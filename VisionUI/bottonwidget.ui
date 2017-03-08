@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>bottonwidget</class>
+ <widget class="QWidget" name="bottonwidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1348</width>
+    <height>172</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QTreeView" name="treeView">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>546</width>
+     <height>141</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QTreeView" name="treeView_2">
+   <property name="geometry">
+    <rect>
+     <x>590</x>
+     <y>15</y>
+     <width>706</width>
+     <height>136</height>
+    </rect>
+   </property>
+   <attribute name="headerDefaultSectionSize">
+    <number>100</number>
+   </attribute>
+   <attribute name="headerMinimumSectionSize">
+    <number>25</number>
+   </attribute>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

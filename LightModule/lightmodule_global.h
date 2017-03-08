@@ -1,0 +1,12 @@
+#ifndef LIGHTMODULE_GLOBAL_H
+#define LIGHTMODULE_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#ifdef LIGHTMODULE_LIB
+# define LIGHTMODULE_EXPORT Q_DECL_EXPORT
+#else
+# define LIGHTMODULE_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // LIGHTMODULE_GLOBAL_H
