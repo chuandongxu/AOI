@@ -16,20 +16,26 @@
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>95</y>
+     <x>5</x>
+     <y>105</y>
      <width>201</width>
-     <height>261</height>
+     <height>161</height>
     </rect>
    </property>
    <property name="title">
     <string>总产量</string>
    </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <widget class="QLabel" name="label_9">
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>14</y>
+      <y>20</y>
       <width>41</width>
       <height>16</height>
      </rect>
@@ -42,7 +48,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>14</y>
+      <y>20</y>
       <width>41</width>
       <height>16</height>
      </rect>
@@ -52,30 +58,39 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_9">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>34</y>
+      <y>40</y>
       <width>61</width>
       <height>20</height>
      </rect>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_10">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>34</y>
+      <y>40</y>
       <width>61</width>
       <height>20</height>
      </rect>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_11">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>64</y>
+      <y>70</y>
       <width>61</width>
       <height>20</height>
      </rect>
@@ -84,9 +99,9 @@
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>88</x>
-      <y>236</y>
-      <width>75</width>
+      <x>60</x>
+      <y>130</y>
+      <width>131</width>
       <height>21</height>
      </rect>
     </property>
@@ -98,7 +113,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>14</y>
+      <y>20</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -111,7 +126,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>34</y>
+      <y>40</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -124,7 +139,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>64</y>
+      <y>70</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -134,10 +149,13 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_12">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>64</y>
+      <y>70</y>
       <width>61</width>
       <height>20</height>
      </rect>
@@ -146,31 +164,37 @@
    <widget class="QLabel" name="label_11">
     <property name="geometry">
      <rect>
-      <x>3</x>
-      <y>214</y>
-      <width>61</width>
+      <x>7</x>
+      <y>104</y>
+      <width>41</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>总量/良率</string>
+     <string>产量:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_21">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>214</y>
+      <y>104</y>
       <width>61</width>
       <height>20</height>
      </rect>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_22">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>214</y>
+      <y>104</y>
       <width>61</width>
       <height>20</height>
      </rect>
@@ -180,21 +204,30 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>0</y>
+     <x>5</x>
+     <y>10</y>
      <width>201</width>
      <height>91</height>
     </rect>
    </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
    <property name="title">
     <string>设备状态</string>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
    </property>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>40</x>
       <y>50</y>
-      <width>111</width>
+      <width>131</width>
       <height>26</height>
      </rect>
     </property>
@@ -211,9 +244,9 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>40</x>
       <y>20</y>
-      <width>111</width>
+      <width>131</width>
       <height>26</height>
      </rect>
     </property>
@@ -225,6 +258,136 @@
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_3">
+   <property name="geometry">
+    <rect>
+     <x>5</x>
+     <y>270</y>
+     <width>201</width>
+     <height>140</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>统计信息</string>
+   </property>
+   <widget class="QLineEdit" name="lineEdit_23">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>30</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_12">
+    <property name="geometry">
+     <rect>
+      <x>7</x>
+      <y>30</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>UPH:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_24">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>30</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_25">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>60</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_13">
+    <property name="geometry">
+     <rect>
+      <x>7</x>
+      <y>60</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PPM:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_26">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>60</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_27">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>90</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_14">
+    <property name="geometry">
+     <rect>
+      <x>7</x>
+      <y>90</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Yield:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_28">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>90</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
     </property>
    </widget>
   </widget>

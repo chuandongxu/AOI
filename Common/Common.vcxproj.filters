@@ -153,14 +153,17 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ErrorCode.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicDisplay.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_GraphicDisplay.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_qcustomplot.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_GraphicDisplay.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_qcustomplot.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="qcustomplot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="errorprinter.cpp">
+      <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -215,6 +218,15 @@
     <ClInclude Include="CVSFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="errorprinter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dog_vcode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="encrypted_string1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ThreadPrioc.h">
@@ -255,8 +267,8 @@
     <CustomBuild Include="translatormgr.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="GraphicDisplay.h">
-      <Filter>Generated Files</Filter>
+    <CustomBuild Include="qcustomplot.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

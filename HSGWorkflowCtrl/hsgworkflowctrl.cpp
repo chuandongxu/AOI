@@ -12,7 +12,7 @@ HSGWorkflowCtrl::HSGWorkflowCtrl(int id,const QString &name)
 	initErrorCode();
 
 	m_ctrl = new QFlowCtrl(NULL);
-	m_workflowWidget = new QWorkFlowWidget;
+	m_workflowWidget = new QWorkFlowWidget;	
 }
 
 HSGWorkflowCtrl::~HSGWorkflowCtrl()
@@ -67,7 +67,7 @@ QList<int> HSGWorkflowCtrl::getResoultItemHeaderWidth()
 
 void HSGWorkflowCtrl::initErrorCode()
 {
-	System->addErrorMap(ERROR_Z_POS_WARRING,MSG_Z_POS_WARRING);
+	System->addErrorMap(ERROR_ATHU_NORIGHT_WARRING, MSG_ATH_NORIGHT_WARRING);
 	System->addErrorMap(ERROR_SAFE_DOOR,MSG_SAFE_DOOR);
 	System->addErrorMap(ERROR_MOTOR_ALM,MSG_MOTOR_ALM);
 	System->addErrorMap(ERROR_ZHOME_ALM,MSG_ZHOME_ALM);

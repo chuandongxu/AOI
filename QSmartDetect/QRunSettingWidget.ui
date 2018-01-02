@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QRunSettingWidget</class>
+ <widget class="QWidget" name="QRunSettingWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>390</width>
+    <height>735</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QRunSettingWidget</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>5</x>
+     <y>10</y>
+     <width>361</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QPushButton" name="pushButton_3DDetectOpen">
+    <property name="geometry">
+     <rect>
+      <x>299</x>
+      <y>66</y>
+      <width>51</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>文件夹</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_3DDetectFile">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>66</y>
+      <width>281</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_runType">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>33</y>
+      <width>125</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_55">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>71</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>检测模式:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_runMode">
+    <property name="geometry">
+     <rect>
+      <x>166</x>
+      <y>33</y>
+      <width>125</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_56">
+    <property name="geometry">
+     <rect>
+      <x>166</x>
+      <y>10</y>
+      <width>71</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>测试次数:</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QToolBox" name="toolBox">
+   <property name="geometry">
+    <rect>
+     <x>5</x>
+     <y>130</y>
+     <width>361</width>
+     <height>261</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Panel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="page">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>359</width>
+      <height>139</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>标准组件</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="page_1">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>98</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>管脚器件</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="page_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>98</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>IC芯片</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="page_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>98</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>LED元件</string>
+    </attribute>
+   </widget>
+  </widget>
+  <widget class="QTableView" name="tableView_objList">
+   <property name="geometry">
+    <rect>
+     <x>5</x>
+     <y>480</y>
+     <width>361</width>
+     <height>251</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_cellEditor">
+   <property name="geometry">
+    <rect>
+     <x>5</x>
+     <y>400</y>
+     <width>361</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>编辑元器件</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_profileEditor">
+   <property name="geometry">
+    <rect>
+     <x>5</x>
+     <y>440</y>
+     <width>361</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>编辑轮廓线</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

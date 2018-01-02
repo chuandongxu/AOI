@@ -12,7 +12,7 @@ QUserEdit::QUserEdit(QWidget *parent)
 	ui.setupUi(this);
 
 	QStringList ls;
-	ls << USER_OPT << USER_MANAGER << USER_TECH << USER_DEBUGER;
+	ls << USER_OPT << USER_MANAGER << USER_TECH;// << USER_DEBUGER;
 	ui.comboBox->addItems(ls);
 
 	connect(ui.pushButton_2,SIGNAL(clicked()),SLOT(onOk()));
@@ -32,8 +32,8 @@ void QUserEdit::initUIData(bool isEdit)
 		ui.lineEdit_2->setText(m_password);
 		ui.lineEdit_3->setText(m_password);
 		if(USER_LEVEL_OPT == m_level)ui.comboBox->setCurrentText(USER_OPT);
-		else if(USER_LEVEL_MANAGER == m_level)ui.comboBox->setCurrentText(USER_OPT);
-		else if(USER_LEVEL_TECH  == m_level)ui.comboBox->setCurrentText(USER_OPT);
+		else if (USER_LEVEL_MANAGER == m_level)ui.comboBox->setCurrentText(USER_MANAGER);
+		else if (USER_LEVEL_TECH == m_level)ui.comboBox->setCurrentText(USER_TECH);
 		else if(USER_LEVEL_DEBUG  == m_level)ui.comboBox->setCurrentText(USER_DEBUGER);
 		else ui.comboBox->setCurrentText(USER_OPT);
 

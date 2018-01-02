@@ -6,6 +6,8 @@
 #include "../Common/eos.h"
 #include "../include/IFlowCtrl.h"
 #include "../Common/ModuleMgr.h"
+#include "../include/IData.h"
+#include <QVBoxLayout>
 
 //----------------------------------------------------------------
 /*
@@ -37,6 +39,14 @@ QBottonWidget::QBottonWidget(QWidget *parent)
 	ui.treeView->setModel(model);
 	ui.treeView_2->setModel(&m_checkModel);
 
+	IData * pData = getModule<IData>(DATA_MODEL);
+	if (pData)
+	{
+		m_widgetEdit = pData->getDataEditor();		
+		ui.scrollArea->setWidget(m_widgetEdit);
+		ui.treeView_2->setVisible(false);		
+	}
+
 	QHeaderView * header = ui.treeView->header();
 	header->resizeSection(0,50);
 	header->resizeSection(1,130);
@@ -60,6 +70,7 @@ QBottonWidget::QBottonWidget(QWidget *parent)
 		this,SLOT(onDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));
 	
 	QEos::Attach(EVENT_CHECK_STATE,this,SLOT(onResoultEvent(const QVariantList &)));
+	QEos::Attach(EVENT_RUN_STATE, this, SLOT(onRunState(const QVariantList &)));
 	//QEos::Attach(EVENT_HSG_TYPE,this,SLOT(onChangeModuleType(const QVariantList &)));
 }
 
@@ -81,6 +92,8 @@ void QBottonWidget::resizeEvent(QResizeEvent * event)
 
 	ui.treeView->setGeometry(5,5,width,height);
 	ui.treeView_2->setGeometry(15+width,5,width,height);
+
+	ui.scrollArea->setGeometry(ui.treeView_2->geometry());
 }
 
 void QBottonWidget::onDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles)
@@ -123,6 +136,27 @@ void QBottomModel::onErrorInfo(const QString &data,const QString &msg,unsigned i
 	//ui.treeView->scrollTo(m_model.index(row,0),QAbstractItemView::PositionAtBottom);
 }
 */
+
+void QBottonWidget::onRunState(const QVariantList &data)
+{
+	IData * pData = getModule<IData>(DATA_MODEL);
+	if (!pData)return;
+
+	if (data.size() == 1)
+	{
+		int iState = data[0].toInt();
+		if (RUN_STATE_RUNING == iState)
+		{
+			ui.scrollArea->setVisible(false);
+			ui.treeView_2->setVisible(true);
+		}
+		else
+		{
+			ui.scrollArea->setVisible(true);
+			ui.treeView_2->setVisible(false);			
+		}
+	}
+}
 
 void QBottonWidget::onResoultEvent(const QVariantList &data)
 {

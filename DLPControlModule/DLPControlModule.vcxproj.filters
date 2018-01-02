@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{5c402a20-6119-4cf1-a366-7f76c1406367}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{ef341b26-b362-4933-9a65-71c131d229b3}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
+    <Filter Include="Header Files\dlp">
+      <UniqueIdentifier>{100aaabc-d32b-4f96-b412-2374db22562d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\dlp">
+      <UniqueIdentifier>{193646b6-712b-4968-9655-973240ba6a83}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DLPControlModule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DLPControlModuleSetting.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DLPControlModuleSetting.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="DLPControlModuleSetting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DLPControl.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DLPControl.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="DLPControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dlpc350_api.cpp">
+      <Filter>Source Files\dlp</Filter>
+    </ClCompile>
+    <ClCompile Include="dlpc350_BMPParser.cpp">
+      <Filter>Source Files\dlp</Filter>
+    </ClCompile>
+    <ClCompile Include="dlpc350_common.cpp">
+      <Filter>Source Files\dlp</Filter>
+    </ClCompile>
+    <ClCompile Include="dlpc350_firmware.cpp">
+      <Filter>Source Files\dlp</Filter>
+    </ClCompile>
+    <ClCompile Include="dlpc350_usb.cpp">
+      <Filter>Source Files\dlp</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_mainwindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_mainwindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_Lcr2.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DLPControlModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_DLPControlModuleSetting.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dlpc350_api.h">
+      <Filter>Header Files\dlp</Filter>
+    </ClInclude>
+    <ClInclude Include="dlpc350_BMPParser.h">
+      <Filter>Header Files\dlp</Filter>
+    </ClInclude>
+    <ClInclude Include="dlpc350_common.h">
+      <Filter>Header Files\dlp</Filter>
+    </ClInclude>
+    <ClInclude Include="dlpc350_error.h">
+      <Filter>Header Files\dlp</Filter>
+    </ClInclude>
+    <ClInclude Include="dlpc350_firmware.h">
+      <Filter>Header Files\dlp</Filter>
+    </ClInclude>
+    <ClInclude Include="dlpc350_flashDevice.h">
+      <Filter>Header Files\dlp</Filter>
+    </ClInclude>
+    <ClInclude Include="dlpc350_usb.h">
+      <Filter>Header Files\dlp</Filter>
+    </ClInclude>
+    <ClInclude Include="dlpc350_version.h">
+      <Filter>Header Files\dlp</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>Header Files\dlp</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_mainwindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dlpcontrolmodule_global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="DLPControlModuleSetting.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DLPControlModuleSetting.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DLPControl.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mainwindow.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mainwindow.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Lcr2.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Icons\Led_G.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\dmd.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Led_R.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\inverted_triangle.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\trigger.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\trigger_inv.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\trigger_item_inv.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\trigger_item.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\my_pause.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\my_play.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\my_stop.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Led_Y.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\LCr4500.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\DLP4500.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Flash\FlashDeviceParameters.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

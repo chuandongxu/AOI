@@ -9,7 +9,7 @@
 # define HSGWORKFLOWCTRL_EXPORT Q_DECL_IMPORT
 #endif
 
-#define STATION_COUNT 6
+#define STATION_COUNT 2
 
 #define PARAM_STATION_ID			"param-station-id"
 #define PARAM_STATION_START_IO		"param-station-start-io"
@@ -26,11 +26,17 @@
 #define SAFE_DOOR_KEY  "safe-door"
 
 //错误代码
-#define ERROR_Z_POS_WARRING   0x18010001 
-#define MSG_Z_POS_WARRING   QStringLiteral("压合轴或侧封轴没有在安全位置")
+#define ERROR_STATION_SAFE_GRATING_ALRM 0x15010009
+#define MSG_STTATION_SAFE_GRATING_ALRM  QStringLiteral("有工位触发安全光栅，请检查设备，确保安全后运行设备")
 
 #define ERROR_SAFE_DOOR       0x18010002
 #define MSG_SAFE_DOOR       QStringLiteral("安全们打开,设备已停止运行")
+
+#define ERROR_MOTION_POS_WARRING   0x18010008 
+#define MSG_MOTION_POS_WARRING   QStringLiteral("运动轴控制错误")
+
+#define ERROR_ATHU_NORIGHT_WARRING   0x38010001 
+#define MSG_ATH_NORIGHT_WARRING   QStringLiteral("系统并没有授权验证，请联系厂家解决")
 
 #define ERROR_MOTOR_ALM        0x58010003
 #define MSG_MOTOR_ALM       QStringLiteral("有轴处于告警状态，请检查驱动器")
@@ -47,10 +53,4 @@
 #define ERROR_HOME_MOTION_ALM        0x58010007
 #define MSG_HOME_NOMOTION_ALM       QStringLiteral("回零失败，运动控制系统加载异常")
 
-#define ERROR_MOTION_POS_WARRING   0x18010008 
-#define MSG_MOTION_POS_WARRING   QStringLiteral("运动轴控制错误")
-
-//@2016-03-25 add by tong wenchao 
-#define ERROR_STATION_SAFE_GRATING_ALRM 0x15010009
-#define MSG_STTATION_SAFE_GRATING_ALRM  QStringLiteral("有工位触发安全光栅，请检查设备，确保安全后运行设备")
 #endif // HSGWORKFLOWCTRL_GLOBAL_H

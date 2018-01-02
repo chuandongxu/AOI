@@ -19,20 +19,22 @@ QAppMainWidget::QAppMainWidget(QWidget *parent)
 
 	this->setObjectName("mainWidget");
     m_topwidget = new QTopWidget;
-	m_leftWidget = new QLeftWidget;
+	m_leftWidget = new QLeftWidget;	
     m_centerWidget = new QCenterWidget;
 	m_bottonWidget = new QBottonWidget;
 	m_dispBkWidget = new QWidget;
 	
-	m_leftWidget->setObjectName("leftwidget");
+	m_topwidget->setObjectName("topWidget");	
+	m_leftWidget->setObjectName("leftWidget");	
 	m_dispBkWidget->setObjectName("dispBkwidget");
 
     m_dispBkLayout = new QVBoxLayout;
-	m_leftLayout = new QHBoxLayout;
+	m_leftLayout = new QHBoxLayout;	
 	m_centerLayout = new QVBoxLayout;
 	m_mainLayout = new QVBoxLayout;
 
-	m_centerWidget->setFixedHeight(650);
+	m_topwidget->setFixedHeight(95);
+	m_centerWidget->setFixedHeight(900);	
 	m_bottonWidget->setFixedHeight(150);
 	QDesktopWidget* desktopWidget = QApplication::desktop();
 	if(desktopWidget)
@@ -43,7 +45,7 @@ QAppMainWidget::QAppMainWidget(QWidget *parent)
 		if(abs(_NORMAL_WIN_WIDTH_ - nScreenWidth) > 10)
 		{			
 			//m_bottonWidget->setFixedHeight(HSG_TYPE_HSG1 == hsgType ? 150 : 112);
-			m_bottonWidget->setFixedHeight(150);
+			//m_bottonWidget->setFixedHeight(150);
 		}
 	}
 	m_dispBkLayout->getContentsMargins(0,0,0,0);
@@ -51,16 +53,16 @@ QAppMainWidget::QAppMainWidget(QWidget *parent)
 	m_dispBkLayout->addStretch();
 	m_dispBkLayout->addWidget(m_bottonWidget,0,Qt::AlignBottom);
 	m_dispBkWidget->setContentsMargins(0,0,0,0);
-	m_dispBkWidget->setLayout(m_dispBkLayout);
+	m_dispBkWidget->setLayout(m_dispBkLayout);	
 
 	m_centerLayout->setContentsMargins(0,0,0,0);
 	m_centerLayout->addWidget(m_topwidget);
-	m_centerLayout->addWidget(m_dispBkWidget);
-	m_centerLayout->addStretch();
+	m_centerLayout->addWidget(m_dispBkWidget);	
+	m_centerLayout->addStretch();	
 
 	m_leftLayout->setContentsMargins(0,0,0,0);
 	m_leftLayout->addWidget(m_leftWidget);
-	m_leftLayout->addLayout(m_centerLayout);
+	m_leftLayout->addLayout(m_centerLayout);	
 
 	m_mainLayout->setContentsMargins(0,0,15,0);
 	m_mainLayout->addLayout(m_leftLayout);
@@ -93,7 +95,6 @@ void QAppMainWidget::onChangeModuleType(const QVariantList &vars)
 
 void QAppMainWidget::onCloseBtnclick()
 {
-    //@ TONG WENCHO 添加强制停机
 	IFlowCtrl * p = getModule<IFlowCtrl>(CTRL_MODEL);
 	if(p)
 	{

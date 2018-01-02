@@ -29,6 +29,7 @@ public:
 	//static void initBottomModel();
 
 protected slots:
+	void onRunState(const QVariantList &data);
 	void onResoultEvent(const QVariantList &data);
 	void onChangeModuleType(const QVariantList &data);
 	void onDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles);
@@ -39,6 +40,7 @@ protected:
 private:
 	Ui::bottonwidget ui;
 	QStandardItemModel m_checkModel;
+	QWidget * m_widgetEdit;
 
 private:
 	//static QBottomModel m_model;

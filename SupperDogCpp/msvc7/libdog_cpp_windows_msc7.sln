@@ -1,0 +1,33 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SuperDog Cpp API", "libdog_cpp_windows_msc7.vcproj", "{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug Diag LIBMDd = Debug Diag LIBMDd
+		Debug Diag LIBMTd = Debug Diag LIBMTd
+		Debug LIBMDd = Debug LIBMDd
+		Debug LIBMTd = Debug LIBMTd
+		Release LIBMD = Release LIBMD
+		Release LIBMT = Release LIBMT
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMDd.ActiveCfg = Debug Diag LIBMDd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMDd.Build.0 = Debug Diag LIBMDd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMTd.ActiveCfg = Debug Diag LIBMTd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMTd.Build.0 = Debug Diag LIBMTd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMDd.ActiveCfg = Debug LIBMDd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMDd.Build.0 = Debug LIBMDd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMTd.ActiveCfg = Debug LIBMTd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMTd.Build.0 = Debug LIBMTd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMD.ActiveCfg = Release LIBMD|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMD.Build.0 = Release LIBMD|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMT.ActiveCfg = Release LIBMT|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMT.Build.0 = Release LIBMT|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

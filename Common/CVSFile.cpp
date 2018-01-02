@@ -11,7 +11,7 @@ const QString TimeFormatString ="yyyyMMddhhmmss";
 QCVSFile::QCVSFile(const QString &filepath,const QString Fileprofix)
 	:m_bFirst(true),m_bOpened(false),m_filePath(filepath),m_fileProfix(Fileprofix)
 {
-	this->open(genFileName(3));
+	this->open(genFileName(2));
 }
 
 QCVSFile::QCVSFile(const QString &filepath,const QString Fileprofix,int method)
@@ -125,7 +125,7 @@ QString QCVSFile::genFileName(int method)
 	else if(2 == method)
 	{
 		QDateTime dtm = QDateTime::currentDateTime();
-		QString strdate = dtm.toString("yyyy-MM-dd-A");
+		QString strdate = dtm.toString("yyyy-MM-dd-HH-mm-ss");
 		strdate += ".csv";
 		return strdate;
 	}
@@ -184,7 +184,7 @@ void QDataRecordInstance::write(const QString &path,const QString &profix,const 
 	QAutoLocker loacker(&m_mutex);
 
 	QCVSFile file(path, profix);
-	file << QDateTime::currentDateTime().toString(TimeFormatString);
+	//file << QDateTime::currentDateTime().toString(TimeFormatString);
 
 	for (int i = 0; i < data.size(); i++)
 	{
@@ -268,7 +268,7 @@ void QDataRecord::flush()
 
 bool QDataRecord::isNewFile()
 {
-	QString szFilePath = m_path + "/" + QDateTime::currentDateTime().toString("yyyy-MM-dd")  + ".csv";
+	QString szFilePath = m_path + "/" + QDateTime::currentDateTime().toString("yyyy-MM-dd-HH-mm-ss")  + ".csv";
 	QFile file(szFilePath);	
 	return !file.exists();
 }

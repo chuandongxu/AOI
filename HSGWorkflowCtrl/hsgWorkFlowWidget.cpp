@@ -5,9 +5,11 @@
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../Common/SystemData.h"
+#include "../include/ICamera.h"
 #include "hsgworkflowctrl_global.h"
 #include <QMessagebox>
 #include <qdesktopwidget.h>
+
 
 #define _NORMAL_WIN_WIDTH_ 1440
 #define ALARMTEST 200
@@ -24,12 +26,34 @@ QWorkFlowWidget::QWorkFlowWidget(QWidget *parent)
 	QEos::Attach(EVENT_AI_STATE,this,SLOT(onAIStateChange(const QVariantList &)));	
 	QEos::Attach(EVENT_CHANGE_USER,this,SLOT(onChangeUser(const QVariantList &)));
 
+	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);	
+
+	m_subVLayout = new QHBoxLayout;
+	//QWidget* pWidget = pCam->getViewWidget(1);
+	QWidget* pWidget = pCam->getMainView();
+	m_subVLayout->addWidget(pWidget);;	
+	pWidget->setFixedSize(1200, 800);
+	m_subVLayout->setAlignment(Qt::AlignTop);
+	
+	
+	m_mainLayout = new QVBoxLayout;
+	m_mainLayout->setContentsMargins(0, 0, 0, 0);
+	m_mainLayout->addLayout(m_subVLayout);
+	this->setLayout(m_mainLayout);
+
+	
+	QPalette Pal(palette());
+	// set black background
+	Pal.setColor(QPalette::Background, QColor(245,245,245));	
+	setAutoFillBackground(true);
+	setPalette(Pal);
+
 	m_nTimerID = this->startTimer(800);	
 
 	if(USER_LEVEL_TECH > System->getUserLevel())
 	{
 		
-	}	
+	}		
 }
 
 QWorkFlowWidget::~QWorkFlowWidget()
@@ -73,10 +97,6 @@ void QWorkFlowWidget::setCheckerState1(int iEvent,double data,double data2)
 	//bool bBinDisp = System->getParam("sys_run_bin_display").toBool();	
 	QString colorstr;
 	if (STATION_STATE_WAIT_START == iEvent)
-	{
-
-	}
-	else if (STATION_STATE_CHECKING == iEvent)
 	{
 
 	}

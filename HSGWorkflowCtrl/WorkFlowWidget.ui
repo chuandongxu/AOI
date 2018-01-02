@@ -6,71 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1216</width>
+    <width>1000</width>
     <height>651</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>QWorkFlowWidget</string>
   </property>
-  <widget class="QGroupBox" name="groupBox">
-   <property name="geometry">
-    <rect>
-     <x>5</x>
-     <y>30</y>
-     <width>1126</width>
-     <height>411</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>12</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgb(231, 231, 231);</string>
-   </property>
-   <property name="title">
-    <string/>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-   <widget class="QLabel" name="label_47">
-    <property name="geometry">
-     <rect>
-      <x>105</x>
-      <y>185</y>
-      <width>47</width>
-      <height>13</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_12">
-   <property name="geometry">
-    <rect>
-     <x>4</x>
-     <y>455</y>
-     <width>1126</width>
-     <height>186</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgb(231, 231, 231);</string>
-   </property>
-   <property name="title">
-    <string/>
-   </property>
-  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

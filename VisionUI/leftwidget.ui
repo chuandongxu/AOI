@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>leftwidget</class>
- <widget class="QWidget" name="leftwidget">
+ <class>leftWidget</class>
+ <widget class="QWidget" name="leftWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>280</width>
-    <height>911</height>
+    <height>1102</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>20</y>
+     <y>970</y>
      <width>200</width>
-     <height>81</height>
+     <height>100</height>
     </rect>
    </property>
    <property name="text">
@@ -30,18 +30,18 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>120</y>
-     <width>225</width>
-     <height>681</height>
+     <y>130</y>
+     <width>221</width>
+     <height>821</height>
     </rect>
    </property>
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>270</y>
-      <width>221</width>
-      <height>356</height>
+      <x>5</x>
+      <y>400</y>
+      <width>210</width>
+      <height>415</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -54,19 +54,19 @@
    <widget class="QWidget" name="widget" native="true">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>10</y>
-      <width>221</width>
-      <height>261</height>
+      <x>5</x>
+      <y>5</y>
+      <width>210</width>
+      <height>391</height>
      </rect>
     </property>
     <widget class="QLabel" name="label_user">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>45</y>
-       <width>56</width>
-       <height>56</height>
+       <y>30</y>
+       <width>70</width>
+       <height>90</height>
       </rect>
      </property>
      <property name="text">
@@ -76,10 +76,10 @@
     <widget class="QPushButton" name="pushButton_4">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>195</y>
-       <width>81</width>
-       <height>41</height>
+       <x>110</x>
+       <y>255</y>
+       <width>80</width>
+       <height>110</height>
       </rect>
      </property>
      <property name="text">
@@ -89,10 +89,10 @@
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>140</y>
-       <width>81</width>
-       <height>41</height>
+       <x>20</x>
+       <y>135</y>
+       <width>80</width>
+       <height>110</height>
       </rect>
      </property>
      <property name="text">
@@ -102,15 +102,15 @@
     <widget class="QLineEdit" name="lineEdit">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>120</x>
        <y>25</y>
-       <width>121</width>
+       <width>81</width>
        <height>21</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>12</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="frame">
@@ -123,7 +123,7 @@
     <widget class="QPushButton" name="pushButton_5">
      <property name="geometry">
       <rect>
-       <x>160</x>
+       <x>150</x>
        <y>55</y>
        <width>51</width>
        <height>23</height>
@@ -132,14 +132,20 @@
      <property name="text">
       <string>切换</string>
      </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
     </widget>
     <widget class="QPushButton" name="pushButton_3">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>140</y>
+       <x>110</x>
+       <y>135</y>
        <width>81</width>
-       <height>41</height>
+       <height>111</height>
       </rect>
      </property>
      <property name="text">
@@ -149,10 +155,10 @@
     <widget class="QPushButton" name="pushButton_2">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>195</y>
+       <x>20</x>
+       <y>255</y>
        <width>81</width>
-       <height>41</height>
+       <height>110</height>
       </rect>
      </property>
      <property name="text">
@@ -176,7 +182,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>250</y>
+       <y>380</y>
        <width>181</width>
        <height>3</height>
       </rect>
@@ -186,35 +192,58 @@
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>5</y>
-       <width>81</width>
+       <x>80</x>
+       <y>28</y>
+       <width>31</width>
        <height>16</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <family>Agency FB</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
      <property name="text">
-      <string>当前登录用户</string>
+      <string>USER：</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_6">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>80</x>
        <y>55</y>
        <width>61</width>
        <height>23</height>
       </rect>
      </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::DefaultContextMenu</enum>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::ImhNone</set>
+     </property>
      <property name="text">
       <string>管理用户</string>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
      </property>
     </widget>
     <widget class="QComboBox" name="comboBox">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>120</x>
        <y>85</y>
        <width>81</width>
        <height>22</height>
@@ -222,16 +251,26 @@
      </property>
     </widget>
     <widget class="QLabel" name="label_4">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
-       <x>93</x>
+       <x>80</x>
        <y>86</y>
        <width>31</width>
        <height>16</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
      <property name="text">
-      <string>语言：</string>
+      <string>LAN：</string>
      </property>
     </widget>
    </widget>
@@ -240,14 +279,52 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>790</y>
+     <y>35</y>
      <width>176</width>
      <height>36</height>
     </rect>
    </property>
+   <property name="palette">
+    <palette>
+     <active>
+      <colorrole role="WindowText">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>255</red>
+         <green>255</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </active>
+     <inactive>
+      <colorrole role="WindowText">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>255</red>
+         <green>255</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </inactive>
+     <disabled>
+      <colorrole role="WindowText">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>120</red>
+         <green>120</green>
+         <blue>120</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </disabled>
+    </palette>
+   </property>
    <property name="font">
     <font>
-     <pointsize>20</pointsize>
+     <family>Arial</family>
+     <pointsize>16</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -259,15 +336,80 @@
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>45</x>
-     <y>835</y>
+     <x>60</x>
+     <y>70</y>
      <width>176</width>
      <height>36</height>
     </rect>
    </property>
+   <property name="palette">
+    <palette>
+     <active>
+      <colorrole role="WindowText">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>255</red>
+         <green>255</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </colorrole>
+      <colorrole role="Button">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>255</red>
+         <green>255</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </active>
+     <inactive>
+      <colorrole role="WindowText">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>255</red>
+         <green>255</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </colorrole>
+      <colorrole role="Button">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>255</red>
+         <green>255</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </inactive>
+     <disabled>
+      <colorrole role="WindowText">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>120</red>
+         <green>120</green>
+         <blue>120</blue>
+        </color>
+       </brush>
+      </colorrole>
+      <colorrole role="Button">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>255</red>
+         <green>255</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </disabled>
+    </palette>
+   </property>
    <property name="font">
     <font>
-     <pointsize>20</pointsize>
+     <family>Arial</family>
+     <pointsize>16</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>

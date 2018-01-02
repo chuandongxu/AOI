@@ -5,6 +5,14 @@ QSysMessageBox::QSysMessageBox(QWidget *parent)
 {
 	ui.setupUi(this);
 	connect(ui.pushButton,SIGNAL(clicked()),SLOT(onBtnClick()));
+
+	QString path = QApplication::applicationDirPath();
+	path += "/image/label_log3.png";
+
+	QPixmap pixmap;
+	pixmap.load(path);
+
+	ui.messageBox_icon->setPixmap(pixmap);
 }
 
 QSysMessageBox::~QSysMessageBox()

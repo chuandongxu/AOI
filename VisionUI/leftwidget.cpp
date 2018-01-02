@@ -9,7 +9,8 @@
 #include "statewidget.h"
 #include "../include/IdDefine.h"
 #include "../Common/eos.h"
-
+#include <QPainter>
+#include <QDebug>
 
 QLeftWidget::QLeftWidget(QWidget *parent)
 	: QWidget(parent)
@@ -23,6 +24,10 @@ QLeftWidget::QLeftWidget(QWidget *parent)
 	m_subLayout->setContentsMargins(0,0,0,0);
 	ui.frame->setLayout(m_subLayout);
 	ui.frame->setContentsMargins(0,0,0,0);
+	ui.widget->setContentsMargins(0,0,0,0);
+	
+	//ui.widget_leftbk->setWindowOpacity(0.7);
+	//ui.widget_leftbk->setAttribute(Qt::WA_TranslucentBackground, true);	
 
 	QString user;
 	int level = 0;
@@ -51,11 +56,34 @@ QLeftWidget::QLeftWidget(QWidget *parent)
 	QEos::Attach(EVENT_RUN_STATE,this,SLOT(onRunState(const QVariantList &)));
 
 	m_timerId = this->startTimer(1000);
+	ui.pushButton->setText("");
+	ui.pushButton->setObjectName("setting_btn");	
+
+	ui.pushButton_3->setText("");
+	ui.pushButton_3->setObjectName("log_btn");
+
+	ui.pushButton_2->setText("");
+	ui.pushButton_2->setObjectName("debug_btn");
+
+	ui.pushButton_4->setText("");
+	ui.pushButton_4->setObjectName("home_btn");
+
+	//m_dlgSetting.setWindowModality(Qt::ApplicationModal);
 }
 
 QLeftWidget::~QLeftWidget()
 {
 	this->killTimer(m_timerId);
+}
+
+void QLeftWidget::paintEvent(QPaintEvent *event)
+{  
+	QStyleOption option;
+	option.init(this);
+	QPainter painter(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
+	QWidget::paintEvent(event);
+
 }
 
 void QLeftWidget::setStateWidget(QWidget * w)
@@ -76,8 +104,12 @@ void QLeftWidget::onDiagonseClick()
 
 void QLeftWidget::onSettingClick()
 {
-	QSettingDialog dlg;
-	dlg.exec();
+	//QSettingDialog dlg;
+	//dlg.exec();
+	//Qt::WindowFlags flags = m_dlgSetting.windowFlags();
+	//flags |= Qt::WindowStaysOnTopHint;
+	//m_dlgSetting.setWindowFlags(flags);
+	m_dlgSetting.show();
 }
 
 void QLeftWidget::onShowWarring()
@@ -121,6 +153,7 @@ void QLeftWidget::enableButton(int iLevel)
 	else if(USER_LEVEL_TECH == iLevel)
 	{		
 		ui.pushButton->setEnabled(true);
+		ui.pushButton_6->setEnabled(true);
 	}
 	else if(USER_LEVEL_DEBUG == iLevel)
 	{

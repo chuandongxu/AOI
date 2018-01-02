@@ -33,6 +33,10 @@ QStateWidget::QStateWidget(QWidget *parent) :
 	QEos::Attach(EVENT_GOHOMEING_STATE,this,SLOT(onIsGoHomeIng(const QVariantList &)));
 	QEos::Attach(EVENT_RUN_STATE,this,SLOT(onRunState(const QVariantList &)));
 	QEos::Attach(EVENT_CHECK_STATE,this,SLOT(onResoultEvent(const QVariantList &)));
+	QPalette Pal(palette());
+	Pal.setColor(QPalette::Background, QColor(235, 235, 235));
+	setAutoFillBackground(true);
+	setPalette(Pal);
 }
 
 QStateWidget::~QStateWidget()
@@ -178,8 +182,6 @@ void QStateWidget::onResoultEvent(const QVariantList &data)
 	if(iEvent != STATION_STATE_RESOULT)return;
 
 	int iState = data[2].toInt();
-	double PressureValue = data[3].toDouble();
-	double LeakValue = data[4].toDouble();
 
 	if(iStation >= 0 && iStation < 6)
 	{

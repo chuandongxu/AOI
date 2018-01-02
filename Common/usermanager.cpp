@@ -77,14 +77,23 @@ void QUserManager::onEditUser()
 	int row = idx.row();
 	dlg.m_userName = m_model.data(m_model.index(row,1)).toString();
 	dlg.m_password = m_model.data(m_model.index(row,3)).toString();
-	dlg.m_level = m_model.data(m_model.index(row,2)).toInt();
+	QString szLevel = m_model.data(m_model.index(row, 2)).toString();
+	if (szLevel == USER_MANAGER) dlg.m_level = USER_LEVEL_MANAGER;
+	else if (szLevel == USER_TECH) dlg.m_level = USER_LEVEL_TECH;
+	else if (szLevel == USER_DEBUGER) dlg.m_level = USER_LEVEL_DEBUG;
+	else dlg.m_level = USER_LEVEL_OPT;
 	dlg.m_remark = m_model.data(m_model.index(row,4)).toString();
 
 	dlg.initUIData(true);
 	if(dlg.exec() == QDialog::Accepted)
 	{
 		m_model.setData(m_model.index(row,1),dlg.m_userName);
-		m_model.setData(m_model.index(row,2),dlg.m_level);
+		int level = dlg.m_level;
+		if (level == USER_LEVEL_MANAGER)m_model.setData(m_model.index(row, 2), USER_MANAGER);
+		else if (level == USER_LEVEL_TECH)m_model.setData(m_model.index(row, 2), USER_TECH);
+		else if (level == USER_LEVEL_DEBUG)m_model.setData(m_model.index(row, 2), USER_DEBUGER);
+		else m_model.setData(m_model.index(row, 2), USER_OPT);
+
 		m_model.setData(m_model.index(row,3),dlg.m_password);
 		m_model.setData(m_model.index(row,4),dlg.m_remark);
 

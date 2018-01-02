@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include "ui_WorkFlowWidget.h"
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 class QWorkFlowWidget : public QWidget
 {
@@ -29,6 +31,8 @@ protected:
 private:
 	Ui::QWorkFlowWidget ui;
 	int m_nTimerID;
+	QHBoxLayout * m_subVLayout;
+	QVBoxLayout * m_mainLayout;
 };
 
 #endif // WORKFLOWWIDGET_H

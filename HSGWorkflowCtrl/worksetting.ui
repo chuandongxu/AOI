@@ -16,14 +16,14 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>10</y>
      <width>681</width>
      <height>581</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -110,9 +110,9 @@
     <widget class="QCheckBox" name="checkBox_safe_grating">
      <property name="geometry">
       <rect>
-       <x>360</x>
+       <x>170</x>
        <y>530</y>
-       <width>101</width>
+       <width>121</width>
        <height>16</height>
       </rect>
      </property>
@@ -131,19 +131,6 @@
      </property>
      <property name="text">
       <string>保存</string>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="checkBoxAutoCycle">
-     <property name="geometry">
-      <rect>
-       <x>155</x>
-       <y>530</y>
-       <width>91</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>循环测试</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="checkBox">
@@ -198,19 +185,6 @@
       <string>选择</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBoxCheckBarcode">
-     <property name="geometry">
-      <rect>
-       <x>245</x>
-       <y>530</y>
-       <width>91</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>启用扫描二维码</string>
-     </property>
-    </widget>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="geometry">
       <rect>
@@ -240,9 +214,9 @@
       <property name="geometry">
        <rect>
         <x>210</x>
-        <y>25</y>
-        <width>54</width>
-        <height>12</height>
+        <y>21</y>
+        <width>81</width>
+        <height>16</height>
        </rect>
       </property>
       <property name="text">
@@ -252,7 +226,7 @@
      <widget class="QComboBox" name="comboBox">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>280</x>
         <y>20</y>
         <width>101</width>
         <height>22</height>
@@ -262,7 +236,7 @@
      <widget class="QComboBox" name="comboBoxSelectStation">
       <property name="geometry">
        <rect>
-        <x>80</x>
+        <x>90</x>
         <y>20</y>
         <width>101</width>
         <height>22</height>
@@ -273,7 +247,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>20</y>
+        <y>22</y>
         <width>71</width>
         <height>16</height>
        </rect>
@@ -390,7 +364,7 @@
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>220</y>
+       <y>300</y>
        <width>601</width>
        <height>231</height>
       </rect>
@@ -405,12 +379,48 @@
        <x>40</x>
        <y>150</y>
        <width>601</width>
-       <height>61</height>
+       <height>131</height>
       </rect>
      </property>
      <property name="title">
       <string>通用设置</string>
      </property>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>72</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>DLP模式:</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboBox_dlpMode">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>26</y>
+        <width>120</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_DlpSave">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>25</y>
+        <width>80</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>保存</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

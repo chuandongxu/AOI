@@ -2,6 +2,9 @@
 #include "../common/SystemData.h"
 #include <QCryptographicHash>
 #include <qmessagebox.h>
+#include <QDateTime>
+
+#define PWD_INVENTOR 1
 
 QLoginEdit::QLoginEdit(QWidget *parent)
 	: QWidget(parent)
@@ -10,8 +13,8 @@ QLoginEdit::QLoginEdit(QWidget *parent)
 
 	//ui.lineEdit->setText("operator");
 	//ui.lineEdit_2->setText("123");
-	ui.lineEdit->setText("aoiDebuger");
-	ui.lineEdit_2->setText("aoi.com");
+	ui.lineEdit->setText("admin");
+	ui.lineEdit_2->setText("Lvr/CB");
 
 	connect(ui.pushButton,SIGNAL(clicked()),SLOT(onOkBtn()));
 	connect(ui.pushButton_2,SIGNAL(clicked()),SLOT(onExitBtn()));
@@ -24,6 +27,12 @@ QLoginEdit::~QLoginEdit()
 
 void QLoginEdit::onOkBtn()
 {
+	if (!System->checkRuntimeAuthRight())
+	{
+		QMessageBox::warning(this, QStringLiteral("错误"), QStringLiteral("系统没有授权！"));
+		return;
+	}
+
 	QString user = ui.lineEdit->text();
 	QString pwd = ui.lineEdit_2->text();
 
@@ -31,14 +40,41 @@ void QLoginEdit::onOkBtn()
 	int level;
 	if(System->getUserPwd(user,targPwd,level))
 	{
-		QByteArray pwdArr;
-		pwdArr.append(pwd);
-		QString pwdHash = QCryptographicHash::hash(pwdArr,QCryptographicHash::Md5).toBase64().data();
-		if(pwdHash == targPwd)
+		if ( (level > USER_LEVEL_OPT) && PWD_INVENTOR)
 		{
-			System->setUser(user,level);
-			emit ok();
-			return;
+			QDateTime dtm = QDateTime::currentDateTime();
+			QString dateTM = dtm.toString("yyyyMM");
+			QByteArray pwdArr;
+			if (USER_LEVEL_MANAGER == level)
+			{
+				targPwd = "admin";
+			}
+			else if (USER_LEVEL_TECH == level)
+			{
+				targPwd = "tech";
+			}
+			pwdArr.append(targPwd);
+			pwdArr.append(dateTM);
+			QString pwdHash = QCryptographicHash::hash(pwdArr, QCryptographicHash::Md5).toBase64().data();
+			QString pwdCacl = pwdHash.left(6);
+			if (pwd == pwdCacl)
+			{
+				System->setUser(user, level);
+				emit ok();
+				return;
+			}
+		}
+		else
+		{
+			QByteArray pwdArr;
+			pwdArr.append(pwd);
+			QString pwdHash = QCryptographicHash::hash(pwdArr, QCryptographicHash::Md5).toBase64().data();
+			if (pwdHash == targPwd)
+			{
+				System->setUser(user, level);
+				emit ok();
+				return;
+			}
 		}
 	}
 	

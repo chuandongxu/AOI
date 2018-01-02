@@ -202,6 +202,8 @@ public:
 	bool checkAuthRight();
 	bool execAuth();
 
+	bool checkRuntimeAuthRight();
+
 signals:
 	void errorInfo(const QString &data,const QString &msg,unsigned int level);
 	void goHome();

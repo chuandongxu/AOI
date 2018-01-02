@@ -70,12 +70,7 @@ QWorkSetting::QWorkSetting(QFlowCtrl *p, QWidget *parent)
 	ui.checkBox_2->setChecked(s);
 	s = System->isEnableBackupData();
 	ui.checkBox_4->setChecked(s);
-	
-	bool bAutoCycle = System->getParam("sys_run_auto_cycle").toBool();
-	ui.checkBoxAutoCycle->setChecked(bAutoCycle);
 
-	bool bCheckBarcode = System->getParam("sys_run_check_barcode").toBool();
-	ui.checkBoxCheckBarcode->setChecked(bCheckBarcode);
 	
 	m_pValidatorDouble = new QDoubleValidator(-1000.0, 1000.0, 3, this);
 	//ui.lineEditBinA->setValidator(m_pValidatorDouble);	
@@ -100,8 +95,7 @@ QWorkSetting::QWorkSetting(QFlowCtrl *p, QWidget *parent)
 	else ui.checkBox_3->setChecked(false);
 
     bool bsafeGrating = System->getParam("sys_run_safe_garting").toBool();
-    ui.checkBox_safe_grating->setChecked(bsafeGrating);	
-	
+    ui.checkBox_safe_grating->setChecked(bsafeGrating);		
 
 	connect(ui.radioButton,SIGNAL(toggled(bool)),SLOT(onclickLowSpeed(bool)));
 	connect(ui.radioButton_2,SIGNAL(toggled(bool)),SLOT(onClickMidSpeed(bool)));
@@ -121,9 +115,16 @@ QWorkSetting::QWorkSetting(QFlowCtrl *p, QWidget *parent)
 
 	connect(ui.pushButton_5,SIGNAL(clicked()),SLOT(onSaveHsgType()));
 	connect(ui.checkBox_3,SIGNAL(stateChanged(int)),SLOT(onEnableSafeDoor(int)));
-	connect(ui.checkBoxAutoCycle,SIGNAL(stateChanged(int)),SLOT(onEnableAutoCycle(int)));
-	connect(ui.checkBoxCheckBarcode,SIGNAL(stateChanged(int)),SLOT(onEnableCheckBarcode(int)));
     connect(ui.checkBox_safe_grating,SIGNAL(stateChanged(int)),SLOT(onCheckSafeGrating(int)));
+
+	connect(ui.comboBox_dlpMode, SIGNAL(currentIndexChanged(int)), SLOT(onDlpModeIndexChanged(int)));
+	ls.clear();
+	ls << QStringLiteral("DLP触发模式") << QStringLiteral("控制卡触发模式");
+	ui.comboBox_dlpMode->addItems(ls);
+	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
+	ui.comboBox_dlpMode->setCurrentIndex(nDlpMode);
+
+	connect(ui.pushButton_DlpSave, SIGNAL(clicked()), SLOT(onDlpModeSave()));
 
 	if(USER_LEVEL_TECH > System->getUserLevel())
 	{
@@ -132,8 +133,6 @@ QWorkSetting::QWorkSetting(QFlowCtrl *p, QWidget *parent)
 		ui.comboBoxSelectStation->setEnabled(false);	
 		ui.checkBox_safe_grating->setEnabled(false);
 		ui.checkBox_3->setEnabled(false);
-		ui.checkBoxAutoCycle->setEnabled(false);
-		ui.checkBoxCheckBarcode->setEnabled(false);
 
 		ui.checkBox->setEnabled(false);
 
@@ -235,22 +234,6 @@ void QWorkSetting::onEnableSafeDoor(int iState)
 	}
 }
 
-void QWorkSetting::onEnableAutoCycle(int iState)
-{
-	int data = 0;
-	if(Qt::Checked == iState)data = 1;
-
-	System->setParam("sys_run_auto_cycle", (bool)data);
-}
-
-void QWorkSetting::onEnableCheckBarcode(int iState)
-{
-	int data = 0;
-	if(Qt::Checked == iState)data = 1;
-
-	System->setParam("sys_run_check_barcode", (bool)data);
-}
-
 void QWorkSetting::onCheckSafeGrating(int iState)
 {
 	int data = 0;
@@ -323,5 +306,22 @@ void QWorkSetting::onSaveHsgType()
 		QStringLiteral("系统配置已修改，请务必关闭软件并重新启动!"),QMessageBox::Ok))
 	{
 		
+	}
+}
+
+void QWorkSetting::onDlpModeIndexChanged(int index)
+{
+	int nIndex = index;
+}
+
+void QWorkSetting::onDlpModeSave()
+{
+	int nDlpMode = ui.comboBox_dlpMode->currentIndex();
+	System->setParam("sys_run_dlp_mode", nDlpMode);
+
+	if (QMessageBox::Ok == QMessageBox::warning(NULL, QStringLiteral("提示"),
+		QStringLiteral("系统配置已修改，请务必关闭软件并重新启动!"), QMessageBox::Ok))
+	{
+
 	}
 }

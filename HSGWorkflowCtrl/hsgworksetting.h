@@ -35,9 +35,10 @@ protected slots:
 	void onSaveHsgType();
 
 	void onEnableSafeDoor(int iState);
-	void onEnableAutoCycle(int iState);
-	void onEnableCheckBarcode(int iState);
 	void onCheckSafeGrating(int iState);
+
+	void onDlpModeIndexChanged(int index);
+	void onDlpModeSave();
 
 private:
 	Ui::QWorkSetting ui;

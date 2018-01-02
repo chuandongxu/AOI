@@ -3,6 +3,7 @@
 #include <qapplication.h>
 #include <qbytearray.h>
 #include "../common/SystemData.h"
+#include <QPainter>
 
 #define HIDE_DEBUG_TOOL_BTN  0
 
@@ -40,8 +41,8 @@ QTopWidget::QTopWidget(QWidget *parent) :
     m_titleLayout->setContentsMargins(0,0,0,0);
  
 	m_titleLayout->addSpacing(350);
-	m_titleLayout->addWidget(m_titleLabel,0,Qt::AlignHCenter);
-	m_titleLayout->addLayout(m_verLayout);
+	//m_titleLayout->addWidget(m_titleLabel,0,Qt::AlignHCenter);
+	//m_titleLayout->addLayout(m_verLayout);
 	m_titleLayout->addStretch(0);
     m_titleLayout->addWidget(m_exitBtn,0,Qt::AlignRight|Qt::AlignTop);
 	m_mainLayout->addLayout(m_titleLayout);
@@ -56,6 +57,17 @@ QTopWidget::QTopWidget(QWidget *parent) :
 	connect(m_goHomeBtn,SIGNAL(clicked()),this,SLOT(onGoHome()));
 	*/
 }
+
+void QTopWidget::paintEvent(QPaintEvent *event)
+{  
+	QStyleOption option;
+	option.init(this);
+	QPainter painter(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
+	QWidget::paintEvent(event);
+
+}
+
 
 QString QTopWidget::getTitle()
 {

@@ -15,6 +15,11 @@
 #include <QWaitCondition>
 #include <QThread>
 
+#include "dog_api_cpp.h"
+#include "dog_vcode.h"
+#include "errorprinter.h"
+#include "encrypted_string1.h"
+
 #define ENABLE_RECORD   "enableRecord"
 #define ENABLE_RECORD_DETAILS   "enableRecordDetails"
 #define ENABLE_OUTLINE   "enableOutline"
@@ -24,7 +29,9 @@
 #define BACKUP_PATH "backupDataPath"
 
 #define DEFALUT_USER  "aoiDebuger"
-#define DEFALUT_PASS   "aoi.com"
+#define DEFALUT_PASS  "aoi.com"
+
+#define AUCH_RIGHT_ENT_STRING "NFG_AOI_ENC#!@.txt"
 
 
 void randData(char * buffer,int size)
@@ -950,6 +957,60 @@ bool QSystem::execAuth()
 	if(dlg.exec() == QDialog::Accepted)return true;
 
 	return false;
+}
+
+bool QSystem::checkRuntimeAuthRight()
+{
+	return true;
+
+	//Prints the error messages for the return values of the functions
+	ErrorPrinter errorPrinter;
+
+	//Used to hold the return value of the called functions
+	dogStatus status;
+
+	CDog dog1(CDogFeature::fromFeature(1));
+	status = dog1.login(vendor_code);
+	errorPrinter.printError(status);
+
+	if (!DOG_SUCCEEDED(status))
+	{
+		status = dog1.logout();
+		errorPrinter.printError(status);
+		return false;
+	}
+
+	unsigned char encryptStrArr1Test[ENCRYPT_BUFFER_LENGTH1];
+	memcpy(encryptStrArr1Test, encryptStrArr1, ENCRYPT_BUFFER_LENGTH1);
+
+	status = dog1.decrypt(encryptStrArr1Test, ENCRYPT_BUFFER_LENGTH1);
+	errorPrinter.printError(status);
+	if (!DOG_SUCCEEDED(status))
+	{
+		status = dog1.logout();
+		errorPrinter.printError(status);
+		return false;
+	}
+
+	unsigned char decryptStrArr[ENCRYPT_BUFFER_LENGTH1];
+	memcpy(decryptStrArr, AUCH_RIGHT_ENT_STRING, ENCRYPT_BUFFER_LENGTH1);
+	for (int i = 0; i < ENCRYPT_BUFFER_LENGTH1; i++)
+	{
+		if (encryptStrArr1Test[i] != decryptStrArr[i])
+		{
+			qDebug() << "String is not correct!";
+			status = dog1.logout();
+			errorPrinter.printError(status);
+			return false;
+		}
+	}
+
+	//if (strcmp(encryptStrArr1Test, decryptStrArr) != 0)
+	
+	status = dog1.logout();
+	errorPrinter.printError(status);
+
+	return true;
 }
 
 void QSystem::initErrorModel()

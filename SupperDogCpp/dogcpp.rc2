@@ -1,0 +1,96 @@
+/////////////////////////////////////////////////////////////////////////////
+//
+// Resources Microsoft Visual C++ does not edit directly
+//
+// Added support for automatic build incrementation
+/////////////////////////////////////////////////////////////////////////////
+
+#if !defined(APSTUDIO_INVOKED)
+
+/////////////////////////////////////////////////////////////////////////////
+// Add manually edited resources here...
+/////////////////////////////////////////////////////////////////////////////
+#if !defined(_MAC)
+
+#define FVER		6, 4, 1, 1.28671
+#define PVER		6, 4, 1, 1.28671
+#define SZFVER		"6.4.1.1.28671\0"
+#define SZPVER		"6.4.1.1.28671\0"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+/////////////////////////////////////////////////////////////////////////////
+#if defined(_DEBUG)
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION FVER
+ PRODUCTVERSION PVER
+ FILEFLAGSMASK 0x3fL
+ FILEFLAGS 0x1L
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+    	    VALUE "Comments", "\0"
+            VALUE "CompanyName", "SafeNet, Inc.\0"
+            VALUE "FileDescription", "SuperDog C++ Dynamic Link Library (Debug Build)\0"
+            VALUE "FileVersion", SZFVER
+            VALUE "InternalName", "dogcpp\0"
+            VALUE "LegalCopyright", "® 2012 SafeNet, Inc. All rights reserved.\0"
+            VALUE "LegalTrademarks", "Dog (R) is a registered trademark of SafeNet, Inc.\0"
+            VALUE "OriginalFilename", "dog_cpp_windows_*.dll\0"
+            VALUE "PrivateBuild", "$Name:  $\0"
+            VALUE "ProductName", "SuperDog C++ Dynamic Link Library\0"
+            VALUE "ProductVersion", SZPVER
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x00, 1200
+    END
+END
+#endif // _DEBUG
+
+#if defined(NDEBUG)
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION FVER
+ PRODUCTVERSION PVER
+ FILEFLAGSMASK 0x3fL
+ FILEFLAGS 0x0L
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+    	    VALUE "Comments", "\0"
+            VALUE "CompanyName", "SafeNet, Inc.\0"
+            VALUE "FileDescription", "SuperDog C++ Dynamic Link Library\0"
+            VALUE "FileVersion", SZFVER
+            VALUE "InternalName", "dogcpp\0"
+            VALUE "LegalCopyright", "® 2012 SafeNet, Inc. All rights reserved.\0"
+            VALUE "LegalTrademarks", "Dog (R) is a registered trademark of SafeNet, Inc.\0"
+            VALUE "OriginalFilename", "dog_cpp_windows_*.dll\0"
+            VALUE "PrivateBuild", "$Name:  $\0"
+            VALUE "ProductName", "SuperDog C++ Dynamic Link Library\0"
+            VALUE "ProductVersion", SZPVER
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x00, 1200
+    END
+END
+
+#endif // NDEBUG
+#endif // !_MAC
+#endif //!APSTUDIO_INVOKED
+
+

@@ -1,0 +1,49 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SuperDog Cpp API", "libdog_cpp_windows_msc8.vcproj", "{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug Diag LIBMDd|Win32 = Debug Diag LIBMDd|Win32
+		Debug Diag LIBMDd|x64 = Debug Diag LIBMDd|x64
+		Debug Diag LIBMTd|Win32 = Debug Diag LIBMTd|Win32
+		Debug Diag LIBMTd|x64 = Debug Diag LIBMTd|x64
+		Debug LIBMDd|Win32 = Debug LIBMDd|Win32
+		Debug LIBMDd|x64 = Debug LIBMDd|x64
+		Debug LIBMTd|Win32 = Debug LIBMTd|Win32
+		Debug LIBMTd|x64 = Debug LIBMTd|x64
+		Release LIBMD|Win32 = Release LIBMD|Win32
+		Release LIBMD|x64 = Release LIBMD|x64
+		Release LIBMT|Win32 = Release LIBMT|Win32
+		Release LIBMT|x64 = Release LIBMT|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMDd|Win32.ActiveCfg = Debug Diag LIBMDd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMDd|Win32.Build.0 = Debug Diag LIBMDd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMDd|x64.ActiveCfg = Debug Diag LIBMDd|x64
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMDd|x64.Build.0 = Debug Diag LIBMDd|x64
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMTd|Win32.ActiveCfg = Debug Diag LIBMTd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMTd|Win32.Build.0 = Debug Diag LIBMTd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMTd|x64.ActiveCfg = Debug Diag LIBMTd|x64
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug Diag LIBMTd|x64.Build.0 = Debug Diag LIBMTd|x64
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMDd|Win32.ActiveCfg = Debug LIBMDd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMDd|Win32.Build.0 = Debug LIBMDd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMDd|x64.ActiveCfg = Debug LIBMDd|x64
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMDd|x64.Build.0 = Debug LIBMDd|x64
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMTd|Win32.ActiveCfg = Debug LIBMTd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMTd|Win32.Build.0 = Debug LIBMTd|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMTd|x64.ActiveCfg = Debug LIBMTd|x64
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Debug LIBMTd|x64.Build.0 = Debug LIBMTd|x64
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMD|Win32.ActiveCfg = Release LIBMD|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMD|Win32.Build.0 = Release LIBMD|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMD|x64.ActiveCfg = Release LIBMD|x64
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMD|x64.Build.0 = Release LIBMD|x64
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMT|Win32.ActiveCfg = Release LIBMT|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMT|Win32.Build.0 = Release LIBMT|Win32
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMT|x64.ActiveCfg = Release LIBMT|x64
+		{84FBCE09-311A-4F9E-814F-28DE0AF97B0D}.Release LIBMT|x64.Build.0 = Release LIBMT|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

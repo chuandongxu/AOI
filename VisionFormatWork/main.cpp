@@ -45,9 +45,13 @@ int main(int argc, char *argv[])
 	QTextCodec::setCodecForLocale(code);
 	QString langPostfix = System->getLangConfig();
 	QTranslatorMgr::changeLange(langPostfix);
-	
 
-	QSystem::loadQss("project.qss");
+	QSystem::loadQss("project.qss");	
+
+	QFont font;
+	font.setFamily("MS Shell Dlg 2");
+	font.setPixelSize(12);
+	a.setFont(font);
 
 	QStartupWidget widget;
 	if(QDialog::Rejected ==  widget.exec())
@@ -56,7 +60,7 @@ int main(int argc, char *argv[])
 	}
 
 	QThreadPool * pIns = QThreadPool::globalInstance();
-	if(pIns)pIns->setMaxThreadCount(16);
+	if(pIns)pIns->setMaxThreadCount(5);
 
 	//QString path = QApplication::applicationDirPath();
 	//QDateTime dtm =  QDateTime::currentDateTime();

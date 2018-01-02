@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QVLProfileEditor</class>
+ <widget class="QMainWindow" name="QVLProfileEditor">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1125</width>
+    <height>818</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QVLProfileEditor</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>291</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Profile编辑</string>
+    </property>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>71</y>
+       <width>81</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>轮廓名称：</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox_selectProfile">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>30</y>
+       <width>171</width>
+       <height>24</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_profileName">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>70</y>
+       <width>171</width>
+       <height>25</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_12">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>81</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>选择轮廓：</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_addProfile">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>110</y>
+       <width>80</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>添加轮廓</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_deleteProfile">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>110</y>
+       <width>80</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>删除轮廓</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView_imgGray">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>430</y>
+      <width>400</width>
+      <height>300</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView_img3D">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>430</y>
+      <width>400</width>
+      <height>300</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDockWidget" name="dockWidget_profileData">
+    <property name="geometry">
+     <rect>
+      <x>313</x>
+      <y>10</y>
+      <width>800</width>
+      <height>400</height>
+     </rect>
+    </property>
+    <property name="features">
+     <set>QDockWidget::NoDockWidgetFeatures</set>
+    </property>
+    <widget class="QWidget" name="dockWidgetContents_3"/>
+   </widget>
+   <widget class="QTableView" name="tableView_profileList">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>160</y>
+      <width>291</width>
+      <height>151</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>320</y>
+      <width>291</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>测量编辑</string>
+    </property>
+    <widget class="QPushButton" name="pushButton_addMeasure">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>99</x>
+       <y>70</y>
+       <width>80</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>添加测量</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_13">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>81</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>选择测量：</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox_selectMeasure">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>30</y>
+       <width>171</width>
+       <height>24</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_deleteMeasure">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>70</y>
+       <width>80</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>删除测量</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTableView" name="tableView_measureList">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>520</y>
+      <width>291</width>
+      <height>211</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_saveConfigFile">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>480</y>
+      <width>291</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>保存元件资料</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_loadConfigFile">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>440</y>
+      <width>291</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>导入元件资料</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1125</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

@@ -6,6 +6,8 @@
 #include "ui_leftwidget.h"
 #include <QVBoxLayout>
 #include"statewidget.h"
+#include "settingdialog.h"
+
 class QLeftWidget : public QWidget
 {
 	Q_OBJECT
@@ -27,14 +29,17 @@ public slots:
 	void onRunState(const QVariantList &data);
 
 protected:
+	void paintEvent(QPaintEvent *event);
 	void timerEvent(QTimerEvent * event);
 	void enableButton(int iLevel);
 
 private:
-	Ui::leftwidget ui;
+	Ui::leftWidget ui;
 	QVBoxLayout * m_subLayout;
 	QWidget * m_stateWidget;
 	int m_timerId;
+	QSettingDialog m_dlgSetting;
+
 };
 
 #endif // LEFTWIDGET_H

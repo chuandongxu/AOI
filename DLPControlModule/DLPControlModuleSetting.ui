@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DLPControlModuleSetting</class>
+ <widget class="QWidget" name="DLPControlModuleSetting">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>850</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DLPControlModuleSetting</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>1180</width>
+     <height>100</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>硬件参数设置</string>
+   </property>
+   <widget class="QPushButton" name="pushButton_inqureInfo">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>111</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>获取USB信息</string>
+    </property>
+   </widget>
+   <widget class="QTableView" name="tableView_dlpInfoList">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>14</y>
+      <width>461</width>
+      <height>81</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_selectDLP">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>20</y>
+      <width>111</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>24</y>
+      <width>72</width>
+      <height>15</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择DLP：</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_bindDLPSerialNB">
+    <property name="geometry">
+     <rect>
+      <x>810</x>
+      <y>20</y>
+      <width>93</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>绑定</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_dlpInfo">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>50</y>
+      <width>461</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>60</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>USB Serial:</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>110</y>
+     <width>1181</width>
+     <height>731</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout"/>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="Lcr2.qrc"/>
+ </resources>
+ <connections/>
+</ui>

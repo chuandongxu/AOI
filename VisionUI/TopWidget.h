@@ -26,6 +26,7 @@ public slots:
 	void onShowWarring();
 	void onGoHome();
 protected:
+	void paintEvent(QPaintEvent *event);
 	virtual void timerEvent(QTimerEvent * event);
 private:
     QHBoxLayout * m_mainLayout;

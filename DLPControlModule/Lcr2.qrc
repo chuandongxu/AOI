@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>Icons/Led_G.png</file>
+        <file>Icons/dmd.jpg</file>
+        <file>Flash/FlashDeviceParameters.txt</file>
+        <file>Icons/Led_R.png</file>
+        <file>Icons/inverted_triangle.jpg</file>
+        <file>Icons/trigger.png</file>
+        <file>Icons/trigger_inv.png</file>
+        <file>Icons/trigger_item_inv.png</file>
+        <file>Icons/trigger_item.png</file>
+        <file>Icons/my_pause.png</file>
+        <file>Icons/my_play.png</file>
+        <file>Icons/my_stop.png</file>
+        <file>Icons/Led_Y.png</file>
+        <file>Icons/LCr4500.ico</file>
+        <file>Icons/DLP4500.jpg</file>
+    </qresource>
+</RCC>

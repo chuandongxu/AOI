@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QVLCellEditor</class>
+ <widget class="QWidget" name="QVLCellEditor">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1172</width>
+    <height>828</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QVLCellEditor</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>180</y>
+     <width>331</width>
+     <height>571</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>编辑操作</string>
+   </property>
+   <widget class="QPushButton" name="pushButton_editCellFrame">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>20</y>
+      <width>100</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>编辑元件框</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_editCellLocFrame">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>70</y>
+      <width>100</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择定位框</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_editCellBase">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>120</y>
+      <width>100</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>编辑Base框</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_editCellDetect">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>170</y>
+      <width>100</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>编辑测量框</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>161</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Step1:设置元件框</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>151</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Step2:设置定位框</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_13">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>127</y>
+      <width>161</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Step3:设置Base框</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_14">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>177</y>
+      <width>161</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Step4:设置测量框</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_cellDetectIndex">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>270</y>
+      <width>121</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_16">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>270</y>
+      <width>81</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择测量框：</string>
+    </property>
+   </widget>
+   <widget class="QTableView" name="tableView_ItemDetAndBase">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>340</y>
+      <width>211</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="autoScroll">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_cellBaseIndex">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>300</y>
+      <width>121</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_17">
+    <property name="geometry">
+     <rect>
+      <x>17</x>
+      <y>300</y>
+      <width>91</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择Base框：</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_AddRelation">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>370</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>添加</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_DeleteRelation">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>400</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>删除</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>250</y>
+      <width>291</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_loadConfigFile">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>480</y>
+      <width>291</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>导入元件资料</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_saveConfigFile">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>520</y>
+      <width>291</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>保存元件资料</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_showNumber">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>270</y>
+      <width>91</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>显示数字</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_editCellLocLearn">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>70</y>
+      <width>71</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>训练模版</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>204</y>
+      <width>291</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_searchCell">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>218</y>
+      <width>291</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Search</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>330</width>
+     <height>161</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QPushButton" name="pushButton_addCell">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>120</y>
+      <width>80</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>添加元件</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_deleteCell">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>120</y>
+      <width>80</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>删除元件</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>90</y>
+      <width>81</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>元件名称：</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_CellName">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>90</y>
+      <width>120</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_cellIndex">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>55</y>
+      <width>120</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>55</y>
+      <width>81</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择元件：</string>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView_cellBitmap">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>20</y>
+      <width>80</width>
+      <height>60</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_selectCellBitmap">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>90</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择图片</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_cellType">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>20</y>
+      <width>120</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_12">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>81</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择元件：</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_editCellROI">
+    <property name="geometry">
+     <rect>
+      <x>189</x>
+      <y>120</y>
+      <width>131</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择区域</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>20</y>
+     <width>801</width>
+     <height>761</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout"/>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>750</y>
+     <width>331</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QPushButton" name="pushButton_addBoardAlign">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>10</y>
+      <width>80</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>添加定位</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_deleteBoardAlign">
+    <property name="geometry">
+     <rect>
+      <x>245</x>
+      <y>10</y>
+      <width>80</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>删除定位</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_alignIndex">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>14</y>
+      <width>81</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>15</y>
+      <width>61</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>定位框：</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

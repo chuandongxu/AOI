@@ -1,0 +1,117 @@
+////////////////////////////////////////////////////////////////////
+// Copyright (C) 2012 SafeNet, Inc. All rights reserved.
+//
+// Dog(R) is a registered trademark of SafeNet, Inc. 
+//
+//
+////////////////////////////////////////////////////////////////////
+#include "dog_api_cpp_.h"
+
+
+////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+////////////////////////////////////////////////////////////////////
+
+CDogVersion::CDogVersion()
+    : m_nMajorVersion(0),
+      m_nMinorVersion(0),
+      m_nServerBuild(0),
+      m_nBuildNumber(0)
+{
+}
+
+CDogVersion::CDogVersion(const CDogVersion& version)
+    : m_nMajorVersion(0),
+      m_nMinorVersion(0),
+      m_nServerBuild(0),
+      m_nBuildNumber(0)
+{
+    *this = version;
+}
+
+CDogVersion::CDogVersion(unsigned int nMajorVersion, 
+                           unsigned int nMinorVersion,
+                           unsigned int nServerBuild, 
+                           unsigned int nBuildNumber)
+    : m_nMajorVersion(nMajorVersion), 
+      m_nMinorVersion(nMinorVersion), 
+      m_nServerBuild(nServerBuild), 
+      m_nBuildNumber(nBuildNumber)
+{
+}
+
+CDogVersion::~CDogVersion()
+{
+}
+
+////////////////////////////////////////////////////////////////////
+// Implementation
+////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////
+//
+////////////////////////////////////////////////////////////////////
+CDogVersion& CDogVersion::operator=(const CDogVersion& version)
+{
+    if (this != &version)
+    {
+        m_nMajorVersion = version.majorVersion();
+        m_nMinorVersion = version.minorVersion();
+        m_nServerBuild = version.serverBuild();
+        m_nBuildNumber = version.buildNumber();
+    }
+
+    return *this;
+}
+
+////////////////////////////////////////////////////////////////////
+//
+////////////////////////////////////////////////////////////////////
+bool CDogVersion::operator==(const CDogVersion& version) const
+{
+    return (this == &version) ||
+           ((majorVersion() == version.majorVersion()) &&
+            (minorVersion() == version.minorVersion()) &&
+            (serverBuild() == version.serverBuild()) &&
+            (buildNumber() ==  version.buildNumber()));
+}
+
+////////////////////////////////////////////////////////////////////
+//
+////////////////////////////////////////////////////////////////////
+bool CDogVersion::operator!=(const CDogVersion& version) const
+{
+    return !(*this == version);
+}
+
+////////////////////////////////////////////////////////////////////
+//
+////////////////////////////////////////////////////////////////////
+unsigned int CDogVersion::majorVersion() const
+{
+    return m_nMajorVersion;
+}
+
+////////////////////////////////////////////////////////////////////
+//
+////////////////////////////////////////////////////////////////////
+unsigned int CDogVersion::minorVersion() const
+{
+    return m_nMinorVersion;
+}
+
+////////////////////////////////////////////////////////////////////
+//
+////////////////////////////////////////////////////////////////////
+unsigned int CDogVersion::serverBuild() const
+{
+    return m_nServerBuild;
+}
+
+////////////////////////////////////////////////////////////////////
+//
+////////////////////////////////////////////////////////////////////
+unsigned int CDogVersion::buildNumber() const
+{
+    return m_nBuildNumber;
+}

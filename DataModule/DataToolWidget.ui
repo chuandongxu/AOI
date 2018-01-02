@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DataToolWidget</class>
+ <widget class="QWidget" name="DataToolWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>410</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DataToolWidget</string>
+  </property>
+  <widget class="QToolBox" name="toolBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>410</width>
+     <height>450</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Panel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <property name="currentIndex">
+    <number>1</number>
+   </property>
+   <widget class="QWidget" name="page">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>408</width>
+      <height>328</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>元件资料</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="page_1">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>408</width>
+      <height>328</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>标准组件</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="page_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>98</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>管脚器件</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="page_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>98</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>LED元件</string>
+    </attribute>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>470</y>
+     <width>390</width>
+     <height>650</height>
+    </rect>
+   </property>
+   <property name="features">
+    <set>QDockWidget::NoDockWidgetFeatures</set>
+   </property>
+   <property name="windowTitle">
+    <string>属性</string>
+   </property>
+   <widget class="QWidget" name="dockWidgetContents"/>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

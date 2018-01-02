@@ -7,12 +7,20 @@
 #define UI_MODEL  1001
 #define CTRL_MODEL 1003
 #define MOTION_MODEL 1004
+#define CAMERA_MODEL 1005
+#define DATA_MODEL 1007
+#define DLP_MODEL 1006
+#define VISION_MODEL 1008
+#define VISION_TEST_MODEL 1009
 #define BARCODE_MODEL 1011
 #define FUNCMGR_MODULE 88001
 
+#define AXIS_MOTOR_NUM		8
+
 //定义轴ID
-//#define AXIS_CHECK1_TOP       1
-//#define AXIS_CHECK1_IN        0
+#define AXIS_MOTOR_X       1
+#define AXIS_MOTOR_Y       2
+#define AXIS_MOTOR_Z       3
 
 /* ************* 定义AI ********************************* */
 //#define CHECK_AI_1     0
@@ -29,7 +37,13 @@
 
 /////输出模块1
 #define DO_YELLOW_LIGHT            0
-#define DO_GREEN_LIGHT             1
-#define DO_RED_LIGHT               2
-#define DO_BUZZER                  3
+#define DO_GREEN_LIGHT             0
+#define DO_RED_LIGHT               0
+#define DO_BUZZER                  0
+
+#define DO_TRIGGER_DLP1            1
+#define DO_TRIGGER_DLP2            2
+#define DO_TRIGGER_DLP3            3
+#define DO_TRIGGER_DLP4            4
+
 #endif

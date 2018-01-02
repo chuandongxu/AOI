@@ -50,24 +50,44 @@
 //检测器状态通知键值和事件，工艺流程模块通知界面模块底层状态，进而更新界面
 #define EVENT_CHECK_STATE "eventCheckState"
 #define STATION_STATE_WAIT_START          100
-#define STATION_STATE_CHECKING            101
-#define STATION_STATE_RESOULT             102
+#define STATION_STATE_CAPTURING           101
+#define STATION_STATE_GENERATE_GRAY       102
+#define STATION_STATE_CALCULATE_3D        103
+#define STATION_STATE_MATCH_POSITION      104
+#define STATION_STATE_CALCULATE_HEIGHT    105
+#define STATION_STATE_RESOULT             106
 
-#define EVENT_BARCODE_CHANGE "barCodeChange"
-#define STATION_STATE_BARCODE             108
+#define EVENT_RESULT_DISPLAY "eventResultDisplay"
+#define STATION_RESULT_DISPLAY		      107
+#define STATION_RESULT_DISPLAY_PROF		  108
+#define STATION_RESULT_DISPLAY_CLEAR	  109
+#define STATION_RESULT_DISPLAY_CLEAR_DATA 110
+#define STATION_RESULT_IMAGE_DISPLAY	  111
 
 #define EVENT_GOHOME_STATE   "goHomeState"
 #define GOHOME_STATE_OK                   120
 #define GOHOME_STATE_NG                   121
 
+#define EVENT_RUN_STATE      "runState"
+#define RUN_STATE_RUNING                  130
+#define RUN_STATE_STOP                    131
+
 #define EVENT_GOHOMEING_STATE    "goHomeIng"            
 #define GOHOMEING_STATE_OK                140
 #define GOHOMEING_STATE_NG                141
 
+#define EVENT_TAB_STATE      "tabState"
+#define RUN_TAB_RUNING					  150
+#define RUN_TAB_SETTING                   151
 
-#define EVENT_RUN_STATE      "runState"
-#define RUN_STATE_RUNING                  130
-#define RUN_STATE_STOP                    131
+#define EVENT_OBJ_STATE		 "objState"
+#define RUN_OBJ_EDITOR					 160
+#define RUN_OBJ_CHANGE                   161
+#define RUN_OBJ_PROFILE					 162
+#define RUN_OBJ_PROFILE_EDIT			 163
+
+#define EVENT_BARCODE_CHANGE "barCodeChange"
+#define STATION_STATE_BARCODE             170
 
 #define EVENT_AI_STATE			"AIStateChange"
 #define EVENT_CHANGE_USER		"changeUserLevel"
