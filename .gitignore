@@ -27,3 +27,16 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 *.vssscc
 $tf*/
+*.sdf
+*.opensdf
+VisionUI/GeneratedFiles
+VisionDetect/GeneratedFiles
+QSmartDetect/GeneratedFiles
+MotionModule/GeneratedFiles
+3DViewUtility/GeneratedFiles
+CarameModel/GeneratedFiles
+Common/GeneratedFiles
+DataModule/GeneratedFiles
+DLPControlModule/GeneratedFiles
+HSGWorkflowCtrl/GeneratedFiles
+VisionFormatWork/GeneratedFiles
