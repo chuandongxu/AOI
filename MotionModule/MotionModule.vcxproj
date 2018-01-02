@@ -62,7 +62,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).dll</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;..\bin\debug\;..\lib\motion\;..\lib\VisionLibrary\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;..\bin\release\;..\lib\motion\;..\lib\VisionLibrary\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Network.lib;Qt5Script.lib;Qt5SerialPort.lib;Qt5Widgets.lib;Qt5Xml.lib;common.lib;gts.lib;opencv_core300.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
