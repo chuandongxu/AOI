@@ -1,4 +1,4 @@
-#include "VisionCtrl.h"
+ï»¿#include "VisionCtrl.h"
 #include "MatHeader.h"
 
 #include "visiondetect_global.h"
@@ -373,7 +373,7 @@ bool VisionCtrl::calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>&
 		{
 			for (int j = 0; j < pObj->getHeightDetectNum(); j++)
 			{
-				// »ñÈ¡¼ì²âÎ»ÖÃµÄBaseÇøÓò
+				// è·å–æ£€æµ‹ä½ç½®çš„BaseåŒºåŸŸ
 				QVector<cv::Rect> baseRects;
 				pObj->getHeightDetectBase(j, baseRects);
 
@@ -387,7 +387,7 @@ bool VisionCtrl::calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>&
 				//AOI::Vision::VectorOfPoint vecBaseLocations;
 				//for (int m = 0; m < baseRects.size(); m++)
 				//{
-				//	//Æ½ÃæÄâºÏ£¬À­Æ½BaseÃæ
+				//	//å¹³é¢æ‹Ÿåˆï¼Œæ‹‰å¹³Baseé¢
 				//	cv::Mat matMask = cv::Mat::zeros(matHeight.size(), CV_8UC1);
 				//	cv::Mat matROI(matMask, baseRects[m]);
 				//	cv::Mat matNotNan = matHeight(baseRects[m]) == matHeight(baseRects[m]);
@@ -427,7 +427,7 @@ bool VisionCtrl::calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>&
 				//float k2 = matK.at<float>(1);
 				//float k3 = matK.at<float>(2);
 
-				////¼ÆËãBaseÖµ
+				////è®¡ç®—Baseå€¼
 				//float zValueBase = 0;
 				//for (int i = 0; i < vecBaseLocations.size(); i++)
 				//{
@@ -441,7 +441,7 @@ bool VisionCtrl::calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>&
 				//}
 				//zValueBase = vecBaseLocations.size() > 0 ? zValueBase / vecBaseLocations.size() : 0;
 
-				//// »ñÈ¡¼ì²âÎ»ÖÃµÄDetectÇøÓò
+				//// è·å–æ£€æµ‹ä½ç½®çš„DetectåŒºåŸŸ
 				//cv::Rect detectRect = pObj->getHeightDetect(j).boundingRect();
 
 				//int nDataDetectMin = System->getParam("3d_detect_data_detect_min").toInt();
@@ -475,7 +475,7 @@ bool VisionCtrl::calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>&
 				//}
 				//zValueDetect = vecTrimedLocations.size() > 0 ? zValueDetect / vecTrimedLocations.size() : 0;
 
-				////Êä³ö½á¹û
+				////è¾“å‡ºç»“æœ
 				//float dDetectHeight = zValueDetect - zValueBase;		
 
 				cv::Rect detectRect = pObj->getHeightDetect(j).boundingRect();
@@ -1238,7 +1238,7 @@ void VisionCtrl::cutingUsingBilinearInterpolation(cv::Mat& matHeight, double pos
 	double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	for (int i = 0; i < nNum - 1; i++)
 	{
-		int xValue = xValues[i];// X,Y Öµ»¥»»
+		int xValue = xValues[i];// X,Y å€¼äº’æ¢
 		int yValue = yValues[i];
 
 		int index1 = (xValue - 1)*(nSizeY)+yValue - 1;		

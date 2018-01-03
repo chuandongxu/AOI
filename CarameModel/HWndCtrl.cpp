@@ -1,4 +1,4 @@
-#include "HWndCtrl.h"
+ï»¿#include "HWndCtrl.h"
 #include "QDebug"
 #include  <QMouseEvent>
 #include  <QWheelEvent>
@@ -48,9 +48,9 @@ HWndCtrl::HWndCtrl( QWidget *parent  )
 	this->setLayout(vboxLayout);
 	setAutoFillBackground(true);
 
-	// ÓÃÓÚÏÔÊ¾ÏñËØÖµµÄ´°¿Ú
+	// ç”¨äºæ˜¾ç¤ºåƒç´ å€¼çš„çª—å£
  	m_pWidgetValue = new QDialog( this );
-	//m_pWidgetValue->setWindowFlags( Qt::FramelessWindowHint );  // ×¢Òâ£¬ÕâÑùÉèÖÃºó¾ÍÎŞ·¨ÏÔÊ¾ÁË£¬»è 
+	//m_pWidgetValue->setWindowFlags( Qt::FramelessWindowHint );  // æ³¨æ„ï¼Œè¿™æ ·è®¾ç½®åå°±æ— æ³•æ˜¾ç¤ºäº†ï¼Œæ˜ 
 	m_pWidgetValue->setWindowFlags( Qt::Dialog | Qt::FramelessWindowHint );
  	QLabel *pLabel1 = new QLabel(m_pWidgetValue);
  	pLabel1->setText("pos   : ");
@@ -124,7 +124,7 @@ void HWndCtrl::paintEvent( QPaintEvent *event )
 
 void HWndCtrl::mouseMoveEvent(QMouseEvent * event)
 {
-	// ×¢Òâ£¬ mouseMoveEvent µÄÏìÓ¦ Óë mouse tracking µÄ×´Ì¬ÓĞ¹ØÏµ£¬ Îª±ÜÃâÓ°Ïì£¬Ö±½Óµ¥¶ÀÉèÖÃ mousePressed ×´Ì¬
+	// æ³¨æ„ï¼Œ mouseMoveEvent çš„å“åº” ä¸ mouse tracking çš„çŠ¶æ€æœ‰å…³ç³»ï¼Œ ä¸ºé¿å…å½±å“ï¼Œç›´æ¥å•ç‹¬è®¾ç½® mousePressed çŠ¶æ€
 	// qDebug()<<"haha";
 	if (mouseLeftPressed)
 	{
@@ -233,7 +233,7 @@ void HWndCtrl::showPixelValue(double posX, double posY)
 {	
 	m_pWidgetValue->move( cursor().pos() + QPoint(5 , 5) ) ;
 
-	// ÕâÀïÊ¹ÓÃ ; ÅĞ¶Ïµ±Ç°HObject ÊÇ·ñÊÇÍ¼Ïñ
+	// è¿™é‡Œä½¿ç”¨ ; åˆ¤æ–­å½“å‰HObject æ˜¯å¦æ˜¯å›¾åƒ
 	for ( int nTmp= 0 ; nTmp < HObjList.length();  nTmp ++ )
 	{
 		cv::Mat *pHoTmp = &( HObjList[nTmp]._Obj ) ;
@@ -282,7 +282,7 @@ void HWndCtrl::addObj(cv::Mat &obj, bool bImage)
 		{
 			imageHeight = obj.size().height;
 			imageWidth = obj.size().width;
-			resetAll( 1 ); // Ä¬ÈÏÇé¿öÏÂ ÉèÖÃÏÔÊ¾µÄ±ÈÀıÎªÍ¼ÏñµÄ±ÈÀı  resetAll(1) ÔòÊÇÊÊÓ¦´°¿Ú
+			resetAll( 1 ); // é»˜è®¤æƒ…å†µä¸‹ è®¾ç½®æ˜¾ç¤ºçš„æ¯”ä¾‹ä¸ºå›¾åƒçš„æ¯”ä¾‹  resetAll(1) åˆ™æ˜¯é€‚åº”çª—å£
 		}
 	}
 
@@ -300,12 +300,12 @@ void HWndCtrl:: resetAll( int flag )
 {
 	if ( 0 == flag)
 	{
-		// ±£³Ö±ÈÀı
+		// ä¿æŒæ¯”ä¾‹
 		double rateW = 1.0 * imageWidth  / windowWidth ;
 		double rateH = 1.0 * imageHeight / windowHeight ;
 		double rateUse = ( rateW > rateH ? rateW : rateH);
 	
-		// ÒÆ¶¯µ½ÏÔÊ¾ÖĞĞÄ
+		// ç§»åŠ¨åˆ°æ˜¾ç¤ºä¸­å¿ƒ
 		double midRowImage = imageHeight / 2.0 ;
 		double midColImage = imageWidth  / 2.0 ;
 		double midRowImageShow = windowHeight / 2.0;
@@ -387,8 +387,8 @@ void HWndCtrl::clearList()
 			 }
 			 A_Transform(mat, matMoved, rect.x(), rect.y());
 			
-			 //Rect rects = Rect(0, 0, mat.cols, mat.rows);//½¨Á¢ÓësrcImageÒ»Ñù´óĞ¡µÄ¾ØĞÎ¿ò£¨0,0£©×ø±êÊÇÆğµã 
-			 //matMoved = Mat::zeros(mat.rows * 2, mat.cols * 4, mat.type());//ÉèÖÃÒÆ¶¯ÇøÓòA  			 
+			 //Rect rects = Rect(0, 0, mat.cols, mat.rows);//å»ºç«‹ä¸srcImageä¸€æ ·å¤§å°çš„çŸ©å½¢æ¡†ï¼ˆ0,0ï¼‰åæ ‡æ˜¯èµ·ç‚¹ 
+			 //matMoved = Mat::zeros(mat.rows * 2, mat.cols * 4, mat.type());//è®¾ç½®ç§»åŠ¨åŒºåŸŸA  			 
 			 //Mat ImageROI = matMoved(rects);
 			 //addWeighted(ImageROI, 0.1, mat, 1, 0., ImageROI);
 
@@ -470,7 +470,7 @@ void HWndCtrl::clearList()
 
  void HWndCtrl::A_Transform(Mat& src, Mat& dst, int dx, int dy)
  {
-	 CV_Assert(src.depth() == CV_8U);//CV_Assert£¨£©ÈôÀ¨ºÅÖĞµÄ±í´ïÊ½ÖµÎªfalse£¬Ôò·µ»ØÒ»¸ö´íÎóĞÅÏ¢¡£  
+	 CV_Assert(src.depth() == CV_8U);//CV_Assertï¼ˆï¼‰è‹¥æ‹¬å·ä¸­çš„è¡¨è¾¾å¼å€¼ä¸ºfalseï¼Œåˆ™è¿”å›ä¸€ä¸ªé”™è¯¯ä¿¡æ¯ã€‚  
 	 const int rows = src.rows;
 	 const int cols = src.cols;
 	 dst.create(rows, cols, src.type());
@@ -480,17 +480,17 @@ void HWndCtrl::clearList()
 
 	 dst.setTo(Scalar(0, 0, 0));
 	
-	 Vec3b *p;   //¶¨ÒåÒ»¸ö´æ·Å3Í¨µÀµÄÈİÆ÷Ö¸Õëp  
+	 Vec3b *p;   //å®šä¹‰ä¸€ä¸ªå­˜æ”¾3é€šé“çš„å®¹å™¨æŒ‡é’ˆp  
 	 for (int i = 0; i < rows; i++)
 	 {
 		 for (int j = 0; j < cols; j++)
 		 {
-			 p = dst.ptr<Vec3b>(i);//Ö¸ÏòĞĞÊıµÄÈİÆ÷p  
+			 p = dst.ptr<Vec3b>(i);//æŒ‡å‘è¡Œæ•°çš„å®¹å™¨p  
 			 int x = j - dx;
 			 int y = i - dy;
-			 if (x>0 && y>0 && x < cols&&y < rows)//Æ½ÒÆºóµÄÏñËØ×ø±êÔÚÔ­Í¼ÏñµÄĞĞÊıºÍÁĞÊıÄÚ  
+			 if (x>0 && y>0 && x < cols&&y < rows)//å¹³ç§»åçš„åƒç´ åæ ‡åœ¨åŸå›¾åƒçš„è¡Œæ•°å’Œåˆ—æ•°å†…  
 			 {
-				 p[i, j] = src.ptr<Vec3b>(y)[x];//Æ½ÒÆºóµÄÍ¼Ïñ£¨i,j)¶ÔÓ¦ÓÚÔ­Í¼ÏñµÄ£¨y,x)  
+				 p[i, j] = src.ptr<Vec3b>(y)[x];//å¹³ç§»åçš„å›¾åƒï¼ˆi,j)å¯¹åº”äºåŸå›¾åƒçš„ï¼ˆy,x)  
 			 }			
 		 }
 	 }

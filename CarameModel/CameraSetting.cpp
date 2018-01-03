@@ -1,4 +1,4 @@
-#include "CameraSetting.h"
+ï»¿#include "CameraSetting.h"
 #include <qfiledialog.h>
 #include "../include/workflowDefine.h"
 #include "../Common/eos.h"
@@ -23,7 +23,7 @@
 
 using namespace AOI;
 
-//¶¨ÒåÏµÍ³Vision LOG
+//å®šä¹‰ç³»ç»ŸVision LOG
 #define VISION_LOG_ALL		2
 #define VISION_LOG_FAIL		1
 
@@ -45,7 +45,7 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, ViewCtrl* mainWidget, QWid
 	m_pGraphicsEditor->setViewPos(100, 0);
 	m_pGraphicsEditor->setScale(1.0, 100);		
 
-	//Ïà»úÉèÖÃ
+	//ç›¸æœºè®¾ç½®
 	QString capturePath = System->getParam("camera_cap_image_path").toString();
 	if (capturePath.isEmpty())capturePath = QApplication::applicationDirPath() + "/capture";
 	ui.lineEdit->setText(capturePath);
@@ -74,7 +74,7 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, ViewCtrl* mainWidget, QWid
 	ui.lineEdit_crossGapWidth->setText(QString("%1").arg(60));
 	
 	QStringList ls;
-	ls << QStringLiteral("BaslarÏà»ú²É¼¯") << QStringLiteral("Dalsa²É¼¯¿¨²É¼¯") << QStringLiteral("ÊÖ¶¯µ¼ÈëÍ¼Æ¬");
+	ls << QStringLiteral("Baslarç›¸æœºé‡‡é›†") << QStringLiteral("Dalsaé‡‡é›†å¡é‡‡é›†") << QStringLiteral("æ‰‹åŠ¨å¯¼å…¥å›¾ç‰‡");
 	ui.comboBox_captureMode->addItems(ls);
 	int nCaptureMode = System->getParam("camera_capture_mode").toInt();
 	ui.comboBox_captureMode->setCurrentIndex(nCaptureMode);
@@ -138,7 +138,7 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, ViewCtrl* mainWidget, QWid
 	connect(ui.pushButton_PRClearRecord, SIGNAL(clicked()), SLOT(onClearAllRecords()));
 	connect(ui.checkBox_AutoClearRecord, SIGNAL(stateChanged(int)), SLOT(onAutoClearRecord(int)));
 
-	//Ïà»ú±ê¶¨
+	//ç›¸æœºæ ‡å®š
 	ui.lineEdit_2->setText(QString("%1").arg(15));
 	ui.lineEdit_3->setText(QString("%1").arg(15));
 	ui.lineEdit_4->setText(QString("%1").arg(2.0));
@@ -153,7 +153,7 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, ViewCtrl* mainWidget, QWid
 	ui.lineEdit_5->setText(QString("%1").arg(dResolutionX));
 	ui.lineEdit_6->setText(QString("%1").arg(dResolutionY));	
 
-	//ÊäÈëÏŞÖÆ
+	//è¾“å…¥é™åˆ¶
 	inputIntRangePos = new QIntValidator(0, 1000, this);
 	inputIntRangeAll = new QIntValidator(-1000, 1000, this);
 	inputDoubleRangePos = new QDoubleValidator(0, 1000, 10, this);
@@ -214,8 +214,8 @@ void CameraSetting::onStateChangeHWTrig(int iState)
 	int data = 0;
 	if (Qt::Checked == iState)data = 1;
 
-	if (QMessageBox::Ok == QMessageBox::warning(NULL, QStringLiteral("ÌáÊ¾"),
-		QStringLiteral("ÉèÖÃÓ²¼ş´¥·¢·½Ê½£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+	if (QMessageBox::Ok == QMessageBox::warning(NULL, QStringLiteral("æç¤º"),
+		QStringLiteral("è®¾ç½®ç¡¬ä»¶è§¦å‘æ–¹å¼ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 	{
 		if (m_mainView)
 		{
@@ -322,7 +322,7 @@ void CameraSetting::onInitPRSystem()
 	Vision::VisionStatus retStatus = Vision::PR_Init();
 	if (retStatus == Vision::VisionStatus::OK)
 	{
-		QMessageBox::information(this, QStringLiteral("ĞÅÏ¢"), QStringLiteral("³õÊ¼»¯³É¹¦"));
+		QMessageBox::information(this, QStringLiteral("ä¿¡æ¯"), QStringLiteral("åˆå§‹åŒ–æˆåŠŸ"));
 	}
 	else
 	{
@@ -335,7 +335,7 @@ void CameraSetting::onUninitPRSystem()
 	/*Vision::VisionStatus retStatus = Vision::PR_Init();
 	if (retStatus == Vision::VisionStatus::OK)
 	{
-		QMessageBox::information(this, QStringLiteral("ĞÅÏ¢"), QStringLiteral("³õÊ¼»¯³É¹¦"));
+		QMessageBox::information(this, QStringLiteral("ä¿¡æ¯"), QStringLiteral("åˆå§‹åŒ–æˆåŠŸ"));
 	}
 	else
 	{
@@ -345,13 +345,13 @@ void CameraSetting::onUninitPRSystem()
 
 void CameraSetting::onClearAllRecords()
 {
-	if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-		QStringLiteral("È«²¿Çå³ı Records £¿"), QMessageBox::Ok, QMessageBox::Cancel))
+	if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+		QStringLiteral("å…¨éƒ¨æ¸…é™¤ Records ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 	{
 		Vision::VisionStatus retStatus = Vision::PR_FreeAllRecord();
 		if (retStatus == Vision::VisionStatus::OK)
 		{
-			QMessageBox::information(this, QStringLiteral("ĞÅÏ¢"), QStringLiteral("Çå³ıRecords³É¹¦"));
+			QMessageBox::information(this, QStringLiteral("ä¿¡æ¯"), QStringLiteral("æ¸…é™¤RecordsæˆåŠŸ"));
 		}
 		else
 		{
@@ -376,7 +376,7 @@ void CameraSetting::onCaptureModeIndexChanged(int iIndex)
 	
 	System->setParam("camera_capture_mode", nCaptureMode);
 
-	QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÖØÆôÈí¼ş£¬Ïà»ú²É¼¯Ä£Ê½²Å¿ÉÒÔÓ¦ÓÃ£¡"));
+	QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("é‡å¯è½¯ä»¶ï¼Œç›¸æœºé‡‡é›†æ¨¡å¼æ‰å¯ä»¥åº”ç”¨ï¼"));
 }
 
 void CameraSetting::onSelCapturePath()
@@ -543,7 +543,7 @@ void CameraSetting::onCalibration()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 	}
 	
 }

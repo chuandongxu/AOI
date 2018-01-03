@@ -1,4 +1,4 @@
-#include "QDlpMTFRsltDisplay.h"
+﻿#include "QDlpMTFRsltDisplay.h"
 #include "qcustomplot.h"
 
 QDlpMTFRsltDisplay::QDlpMTFRsltDisplay(QWidget *parent)

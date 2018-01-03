@@ -1,4 +1,4 @@
-#include "CameraCtrl.h"
+ï»¿#include "CameraCtrl.h"
 #include <QMessageBox>
 #include "../Common/SystemData.h"
 #include "QDebug.h"
@@ -57,7 +57,7 @@ bool CameraCtrl::isImage()
 
 bool CameraCtrl::initial()
 {
-	// Ïà»úÉè±¸Ä£¿é³õÊ¼»¯
+	// ç›¸æœºè®¾å¤‡æ¨¡å—åˆå§‹åŒ–
 	if ( !m_CameraList.isEmpty() )
 	{
 		for ( int nC = 0 ; nC < m_CameraList.length(); nC++)

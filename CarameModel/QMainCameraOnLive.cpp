@@ -1,4 +1,4 @@
-#include "QMainCameraOnLive.h"
+ï»¿#include "QMainCameraOnLive.h"
 
 #include "QMainView.h"
 #include "CameraCtrl.h"
@@ -64,7 +64,7 @@ void MainCameraOnLive::run()
 		
 		if (m_pView->getStation() == 0)
 		{
-			System->setTrackInfo(QStringLiteral("Æô¶¯²âÊÔ..."));
+			System->setTrackInfo(QStringLiteral("å¯åŠ¨æµ‹è¯•..."));
 		}		
 		else
 		{

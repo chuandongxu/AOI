@@ -1,4 +1,4 @@
-#include "VisionDetectSetting.h"
+ï»¿#include "VisionDetectSetting.h"
 #include <QFileDialog>
 
 #include "visiondetect_global.h"
@@ -188,10 +188,10 @@ void VisionDetectSetting::initUI()
 	m_pVLCellObjEditor = m_pCtrl->getCellObjEditor();
 	m_pVLProflieEditor = m_pCtrl->getProfileEditor();
 
-	//ÏßĞÔ¼ì²â
+	//çº¿æ€§æ£€æµ‹
 	connect(ui.comboBox_SrhLineDir, SIGNAL(currentIndexChanged(int)), SLOT(onSrhLineDirIndexChanged(int)));
 	QStringList ls;
-	ls << QStringLiteral("ÓÉ°µ±ßµ½ÁÁ±ß") << QStringLiteral("ÓÉÁÁ±ßµ½°µ±ß");
+	ls << QStringLiteral("ç”±æš—è¾¹åˆ°äº®è¾¹") << QStringLiteral("ç”±äº®è¾¹åˆ°æš—è¾¹");
 	ui.comboBox_SrhLineDir->addItems(ls);
 	int nSrhLineDir = System->getParam("srh_line_dir").toInt();
 	ui.comboBox_SrhLineDir->setCurrentIndex(nSrhLineDir);
@@ -214,7 +214,7 @@ void VisionDetectSetting::initUI()
 	connect(ui.pushButton_SrhLineDetect, SIGNAL(clicked()), SLOT(onSrhLineDetect()));
 	connect(ui.pushButton_SaveDetectParam, SIGNAL(clicked()), SLOT(onSaveDetectParam()));
 
-	//ÇøÓò¼ì²â
+	//åŒºåŸŸæ£€æµ‹
 	connect(ui.comboBox_TmpMatchObjMotion, SIGNAL(currentIndexChanged(int)), SLOT(onTmpMatchObjMotionIndexChanged(int)));
 	ls.clear();
 	ls << QStringLiteral("TRANSLATION") << QStringLiteral("EUCLIDEAN") << QStringLiteral("AFFINE") << QStringLiteral("HOMOGRAPHY");
@@ -240,7 +240,7 @@ void VisionDetectSetting::initUI()
 	ui.checkBox_TmpMatchSubPixel->setChecked(bTmpMatchSubPixel);
 	connect(ui.checkBox_TmpMatchSubPixel, SIGNAL(stateChanged(int)), SLOT(onComBoxSubPixel(int)));
 
-	//Ô²»¡¼ì²â
+	//åœ†å¼§æ£€æµ‹
 	int nDetectEdgeThred1 = System->getParam("detect_edge_threshold1").toInt();
 	int nDetectEdgeThred2 = System->getParam("detect_edge_threshold2").toInt();
 	int nDetectEdgeApeSize = System->getParam("detect_edge_aperture_size").toInt();
@@ -255,7 +255,7 @@ void VisionDetectSetting::initUI()
 	connect(ui.pushButton_SrhCircleROI, SIGNAL(clicked()), SLOT(onSrhCircleROI()));
 	connect(ui.pushButton_SrhCirccleDetect, SIGNAL(clicked()), SLOT(onSrhCircleDetect()));
 
-	//»Ò¶È¼ì²â
+	//ç°åº¦æ£€æµ‹
 	int nDetectGrayScaleRow = System->getParam("detect_gray_scale_row").toInt();
 	int nDetectGrayScaleCol = System->getParam("detect_gray_scale_col").toInt();
 	ui.lineEdit_DetectGraySacleRow->setText(QString("%1").arg(nDetectGrayScaleRow));
@@ -265,7 +265,7 @@ void VisionDetectSetting::initUI()
 	connect(ui.pushButton_SaveDetectGrayScaleParams, SIGNAL(clicked()), SLOT(onSaveDetectGrayScaleParams()));
 	connect(ui.pushButton_DetectGrayScale, SIGNAL(clicked()), SLOT(onDetectGrayScale()));
 
-	//3D¼ì²â±ê¶¨
+	//3Dæ£€æµ‹æ ‡å®š
 	connect(ui.comboBox_selectDLP, SIGNAL(currentIndexChanged(int)), SLOT(onDLPIndexChanged(int)));
 	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
 	for (int i = 0; i < nStationNum; i++)
@@ -294,7 +294,7 @@ void VisionDetectSetting::initUI()
 	connect(ui.pushButton_Save3DDetectCaliParams, SIGNAL(clicked()), SLOT(onSave3DDetectCaliParams()));
 	connect(ui.pushButton_Save3DDetectCaliHeightParams, SIGNAL(clicked()), SLOT(onSave3DDetectCaliHeightParams()));
 
-	//3D¼ì²â²âÁ¿
+	//3Dæ£€æµ‹æµ‹é‡
 	bool b3DDetectCaliUseThinPattern = System->getParam("3d_detect_cali_thin_pattern").toBool();
 	bool b3DDetectCaliGaussionFilter = System->getParam("3d_detect_cali_gaussion_filter").toBool();
 	bool b3DDetectCaliReverseSeq = System->getParam("3d_detect_cali_reverse_seq").toBool();
@@ -346,7 +346,7 @@ void VisionDetectSetting::initUI()
 	connect(ui.pushButton_3DProfileEdit, SIGNAL(clicked()), SLOT(on3DProfileEdit()));
 
 
-	//3D ¼ì²âÊı¾İ´¦Àí
+	//3D æ£€æµ‹æ•°æ®å¤„ç†
 	int nDataBaseMin = System->getParam("3d_detect_data_base_min").toInt();
 	int nDataBaseMax = System->getParam("3d_detect_data_base_max").toInt();
 	int nDataDetectMin = System->getParam("3d_detect_data_detect_min").toInt();
@@ -363,7 +363,7 @@ void VisionDetectSetting::initUI()
 	connect(ui.pushButton_CalibGuidePrevious, SIGNAL(clicked()), SLOT(onCaliGuidePrevious()));
 	
 
-	// MTF ¼ì²â
+	// MTF æ£€æµ‹
 	connect(ui.pushButton_editMTFLoc1, SIGNAL(clicked()), SLOT(onEditMTFLoc1()));
 	connect(ui.pushButton_editMTFLocLearn1, SIGNAL(clicked()), SLOT(onEditMTFLocLearn1()));
 	connect(ui.pushButton_searchMTFLoc1, SIGNAL(clicked()), SLOT(onSearchMTFLoc1()));
@@ -395,7 +395,7 @@ void VisionDetectSetting::initUI()
 	ui.lineEdit_SmallPatRelMtfV->setText(QString::number(0.0, 'f', 5));
 	ui.lineEdit_SmallPatRelMtfH->setText(QString::number(0.0, 'f', 5));
 
-	// DLP MTF ¼ì²â	
+	// DLP MTF æ£€æµ‹	
 	double dMagnitudeOfDLP = System->getParam("dlp_mtf_magnitude").toDouble();
 	ui.lineEdit_dlpMTFMagnitudeOfDLP->setText(QString("%1").arg(dMagnitudeOfDLP));
 
@@ -404,7 +404,7 @@ void VisionDetectSetting::initUI()
 	connect(ui.pushButton_SaveDlpMTFParams, SIGNAL(clicked()), SLOT(onSaveDlpMTFParams()));
 	connect(ui.pushButton_DetectDlpMTF, SIGNAL(clicked()), SLOT(onDetectDlpMTF()));
 
-	// DLP PD ¼ì²â
+	// DLP PD æ£€æµ‹
 	bool bDlpPDReverseSeq = System->getParam("dlp_pd_reverse_seq").toBool();
 	int nDlpPDSizeX = System->getParam("dlp_pd_pattern_size_x").toInt();
 	int nDlpPDSizeY = System->getParam("dlp_pd_pattern_size_y").toInt();
@@ -428,7 +428,7 @@ void VisionDetectSetting::initUI()
 
 void VisionDetectSetting::initLimits()
 {
-	//ÊäÈëÏŞÖÆ
+	//è¾“å…¥é™åˆ¶
 	inputIntRangePos = new QIntValidator(0, 1000, this);
 	inputIntRangeAll = new QIntValidator(-1000, 1000, this);
 	inputDoubleRangePos = new QDoubleValidator(0, 1000, 10, this);
@@ -504,8 +504,8 @@ void VisionDetectSetting::onSrhLineROI()
 	if (!matImage.empty())
 	{	
 		bool bClearAll = false;
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çå³ıÑ¡Ôñ¿ò£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("æ¸…é™¤é€‰æ‹©æ¡†ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			bClearAll = true;
 		}
@@ -518,7 +518,7 @@ void VisionDetectSetting::onSrhLineROI()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 	}
 }
 
@@ -533,9 +533,9 @@ void VisionDetectSetting::onSrhLineDetect()
 		//m_pView->clearImage();
 
 		//Mat gray = matImage.clone();
-		//cv::cvtColor(gray, gray, CV_RGB2GRAY);//»Ò¶È»¯
-		//Mat hole(gray.size(), CV_8U, Scalar(0)); //ÕÚÕÖÍ¼²ã
-		////cv::drawContours(hole, contours1, -1, Scalar(255), CV_FILLED); //ÔÚÕÚÕÖÍ¼²ãÉÏ£¬ÓÃ°×É«ÏñËØÌî³äÂÖÀª 
+		//cv::cvtColor(gray, gray, CV_RGB2GRAY);//ç°åº¦åŒ–
+		//Mat hole(gray.size(), CV_8U, Scalar(0)); //é®ç½©å›¾å±‚
+		////cv::drawContours(hole, contours1, -1, Scalar(255), CV_FILLED); //åœ¨é®ç½©å›¾å±‚ä¸Šï¼Œç”¨ç™½è‰²åƒç´ å¡«å……è½®å»“ 
 		//m_mainView->setImage(hole);
 
 		Vision::PR_CALIPER_CMD  stCmd;
@@ -598,7 +598,7 @@ void VisionDetectSetting::onSrhLineDetect()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 	}
 }
 
@@ -663,7 +663,7 @@ void VisionDetectSetting::onTmpMatchOpen()
 	path += "/";
 
 	QString picFilter = "Image(*.tif *.tiff *.gif *.bmp *.jpg *.jpeg *.jp2 *.png *.pcx *.pgm *.ppm *.pbm *.xwd *.ima)";
-	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("´ò¿ªÍ¼Æ¬"), "/"/*path*/, picFilter);
+	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡"), "/"/*path*/, picFilter);
 
 	if (!strFileName.isEmpty())
 	{
@@ -682,8 +682,8 @@ void VisionDetectSetting::onTmpMatchSelectROI()
 		m_tmpMatchImg = imread(strFileName.toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_COLOR);
 
 		bool bClearAll = false;
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çå³ıÑ¡Ôñ¿ò£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("æ¸…é™¤é€‰æ‹©æ¡†ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			bClearAll = true;
 		}
@@ -758,7 +758,7 @@ void VisionDetectSetting::onTmpMatchSelectROI()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 	}
 }
 
@@ -773,7 +773,7 @@ void VisionDetectSetting::onTmpMatchSelectDetect()
 {
 	if (m_tmpMatchROI.empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÄ£°åROIÇøÓò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©æ¨¡æ¿ROIåŒºåŸŸ"));
 		return;
 	}
 
@@ -781,8 +781,8 @@ void VisionDetectSetting::onTmpMatchSelectDetect()
 	if (!matImage.empty())
 	{
 		bool bClearAll = false;
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çå³ıÑ¡Ôñ¿ò£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("æ¸…é™¤é€‰æ‹©æ¡†ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			bClearAll = true;
 		}
@@ -806,7 +806,7 @@ void VisionDetectSetting::onTmpMatchSelectDetect()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 	}	
 }
 
@@ -814,7 +814,7 @@ void VisionDetectSetting::onTmpMatchDetect()
 {
 	if (m_tmpMatchROI.empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÄ£°åROIÇøÓò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©æ¨¡æ¿ROIåŒºåŸŸ"));
 		return;
 	}
 
@@ -890,7 +890,7 @@ void VisionDetectSetting::onTmpMatchDetect()
 	}	
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 	}
 }
 
@@ -925,8 +925,8 @@ void VisionDetectSetting::onDetectEdgeROI()
 	if (!matImage.empty())
 	{
 		bool bClearAll = false;
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çå³ıÑ¡Ôñ¿ò£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("æ¸…é™¤é€‰æ‹©æ¡†ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			bClearAll = true;
 		}
@@ -950,7 +950,7 @@ void VisionDetectSetting::onDetectEdgeROI()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 	}
 }
 
@@ -993,7 +993,7 @@ void VisionDetectSetting::onDetectEdge()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 	}
 }
 
@@ -1004,8 +1004,8 @@ void VisionDetectSetting::onSrhCircleROI()
 	if (!matImage.empty())
 	{
 		bool bClearAll = false;
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çå³ıÑ¡Ôñ¿ò£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("æ¸…é™¤é€‰æ‹©æ¡†ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			bClearAll = true;
 		}
@@ -1028,7 +1028,7 @@ void VisionDetectSetting::onSrhCircleROI()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 	}
 }
 
@@ -1036,7 +1036,7 @@ void VisionDetectSetting::onSrhCircleDetect()
 {
 	if (m_detectEdgeImg.empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÉè¶¨¼ì²â±ß½ç"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆè®¾å®šæ£€æµ‹è¾¹ç•Œ"));
 		return;
 	}
 
@@ -1081,7 +1081,7 @@ void VisionDetectSetting::onSrhCircleDetect()
 	}
 	//else
 	//{
-	//	QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+	//	QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 	//}
 }
 
@@ -1091,7 +1091,7 @@ void VisionDetectSetting::onDetectGrayScaleOpen()
 	path += "/capture/";
 
 	QString picFilter = "Image(*.tif *.tiff *.gif *.bmp *.jpg *.jpeg *.jp2 *.png *.pcx *.pgm *.ppm *.pbm *.xwd *.ima)";
-	QStringList files = QFileDialog::getOpenFileNames(this, QStringLiteral("´ò¿ªÍ¼Æ¬ÎÄ¼ş¼Ğ"), path, picFilter);
+	QStringList files = QFileDialog::getOpenFileNames(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡æ–‡ä»¶å¤¹"), path, picFilter);
 
 	if (files.count())
 	{
@@ -1100,7 +1100,7 @@ void VisionDetectSetting::onDetectGrayScaleOpen()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 	}
 }
 
@@ -1117,7 +1117,7 @@ void VisionDetectSetting::onDetectGrayScale()
 {
 	if (m_detectGrayScaleFiles.count() <= 0)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
@@ -1152,7 +1152,7 @@ void VisionDetectSetting::on3DCaliOpen()
 	QString path = QApplication::applicationDirPath();
 	path += "/capture/";
 	
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("´ò¿ªÍ¼Æ¬ÎÄ¼ş¼Ğ"), path);
+	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡æ–‡ä»¶å¤¹"), path);
 
 	if (!filePath.isEmpty())
 	{	
@@ -1175,7 +1175,7 @@ void VisionDetectSetting::on3DCaliOpen()
 	else
 	{
 		ui.lineEdit_3DCaliFile->setText("");
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÑ¡ÔñÎÄ¼ş¼Ğ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·é€‰æ‹©æ–‡ä»¶å¤¹"));
 	}
 }
 
@@ -1185,7 +1185,7 @@ void VisionDetectSetting::on3DCaliRstOpen()
 	path += "/3D/config/";
 
 	QString picFilter = "Config(*.yml)";
-	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("´ò¿ªÎÄ¼ş"), path, picFilter);
+	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("æ‰“å¼€æ–‡ä»¶"), path, picFilter);
 
 	QDir dir(path);		
 	if (!strFileName.isEmpty() && strFileName.indexOf(dir.absolutePath()) >= 0)
@@ -1194,7 +1194,7 @@ void VisionDetectSetting::on3DCaliRstOpen()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÔÚ×ÓÄ¿Â¼ÏÂÉèÖÃÂ·¾¶"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·åœ¨å­ç›®å½•ä¸‹è®¾ç½®è·¯å¾„"));
 	}
 }
 
@@ -1203,14 +1203,14 @@ void VisionDetectSetting::on3DCali()
 	QString sz3DCaliFile = ui.lineEdit_3DCaliFile->text();
 	if (sz3DCaliFile.isEmpty() && !m_bGuideCali)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
 	if (sz3DCaliRstFile.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñĞ£×¼Êä³öÎÄ¼ş"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©æ ¡å‡†è¾“å‡ºæ–‡ä»¶"));
 		return;
 	}
 
@@ -1231,11 +1231,11 @@ void VisionDetectSetting::on3DCali()
 
 	if (!readImages(sz3DCaliFile, stCmd.vecInputImgs))
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¶ÁÈ¡ÎÄ¼ş´íÎó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯»å–æ–‡ä»¶é”™è¯¯"));
 		return;
 	}
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("±ê¶¨BaseÃæ...ÇëÄÍĞÄµÈ´ı..."), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("æ ‡å®šBaseé¢...è¯·è€å¿ƒç­‰å¾…..."), 0);
 	QApplication::processEvents();
 
 	bool b3DCaliGaussionFilter = ui.checkBox_3DCaliGaussionFilter->isChecked();
@@ -1252,7 +1252,7 @@ void VisionDetectSetting::on3DCali()
 		cv::FileStorage fs(strResultMatPath, cv::FileStorage::WRITE);
 		if (!fs.isOpened())
 		{
-			System->setTrackInfo(QStringLiteral("ÅäÖÃÎÄ¼şÂ·¾¶²»ÕıÈ·£¡"));
+			System->setTrackInfo(QStringLiteral("é…ç½®æ–‡ä»¶è·¯å¾„ä¸æ­£ç¡®ï¼"));
 			QSystem::closeMessage();
 			return;
 		}			
@@ -1274,8 +1274,8 @@ void VisionDetectSetting::on3DCali()
 		//int nStation = ui.comboBox_selectDLP->currentIndex();
 		//m_matBaseSurfaces[nStation] = stCalc3DBaseRpy.matBaseSurface;
 
-		//QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("±ê¶¨³É¹¦"));
-		System->setTrackInfo(QStringLiteral("±ê¶¨Base³É¹¦"));
+		//QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ ‡å®šæˆåŠŸ"));
+		System->setTrackInfo(QStringLiteral("æ ‡å®šBaseæˆåŠŸ"));
 	}
 	else
 	{
@@ -1297,7 +1297,7 @@ void VisionDetectSetting::on3DDetectCaliOpen()
 	QString path = QApplication::applicationDirPath();
 	path += "/capture/";
 
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("´ò¿ªÍ¼Æ¬ÎÄ¼ş¼Ğ"), path);
+	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡æ–‡ä»¶å¤¹"), path);
 
 	if (!filePath.isEmpty())
 	{
@@ -1322,7 +1322,7 @@ void VisionDetectSetting::on3DDetectCaliOpen()
 	else
 	{
 		ui.lineEdit_3DDetectCaliFile->setText("");
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÑ¡ÔñÎÄ¼ş¼Ğ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·é€‰æ‹©æ–‡ä»¶å¤¹"));
 	}
 }
 
@@ -1331,20 +1331,20 @@ void VisionDetectSetting::on3DDetectCali()
 	QString sz3DDetectCaliFile = ui.lineEdit_3DDetectCaliFile->text();
 	if (sz3DDetectCaliFile.isEmpty() && !m_bGuideCali)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
 	if (sz3DCaliRstFile.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñĞ£×¼Êä³öÎÄ¼ş"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©æ ¡å‡†è¾“å‡ºæ–‡ä»¶"));
 		return;
 	}
 
 	//if (m_matBaseSurface.empty())
 	//{
-	//	QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈĞ£×¼BaseÆ½Ãæ"));
+	//	QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆæ ¡å‡†Baseå¹³é¢"));
 	//	return;
 	//}
 
@@ -1366,11 +1366,11 @@ void VisionDetectSetting::on3DDetectCali()
 	//}
 	if (!readImages(sz3DDetectCaliFile, stCmd.vecInputImgs))
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¶ÁÈ¡ÎÄ¼ş´íÎó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯»å–æ–‡ä»¶é”™è¯¯"));
 		return;
 	}
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("±ê¶¨") + QString::number(nCaliTypeIndex + 1, 'g', 2) + QStringLiteral("Ãæ...ÇëÄÍĞÄµÈ´ı..."), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("æ ‡å®š") + QString::number(nCaliTypeIndex + 1, 'g', 2) + QStringLiteral("é¢...è¯·è€å¿ƒç­‰å¾…..."), 0);
 	QApplication::processEvents();
 
 	bool b3DDetectCaliUseThinPattern = ui.checkBox_3DCaliUseThinPattern->isChecked();
@@ -1442,7 +1442,7 @@ void VisionDetectSetting::on3DDetectCali()
 		cv::FileStorage fs1(strResultMatPath, cv::FileStorage::APPEND);
 		if (!fs1.isOpened())
 		{
-			System->setTrackInfo(QStringLiteral("ÅäÖÃÎÄ¼şÂ·¾¶²»ÕıÈ·£¡"));
+			System->setTrackInfo(QStringLiteral("é…ç½®æ–‡ä»¶è·¯å¾„ä¸æ­£ç¡®ï¼"));
 			QSystem::closeMessage();
 			return;
 		}
@@ -1453,7 +1453,7 @@ void VisionDetectSetting::on3DDetectCali()
 		cv::FileStorage fsCalibData(strCalibDataFile, cv::FileStorage::WRITE);
 		if (!fsCalibData.isOpened())
 		{
-			System->setTrackInfo(QStringLiteral("ÅäÖÃÎÄ¼şÂ·¾¶²»ÕıÈ·£¡"));
+			System->setTrackInfo(QStringLiteral("é…ç½®æ–‡ä»¶è·¯å¾„ä¸æ­£ç¡®ï¼"));
 			QSystem::closeMessage();
 			return;
 		}
@@ -1484,8 +1484,8 @@ void VisionDetectSetting::on3DDetectCali()
 			m_pColorDisplay->setGeometry(rectRstDisplay.left() - nWidth, rectRstDisplay.top(), nWidth, nHeight);
 		}
 
-		//QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("±ê¶¨³É¹¦"));
-		System->setTrackInfo(QStringLiteral("±ê¶¨") + QString::number(nCaliTypeIndex + 1, 'g', 2) + QStringLiteral("Ãæ³É¹¦"));
+		//QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ ‡å®šæˆåŠŸ"));
+		System->setTrackInfo(QStringLiteral("æ ‡å®š") + QString::number(nCaliTypeIndex + 1, 'g', 2) + QStringLiteral("é¢æˆåŠŸ"));
 	}
 	else
 	{
@@ -1509,7 +1509,7 @@ void VisionDetectSetting::on3DDetectCaliNegOpen()
 	QString path = QApplication::applicationDirPath();
 	path += "/capture/";
 
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("´ò¿ªÍ¼Æ¬ÎÄ¼ş¼Ğ"), path);
+	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡æ–‡ä»¶å¤¹"), path);
 
 	if (!filePath.isEmpty())
 	{
@@ -1534,7 +1534,7 @@ void VisionDetectSetting::on3DDetectCaliNegOpen()
 	else
 	{
 		ui.lineEdit_3DDetectCaliNegFile->setText("");
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÑ¡ÔñÎÄ¼ş¼Ğ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·é€‰æ‹©æ–‡ä»¶å¤¹"));
 	}
 }
 
@@ -1543,20 +1543,20 @@ void VisionDetectSetting::on3DDetectCaliNeg()
 	QString sz3DDetectCaliFile = ui.lineEdit_3DDetectCaliNegFile->text();
 	if (sz3DDetectCaliFile.isEmpty() && !m_bGuideCali)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
 	if (sz3DCaliRstFile.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñĞ£×¼Êä³öÎÄ¼ş"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©æ ¡å‡†è¾“å‡ºæ–‡ä»¶"));
 		return;
 	}
 
 	//if (m_matBaseSurface.empty())
 	//{
-	//	QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈĞ£×¼BaseÆ½Ãæ"));
+	//	QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆæ ¡å‡†Baseå¹³é¢"));
 	//	return;
 	//}
 
@@ -1574,12 +1574,12 @@ void VisionDetectSetting::on3DDetectCaliNeg()
 	//}
 	if (!readImages(sz3DDetectCaliFile, stCmd.vecInputImgs))
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¶ÁÈ¡ÎÄ¼ş´íÎó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯»å–æ–‡ä»¶é”™è¯¯"));
 		return;
 	}
 
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("±ê¶¨H5Ãæ...ÇëÄÍĞÄµÈ´ı..."), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("æ ‡å®šH5é¢...è¯·è€å¿ƒç­‰å¾…..."), 0);
 	QApplication::processEvents();
 
 	bool b3DDetectCaliUseThinPattern = ui.checkBox_3DCaliUseThinPattern->isChecked();
@@ -1631,7 +1631,7 @@ void VisionDetectSetting::on3DDetectCaliNeg()
 		cv::FileStorage fsCalibData(strCalibDataFile, cv::FileStorage::WRITE);
 		if (!fsCalibData.isOpened())
 		{
-			System->setTrackInfo(QStringLiteral("ÅäÖÃÎÄ¼şÂ·¾¶²»ÕıÈ·£¡"));
+			System->setTrackInfo(QStringLiteral("é…ç½®æ–‡ä»¶è·¯å¾„ä¸æ­£ç¡®ï¼"));
 			QSystem::closeMessage();
 			return;
 		}
@@ -1641,7 +1641,7 @@ void VisionDetectSetting::on3DDetectCaliNeg()
 		cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
 		m_pView->displayImage(matHeightResultImg);	
 
-		System->setTrackInfo(QStringLiteral("±ê¶¨H5Ãæ³É¹¦"));
+		System->setTrackInfo(QStringLiteral("æ ‡å®šH5é¢æˆåŠŸ"));
 	}
 	else
 	{
@@ -1656,7 +1656,7 @@ void VisionDetectSetting::on3DDetectCaliComb()
 	QString path = QApplication::applicationDirPath();
 	path += "/3D/config/";
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("µ¼Èë±ê¶¨½á¹û...ÇëÄÍĞÄµÈ´ı..."), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("å¯¼å…¥æ ‡å®šç»“æœ...è¯·è€å¿ƒç­‰å¾…..."), 0);
 	QApplication::processEvents();
 
 	Vision::PR_INTEGRATE_3D_CALIB_CMD stCmd;
@@ -1667,7 +1667,7 @@ void VisionDetectSetting::on3DDetectCaliComb()
 		cv::FileStorage fsCalibData(strCalibDataFile, cv::FileStorage::READ);
 		if (!fsCalibData.isOpened()) 
 		{
-			System->setTrackInfo(QStringLiteral("ÅäÖÃÎÄ¼şÂ·¾¶²»ÕıÈ·£¡"));	
+			System->setTrackInfo(QStringLiteral("é…ç½®æ–‡ä»¶è·¯å¾„ä¸æ­£ç¡®ï¼"));	
 			QSystem::closeMessage();
 			return;
 		}
@@ -1687,7 +1687,7 @@ void VisionDetectSetting::on3DDetectCaliComb()
 	cv::FileStorage fsCalibData(strCalibDataFile, cv::FileStorage::READ);
 	if (!fsCalibData.isOpened())
 	{
-		System->setTrackInfo(QStringLiteral("ÅäÖÃÎÄ¼şÂ·¾¶²»ÕıÈ·£¡"));
+		System->setTrackInfo(QStringLiteral("é…ç½®æ–‡ä»¶è·¯å¾„ä¸æ­£ç¡®ï¼"));
 		QSystem::closeMessage();
 		return;
 	}
@@ -1700,7 +1700,7 @@ void VisionDetectSetting::on3DDetectCaliComb()
 
 	QSystem::closeMessage();
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("ºÏ³É±ê¶¨½á¹û...ÇëÄÍĞÄµÈ´ı..."), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("åˆæˆæ ‡å®šç»“æœ...è¯·è€å¿ƒç­‰å¾…..."), 0);
 	QApplication::processEvents();
 
 	Vision::VisionStatus retStatus = PR_Integrate3DCalib(&stCmd, &stRpy);
@@ -1742,8 +1742,8 @@ void VisionDetectSetting::on3DDetectCaliComb()
 		cv::write(fsCalibResultData, "Order3CurveSurface", stRpy.matOrder3CurveSurface);
 		fsCalibResultData.release();
 
-		System->setTrackInfo(QStringLiteral("ºÏ³É±ê¶¨³É¹¦"));
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ºÏ³ÉDLP%1±ê¶¨³É¹¦").arg(nDLPIndex+1));
+		System->setTrackInfo(QStringLiteral("åˆæˆæ ‡å®šæˆåŠŸ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("åˆæˆDLP%1æ ‡å®šæˆåŠŸ").arg(nDLPIndex+1));
 	}
 	else
 	{
@@ -1809,7 +1809,7 @@ void VisionDetectSetting::on3DDetectOpen()
 	QString path = QApplication::applicationDirPath();
 	path += "/capture/";
 
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("´ò¿ªÍ¼Æ¬ÎÄ¼ş¼Ğ"), path);
+	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡æ–‡ä»¶å¤¹"), path);
 
 	if (!filePath.isEmpty())
 	{
@@ -1834,7 +1834,7 @@ void VisionDetectSetting::on3DDetectOpen()
 	else
 	{
 		ui.lineEdit_3DDetectFile->setText("");
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÑ¡ÔñÎÄ¼ş¼Ğ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·é€‰æ‹©æ–‡ä»¶å¤¹"));
 	}
 }
 
@@ -1848,14 +1848,14 @@ void VisionDetectSetting::on3DDetect()
 	QString sz3DDetectFile = ui.lineEdit_3DDetectFile->text();
 	if (sz3DDetectFile.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
 	if (sz3DCaliRstFile.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñĞ£×¼Êä³öÎÄ¼ş"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©æ ¡å‡†è¾“å‡ºæ–‡ä»¶"));
 		return;
 	}
 
@@ -1873,7 +1873,7 @@ void VisionDetectSetting::on3DDetect()
 	//}
 	if (!readImages(sz3DDetectFile, stCmd.vecInputImgs))
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¶ÁÈ¡ÎÄ¼ş´íÎó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯»å–æ–‡ä»¶é”™è¯¯"));
 		return;
 	}
 
@@ -2014,7 +2014,7 @@ void VisionDetectSetting::on3DDetectMerge()
 	{
 		if (m_3DMatHeights[i].empty())
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ·Ö²½¼ÆËã3D¸ß¶È£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ†æ­¥è®¡ç®—3Dé«˜åº¦ï¼"));
 			return;
 		}
 	}
@@ -2066,14 +2066,14 @@ void VisionDetectSetting::on3DDetectMerge()
 //	QString sz3DDetectFile = ui.lineEdit_3DDetectFile->text();
 //	if (sz3DDetectFile.isEmpty())
 //	{
-//		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+//		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 //		return;
 //	}
 //
 //	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
 //	if (sz3DCaliRstFile.isEmpty())
 //	{
-//		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñĞ£×¼Êä³öÎÄ¼ş"));
+//		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©æ ¡å‡†è¾“å‡ºæ–‡ä»¶"));
 //		return;
 //	}
 //
@@ -2378,14 +2378,14 @@ bool VisionDetectSetting::startCaliGuide()
 			if (!pCam->startUpCapture())
 			{
 				QSystem::closeMessage();
-				QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Ïà»ú³õÊ¼»¯ÎÊÌâ¡£"));
+				QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("ç›¸æœºåˆå§‹åŒ–é—®é¢˜ã€‚"));
 				return false;
 			}
 		}
 		else
 		{
 			QSystem::closeMessage();
-			QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Çë¼ì²éÏà»úÊÇ·ñÁ¬½Ó¡£"));
+			QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("è¯·æ£€æŸ¥ç›¸æœºæ˜¯å¦è¿æ¥ã€‚"));
 			return false;
 		}
 
@@ -2397,14 +2397,14 @@ bool VisionDetectSetting::startCaliGuide()
 				if (!pDlp->startUpCapture(i))
 				{
 					QSystem::closeMessage();
-					QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("DLPÆô¶¯Ê§°Ü£¡"));
+					QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("DLPå¯åŠ¨å¤±è´¥ï¼"));
 					return false;
 				}
 			}
 			else
 			{
 				QSystem::closeMessage();
-				System->setTrackInfo(QString(QStringLiteral("DLP%0Æô¶¯Ê§°Ü, Çë¼ì²éÓ²¼şÁ¬½Ó£¡")).arg(i + 1));
+				System->setTrackInfo(QString(QStringLiteral("DLP%0å¯åŠ¨å¤±è´¥, è¯·æ£€æŸ¥ç¡¬ä»¶è¿æ¥ï¼")).arg(i + 1));
 			}
 		}
 	}	
@@ -2413,7 +2413,7 @@ bool VisionDetectSetting::startCaliGuide()
 	ui.comboBox_selectDLP->setEnabled(false);
 	ui.pushButton_CalibGuideNext->setEnabled(true);
 	ui.pushButton_CalibGuidePrevious->setEnabled(true);
-	ui.pushButton_CalibGuide->setText(QStringLiteral("È¡Ïû±ê¶¨"));
+	ui.pushButton_CalibGuide->setText(QStringLiteral("å–æ¶ˆæ ‡å®š"));
 	m_bGuideCali = true;
 	m_nCaliGuideStep = 0;
 
@@ -2485,7 +2485,7 @@ void VisionDetectSetting::stopCaliGuide()
 	ui.comboBox_selectDLP->setEnabled(true);
 	ui.pushButton_CalibGuideNext->setEnabled(false);
 	ui.pushButton_CalibGuidePrevious->setEnabled(false);
-	ui.pushButton_CalibGuide->setText(QStringLiteral("±ê¶¨Ïòµ¼"));
+	ui.pushButton_CalibGuide->setText(QStringLiteral("æ ‡å®šå‘å¯¼"));
 
 	m_nCaliGuideStep = 0;
 	m_bGuideCali = false;
@@ -2647,11 +2647,11 @@ void VisionDetectSetting::onCaliGuide()
 
 		if (!startCaliGuide())
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("Æô¶¯±ê¶¨Ê§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("å¯åŠ¨æ ‡å®šå¤±è´¥ï¼"));
 		}
 		else
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¿ªÊ¼±ê¶¨..."));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("å¼€å§‹æ ‡å®š..."));
 		}
 		
 	}	
@@ -2665,7 +2665,7 @@ void VisionDetectSetting::onCaliGuideNext()
 	{
 		startCameraCapturing();
 
-		//±ê¶¨DLP1
+		//æ ‡å®šDLP1
 		ui.comboBox_selectDLP->setCurrentIndex(0);
 		ui.toolBox_2->setCurrentIndex(0);
 
@@ -2673,19 +2673,19 @@ void VisionDetectSetting::onCaliGuideNext()
 		QFile file(szFileName);
 		if (!file.exists())
 		{
-			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-				QStringLiteral("±ê¶¨ÎÄ¼şÂ·¾¶²»´æÔÚ£¬ÊÇ·ñÖØĞÂÑ¡ÔñÂ·¾¶£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+				QStringLiteral("æ ‡å®šæ–‡ä»¶è·¯å¾„ä¸å­˜åœ¨ï¼Œæ˜¯å¦é‡æ–°é€‰æ‹©è·¯å¾„ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 			{
 				on3DCaliRstOpen();
 			}			
 		}		
 		
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çë·ÅÖÃDLP1µÄBase±ê¶¨¿é£¬È·¶¨¿ªÊ¼²É¼¯Í¼Ïñ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("è¯·æ”¾ç½®DLP1çš„Baseæ ‡å®šå—ï¼Œç¡®å®šå¼€å§‹é‡‡é›†å›¾åƒï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Í£Ö¹ÊµÊ±Í¼Ïñ£¬ÇëÖØĞÂ²É¼¯£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åœæ­¢å®æ—¶å›¾åƒï¼Œè¯·é‡æ–°é‡‡é›†ï¼"));
 				return;
 			}
 
@@ -2696,8 +2696,8 @@ void VisionDetectSetting::onCaliGuideNext()
 				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
 				m_pView->setImage(matGray);
 
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-					QStringLiteral("²É¼¯Íê³É£¬Í¼ÏñÊÇ·ñOK£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("é‡‡é›†å®Œæˆï¼Œå›¾åƒæ˜¯å¦OKï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					return;
 				}
@@ -2713,26 +2713,26 @@ void VisionDetectSetting::onCaliGuideNext()
 	{
 		startCameraCapturing();
 
-		//±ê¶¨DLP1
+		//æ ‡å®šDLP1
 		ui.comboBox_selectDLP->setCurrentIndex(1);
 
 		QString szFileName = ui.lineEdit_3DCaliRstFile->text();
 		QFile file(szFileName);
 		if (!file.exists())
 		{
-			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-				QStringLiteral("±ê¶¨ÎÄ¼şÂ·¾¶²»´æÔÚ£¬ÊÇ·ñÖØĞÂÑ¡ÔñÂ·¾¶£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+				QStringLiteral("æ ‡å®šæ–‡ä»¶è·¯å¾„ä¸å­˜åœ¨ï¼Œæ˜¯å¦é‡æ–°é€‰æ‹©è·¯å¾„ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 			{
 				on3DCaliRstOpen();
 			}
 		}
 		
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çë·ÅÖÃDLP2µÄBase±ê¶¨¿é£¬È·¶¨¿ªÊ¼²É¼¯Í¼Ïñ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("è¯·æ”¾ç½®DLP2çš„Baseæ ‡å®šå—ï¼Œç¡®å®šå¼€å§‹é‡‡é›†å›¾åƒï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Í£Ö¹ÊµÊ±Í¼Ïñ£¬ÇëÖØĞÂ²É¼¯£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åœæ­¢å®æ—¶å›¾åƒï¼Œè¯·é‡æ–°é‡‡é›†ï¼"));
 				return;
 			}
 
@@ -2743,8 +2743,8 @@ void VisionDetectSetting::onCaliGuideNext()
 				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
 				m_pView->setImage(matGray);
 
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-					QStringLiteral("²É¼¯Íê³É£¬Í¼ÏñÊÇ·ñOK£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("é‡‡é›†å®Œæˆï¼Œå›¾åƒæ˜¯å¦OKï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					return;
 				}
@@ -2762,12 +2762,12 @@ void VisionDetectSetting::onCaliGuideNext()
 
 		ui.toolBox_2->setCurrentIndex(1);
 		ui.comboBox_selectDLP->setCurrentIndex(0);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çë·ÅÖÃDLP1µÄLeft Top±ê¶¨¿é£¬È·¶¨¿ªÊ¼²É¼¯Í¼Ïñ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("è¯·æ”¾ç½®DLP1çš„Left Topæ ‡å®šå—ï¼Œç¡®å®šå¼€å§‹é‡‡é›†å›¾åƒï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Í£Ö¹ÊµÊ±Í¼Ïñ£¬ÇëÖØĞÂ²É¼¯£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åœæ­¢å®æ—¶å›¾åƒï¼Œè¯·é‡æ–°é‡‡é›†ï¼"));
 				return;
 			}
 
@@ -2778,8 +2778,8 @@ void VisionDetectSetting::onCaliGuideNext()
 				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
 				m_pView->setImage(matGray);
 
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-					QStringLiteral("²É¼¯Íê³É£¬Í¼ÏñÊÇ·ñOK£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("é‡‡é›†å®Œæˆï¼Œå›¾åƒæ˜¯å¦OKï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					return;
 				}
@@ -2799,12 +2799,12 @@ void VisionDetectSetting::onCaliGuideNext()
 		startCameraCapturing();
 
 		ui.comboBox_selectDLP->setCurrentIndex(1);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çë·ÅÖÃDLP2µÄLeft Top±ê¶¨¿é£¬È·¶¨¿ªÊ¼²É¼¯Í¼Ïñ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("è¯·æ”¾ç½®DLP2çš„Left Topæ ‡å®šå—ï¼Œç¡®å®šå¼€å§‹é‡‡é›†å›¾åƒï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Í£Ö¹ÊµÊ±Í¼Ïñ£¬ÇëÖØĞÂ²É¼¯£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åœæ­¢å®æ—¶å›¾åƒï¼Œè¯·é‡æ–°é‡‡é›†ï¼"));
 				return;
 			}
 
@@ -2815,8 +2815,8 @@ void VisionDetectSetting::onCaliGuideNext()
 				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
 				m_pView->setImage(matGray);
 
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-					QStringLiteral("²É¼¯Íê³É£¬Í¼ÏñÊÇ·ñOK£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("é‡‡é›†å®Œæˆï¼Œå›¾åƒæ˜¯å¦OKï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					return;
 				}
@@ -2836,12 +2836,12 @@ void VisionDetectSetting::onCaliGuideNext()
 		startCameraCapturing();
 
 		ui.comboBox_selectDLP->setCurrentIndex(0);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çë·ÅÖÃDLP1µÄRight Top±ê¶¨¿é£¬È·¶¨¿ªÊ¼²É¼¯Í¼Ïñ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("è¯·æ”¾ç½®DLP1çš„Right Topæ ‡å®šå—ï¼Œç¡®å®šå¼€å§‹é‡‡é›†å›¾åƒï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Í£Ö¹ÊµÊ±Í¼Ïñ£¬ÇëÖØĞÂ²É¼¯£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åœæ­¢å®æ—¶å›¾åƒï¼Œè¯·é‡æ–°é‡‡é›†ï¼"));
 				return;
 			}
 
@@ -2852,8 +2852,8 @@ void VisionDetectSetting::onCaliGuideNext()
 				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
 				m_pView->setImage(matGray);
 
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-					QStringLiteral("²É¼¯Íê³É£¬Í¼ÏñÊÇ·ñOK£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("é‡‡é›†å®Œæˆï¼Œå›¾åƒæ˜¯å¦OKï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					return;
 				}
@@ -2873,12 +2873,12 @@ void VisionDetectSetting::onCaliGuideNext()
 		startCameraCapturing();
 
 		ui.comboBox_selectDLP->setCurrentIndex(1);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çë·ÅÖÃDLP2µÄRight Top±ê¶¨¿é£¬È·¶¨¿ªÊ¼²É¼¯Í¼Ïñ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("è¯·æ”¾ç½®DLP2çš„Right Topæ ‡å®šå—ï¼Œç¡®å®šå¼€å§‹é‡‡é›†å›¾åƒï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Í£Ö¹ÊµÊ±Í¼Ïñ£¬ÇëÖØĞÂ²É¼¯£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åœæ­¢å®æ—¶å›¾åƒï¼Œè¯·é‡æ–°é‡‡é›†ï¼"));
 				return;
 			}
 
@@ -2889,8 +2889,8 @@ void VisionDetectSetting::onCaliGuideNext()
 				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
 				m_pView->setImage(matGray);
 
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-					QStringLiteral("²É¼¯Íê³É£¬Í¼ÏñÊÇ·ñOK£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("é‡‡é›†å®Œæˆï¼Œå›¾åƒæ˜¯å¦OKï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					return;
 				}
@@ -2910,12 +2910,12 @@ void VisionDetectSetting::onCaliGuideNext()
 		startCameraCapturing();
 
 		ui.comboBox_selectDLP->setCurrentIndex(0);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çë·ÅÖÃDLP1µÄNagative±ê¶¨¿é£¬È·¶¨¿ªÊ¼²É¼¯Í¼Ïñ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("è¯·æ”¾ç½®DLP1çš„Nagativeæ ‡å®šå—ï¼Œç¡®å®šå¼€å§‹é‡‡é›†å›¾åƒï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Í£Ö¹ÊµÊ±Í¼Ïñ£¬ÇëÖØĞÂ²É¼¯£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åœæ­¢å®æ—¶å›¾åƒï¼Œè¯·é‡æ–°é‡‡é›†ï¼"));
 				return;
 			}
 
@@ -2926,8 +2926,8 @@ void VisionDetectSetting::onCaliGuideNext()
 				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
 				m_pView->setImage(matGray);
 
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-					QStringLiteral("²É¼¯Íê³É£¬Í¼ÏñÊÇ·ñOK£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("é‡‡é›†å®Œæˆï¼Œå›¾åƒæ˜¯å¦OKï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					return;
 				}
@@ -2946,12 +2946,12 @@ void VisionDetectSetting::onCaliGuideNext()
 		startCameraCapturing();
 
 		ui.comboBox_selectDLP->setCurrentIndex(1);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çë·ÅÖÃDLP2µÄNagative±ê¶¨¿é£¬È·¶¨¿ªÊ¼²É¼¯Í¼Ïñ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("è¯·æ”¾ç½®DLP2çš„Nagativeæ ‡å®šå—ï¼Œç¡®å®šå¼€å§‹é‡‡é›†å›¾åƒï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Í£Ö¹ÊµÊ±Í¼Ïñ£¬ÇëÖØĞÂ²É¼¯£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åœæ­¢å®æ—¶å›¾åƒï¼Œè¯·é‡æ–°é‡‡é›†ï¼"));
 				return;
 			}
 
@@ -2962,8 +2962,8 @@ void VisionDetectSetting::onCaliGuideNext()
 				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
 				m_pView->setImage(matGray);
 
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-					QStringLiteral("²É¼¯Íê³É£¬Í¼ÏñÊÇ·ñOK£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("é‡‡é›†å®Œæˆï¼Œå›¾åƒæ˜¯å¦OKï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					return;
 				}
@@ -2982,12 +2982,12 @@ void VisionDetectSetting::onCaliGuideNext()
 		startCameraCapturing();
 
 		ui.comboBox_selectDLP->setCurrentIndex(0);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çë·ÅÖÃDLP1µÄH=5mm±ê¶¨¿é£¬È·¶¨¿ªÊ¼²É¼¯Í¼Ïñ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("è¯·æ”¾ç½®DLP1çš„H=5mmæ ‡å®šå—ï¼Œç¡®å®šå¼€å§‹é‡‡é›†å›¾åƒï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Í£Ö¹ÊµÊ±Í¼Ïñ£¬ÇëÖØĞÂ²É¼¯£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åœæ­¢å®æ—¶å›¾åƒï¼Œè¯·é‡æ–°é‡‡é›†ï¼"));
 				return;
 			}
 
@@ -2998,8 +2998,8 @@ void VisionDetectSetting::onCaliGuideNext()
 				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
 				m_pView->setImage(matGray);
 
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-					QStringLiteral("²É¼¯Íê³É£¬Í¼ÏñÊÇ·ñOK£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("é‡‡é›†å®Œæˆï¼Œå›¾åƒæ˜¯å¦OKï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					return;
 				}
@@ -3018,12 +3018,12 @@ void VisionDetectSetting::onCaliGuideNext()
 		startCameraCapturing();
 
 		ui.comboBox_selectDLP->setCurrentIndex(1);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çë·ÅÖÃDLP2µÄH=5mm±ê¶¨¿é£¬È·¶¨¿ªÊ¼²É¼¯Í¼Ïñ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("è¯·æ”¾ç½®DLP2çš„H=5mmæ ‡å®šå—ï¼Œç¡®å®šå¼€å§‹é‡‡é›†å›¾åƒï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Í£Ö¹ÊµÊ±Í¼Ïñ£¬ÇëÖØĞÂ²É¼¯£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åœæ­¢å®æ—¶å›¾åƒï¼Œè¯·é‡æ–°é‡‡é›†ï¼"));
 				return;
 			}
 
@@ -3034,8 +3034,8 @@ void VisionDetectSetting::onCaliGuideNext()
 				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
 				m_pView->setImage(matGray);
 
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-					QStringLiteral("²É¼¯Íê³É£¬Í¼ÏñÊÇ·ñOK£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("é‡‡é›†å®Œæˆï¼Œå›¾åƒæ˜¯å¦OKï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					return;
 				}
@@ -3070,7 +3070,7 @@ void VisionDetectSetting::onCaliGuideNext()
 		ui.toolBox_2->setCurrentIndex(3);
 		stopCaliGuide();
 
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("×Ô¶¯±ê¶¨Ïòµ¼Íê³É£¡"));		
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è‡ªåŠ¨æ ‡å®šå‘å¯¼å®Œæˆï¼"));		
 	}
 	break;
 	}
@@ -3085,7 +3085,7 @@ void VisionDetectSetting::onCaliGuidePrevious()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨¼ÌĞøÉÏÒ»²½±ê¶¨£¬ÇëÏÂÒ»²½²Ù×÷»òÕßÈ¡Ïû±ê¶¨£¡"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•ç»§ç»­ä¸Šä¸€æ­¥æ ‡å®šï¼Œè¯·ä¸‹ä¸€æ­¥æ“ä½œæˆ–è€…å–æ¶ˆæ ‡å®šï¼"));
 	}
 }
 
@@ -3093,7 +3093,7 @@ void VisionDetectSetting::onEditMTFLoc1()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
@@ -3127,7 +3127,7 @@ void VisionDetectSetting::onEditMTFLoc1()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("Ôª¼ş¿ò±ØĞë´æÔÚ£¬ÇëÖØĞÂÉèÖÃ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("å…ƒä»¶æ¡†å¿…é¡»å­˜åœ¨ï¼Œè¯·é‡æ–°è®¾ç½®"));
 	}
 }
 
@@ -3135,13 +3135,13 @@ void VisionDetectSetting::onEditMTFLocLearn1()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}	
 
 	if (m_MTFLocROI1.width == 0 && m_MTFLocROI1.height == 0)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨¶¨Î»¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå®šä½æ¡†"));
 		return;
 	}	
 
@@ -3253,13 +3253,13 @@ void VisionDetectSetting::onEditMTFDetect1()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	if (m_MTFLocROI1.width == 0 && m_MTFLocROI1.height == 0)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨¶¨Î»¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå®šä½æ¡†"));
 		return;
 	}
 
@@ -3312,7 +3312,7 @@ void VisionDetectSetting::onEditMTFDetect1()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ì²â¿ò±ØĞë´æÔÚ£¬ÇëÖØĞÂÉèÖÃ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ£€æµ‹æ¡†å¿…é¡»å­˜åœ¨ï¼Œè¯·é‡æ–°è®¾ç½®"));
 	}	
 }
 
@@ -3320,7 +3320,7 @@ void VisionDetectSetting::onEditMTFLoc2()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
@@ -3356,7 +3356,7 @@ void VisionDetectSetting::onEditMTFLoc2()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("Ôª¼ş¿ò±ØĞë´æÔÚ£¬ÇëÖØĞÂÉèÖÃ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("å…ƒä»¶æ¡†å¿…é¡»å­˜åœ¨ï¼Œè¯·é‡æ–°è®¾ç½®"));
 	}
 }
 
@@ -3364,13 +3364,13 @@ void VisionDetectSetting::onEditMTFLocLearn2()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	if (m_MTFLocROI2.width == 0 && m_MTFLocROI2.height == 0)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨¶¨Î»¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå®šä½æ¡†"));
 		return;
 	}
 
@@ -3455,13 +3455,13 @@ void VisionDetectSetting::onEditMTFDetect2()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	if (m_MTFLocROI2.width == 0 && m_MTFLocROI2.height == 0)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨¶¨Î»¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå®šä½æ¡†"));
 		return;
 	}
 
@@ -3515,7 +3515,7 @@ void VisionDetectSetting::onEditMTFDetect2()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ì²â¿ò±ØĞë´æÔÚ£¬ÇëÖØĞÂÉèÖÃ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ£€æµ‹æ¡†å¿…é¡»å­˜åœ¨ï¼Œè¯·é‡æ–°è®¾ç½®"));
 	}
 }
 
@@ -3523,13 +3523,13 @@ void VisionDetectSetting::onCalcMTF()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	if (m_nMTFLocRecord1 == 0 || m_nMTFLocRecord2 == 0)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨¶¨Î»¿ò,¼ì²â¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå®šä½æ¡†,æ£€æµ‹æ¡†"));
 		return;
 	}
 
@@ -3613,7 +3613,7 @@ void VisionDetectSetting::onCalcMTF()
 	//stCmd.rectHSmallPatternROI.height /= 2;
 	//stCmd.rectHSmallPatternROI.y += stCmd.rectHSmallPatternROI.height;
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ÆËãCamera MTFÇúÏß...ÇëÄÍĞÄµÈ´ı..."), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("è®¡ç®—Camera MTFæ›²çº¿...è¯·è€å¿ƒç­‰å¾…..."), 0);
 	QApplication::processEvents();
 
 	Vision::VisionStatus retStatus = PR_CalcCameraMTF(&stCmd, &stRpy);
@@ -3720,7 +3720,7 @@ cv::Point2f VisionDetectSetting::rotateByPoint(cv::Point2f ptSrc, cv::Point2f pt
 
 bool VisionDetectSetting::convertToGrayImage(QString& szFilePath, cv::Mat &matGray)
 {
-	//ÅĞ¶ÏÂ·¾¶ÊÇ·ñ´æÔÚ
+	//åˆ¤æ–­è·¯å¾„æ˜¯å¦å­˜åœ¨
 	QDir dir(szFilePath);
 	if (!dir.exists())
 	{
@@ -3779,7 +3779,7 @@ bool VisionDetectSetting::readImages(QString& szFilePath, AOI::Vision::VectorOfM
 		return true;
 	}
 
-	//ÅĞ¶ÏÂ·¾¶ÊÇ·ñ´æÔÚ
+	//åˆ¤æ–­è·¯å¾„æ˜¯å¦å­˜åœ¨
 	QDir dir(szFilePath);
 	if (!dir.exists())
 	{
@@ -3843,7 +3843,7 @@ void VisionDetectSetting::onDlpMTFOpen()
 	QString path = QApplication::applicationDirPath();
 	path += "/capture/";
 
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("´ò¿ªÍ¼Æ¬ÎÄ¼ş¼Ğ"), path);
+	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡æ–‡ä»¶å¤¹"), path);
 
 	if (!filePath.isEmpty())
 	{
@@ -3855,7 +3855,7 @@ void VisionDetectSetting::onDlpMTFOpen()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÑ¡ÔñÎÄ¼ş¼Ğ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·é€‰æ‹©æ–‡ä»¶å¤¹"));
 	}
 }
 
@@ -3886,7 +3886,7 @@ void VisionDetectSetting::onDetectDlpMTF()
 	QString szDLPMTFFile = ui.lineEdit_dlpMTFFile->text();
 	if (szDLPMTFFile.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
@@ -3908,7 +3908,7 @@ void VisionDetectSetting::onDetectDlpMTF()
 	double dMagnitudeOfDLP = ui.lineEdit_dlpMTFMagnitudeOfDLP->text().toDouble();	
 	stCmd.fMagnitudeOfDLP = dMagnitudeOfDLP;
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ÆËãDLP MTFÇúÏß...ÇëÄÍĞÄµÈ´ı..."), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("è®¡ç®—DLP MTFæ›²çº¿...è¯·è€å¿ƒç­‰å¾…..."), 0);
 	QApplication::processEvents();
 
 	Vision::VisionStatus retStatus = PR_CalcMTF(&stCmd, &stRpy);
@@ -3940,7 +3940,7 @@ void VisionDetectSetting::onDlpPDOpen()
 	QString path = QApplication::applicationDirPath();
 	path += "/capture/";
 
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("´ò¿ªÍ¼Æ¬ÎÄ¼ş¼Ğ"), path);
+	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡æ–‡ä»¶å¤¹"), path);
 
 	if (!filePath.isEmpty())
 	{
@@ -3952,7 +3952,7 @@ void VisionDetectSetting::onDlpPDOpen()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÑ¡ÔñÎÄ¼ş¼Ğ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·é€‰æ‹©æ–‡ä»¶å¤¹"));
 	}
 }
 
@@ -3961,7 +3961,7 @@ void VisionDetectSetting::onDetectDlpPD()
 	QString szDLPPDFile = ui.lineEdit_dlpPDFile->text();
 	if (szDLPPDFile.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
@@ -3996,7 +3996,7 @@ void VisionDetectSetting::onDetectDlpPD()
 	stCmd.fDlpPixelCycle = dDlpPDPixelCycle;
 	stCmd.fGaussianFilterSigma = dDlpPDGaussianSigma;
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ÆËãDLP PDÇúÏß...ÇëÄÍĞÄµÈ´ı..."), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("è®¡ç®—DLP PDæ›²çº¿...è¯·è€å¿ƒç­‰å¾…..."), 0);
 	QApplication::processEvents();
 
 	Vision::VisionStatus retStatus = PR_CalcPD(&stCmd, &stRpy);

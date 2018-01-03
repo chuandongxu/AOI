@@ -1,4 +1,4 @@
-#include "VLProfileEditor.h"
+ï»¿#include "VLProfileEditor.h"
 #include <QFileDialog>
 
 #include "VisionCtrl.h"
@@ -109,7 +109,7 @@ QVLProfileEditor::~QVLProfileEditor()
 }
 
 void QVLProfileEditor::closeEvent(QCloseEvent *e){
-	//qDebug() << "¹Ø±ÕÊÂ¼þ";
+	//qDebug() << "å…³é—­äº‹ä»¶";
 	//e->ignore();
 
 	this->hide();
@@ -126,67 +126,67 @@ void QVLProfileEditor::init()
 
 void QVLProfileEditor::createActions()
 {
-	loadAct = new QAction(QIcon("image/openFile.png"), QStringLiteral("µ¼ÈëÊý¾Ý..."), this);
+	loadAct = new QAction(QIcon("image/openFile.png"), QStringLiteral("å¯¼å…¥æ•°æ®..."), this);
 	loadAct->setShortcuts(QKeySequence::Open);
 	loadAct->setStatusTip(tr("Open data..."));
 	connect(loadAct, SIGNAL(triggered()), this, SLOT(loadFile()));
 
-	saveAct = new QAction(QIcon("image/saveAsFile.png"), QStringLiteral("±£´æÊý¾Ý..."), this);
+	saveAct = new QAction(QIcon("image/saveAsFile.png"), QStringLiteral("ä¿å­˜æ•°æ®..."), this);
 	saveAct->setShortcuts(QKeySequence::SaveAs);
 	saveAct->setStatusTip(tr("Save data..."));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
 
-	line2lineAct = new QAction(QIcon("image/Profile/ln2ln.png"), QStringLiteral("Ïßµ½Ïß¾àÀë..."), this);
+	line2lineAct = new QAction(QIcon("image/Profile/ln2ln.png"), QStringLiteral("çº¿åˆ°çº¿è·ç¦»..."), this);
 	line2lineAct->setShortcuts(QKeySequence::MoveToEndOfLine);
 	line2lineAct->setStatusTip(tr("Profile Measure"));
 	connect(line2lineAct, SIGNAL(triggered()), this, SLOT(onLn2LnDist()));
 
-	point2lineAct = new QAction(QIcon("image/Profile/ln2pt.png"), QStringLiteral("µãµ½Ïß¾àÀë..."), this);
+	point2lineAct = new QAction(QIcon("image/Profile/ln2pt.png"), QStringLiteral("ç‚¹åˆ°çº¿è·ç¦»..."), this);
 	point2lineAct->setShortcuts(QKeySequence::MoveToStartOfBlock);
 	point2lineAct->setStatusTip(tr("Profile Measure"));
 	connect(point2lineAct, SIGNAL(triggered()), this, SLOT(onPt2LnDist()));
 
-	point2pointAct = new QAction(QIcon("image/Profile/pt2pt.png"), QStringLiteral("µãµ½µã¾àÀë..."), this);
+	point2pointAct = new QAction(QIcon("image/Profile/pt2pt.png"), QStringLiteral("ç‚¹åˆ°ç‚¹è·ç¦»..."), this);
 	point2pointAct->setShortcuts(QKeySequence::MoveToEndOfBlock);
 	point2pointAct->setStatusTip(tr("Profile Measure"));
 	connect(point2pointAct, SIGNAL(triggered()), this, SLOT(onPt2PtDist()));
 
-	pointHeightAct = new QAction(QIcon("image/Profile/ptHeight.png"), QStringLiteral("µãµÄ¸ß¶È..."), this);
+	pointHeightAct = new QAction(QIcon("image/Profile/ptHeight.png"), QStringLiteral("ç‚¹çš„é«˜åº¦..."), this);
 	pointHeightAct->setShortcuts(QKeySequence::MoveToStartOfDocument);
 	pointHeightAct->setStatusTip(tr("Profile Measure"));
 	connect(pointHeightAct, SIGNAL(triggered()), this, SLOT(onPtHeight()));
 
-	circle2circleAct = new QAction(QIcon("image/Profile/crl2crl.png"), QStringLiteral("Ô²µ½Ô²¾àÀë..."), this);
+	circle2circleAct = new QAction(QIcon("image/Profile/crl2crl.png"), QStringLiteral("åœ†åˆ°åœ†è·ç¦»..."), this);
 	circle2circleAct->setShortcuts(QKeySequence::MoveToEndOfDocument);
 	circle2circleAct->setStatusTip(tr("Profile Measure"));
 	connect(circle2circleAct, SIGNAL(triggered()), this, SLOT(onCir2CirDist()));
 
-	circle2lineAct = new QAction(QIcon("image/Profile/crl2ln.png"), QStringLiteral("Ô²µ½Ïß¾àÀë..."), this);
+	circle2lineAct = new QAction(QIcon("image/Profile/crl2ln.png"), QStringLiteral("åœ†åˆ°çº¿è·ç¦»..."), this);
 	circle2lineAct->setShortcuts(QKeySequence::SelectNextChar);
 	circle2lineAct->setStatusTip(tr("Profile Measure"));
 	connect(circle2lineAct, SIGNAL(triggered()), this, SLOT(onCir2LnDist()));
 
-	circle2pointAct = new QAction(QIcon("image/Profile/crl2pt.png"), QStringLiteral("Ô²µ½µã¾àÀë..."), this);
+	circle2pointAct = new QAction(QIcon("image/Profile/crl2pt.png"), QStringLiteral("åœ†åˆ°ç‚¹è·ç¦»..."), this);
 	circle2pointAct->setShortcuts(QKeySequence::SelectPreviousChar);
 	circle2pointAct->setStatusTip(tr("Profile Measure"));
 	connect(circle2pointAct, SIGNAL(triggered()), this, SLOT(onCir2PtDist()));
 
-	arcRadiusAct = new QAction(QIcon("image/Profile/arcRadius.png"), QStringLiteral("Ô²»¡°ë¾¶..."), this);
+	arcRadiusAct = new QAction(QIcon("image/Profile/arcRadius.png"), QStringLiteral("åœ†å¼§åŠå¾„..."), this);
 	arcRadiusAct->setShortcuts(QKeySequence::SelectNextWord);
 	arcRadiusAct->setStatusTip(tr("Profile Measure"));
 	connect(arcRadiusAct, SIGNAL(triggered()), this, SLOT(onCrRadious()));
 
-	line2lineAngleAct = new QAction(QIcon("image/Profile/ln2lnAngle.png"), QStringLiteral("ÏßÓëÏß¼Ð½Ç..."), this);
+	line2lineAngleAct = new QAction(QIcon("image/Profile/ln2lnAngle.png"), QStringLiteral("çº¿ä¸Žçº¿å¤¹è§’..."), this);
 	line2lineAngleAct->setShortcuts(QKeySequence::SelectPreviousWord);
 	line2lineAngleAct->setStatusTip(tr("Profile Measure"));
 	connect(line2lineAngleAct, SIGNAL(triggered()), this, SLOT(onLn2LnAngle()));
 
-	squareAreaAct = new QAction(QIcon("image/Profile/profArea.png"), QStringLiteral("ÇøÓòÃæ»ý..."), this);
+	squareAreaAct = new QAction(QIcon("image/Profile/profArea.png"), QStringLiteral("åŒºåŸŸé¢ç§¯..."), this);
 	squareAreaAct->setShortcuts(QKeySequence::SelectNextLine);
 	squareAreaAct->setStatusTip(tr("Profile Measure"));
 	connect(squareAreaAct, SIGNAL(triggered()), this, SLOT(onProfArea()));
 
-	profileLengthAct = new QAction(QIcon("image/Profile/profLength.png"), QStringLiteral("Ïß¶Î³¤¶È..."), this);
+	profileLengthAct = new QAction(QIcon("image/Profile/profLength.png"), QStringLiteral("çº¿æ®µé•¿åº¦..."), this);
 	profileLengthAct->setShortcuts(QKeySequence::SelectPreviousLine);
 	profileLengthAct->setStatusTip(tr("Profile Measure"));
 	connect(profileLengthAct, SIGNAL(triggered()), this, SLOT(onProfLength()));
@@ -219,8 +219,8 @@ void QVLProfileEditor::createStatusBar()
 
 void QVLProfileEditor::loadFile()
 {
-	if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ÐÅÏ¢ÌáÊ¾"),
-		QStringLiteral("ÊÇ·ñµ¼ÈëÏµÍ³´æµµÊý¾Ý£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+	if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+		QStringLiteral("æ˜¯å¦å¯¼å…¥ç³»ç»Ÿå­˜æ¡£æ•°æ®ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 	{
 		loadDataBase();
 	}
@@ -228,8 +228,8 @@ void QVLProfileEditor::loadFile()
 
 void QVLProfileEditor::saveFile()
 {
-	if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ÐÅÏ¢ÌáÊ¾"),
-		QStringLiteral("ÊÇ·ñ±£´æµ±Ç°Êý¾Ý²¢¸²¸ÇÏµÍ³´æµµ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+	if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+		QStringLiteral("æ˜¯å¦ä¿å­˜å½“å‰æ•°æ®å¹¶è¦†ç›–ç³»ç»Ÿå­˜æ¡£ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 	{
 		saveDataBase();
 	}
@@ -257,7 +257,7 @@ void QVLProfileEditor::onLn2LnDist()
 
 		if (rectRanges.size() != 2)
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÁ½ÌõÏß¶ÎÇøÓò£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©ä¸¤æ¡çº¿æ®µåŒºåŸŸï¼"));
 			return;
 		}
 
@@ -267,7 +267,7 @@ void QVLProfileEditor::onLn2LnDist()
 		Vision::PR_Line2f stLine1;
 		if (!m_pCtrl->fitLine(m_profDatas, nProfDataIndex1, nProfDataIndex2, stLine1))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("µÚÒ»ÌõÏßÄâºÏÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("ç¬¬ä¸€æ¡çº¿æ‹Ÿåˆå¤±è´¥ï¼"));
 			return;
 		}
 
@@ -277,14 +277,14 @@ void QVLProfileEditor::onLn2LnDist()
 		Vision::PR_Line2f stLine2;
 		if (!m_pCtrl->fitLine(m_profDatas, nProfDataIndex3, nProfDataIndex4, stLine2))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("µÚ¶þÌõÏßÄâºÏÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("ç¬¬äºŒæ¡çº¿æ‹Ÿåˆå¤±è´¥ï¼"));
 			return;
 		}
 
 		QProfMeasLnToLnDist* pObj = new QProfMeasLnToLnDist();
 		if (!m_pCtrl->calcTwoLineDist(stLine1, stLine2, pObj))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ÆËãÁ½ÌõÏßµÄ¾àÀëÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è®¡ç®—ä¸¤æ¡çº¿çš„è·ç¦»å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -304,7 +304,7 @@ void QVLProfileEditor::onLn2LnDist()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñProfile"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Profile"));
 	}
 }
 
@@ -330,7 +330,7 @@ void QVLProfileEditor::onPt2LnDist()
 
 		if (rectRanges.size() != 2)
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ1ÌõÏß¶ÎÇøÓòºÍÒ»ÌõÏß½»µã£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©1æ¡çº¿æ®µåŒºåŸŸå’Œä¸€æ¡çº¿äº¤ç‚¹ï¼"));
 			return;
 		}
 
@@ -350,7 +350,7 @@ void QVLProfileEditor::onPt2LnDist()
 
 			if (!m_pCtrl->fitLine(m_profDatas, nProfDataIndex3, nProfDataIndex4, bReversedFit, fSlope, fIntercept))
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("µÚÒ»ÌõÏßÄâºÏÊ§°Ü£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("ç¬¬ä¸€æ¡çº¿æ‹Ÿåˆå¤±è´¥ï¼"));
 				return;
 			}
 		}
@@ -364,7 +364,7 @@ void QVLProfileEditor::onPt2LnDist()
 
 			if (!m_pCtrl->fitLine(m_profDatas, nProfDataIndex3, nProfDataIndex4, bReversedFit, fSlope, fIntercept))
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("µÚÒ»ÌõÏßÄâºÏÊ§°Ü£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("ç¬¬ä¸€æ¡çº¿æ‹Ÿåˆå¤±è´¥ï¼"));
 				return;
 			}
 		}
@@ -373,7 +373,7 @@ void QVLProfileEditor::onPt2LnDist()
 		cv::Point2d ptOrg = m_profDatas[nProfDataIndex1];
 		if (!m_pCtrl->calcPtToLineDist(ptOrg, bReversedFit, fSlope, fIntercept, pObj))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ÆËãÁ½ÌõÏßµÄ¾àÀëÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è®¡ç®—ä¸¤æ¡çº¿çš„è·ç¦»å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -393,7 +393,7 @@ void QVLProfileEditor::onPt2LnDist()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñProfile"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Profile"));
 	}
 }
 
@@ -419,7 +419,7 @@ void QVLProfileEditor::onPt2PtDist()
 
 		if (rectRanges.size() != 2)
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ2ÌõÏß½»µã£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©2æ¡çº¿äº¤ç‚¹ï¼"));
 			return;
 		}
 
@@ -439,7 +439,7 @@ void QVLProfileEditor::onPt2PtDist()
 		cv::Point2d pt2 = m_profDatas[nProfDataIndex3];
 		if (!m_pCtrl->calcPtToPtDist(pt1, pt2, pObj))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ÆËãÁ½µãµÄ¾àÀëÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è®¡ç®—ä¸¤ç‚¹çš„è·ç¦»å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -459,7 +459,7 @@ void QVLProfileEditor::onPt2PtDist()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñProfile"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Profile"));
 	}
 }
 
@@ -485,7 +485,7 @@ void QVLProfileEditor::onPtHeight()
 
 		if (rectRanges.size() != 1)
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ1ÌõÏß½»µã£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©1æ¡çº¿äº¤ç‚¹ï¼"));
 			return;
 		}
 
@@ -516,7 +516,7 @@ void QVLProfileEditor::onPtHeight()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñProfile"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Profile"));
 	}
 }
 
@@ -542,7 +542,7 @@ void QVLProfileEditor::onCir2CirDist()
 
 		if (rectRanges.size() != 2)
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ2¸öÔ²»¡ÇøÓò£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©2ä¸ªåœ†å¼§åŒºåŸŸï¼"));
 			return;
 		}
 
@@ -561,7 +561,7 @@ void QVLProfileEditor::onCir2CirDist()
 		cv::Point2f ptCirCenter1; double dRadius1 = 0;
 		if (!m_pCtrl->fitCircle(m_profDatas, nProfDataIndex1, nProfDataIndex2, ptCirCenter1, dRadius1))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÄâºÏÔ²»¡Ê§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ‹Ÿåˆåœ†å¼§å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -571,7 +571,7 @@ void QVLProfileEditor::onCir2CirDist()
 		cv::Point2f ptCirCenter2; double dRadius2 = 0;
 		if (!m_pCtrl->fitCircle(m_profDatas, nProfDataIndex3, nProfDataIndex4, ptCirCenter2, dRadius2))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÄâºÏÔ²»¡Ê§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ‹Ÿåˆåœ†å¼§å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}		
@@ -582,7 +582,7 @@ void QVLProfileEditor::onCir2CirDist()
 		cv::Point2d pt2 = ptCirCenter2;
 		if (!m_pCtrl->calcPtToPtDist(pt1, pt2, pObj))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ÆËãÁ½µãµÄ¾àÀëÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è®¡ç®—ä¸¤ç‚¹çš„è·ç¦»å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -602,7 +602,7 @@ void QVLProfileEditor::onCir2CirDist()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñProfile"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Profile"));
 	}
 }
 
@@ -628,7 +628,7 @@ void QVLProfileEditor::onCir2LnDist()
 
 		if (rectRanges.size() != 2)
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ2¸öÔ²»¡ÇøÓò£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©2ä¸ªåœ†å¼§åŒºåŸŸï¼"));
 			return;
 		}
 
@@ -647,7 +647,7 @@ void QVLProfileEditor::onCir2LnDist()
 		cv::Point2f ptCirCenter1; double dRadius1 = 0;
 		if (!m_pCtrl->fitCircle(m_profDatas, nProfDataIndex1, nProfDataIndex2, ptCirCenter1, dRadius1))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÄâºÏÔ²»¡Ê§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ‹Ÿåˆåœ†å¼§å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -657,14 +657,14 @@ void QVLProfileEditor::onCir2LnDist()
 		bool bReversedFit = false;  double fSlope = 0, fIntercept = 0;
 		if (!m_pCtrl->fitLine(m_profDatas, nProfDataIndex3, nProfDataIndex4, bReversedFit, fSlope, fIntercept))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("µÚÒ»ÌõÏßÄâºÏÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("ç¬¬ä¸€æ¡çº¿æ‹Ÿåˆå¤±è´¥ï¼"));
 			return;
 		}
 
 		cv::Point2d ptOrg = ptCirCenter1;
 		if (!m_pCtrl->calcPtToLineDist(ptOrg, bReversedFit, fSlope, fIntercept, pObj))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ÆËãµãµ½ÏßµÄ¾àÀëÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è®¡ç®—ç‚¹åˆ°çº¿çš„è·ç¦»å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -684,7 +684,7 @@ void QVLProfileEditor::onCir2LnDist()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñProfile"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Profile"));
 	}
 }
 
@@ -710,7 +710,7 @@ void QVLProfileEditor::onCir2PtDist()
 
 		if (rectRanges.size() != 2)
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ1¸öÔ²»¡ÇøÓòºÍÒ»Ìõ½»Ïß£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©1ä¸ªåœ†å¼§åŒºåŸŸå’Œä¸€æ¡äº¤çº¿ï¼"));
 			return;
 		}
 
@@ -729,7 +729,7 @@ void QVLProfileEditor::onCir2PtDist()
 		cv::Point2f ptCirCenter1; double dRadius1 = 0;
 		if (!m_pCtrl->fitCircle(m_profDatas, nProfDataIndex1, nProfDataIndex2, ptCirCenter1, dRadius1))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÄâºÏÔ²»¡Ê§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ‹Ÿåˆåœ†å¼§å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -740,7 +740,7 @@ void QVLProfileEditor::onCir2PtDist()
 		cv::Point2d pt2 = m_profDatas[nProfDataIndex3];
 		if (!m_pCtrl->calcPtToPtDist(pt1, pt2, pObj))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ÆËãÁ½µãµÄ¾àÀëÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è®¡ç®—ä¸¤ç‚¹çš„è·ç¦»å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -760,7 +760,7 @@ void QVLProfileEditor::onCir2PtDist()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñProfile"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Profile"));
 	}
 }
 
@@ -786,7 +786,7 @@ void QVLProfileEditor::onCrRadious()
 
 		if (rectRanges.size() != 1)
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ1¸öÔ²»¡ÇøÓò£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©1ä¸ªåœ†å¼§åŒºåŸŸï¼"));
 			return;
 		}
 
@@ -803,7 +803,7 @@ void QVLProfileEditor::onCrRadious()
 		cv::Point2f ptCirCenter; double dRadius = 0;
 		if (!m_pCtrl->fitCircle(m_profDatas, nProfDataIndex1, nProfDataIndex2, ptCirCenter, dRadius))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÄâºÏÔ²»¡Ê§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ‹Ÿåˆåœ†å¼§å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}	
@@ -825,7 +825,7 @@ void QVLProfileEditor::onCrRadious()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñProfile"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Profile"));
 	}
 }
 
@@ -851,7 +851,7 @@ void QVLProfileEditor::onProfArea()
 
 		if (rectRanges.size() != 1)
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ1¸öÇøÓò£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©1ä¸ªåŒºåŸŸï¼"));
 			return;
 		}
 
@@ -868,7 +868,7 @@ void QVLProfileEditor::onProfArea()
 		double dArea = 0;
 		if (!m_pCtrl->CrossSectionArea(m_profDatas, nProfDataIndex1, nProfDataIndex2, dArea))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇóÇøÓòÃæ»ýÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ±‚åŒºåŸŸé¢ç§¯å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -889,7 +889,7 @@ void QVLProfileEditor::onProfArea()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñProfile"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Profile"));
 	}
 }
 
@@ -915,7 +915,7 @@ void QVLProfileEditor::onProfLength()
 
 		if (rectRanges.size() != 1)
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ1¸öÇøÓò£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©1ä¸ªåŒºåŸŸï¼"));
 			return;
 		}
 
@@ -932,7 +932,7 @@ void QVLProfileEditor::onProfLength()
 		double dLength = 0;
 		if (!m_pCtrl->CrossSectionProfLength(m_profDatas, nProfDataIndex1, nProfDataIndex2, dLength))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇóÇúÏß³¤¶ÈÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ±‚æ›²çº¿é•¿åº¦å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -953,7 +953,7 @@ void QVLProfileEditor::onProfLength()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñProfile"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Profile"));
 	}
 }
 
@@ -979,7 +979,7 @@ void QVLProfileEditor::onLn2LnAngle()
 		
 		if (rectRanges.size() != 2)
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÁ½ÌõÏß¶ÎÇøÓò£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©ä¸¤æ¡çº¿æ®µåŒºåŸŸï¼"));
 			return;
 		}
 
@@ -989,7 +989,7 @@ void QVLProfileEditor::onLn2LnAngle()
 		Vision::PR_Line2f stLine1;
 		if (!m_pCtrl->fitLine(m_profDatas, nProfDataIndex1, nProfDataIndex2, stLine1))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("µÚÒ»ÌõÏßÄâºÏÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("ç¬¬ä¸€æ¡çº¿æ‹Ÿåˆå¤±è´¥ï¼"));
 			return;
 		}
 
@@ -999,14 +999,14 @@ void QVLProfileEditor::onLn2LnAngle()
 		Vision::PR_Line2f stLine2;
 		if (!m_pCtrl->fitLine(m_profDatas, nProfDataIndex3, nProfDataIndex4, stLine2))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("µÚ¶þÌõÏßÄâºÏÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("ç¬¬äºŒæ¡çº¿æ‹Ÿåˆå¤±è´¥ï¼"));
 			return;
 		}
 
 		QProfMeasLnToLnAngle* pObj = new QProfMeasLnToLnAngle();
 		if (!m_pCtrl->calcTwoLineAngle(stLine1, stLine2, pObj))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ÆËãÁ½ÌõÏßµÄ½Ç¶ÈÊ§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è®¡ç®—ä¸¤æ¡çº¿çš„è§’åº¦å¤±è´¥ï¼"));
 			delete pObj;
 			return;
 		}
@@ -1026,7 +1026,7 @@ void QVLProfileEditor::onLn2LnAngle()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñProfile"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Profile"));
 	}	
 }
 
@@ -1062,7 +1062,7 @@ void QVLProfileEditor::onAddProfile()
 
 	if (m_profDatas.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("Ã»ÓÐProfileÊý¾Ý£¬ÇëÖØÐÂÌáÈ¡ÂÖÀªÏß£¡"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ²¡æœ‰Profileæ•°æ®ï¼Œè¯·é‡æ–°æå–è½®å»“çº¿ï¼"));
 		return;
 	}
 
@@ -1078,8 +1078,8 @@ void QVLProfileEditor::onAddProfile()
 		{
 			if (cellName == pData->getProfObj(i)->getName())
 			{
-				if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ÐÅÏ¢ÌáÊ¾"),
-					QStringLiteral("Ãû³ÆÒÑ¾­´æÔÚ£¬ÊÇ·ñ²ÉÓÃÄ¬ÈÏÃû³Æ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("åç§°å·²ç»å­˜åœ¨ï¼Œæ˜¯å¦é‡‡ç”¨é»˜è®¤åç§°ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					cellName = QString("Prof %1").arg(pData->getProfObjIndex() + 1);
 				}
@@ -1701,7 +1701,7 @@ void QVLProfileEditor::updateProfileList()
 	m_modelProf.clear();
 
 	QStringList ls;
-	ls << QStringLiteral("²âÁ¿Ãû³Æ") << QStringLiteral("²âÁ¿Î»ÖÃ");
+	ls << QStringLiteral("æµ‹é‡åç§°") << QStringLiteral("æµ‹é‡ä½ç½®");
 	m_modelProf.setHorizontalHeaderLabels(ls);
 
 	ui.tableView_profileList->setColumnWidth(0, 70);
@@ -1731,7 +1731,7 @@ void QVLProfileEditor::updateProfMeasList()
 	if (m_curObj)
 	{
 		QStringList ls;
-		ls << QStringLiteral("²âÁ¿ÀàÐÍ") << QStringLiteral("²âÁ¿Êý¾Ý");
+		ls << QStringLiteral("æµ‹é‡ç±»åž‹") << QStringLiteral("æµ‹é‡æ•°æ®");
 		m_modelMeasure.setHorizontalHeaderLabels(ls);
 
 		ui.tableView_measureList->setColumnWidth(0, 135);

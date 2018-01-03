@@ -1,4 +1,4 @@
-#include "AttchWidget.h"
+﻿#include "AttchWidget.h"
 
 QAttchWidget::QAttchWidget(QWidget *w,QWidget *parent)
 	: QWidget(parent),m_attWidget(w)

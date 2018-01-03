@@ -1,4 +1,4 @@
-#include "ImageDevice.h"
+ï»¿#include "ImageDevice.h"
 #include <QDir>
 
 #include "../Common/SystemData.h"
@@ -180,7 +180,7 @@ bool ImageDevice::convertToGrayImage(QString& szFilePath, cv::Mat &matGray)
 	IVision* pVision = getModule<IVision>(VISION_MODEL);
 	if (!pVision) return false;
 
-	//ÅĞ¶ÏÂ·¾¶ÊÇ·ñ´æÔÚ
+	//åˆ¤æ–­è·¯å¾„æ˜¯å¦å­˜åœ¨
 	QDir dir(szFilePath);
 	if (!dir.exists())
 	{
@@ -230,7 +230,7 @@ bool ImageDevice::convertToGrayImage(QString& szFilePath, cv::Mat &matGray)
 
 bool ImageDevice::readImages(QString& szFilePath, QVector<cv::Mat>& matImgs)
 {
-	//ÅĞ¶ÏÂ·¾¶ÊÇ·ñ´æÔÚ
+	//åˆ¤æ–­è·¯å¾„æ˜¯å¦å­˜åœ¨
 	QDir dir(szFilePath);
 	if (!dir.exists())
 	{

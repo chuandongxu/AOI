@@ -1,4 +1,4 @@
-#include "VisionDetect.h"
+ï»¿#include "VisionDetect.h"
 #include "../common/SystemData.h"
 #include "VisionDetectSetting.h"
 
@@ -17,7 +17,7 @@ void VisionDetect::addSettingWiddget(QTabWidget * tabWidget)
 {
 	if (tabWidget)
 	{
-		tabWidget->addTab(new VisionDetectSetting(&m_ctrl), QStringLiteral("ÊÓ¾õ¼ì²â"));
+		tabWidget->addTab(new VisionDetectSetting(&m_ctrl), QStringLiteral("è§†è§‰æ£€æµ‹"));
 	}
 
 	QString user;

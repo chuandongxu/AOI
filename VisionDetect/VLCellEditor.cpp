@@ -1,4 +1,4 @@
-#include "VLCellEditor.h"
+ï»¿#include "VLCellEditor.h"
 #include <QFileDialog>
 
 #include "../Common/SystemData.h"
@@ -52,7 +52,7 @@ QVLCellEditor::QVLCellEditor(DataTypeEnum emType, QWidget *parent)
 	ui.graphicsView_cellBitmap->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	QStringList ls;
-	ls << QStringLiteral("±ê×¼×é¼ş") << QStringLiteral("¹Ü½ÅÆ÷¼ş") << QStringLiteral("ICĞ¾Æ¬") << QStringLiteral("LEDÔª¼ş");
+	ls << QStringLiteral("æ ‡å‡†ç»„ä»¶") << QStringLiteral("ç®¡è„šå™¨ä»¶") << QStringLiteral("ICèŠ¯ç‰‡") << QStringLiteral("LEDå…ƒä»¶");
 	ui.comboBox_cellType->addItems(ls);
 	ui.comboBox_cellType->setCurrentIndex(0);
 
@@ -113,7 +113,7 @@ QVLCellEditor::~QVLCellEditor()
 }
 
 void QVLCellEditor::closeEvent(QCloseEvent *e){
-	//qDebug() << "¹Ø±ÕÊÂ¼ş";
+	//qDebug() << "å…³é—­äº‹ä»¶";
 	//e->ignore();
 
 	this->hide();
@@ -151,7 +151,7 @@ void QVLCellEditor::loadConfigData(int nIndex)
 void QVLCellEditor::initValue()
 {
 	ui.comboBox_cellIndex->clear();
-	ui.comboBox_cellIndex->addItem(QString("%1").arg(QStringLiteral("È«²¿ÏÔÊ¾")));
+	ui.comboBox_cellIndex->addItem(QString("%1").arg(QStringLiteral("å…¨éƒ¨æ˜¾ç¤º")));
 
 	refreshDBRelation();
 
@@ -210,8 +210,8 @@ void QVLCellEditor::onAddCell()
 		{
 			if (cellName == pData->getObj(i, m_dataTypeEnum)->getName())
 			{
-				if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-					QStringLiteral("Ãû³ÆÒÑ¾­´æÔÚ£¬ÊÇ·ñÖØĞÂÃüÃû£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+				if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+					QStringLiteral("åç§°å·²ç»å­˜åœ¨ï¼Œæ˜¯å¦é‡æ–°å‘½åï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 				{
 					return;
 				}
@@ -253,7 +253,7 @@ void QVLCellEditor::onSelectCellBitmap()
 {
 	if (!m_curObj)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñDevice"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©Device"));
 		return;
 	}
 
@@ -261,7 +261,7 @@ void QVLCellEditor::onSelectCellBitmap()
 	path += "/image/DataImage/";
 
 	QString picFilter = "Image(*.tif *.tiff *.gif *.bmp *.jpg *.jpeg *.jp2 *.png *.pcx *.pgm *.ppm *.pbm *.xwd *.ima *.ent)";
-	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("´ò¿ªÍ¼Æ¬"), path, picFilter);
+	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡"), path, picFilter);
 
 	if (!strFileName.isEmpty())
 	{
@@ -337,13 +337,13 @@ void QVLCellEditor::onEditCellROI()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	if (!m_curObj)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ¶ÔÏó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å¯¹è±¡"));
 		return;
 	}	
 
@@ -354,20 +354,20 @@ void QVLCellEditor::onEditCellROI()
 		QApplication::processEvents();
 	}
 
-	QMessageBox::information(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¼ì²âÇøÓòÉèÖÃÍê³É"));
+	QMessageBox::information(this, QStringLiteral("æç¤º"), QStringLiteral("æ£€æµ‹åŒºåŸŸè®¾ç½®å®Œæˆ"));
 }
 
 void QVLCellEditor::onEditCellFrame()
 {
 	if (!m_pView || m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	if (!m_curObj)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ¶ÔÏó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å¯¹è±¡"));
 		return;
 	}	
 
@@ -408,7 +408,7 @@ void QVLCellEditor::onEditCellFrame()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("Ôª¼ş¿ò±ØĞë´æÔÚ£¬ÇëÖØĞÂÉèÖÃ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("å…ƒä»¶æ¡†å¿…é¡»å­˜åœ¨ï¼Œè¯·é‡æ–°è®¾ç½®"));
 	}	
 }
 
@@ -416,19 +416,19 @@ void QVLCellEditor::onEditCellLocFrame()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	if (!m_curObj)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ¶ÔÏó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å¯¹è±¡"));
 		return;
 	}
 
 	if (!m_curObj->isFrameCreated())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨Ôª¼ş¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå…ƒä»¶æ¡†"));
 		return;
 	}	
 
@@ -474,25 +474,25 @@ void QVLCellEditor::onEditCellLocLearn()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	if (!m_curObj)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ¶ÔÏó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å¯¹è±¡"));
 		return;
 	}
 
 	if (!m_curObj->isFrameCreated())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨Ôª¼ş¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå…ƒä»¶æ¡†"));
 		return;
 	}
 
 	if (!m_curObj->isLocCreated())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨¶¨Î»¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå®šä½æ¡†"));
 		return;
 	}
 
@@ -562,19 +562,19 @@ void QVLCellEditor::onEditCellBaseFrame()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	if (!m_curObj)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ¶ÔÏó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å¯¹è±¡"));
 		return;
 	}
 
 	if (!m_curObj->isFrameCreated())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨Ôª¼ş¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå…ƒä»¶æ¡†"));
 		return;
 	}
 
@@ -632,19 +632,19 @@ void QVLCellEditor::onEditCellDetectFrame()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	if (!m_curObj)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ¶ÔÏó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å¯¹è±¡"));
 		return;
 	}
 
 	if (!m_curObj->isFrameCreated())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨Ôª¼ş¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå…ƒä»¶æ¡†"));
 		return;
 	}
 
@@ -702,25 +702,25 @@ void QVLCellEditor::onSearchCell()
 {
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	if (!m_curObj)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡Ôñ¶ÔÏó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å¯¹è±¡"));
 		return;
 	}
 
 	if (!m_curObj->isFrameCreated())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨Ôª¼ş¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå…ƒä»¶æ¡†"));
 		return;
 	}
 
 	if (!m_curObj->isLocCreated())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈ´´½¨¶¨Î»¿ò"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆåˆ›å»ºå®šä½æ¡†"));
 		return;
 	}
 
@@ -831,7 +831,7 @@ void QVLCellEditor::refreshDBRelation()
 	m_model.clear();
 
 	QStringList ls;
-	ls << QStringLiteral("ĞòºÅ") << QStringLiteral("²âÁ¿Î»ÖÃ") << QStringLiteral("BaseÎ»ÖÃ");
+	ls << QStringLiteral("åºå·") << QStringLiteral("æµ‹é‡ä½ç½®") << QStringLiteral("Baseä½ç½®");
 	m_model.setHorizontalHeaderLabels(ls);
 
 	ui.tableView_ItemDetAndBase->setColumnWidth(0, 50);
@@ -868,8 +868,8 @@ void QVLCellEditor::onLoadConfigFile()
 void QVLCellEditor::onSaveConfigFile()
 {
 	//saveMapData();
-	if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-		QStringLiteral("ÊÇ·ñ±£´æµ±Ç°Êı¾İ²¢¸²¸ÇÏµÍ³´æµµ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+	if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+		QStringLiteral("æ˜¯å¦ä¿å­˜å½“å‰æ•°æ®å¹¶è¦†ç›–ç³»ç»Ÿå­˜æ¡£ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 	{
 		saveDataBase();
 	}
@@ -896,7 +896,7 @@ void QVLCellEditor::onAddBoardAlign()
 
 	if (m_pView->getImage().empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 

@@ -1,4 +1,4 @@
-#include "DalsaDevice.h"
+﻿#include "DalsaDevice.h"
 #include "caramemodel_global.h"
 #include "../Common/SystemData.h"
 #include "QDebug.h"

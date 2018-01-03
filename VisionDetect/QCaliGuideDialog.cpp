@@ -1,4 +1,4 @@
-#include "QCaliGuideDialog.h"
+﻿#include "QCaliGuideDialog.h"
 #include <QApplication>
 
 QCaliGuideDialog::QCaliGuideDialog(QWidget *parent)

@@ -1,4 +1,4 @@
-#include "VLMaskEditor.h"
+ï»¿#include "VLMaskEditor.h"
 #include "../Common/SystemData.h"
 #include "../include/IdDefine.h"
 #include <QVBoxLayout>
@@ -86,7 +86,7 @@ QVLMaskEditor::~QVLMaskEditor()
 }
 
 void QVLMaskEditor::closeEvent(QCloseEvent *e){
-	//qDebug() << "¹Ø±ÕÊÂ¼ş";
+	//qDebug() << "å…³é—­äº‹ä»¶";
 	//e->ignore();
 
 	this->hide();
@@ -94,8 +94,8 @@ void QVLMaskEditor::closeEvent(QCloseEvent *e){
 
 void QVLMaskEditor::initValue()
 {
-	ui.comboBox_selectIndex->addItem(QString("%1").arg(QStringLiteral("ÇëÑ¡ÔñÇøÓò")));
-	ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("ÇëÑ¡ÔñÇøÓò")));
+	ui.comboBox_selectIndex->addItem(QString("%1").arg(QStringLiteral("è¯·é€‰æ‹©åŒºåŸŸ")));
+	ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("è¯·é€‰æ‹©åŒºåŸŸ")));
 
 	ui.radioButton_rect->setChecked(true);
 	ui.radioButton_circle->setChecked(false);
@@ -642,7 +642,7 @@ void QVLMaskEditor::wheelEvent(QWheelEvent * event)
 
 void QVLMaskEditor::A_Transform(Mat& src, Mat& dst, int dx, int dy)
 {
-	CV_Assert(src.depth() == CV_8U);//CV_Assert£¨£©ÈôÀ¨ºÅÖĞµÄ±í´ïÊ½ÖµÎªfalse£¬Ôò·µ»ØÒ»¸ö´íÎóĞÅÏ¢¡£  
+	CV_Assert(src.depth() == CV_8U);//CV_Assertï¼ˆï¼‰è‹¥æ‹¬å·ä¸­çš„è¡¨è¾¾å¼å€¼ä¸ºfalseï¼Œåˆ™è¿”å›ä¸€ä¸ªé”™è¯¯ä¿¡æ¯ã€‚  
 	const int rows = src.rows;
 	const int cols = src.cols;
 	dst.create(rows, cols, src.type());
@@ -652,17 +652,17 @@ void QVLMaskEditor::A_Transform(Mat& src, Mat& dst, int dx, int dy)
 
 	dst.setTo(Scalar(0, 0, 0));
 
-	Vec3b *p;   //¶¨ÒåÒ»¸ö´æ·Å3Í¨µÀµÄÈİÆ÷Ö¸Õëp  
+	Vec3b *p;   //å®šä¹‰ä¸€ä¸ªå­˜æ”¾3é€šé“çš„å®¹å™¨æŒ‡é’ˆp  
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			p = dst.ptr<Vec3b>(i);//Ö¸ÏòĞĞÊıµÄÈİÆ÷p  
+			p = dst.ptr<Vec3b>(i);//æŒ‡å‘è¡Œæ•°çš„å®¹å™¨p  
 			int x = j - dx;
 			int y = i - dy;
-			if (x>0 && y>0 && x < cols&&y < rows)//Æ½ÒÆºóµÄÏñËØ×ø±êÔÚÔ­Í¼ÏñµÄĞĞÊıºÍÁĞÊıÄÚ  
+			if (x>0 && y>0 && x < cols&&y < rows)//å¹³ç§»åçš„åƒç´ åæ ‡åœ¨åŸå›¾åƒçš„è¡Œæ•°å’Œåˆ—æ•°å†…  
 			{
-				p[i, j] = src.ptr<Vec3b>(y)[x];//Æ½ÒÆºóµÄÍ¼Ïñ£¨i,j)¶ÔÓ¦ÓÚÔ­Í¼ÏñµÄ£¨y,x)  
+				p[i, j] = src.ptr<Vec3b>(y)[x];//å¹³ç§»åçš„å›¾åƒï¼ˆi,j)å¯¹åº”äºåŸå›¾åƒçš„ï¼ˆy,x)  
 			}
 		}
 	}
@@ -1339,7 +1339,7 @@ void QVLMaskEditor::drawSelectRectRotated(cv::RotatedRect& selectRect, double dR
 	circle(matImage, selectRect.center, dCircleRadius, Scalar(0, 0, 0), 1);
 
 	Point ptPos = Point(selectRect.center.x + radious / 6, selectRect.center.y);
-	addImageText(matImage, ptPos, QString::number(dRotatedAngle, 'f', 1) /*+ QStringLiteral("¡ã")*/);
+	addImageText(matImage, ptPos, QString::number(dRotatedAngle, 'f', 1) /*+ QStringLiteral("Â°")*/);
 
 
 	displayImage(matImage);
@@ -1378,8 +1378,8 @@ void QVLMaskEditor::clear()
 {
 	ui.comboBox_selectIndex->clear();
 	ui.comboBox_maskIndex->clear();
-	ui.comboBox_selectIndex->addItem(QString("%1").arg(QStringLiteral("ÇëÑ¡ÔñÇøÓò")));
-	ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("ÇëÑ¡ÔñÇøÓò")));
+	ui.comboBox_selectIndex->addItem(QString("%1").arg(QStringLiteral("è¯·é€‰æ‹©åŒºåŸŸ")));
+	ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("è¯·é€‰æ‹©åŒºåŸŸ")));
 
 	m_selectRects.clear();
 

@@ -1,4 +1,4 @@
-#include "QResultDisplay.h"
+﻿#include "QResultDisplay.h"
 #include "qcustomplot.h"
 
 QResultDisplay::QResultDisplay(QWidget *parent)

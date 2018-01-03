@@ -1,4 +1,4 @@
-#include "viewctrl.h"
+ï»¿#include "viewctrl.h"
 #include "caramemodel_global.h"
 #include "QMessageBox"
 #include "QFileDialog"
@@ -241,7 +241,7 @@ ViewCtrl::ViewCtrl(  QWidget *parent )
 
     ui.setupUi(this);
 
-	// ĞÅºÅ²ÛtoolButton_openImages
+	// ä¿¡å·æ§½toolButton_openImages
 	connect( ui.toolButton_openImage, SIGNAL(clicked()) ,  this,   SLOT(onClickOpenFile())  );
 	connect( ui.toolButton_openImages, SIGNAL(clicked()) ,  this,   SLOT(onToolButton_openImages())  );
 	connect( ui.toolButton_snapImage, SIGNAL(clicked()),  this, SLOT(onClickSnapImage()));
@@ -262,7 +262,7 @@ ViewCtrl::ViewCtrl(  QWidget *parent )
 	connect(ui.toolButton_3DView, SIGNAL(clicked()), this, SLOT(onToolButton_3DView()));
 
 
-	// ²¼¾Ö
+	// å¸ƒå±€
 	m_pLayoutToolsMain = new QHBoxLayout();
 	m_pLayoutTools = new QHBoxLayout();
 	m_pLayoutToolsAnd = new QHBoxLayout();
@@ -270,8 +270,8 @@ ViewCtrl::ViewCtrl(  QWidget *parent )
 	m_pLayoutHWindow = new QHBoxLayout();
 	m_pLayoutMain = new QVBoxLayout(this);
 
-	// ³õÊ¼»¯
-	// initial(); // ÓÉÍâÃæ³õÊ¼»¯
+	// åˆå§‹åŒ–
+	// initial(); // ç”±å¤–é¢åˆå§‹åŒ–
 	m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM;
 
 	m_pView3D = new DViewUtility();// = NULL;
@@ -290,18 +290,18 @@ ViewCtrl::~ViewCtrl()
 
 void ViewCtrl::initial( int nWindow )
 {
-	// ÆäËû
+	// å…¶ä»–
 	freshCur();
 	
-	// Ïà»úÏß³Ì
+	// ç›¸æœºçº¿ç¨‹
 	m_pCameraOnLive = NULL;
 	m_pCameraCur = NULL;
 
-	// button ÉèÖÃ
+	// button è®¾ç½®
 	setButtonsEnable(true);
 	ui.toolButton_stop->setEnabled(false);
 	//ui.toolButton_Draw->setEnabled(false);
-	// ²¼¾Ö
+	// å¸ƒå±€
 	setMyLayout();	
 }
 
@@ -320,12 +320,12 @@ void ViewCtrl::setMyLayout()
 	 m_pLayoutTools->addWidget( ui.toolButton_moveImage );
 	 m_pLayoutTools->addWidget(ui.toolButton_Draw);
 	 m_pLayoutTools->addWidget( ui.comboBox_cameras );
-	 m_pLayoutTools->addStretch(0); // ¹ş¹ş£¡£¡£¡£¡£¬ ¼ÓÉÏÕâ¸ö¿Ø¼şÖ®¼äµÄ¼ä¾à¾ÍÊÇËùĞèÒªµÄ£¬ ·ñÔò¼ä¾àºÜ´ó
+	 m_pLayoutTools->addStretch(0); // å“ˆå“ˆï¼ï¼ï¼ï¼ï¼Œ åŠ ä¸Šè¿™ä¸ªæ§ä»¶ä¹‹é—´çš„é—´è·å°±æ˜¯æ‰€éœ€è¦çš„ï¼Œ å¦åˆ™é—´è·å¾ˆå¤§
 	 m_pLayoutTools->setContentsMargins(0,0,0,0);
 	 m_pLayoutTools->setSpacing(1);
      m_pLayoutTools->setSizeConstraint( QLayout::SetDefaultConstraint );
 
-	 //¹¤¾ß°´Å¥ÖÆ×÷µ¯³ö²Ëµ¥  
+	 //å·¥å…·æŒ‰é’®åˆ¶ä½œå¼¹å‡ºèœå•  
 	 QMenu *menuDraw =  new QMenu();  
 	 menuDraw = new QMenu();
 	 connect(menuDraw,SIGNAL(triggered(QAction *)),this,SLOT(onMenu_Draw_Triggered(QAction *)));
@@ -338,22 +338,22 @@ void ViewCtrl::setMyLayout()
 	 menuDraw->addAction(m_ActionMenuDrawCircle);
 	 menuDraw->addAction(m_ActionMenuDrawPoly);
 
-	 m_ActionMenuDrawRect->setText(QStringLiteral("»æÖÆ¾ØĞÎ"));	 
+	 m_ActionMenuDrawRect->setText(QStringLiteral("ç»˜åˆ¶çŸ©å½¢"));	 
 	 QIcon icon1;
 	 icon1.addFile(QStringLiteral(":/Images/Resources/images/v_rect.png"), QSize(), QIcon::Normal, QIcon::Off);
 	 m_ActionMenuDrawRect->setIcon(icon1);
 
-	 m_ActionMenuDrawRect2->setText(QStringLiteral("»æÖÆ¾ØĞÎ2"));
+	 m_ActionMenuDrawRect2->setText(QStringLiteral("ç»˜åˆ¶çŸ©å½¢2"));
 	 QIcon icon2;
 	 icon2.addFile(QStringLiteral(":/Images/Resources/images/v_rect2.png"), QSize(), QIcon::Normal, QIcon::Off);
 	 m_ActionMenuDrawRect2->setIcon(icon2);
 
-	 m_ActionMenuDrawCircle->setText(QStringLiteral("»æÖÆÔ²ĞÎ"));
+	 m_ActionMenuDrawCircle->setText(QStringLiteral("ç»˜åˆ¶åœ†å½¢"));
 	 QIcon icon3;
 	 icon3.addFile(QStringLiteral(":/Images/Resources/images/v_circle.png"), QSize(), QIcon::Normal, QIcon::Off);
 	 m_ActionMenuDrawCircle->setIcon(icon3);
 
-	 m_ActionMenuDrawPoly->setText(QStringLiteral("»æÖÆ¶à±ßĞÎ"));
+	 m_ActionMenuDrawPoly->setText(QStringLiteral("ç»˜åˆ¶å¤šè¾¹å½¢"));
 	 QIcon icon4;
 	 icon4.addFile(QStringLiteral(":/Images/Resources/images/v_poly.png"), QSize(), QIcon::Normal, QIcon::Off);
 	 m_ActionMenuDrawPoly->setIcon(icon4);
@@ -366,7 +366,7 @@ void ViewCtrl::setMyLayout()
 	 m_pLayoutToolsAnd->addWidget( ui.lineEdit_picName );
 	 m_pLayoutToolsAnd->addWidget( ui.toolButton_nextPic );
 	 m_pLayoutToolsAnd->addWidget( ui.toolButton_LastPic );
-	 m_pLayoutToolsAnd->addStretch(0); // ¹ş¹ş£¡£¡£¡£¡£¬ ¼ÓÉÏÕâ¸ö¿Ø¼şÖ®¼äµÄ¼ä¾à¾ÍÊÇËùĞèÒªµÄ£¬ ·ñÔò¼ä¾àºÜ´ó
+	 m_pLayoutToolsAnd->addStretch(0); // å“ˆå“ˆï¼ï¼ï¼ï¼ï¼Œ åŠ ä¸Šè¿™ä¸ªæ§ä»¶ä¹‹é—´çš„é—´è·å°±æ˜¯æ‰€éœ€è¦çš„ï¼Œ å¦åˆ™é—´è·å¾ˆå¤§
 	 m_pLayoutToolsAnd->setContentsMargins(0,0,0,0);
 	 m_pLayoutToolsAnd->setSpacing(0);
 
@@ -394,7 +394,7 @@ void ViewCtrl::setMyLayout()
 
 void ViewCtrl::connectCameraCtrl( CameraCtrl* pCameralCtrl )
 {
-	// Ïà»ú
+	// ç›¸æœº
 	m_pCameralCtrl = pCameralCtrl ;
 
 	ui.comboBox_cameras->clear();
@@ -636,24 +636,24 @@ void  ViewCtrl::onClickOpenFile()
 {
 	
 	QString picFilter = "Image(*.tif *.tiff *.gif *.bmp *.jpg *.jpeg *.jp2 *.png *.pcx *.pgm *.ppm *.pbm *.xwd *.ima)";
-	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("´ò¿ªÍ¼Æ¬"),"/",picFilter);
+	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡"),"/",picFilter);
 	if ( !strFileName.isEmpty() )
 	{
 		try
 		{
 			m_picPath.clear();
 			m_picPath<< strFileName ;
-			m_picNum = 1;                      // Í¼Æ¬¸öÊı
-			m_picIndCur = 0 ;                   // µ±Ç°Ë÷Òı 
+			m_picNum = 1;                      // å›¾ç‰‡ä¸ªæ•°
+			m_picIndCur = 0 ;                   // å½“å‰ç´¢å¼• 
 			freshNavigation();
 		}
 		catch (std::exception& e)
 		{
-			QMessageBox::warning(this, "", QStringLiteral("Halcon´ò¿ªÍ¼Æ¬Ê§°Ü:") + e.what());
+			QMessageBox::warning(this, "", QStringLiteral("Halconæ‰“å¼€å›¾ç‰‡å¤±è´¥:") + e.what());
 		}
 		catch( ... )
 		{
-			QMessageBox::warning(this, "", QStringLiteral("´ò¿ªÍ¼Æ¬Ê§°Ü"));
+			QMessageBox::warning(this, "", QStringLiteral("æ‰“å¼€å›¾ç‰‡å¤±è´¥"));
 		}
 	}
 }
@@ -666,7 +666,7 @@ void ViewCtrl::onToolButton_openImages()
 		return;
 	}
 
-	//ÅĞ¶ÏÂ·¾¶ÊÇ·ñ´æÔÚ
+	//åˆ¤æ–­è·¯å¾„æ˜¯å¦å­˜åœ¨
 	QDir dir(dirPath);
 	if (!dir.exists())
 	{
@@ -675,8 +675,8 @@ void ViewCtrl::onToolButton_openImages()
 
 	QStringList filters;
 	filters << QString("*.jpeg") << QString("*.jpg") << QString("*.png") << QString("*.tiff") << QString("*.gif") << QString("*.bmp");
-	dir.setFilter(QDir::Files | QDir::NoSymLinks); //ÉèÖÃÀàĞÍ¹ıÂËÆ÷£¬Ö»ÎªÎÄ¼ş¸ñÊ½
-	dir.setNameFilters(filters);  //ÉèÖÃÎÄ¼şÃû³Æ¹ıÂËÆ÷£¬Ö»Îªfilters¸ñÊ½£¨ºó×ºÎª.jpegµÈÍ¼Æ¬¸ñÊ½£©
+	dir.setFilter(QDir::Files | QDir::NoSymLinks); //è®¾ç½®ç±»å‹è¿‡æ»¤å™¨ï¼Œåªä¸ºæ–‡ä»¶æ ¼å¼
+	dir.setNameFilters(filters);  //è®¾ç½®æ–‡ä»¶åç§°è¿‡æ»¤å™¨ï¼Œåªä¸ºfiltersæ ¼å¼ï¼ˆåç¼€ä¸º.jpegç­‰å›¾ç‰‡æ ¼å¼ï¼‰
 
 	int dir_count = dir.count();
 	if (dir_count <= 0)
@@ -684,10 +684,10 @@ void ViewCtrl::onToolButton_openImages()
 		return;
 	}
 
-	// ±éÀúÎÄ¼ş¼Ğ»ñÈ¡Í¼Æ¬
+	// éå†æ–‡ä»¶å¤¹è·å–å›¾ç‰‡
 	(m_picPath).clear();
 
-	//»ñÈ¡·Ö¸ô·û	
+	//è·å–åˆ†éš”ç¬¦	
 	QChar separator = QChar('/');
 	if (!dirPath.contains(separator))
 	{
@@ -701,13 +701,13 @@ void ViewCtrl::onToolButton_openImages()
 
 	for (uint i = 0; i < dir_count; i++)
 	{
-		QString file_name = dir[i];  //ÎÄ¼şÃû³Æ
-		QString file_path = dirPath + separator + file_name;   //ÎÄ¼şÈ«Â·¾¶
+		QString file_name = dir[i];  //æ–‡ä»¶åç§°
+		QString file_path = dirPath + separator + file_name;   //æ–‡ä»¶å…¨è·¯å¾„
 		m_picPath << file_path;
 	}
 
-	m_picNum = dir_count;  // Í¼Æ¬¸öÊı
-	m_picIndCur = 0;                   // µ±Ç°Ë÷Òı 
+	m_picNum = dir_count;  // å›¾ç‰‡ä¸ªæ•°
+	m_picIndCur = 0;                   // å½“å‰ç´¢å¼• 
 	freshNavigation();
 }
 
@@ -715,14 +715,14 @@ void  ViewCtrl::onClickSnapImage()
 {
 	if (!m_pCameraCur || !m_pCameraCur->getStatus())
 	{
-		QMessageBox::warning(this, "", QStringLiteral("ÎŞÏà»ú") );
+		QMessageBox::warning(this, "", QStringLiteral("æ— ç›¸æœº") );
 		return;
 	}
 
 	//bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
 	//if (bHardwareTrigger)
 	//{
-	//	QMessageBox::warning(this, "", QStringLiteral("²»Ö§³ÖÓ²¼ş´¥·¢"));
+	//	QMessageBox::warning(this, "", QStringLiteral("ä¸æ”¯æŒç¡¬ä»¶è§¦å‘"));
 	//	return;
 	//}
 	
@@ -735,7 +735,7 @@ void  ViewCtrl::onClickSnapImage()
 	}	
 	else
 	{
-		QMessageBox::warning(this, "", QStringLiteral("»ñÈ¡Í¼ÏñÊ§°Ü") );
+		QMessageBox::warning(this, "", QStringLiteral("è·å–å›¾åƒå¤±è´¥") );
 	}
 }
 
@@ -744,14 +744,14 @@ void  ViewCtrl::onClickPushbutton_onLive()
 {
 	if (!m_pCameraCur || !m_pCameraCur->getStatus())
 	{
-		QMessageBox::warning(this, "", QStringLiteral("ÎŞÏà»ú") );
+		QMessageBox::warning(this, "", QStringLiteral("æ— ç›¸æœº") );
 		return;
 	}	
 
 	int nCaptureMode = System->getParam("camera_capture_mode").toInt();
 	if (2 == nCaptureMode)
 	{
-		QMessageBox::warning(this, "", QStringLiteral("ÊÖ¶¯²É¼¯Ä£Ê½²»Ö§³ÖÊµÊ±Í¼ÏñÏÔÊ¾"));
+		QMessageBox::warning(this, "", QStringLiteral("æ‰‹åŠ¨é‡‡é›†æ¨¡å¼ä¸æ”¯æŒå®æ—¶å›¾åƒæ˜¾ç¤º"));
 		return;
 	}
 
@@ -761,7 +761,7 @@ void  ViewCtrl::onClickPushbutton_onLive()
 
 	if (!bHardwareTrigger && bCaptureImage)
 	{
-		QMessageBox::warning(this, "", QStringLiteral("ÊµÊ±Í¼Ïñ²»Ö§³Ö¡¾·ÇÓ²´¥·¢¡¿±£´æÍ¼Ïñ£¬È¡Ïû±£´æÍ¼Ïñ»òÕßÆôÓÃÓ²´¥·¢Ä£Ê½"));
+		QMessageBox::warning(this, "", QStringLiteral("å®æ—¶å›¾åƒä¸æ”¯æŒã€éç¡¬è§¦å‘ã€‘ä¿å­˜å›¾åƒï¼Œå–æ¶ˆä¿å­˜å›¾åƒæˆ–è€…å¯ç”¨ç¡¬è§¦å‘æ¨¡å¼"));
 		return;
 	}
 
@@ -779,7 +779,7 @@ void  ViewCtrl::onClickPushbutton_stopLive()
 {
 	if (!m_pCameraCur || !m_pCameraCur->getStatus())
 	{
-		QMessageBox::warning(this, "", QStringLiteral("ÎŞÏà»ú»òÕßÃ»´ò¿ª"));
+		QMessageBox::warning(this, "", QStringLiteral("æ— ç›¸æœºæˆ–è€…æ²¡æ‰“å¼€"));
 		return;
 	}
 
@@ -812,7 +812,7 @@ void ViewCtrl:: onClickSaveImage()
 	if (!m_hoImage.empty())
 	{
 		QString picFilter = "Image( *.bmp )";
-		QString strSave = QFileDialog::getSaveFileName(this, QStringLiteral("´ò¿ªÍ¼Æ¬"), "/", picFilter);
+		QString strSave = QFileDialog::getSaveFileName(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡"), "/", picFilter);
 		if (!strSave.isEmpty())
 		{
 			strSave += ".bmp";
@@ -825,12 +825,12 @@ void ViewCtrl:: onClickSaveImage()
 		}
 		else
 		{
-			QMessageBox::warning(this, "", QStringLiteral("ÊäÈëÎÄ¼şÃû"));
+			QMessageBox::warning(this, "", QStringLiteral("è¾“å…¥æ–‡ä»¶å"));
 		}
 	}
 	else
 	{
-		QMessageBox::warning(this, "", QStringLiteral("ÎŞÍ¼Ïñ"));
+		QMessageBox::warning(this, "", QStringLiteral("æ— å›¾åƒ"));
 	}
 }
 
@@ -876,7 +876,7 @@ void  ViewCtrl::onToolButton_firstPic()
 {
 	if ( m_picNum > 0  )
 	{
-		m_picIndCur = 0 ;                   // µ±Ç°Ë÷Òı 
+		m_picIndCur = 0 ;                   // å½“å‰ç´¢å¼• 
 		freshNavigation();
 	}
 	
@@ -886,7 +886,7 @@ void  ViewCtrl::onToolButton_forwardPic()
 {
 	if ( m_picNum > 0  )
 	{
-		m_picIndCur -= 1 ;                   // µ±Ç°Ë÷Òı 
+		m_picIndCur -= 1 ;                   // å½“å‰ç´¢å¼• 
 		m_picIndCur = ( m_picIndCur< 0 ? m_picNum -1 :  m_picIndCur );
 		freshNavigation();
 	}
@@ -896,7 +896,7 @@ void ViewCtrl:: onToolButton_nextPic()
 {
 	if ( m_picNum > 0  )
 	{
-		m_picIndCur += 1 ;                   // µ±Ç°Ë÷Òı 
+		m_picIndCur += 1 ;                   // å½“å‰ç´¢å¼• 
 		m_picIndCur = ( m_picIndCur >= m_picNum ? 0 :  m_picIndCur );
 		freshNavigation();
 	}
@@ -906,7 +906,7 @@ void  ViewCtrl::onToolButton_LastPic()
 {
 	if ( m_picNum > 0  )
 	{
-		m_picIndCur = m_picNum - 1  ;                   // µ±Ç°Ë÷Òı 
+		m_picIndCur = m_picNum - 1  ;                   // å½“å‰ç´¢å¼• 
 		freshNavigation();
 	}
 }

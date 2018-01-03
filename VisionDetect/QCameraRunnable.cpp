@@ -1,4 +1,4 @@
-#include "QCameraRunnable.h"
+ï»¿#include "QCameraRunnable.h"
 #include "../Common/SystemData.h"
 
 #include "VisionDetectSetting.h"
@@ -47,7 +47,7 @@ bool QCameraRunnable::isCapturing()
 
 void QCameraRunnable::run()
 {
-	System->setTrackInfo(QString(QStringLiteral("ÊÓÆµ²É¼¯Æô¶¯³É¹¦...")));
+	System->setTrackInfo(QString(QStringLiteral("è§†é¢‘é‡‡é›†å¯åŠ¨æˆåŠŸ...")));
 	
 	m_bRunning = true;
 	while (!isExit())
@@ -65,7 +65,7 @@ void QCameraRunnable::run()
 	}
 	m_bRunning = false;
 	
-	System->setTrackInfo(QString(QStringLiteral("ÊÓÆµ²É¼¯ÒÑÍ£Ö¹...")));
+	System->setTrackInfo(QString(QStringLiteral("è§†é¢‘é‡‡é›†å·²åœæ­¢...")));
 }
 
 bool QCameraRunnable::waitStartBtn()

@@ -1,4 +1,4 @@
-#include "GraphicsContext.h"
+ï»¿#include "GraphicsContext.h"
 
 
 GraphicsContext::GraphicsContext(void)
@@ -23,7 +23,7 @@ GraphicsContext::~GraphicsContext(void)
 	 if (!hv_window) return;
 
 	 QString key  = "";
-	 QString valS = "";  // ¼´ value ×îÖÕÒªÓÃµ½µÄÀàĞÍ ¿ÉÒÔÊÇ QString »ò int  
+	 QString valS = "";  // å³ value æœ€ç»ˆè¦ç”¨åˆ°çš„ç±»å‹ å¯ä»¥æ˜¯ QString æˆ– int  
 	 int     valI = -1;	
 
 	 QMap<QString, QString>::const_iterator iterator;

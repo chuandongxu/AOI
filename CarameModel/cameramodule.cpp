@@ -1,4 +1,4 @@
-#include "cameramodule.h"
+ï»¿#include "cameramodule.h"
 #include "CameraCtrl.h"
 #include "viewctrl.h"
 #include "../Common/SystemData.h"
@@ -32,7 +32,7 @@ CameraModule::~CameraModule()
 
 void CameraModule::initial(int nWindow)
 {
-	// Ïà»úÉè±¸³õÊ¼»¯
+	// ç›¸æœºè®¾å¤‡åˆå§‹åŒ–
 	m_pCameraCtrl = NULL;
 	m_pCameraCtrl = new CameraCtrl();
 	m_pCameraCtrl->initial();
@@ -40,7 +40,7 @@ void CameraModule::initial(int nWindow)
 	m_pMainView = NULL;
 	m_pMainView = new QMainView(m_pCameraCtrl);
 
-	// ´°¿Ú
+	// çª—å£
 	int nWid = CAMERA_CTR_NUM;
 	for (int nTmp = 0; nTmp < nWid; nTmp++)
 	{
@@ -49,7 +49,7 @@ void CameraModule::initial(int nWindow)
 		m_pListViewCtrl[nTmp]->connectCameraCtrl(m_pCameraCtrl);
 	}
 
-	// ´íÎóÂë
+	// é”™è¯¯ç 
 	setErrorMap();
 
 	System->setParam("camera_hw_tri_enable", true);
@@ -242,7 +242,7 @@ void CameraModule::addSettingWiddget(QTabWidget *tabWidget)
 {
 	if (tabWidget)
 	{
-		tabWidget->addTab(new CameraSetting(m_pCameraCtrl, getViewWindow(0)), QStringLiteral("Ïà»úÉè¶¨"));
+		tabWidget->addTab(new CameraSetting(m_pCameraCtrl, getViewWindow(0)), QStringLiteral("ç›¸æœºè®¾å®š"));
 	}
 
 	QString user;
@@ -272,13 +272,13 @@ void CameraModule::getExistImage(int nWindow, int nCamera, void *lpImage, int in
 }
 
 
-void CameraModule::getNumImage(int nCamera, int &nPic) // »ñÈ¡Í¼Ïñ¸öÊı
+void CameraModule::getNumImage(int nCamera, int &nPic) // è·å–å›¾åƒä¸ªæ•°
 {
 
 }
 
 
-void CameraModule::addHObject(int nWindowCtrl, void *pHObject, bool bImage)  // Ìí¼ÓÍ¼ÏñÊı¾İµ½ Í¼Ïñ´°¿Ú¿ØÖÆ, ÕâÑùÌí¼ÓµÄÍ¼ÏñÊı¾İ¿ÉÒÔ½øĞĞËõ·ÅµÈÆäËû²Ù×÷
+void CameraModule::addHObject(int nWindowCtrl, void *pHObject, bool bImage)  // æ·»åŠ å›¾åƒæ•°æ®åˆ° å›¾åƒçª—å£æ§åˆ¶, è¿™æ ·æ·»åŠ çš„å›¾åƒæ•°æ®å¯ä»¥è¿›è¡Œç¼©æ”¾ç­‰å…¶ä»–æ“ä½œ
 {
 	/*****/
 

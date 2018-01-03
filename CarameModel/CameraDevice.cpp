@@ -1,4 +1,4 @@
-#include "CameraDevice.h"
+﻿#include "CameraDevice.h"
 #include "../Common/SystemData.h"
 #include "QDebug.h"
 #include <QDateTime>
