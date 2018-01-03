@@ -1,4 +1,4 @@
-#include "QRightWidget.h"
+﻿#include "QRightWidget.h"
 
 QRightWidget::QRightWidget(DataCtrl* pCtrl, QWidget *parent)
 	: m_pCtrl(pCtrl), QWidget(parent)

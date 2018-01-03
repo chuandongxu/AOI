@@ -1,4 +1,4 @@
-#include "DataCtrl.h"
+﻿#include "DataCtrl.h"
 #include "../Common/ThreadPrioc.h"
 #include <QApplication>
 #include "../Common/SystemData.h"

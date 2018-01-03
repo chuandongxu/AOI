@@ -1,4 +1,4 @@
-#include "QBottomWidget.h"
+﻿#include "QBottomWidget.h"
 #include "../Common/SystemData.h"
 #include "../include/IdDefine.h"
 #include "../Common/eos.h"

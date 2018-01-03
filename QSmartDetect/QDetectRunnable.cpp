@@ -1,4 +1,4 @@
-#include "QDetectRunnable.h"
+ï»¿#include "QDetectRunnable.h"
 #include "qsmartdetect_global.h"
 #include <time.h>
 #include <qthread.h>
@@ -90,10 +90,10 @@ void QCheckerRunable::run()
 
 	if (!startUpSetup())
 	{
-		System->setTrackInfo(QString(QStringLiteral("¹¤Î»%0Æô¶¯Ê§°Ü£¡")).arg(iStation));
+		System->setTrackInfo(QString(QStringLiteral("å·¥ä½%0å¯åŠ¨å¤±è´¥ï¼")).arg(iStation));
 		return;
 	}
-	System->setTrackInfo(QString(QStringLiteral("¹¤Î»%0Æô¶¯³É¹¦")).arg(iStation));
+	System->setTrackInfo(QString(QStringLiteral("å·¥ä½%0å¯åŠ¨æˆåŠŸ")).arg(iStation));
 	m_bRunning = true;
 
 	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
@@ -113,20 +113,20 @@ void QCheckerRunable::run()
 			if (!captureImages())continue;
 			if (isExit())break;
 			dtime_movePos = double(clock());
-			System->setTrackInfo(QStringLiteral("Station%1:²É¼¯Í¼ÏñÊı¾İ: %2 ms").arg(iStation).arg(dtime_movePos - dtime_start), true);
+			System->setTrackInfo(QStringLiteral("Station%1:é‡‡é›†å›¾åƒæ•°æ®: %2 ms").arg(iStation).arg(dtime_movePos - dtime_start), true);
 		}
 
 		dtime_start = double(clock());
 		if (!generateGrayImage(bMotionCardTrigger))continue;
 		if (isExit())break;
 		dtime_movePos = double(clock());
-		System->setTrackInfo(QStringLiteral("Station%1:¼ÆËã3D»Ò¶ÈÍ¼: %2 ms").arg(iStation).arg(dtime_movePos - dtime_start), true);
+		System->setTrackInfo(QStringLiteral("Station%1:è®¡ç®—3Dç°åº¦å›¾: %2 ms").arg(iStation).arg(dtime_movePos - dtime_start), true);
 
 		dtime_start = double(clock());
 		if (!calculate3DHeight(bMotionCardTrigger))continue;
 		if (isExit())break;
 		dtime_movePos = double(clock());
-		System->setTrackInfo(QStringLiteral("Station%1:¼ÆËã3D¸ß¶ÈÊı¾İ: %2 ms").arg(iStation).arg(dtime_movePos - dtime_start), true);
+		System->setTrackInfo(QStringLiteral("Station%1:è®¡ç®—3Dé«˜åº¦æ•°æ®: %2 ms").arg(iStation).arg(dtime_movePos - dtime_start), true);
 
 		if (!waitCheckDone())continue;
 		if (isExit())break;
@@ -135,7 +135,7 @@ void QCheckerRunable::run()
 	endUpSetup();
 
 	m_bRunning = false;
-	System->setTrackInfo(QString(QStringLiteral("¹¤Î»%0ÒÑÍ£Ö¹")).arg(getStationID()));
+	System->setTrackInfo(QString(QStringLiteral("å·¥ä½%0å·²åœæ­¢")).arg(getStationID()));
 }
 
 bool QCheckerRunable::waitStartBtn()
@@ -197,7 +197,7 @@ bool QCheckerRunable::captureImages()
 		return false;
 	}
 
-	System->setTrackInfo(QStringLiteral("Station%1:¿ªÊ¼²É¼¯Êı¾İ...").arg(iStation));
+	System->setTrackInfo(QStringLiteral("Station%1:å¼€å§‹é‡‡é›†æ•°æ®...").arg(iStation));
 
 	if (!isImageFloder)
 	{
@@ -403,7 +403,7 @@ void QMainRunable::imgStop()
 
 void QMainRunable::run()
 {
-	System->setTrackInfo(QString(QStringLiteral("Ö÷Á÷³ÌÆô¶¯³É¹¦!")));
+	System->setTrackInfo(QString(QStringLiteral("ä¸»æµç¨‹å¯åŠ¨æˆåŠŸ!")));
 
 	while (!isExit())
 	{
@@ -416,25 +416,25 @@ void QMainRunable::run()
 		if (!captureImages())continue;
 		if (isExit())break;
 		double dtime_movePos = double(clock());
-		System->setTrackInfo(QStringLiteral("Board%1:²É¼¯Í¼Ïñ²¢Éú³É3DÊı¾İ: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);	
+		System->setTrackInfo(QStringLiteral("Board%1:é‡‡é›†å›¾åƒå¹¶ç”Ÿæˆ3Dæ•°æ®: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);	
 
 		dtime_start = double(clock());
 		if (!matchPosition())continue;
 		if (isExit())break;
 		dtime_movePos = double(clock());
-		System->setTrackInfo(QStringLiteral("Board%1:Ä£°åÆ¥ÅäÔª¼ş: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);		
+		System->setTrackInfo(QStringLiteral("Board%1:æ¨¡æ¿åŒ¹é…å…ƒä»¶: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);		
 
 		dtime_start = double(clock());
 		if (!calculateDetectHeight())continue;
 		if (isExit())break;
 		dtime_movePos = double(clock());
-		System->setTrackInfo(QStringLiteral("Board%1:¼ÆËã3D²âÁ¿Êı¾İ: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
+		System->setTrackInfo(QStringLiteral("Board%1:è®¡ç®—3Dæµ‹é‡æ•°æ®: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
 
 		dtime_start = double(clock());
 		if (!calculateDetectProfile())continue;
 		if (isExit())break;
 		dtime_movePos = double(clock());
-		System->setTrackInfo(QStringLiteral("Board%1:¼ÆËãProfileÊı¾İ: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
+		System->setTrackInfo(QStringLiteral("Board%1:è®¡ç®—Profileæ•°æ®: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
 
 		if (!waitCheckDone())continue;
 		if (isExit())break;
@@ -449,7 +449,7 @@ void QMainRunable::run()
 		}
 	}
 
-	System->setTrackInfo(QString(QStringLiteral("Ö÷Á÷³ÌÒÑÍ£Ö¹")));
+	System->setTrackInfo(QString(QStringLiteral("ä¸»æµç¨‹å·²åœæ­¢")));
 }
 
 bool QMainRunable::waitStartBtn()
@@ -637,7 +637,7 @@ bool QMainRunable::captureImages()
 		QVector<cv::Mat> imageMats;
 		if (!captureAllImages(imageMats)) return false;
 		double dtime_movePos = double(clock());
-		System->setTrackInfo(QStringLiteral("Board%1:²É¼¯Í¼ÏñÊı¾İ: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
+		System->setTrackInfo(QStringLiteral("Board%1:é‡‡é›†å›¾åƒæ•°æ®: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
 
 		int nPatternNum = System->getParam("motion_trigger_pattern_num").toInt();
 		for (int i = 0; i < nStationNum; i++)
@@ -674,7 +674,7 @@ bool QMainRunable::captureImages()
 	}
 	if (nWaitTime <= 0)
 	{
-		System->setTrackInfo(QStringLiteral("µÈ´ıDLP¼ÆËãTimeOut. Try again!"));
+		System->setTrackInfo(QStringLiteral("ç­‰å¾…DLPè®¡ç®—TimeOut. Try again!"));
 		return false;
 	}
 
@@ -796,7 +796,7 @@ bool QMainRunable::waitCheckDone()
 		displayAllProfObjs();
 
 		int n = System->getSysParam("OK_COUNT_SYSTEM").toInt();
-		System->setTrackInfo(QStringLiteral("Í³¼Æ:ÒÑÍê³É²âÁ¿Êı¾İ: %1 ¸ö").arg(n + 1), true);
+		System->setTrackInfo(QStringLiteral("ç»Ÿè®¡:å·²å®Œæˆæµ‹é‡æ•°æ®: %1 ä¸ª").arg(n + 1), true);
 
 		m_pCtrl->decrementCycleTests();
 	}
@@ -860,7 +860,7 @@ void QMainRunable::displayAllObjs()
 						cv::rectangle(matDisplay, rtDetect.boundingRect(), Scalar(255, 0, 0), 2);
 
 						Point ptPos = Point(rtDetect.center.x, rtDetect.center.y);
-						addImageText(matDisplay, ptPos, QString::number(pObj->getHeightValue(j), 'f', 3) /*+ QStringLiteral("¡ã")*/);
+						addImageText(matDisplay, ptPos, QString::number(pObj->getHeightValue(j), 'f', 3) /*+ QStringLiteral("Â°")*/);
 
 						if (0 == j)
 						{

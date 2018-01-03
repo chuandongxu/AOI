@@ -1,4 +1,4 @@
-#include "QRunSettingWidget.h"
+ï»¿#include "QRunSettingWidget.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QGridLayout>
@@ -34,7 +34,7 @@ QRunSettingWidget::QRunSettingWidget(DataCtrl* pCtrl, QWidget *parent)
 	setAcceptDrops(true);
 	
 	QStringList ls;
-	ls << QStringLiteral("BaslarÏà»ú²É¼¯") << QStringLiteral("Dalsa²É¼¯¿¨²É¼¯") << QStringLiteral("ÊÖ¶¯µ¼ÈëÍ¼Æ¬");
+	ls << QStringLiteral("Baslarç›¸æœºé‡‡é›†") << QStringLiteral("Dalsaé‡‡é›†å¡é‡‡é›†") << QStringLiteral("æ‰‹åŠ¨å¯¼å…¥å›¾ç‰‡");
 	ui.comboBox_runType->addItems(ls);
 	int nCaptureMode = System->getParam("camera_capture_mode").toInt();
 	ui.comboBox_runType->setCurrentIndex(nCaptureMode);
@@ -44,7 +44,7 @@ QRunSettingWidget::QRunSettingWidget(DataCtrl* pCtrl, QWidget *parent)
 
 	connect(ui.comboBox_runMode, SIGNAL(currentIndexChanged(int)), SLOT(onRunModeIndexChanged(int)));
 	ls.clear();
-	ls << QStringLiteral("µ¥´Î²âÁ¿") << QStringLiteral("Ñ­»·²âÊÔ");
+	ls << QStringLiteral("å•æ¬¡æµ‹é‡") << QStringLiteral("å¾ªç¯æµ‹è¯•");
 	ui.comboBox_runMode->addItems(ls);
 	ui.comboBox_runMode->setCurrentIndex(0);
 
@@ -112,7 +112,7 @@ void QRunSettingWidget::initObjList()
 	m_model.clear();
 
 	QStringList ls;
-	ls << QStringLiteral("Ôª¼ş") << QStringLiteral("ÀàĞÍ") << QStringLiteral("Î»ÖÃ") << QStringLiteral("²Ù×÷");
+	ls << QStringLiteral("å…ƒä»¶") << QStringLiteral("ç±»å‹") << QStringLiteral("ä½ç½®") << QStringLiteral("æ“ä½œ");
 	m_model.setHorizontalHeaderLabels(ls);
 
 	ui.tableView_objList->setColumnWidth(0, 70);
@@ -136,23 +136,23 @@ void QRunSettingWidget::initObjList()
 				switch (pObj->getType().toInt())
 				{
 				case 0:
-					szType = QStringLiteral("±ê×¼×é¼ş");
+					szType = QStringLiteral("æ ‡å‡†ç»„ä»¶");
 					break;
 				case 1:
-					szType = QStringLiteral("¹Ü½ÅÆ÷¼ş");
+					szType = QStringLiteral("ç®¡è„šå™¨ä»¶");
 					break;
 				case 2:
-					szType = QStringLiteral("ICĞ¾Æ¬");
+					szType = QStringLiteral("ICèŠ¯ç‰‡");
 					break;
 				case 3:
-					szType = QStringLiteral("LEDÔª¼ş");
+					szType = QStringLiteral("LEDå…ƒä»¶");
 					break;
 				default:
 					break;
 				}
 				m_model.setData(m_model.index(nr, 1), szType);
 				m_model.setData(m_model.index(nr, 2), QStringLiteral("x = %1, y = %2").arg(pObj->getX()).arg(pObj->getY()));
-				m_model.setData(m_model.index(nr, 3), QStringLiteral("±à¼­"));	
+				m_model.setData(m_model.index(nr, 3), QStringLiteral("ç¼–è¾‘"));	
 				m_model.item(nr, 3)->setForeground(QBrush(QColor(183, 71, 42)));
 				//m_model.item(nr, 3)->setBackground(QBrush(QColor(0, 0, 220)));
 			}		
@@ -343,7 +343,7 @@ void QRunSettingWidget::on3DDetectOpen()
 	QString path = QApplication::applicationDirPath();
 	path += "/capture/";
 
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("´ò¿ªÍ¼Æ¬ÎÄ¼ş¼Ğ"), path);
+	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡æ–‡ä»¶å¤¹"), path);
 
 	if (!filePath.isEmpty())
 	{
@@ -369,7 +369,7 @@ void QRunSettingWidget::on3DDetectOpen()
 	else
 	{
 		ui.lineEdit_3DDetectFile->setText("");
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÑ¡ÔñÎÄ¼ş¼Ğ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·é€‰æ‹©æ–‡ä»¶å¤¹"));
 	}
 }
 
@@ -388,7 +388,7 @@ bool QRunSettingWidget::convertToGrayImage(QString& szFilePath, cv::Mat &matGray
 	IVision* pVision = getModule<IVision>(VISION_MODEL);
 	if (!pVision) return false;
 
-	//ÅĞ¶ÏÂ·¾¶ÊÇ·ñ´æÔÚ
+	//åˆ¤æ–­è·¯å¾„æ˜¯å¦å­˜åœ¨
 	QDir dir(szFilePath);
 	if (!dir.exists())
 	{
