@@ -1,4 +1,4 @@
-#include "QSmartDetect.h"
+ï»¿#include "QSmartDetect.h"
 #include "../Common/SystemData.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
@@ -101,7 +101,7 @@ QSmartDetect::~QSmartDetect()
 
 void QSmartDetect::initStationParam()
 {
-	//µÚÒ»¸ö¼ì²âÆ÷
+	//ç¬¬ä¸€ä¸ªæ£€æµ‹å™¨
 	QCheckerParamMap *paramMap = new QCheckerParamMap;
 	paramMap->insert(PARAM_STATION_ID, 1);
 	/*paramMap->insert(PARAM_STATION_START_IO, DI_START_STATION1);
@@ -160,7 +160,7 @@ void QSmartDetect::init()
 
 void QSmartDetect::createActions()
 {
-	settingAct = new QAction(QIcon("image/setting.png"), QStringLiteral("ÏµÍ³ÉèÖÃ"), this);
+	settingAct = new QAction(QIcon("image/setting.png"), QStringLiteral("ç³»ç»Ÿè®¾ç½®"), this);
 	settingAct->setShortcuts(QKeySequence::HelpContents);
 	settingAct->setStatusTip(tr("System Setting"));
 	connect(settingAct, SIGNAL(triggered()), this, SLOT(onSetting()));
@@ -179,12 +179,12 @@ void QSmartDetect::createMenus()
 {
 	ui.mainToolBar->setVisible(false);
 
-	settingMenu = menuBar()->addMenu(QStringLiteral("ÉèÖÃ"));
+	settingMenu = menuBar()->addMenu(QStringLiteral("è®¾ç½®"));
 	settingMenu->addAction(settingAct);
 
 	menuBar()->addSeparator();
 
-	helpMenu = menuBar()->addMenu(QStringLiteral("°ïÖú"));
+	helpMenu = menuBar()->addMenu(QStringLiteral("å¸®åŠ©"));
 	helpMenu->addAction(aboutAct);
 	helpMenu->addAction(aboutSystemAct);
 }
@@ -314,15 +314,15 @@ void QSmartDetect::showErrorMessage()
 		QString msg = System->getErrorString();
 
 		QString str;
-		if (msg.isEmpty())str = QString(QStringLiteral("Î´ÖªÈ·ÇĞº¬Òå´íÎó %0")).arg(code);
+		if (msg.isEmpty())str = QString(QStringLiteral("æœªçŸ¥ç¡®åˆ‡å«ä¹‰é”™è¯¯ %0")).arg(code);
 		else str = QString(QStringLiteral(" %0")).arg(msg);
 		if (code < 0x30000000)
 		{
-			QSystem::showMessage(QStringLiteral("´íÎó"), str, 0);
+			QSystem::showMessage(QStringLiteral("é”™è¯¯"), str, 0);
 		}
 		else if (code < 0x40000000)
 		{
-			QSystem::showMessage(QStringLiteral("¸æ¾¯"), str);
+			QSystem::showMessage(QStringLiteral("å‘Šè­¦"), str);
 		}
 	}
 }
@@ -340,11 +340,11 @@ bool QSmartDetect::start()
 
 	if (m_ctrl.isRunning())
 	{
-		QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("Éè±¸ÕıÔÚÔËĞĞ£¬ÇëÏÈ°´Í£Ö¹°´Å¥"));
+		QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("è®¾å¤‡æ­£åœ¨è¿è¡Œï¼Œè¯·å…ˆæŒ‰åœæ­¢æŒ‰é’®"));
 		return false;
 	}
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("Éè±¸ÕıÔÚÆô¶¯ÖĞ..."), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("è®¾å¤‡æ­£åœ¨å¯åŠ¨ä¸­..."), 0);
 	QApplication::processEvents();
 
 	if (pCam->getCameraNum() > 0)
@@ -352,14 +352,14 @@ bool QSmartDetect::start()
 		if (!pCam->startUpCapture())
 		{
 			QSystem::closeMessage();
-			QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Ïà»ú³õÊ¼»¯ÎÊÌâ¡£"));
+			QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("ç›¸æœºåˆå§‹åŒ–é—®é¢˜ã€‚"));
 			return false;
 		}
 	}
 	else
 	{
 		QSystem::closeMessage();
-		QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Çë¼ì²éÏà»úÊÇ·ñÁ¬½Ó¡£"));
+		QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("è¯·æ£€æŸ¥ç›¸æœºæ˜¯å¦è¿æ¥ã€‚"));
 		return false;
 	}
 
@@ -386,7 +386,7 @@ bool QSmartDetect::start()
 		}
 		else
 		{
-			System->setTrackInfo(QString(QStringLiteral("¹¤Î»%0Æô¶¯Ê§°Ü, Çë¼ì²éDLPÓ²¼ş£¡")).arg(i + 1));
+			System->setTrackInfo(QString(QStringLiteral("å·¥ä½%0å¯åŠ¨å¤±è´¥, è¯·æ£€æŸ¥DLPç¡¬ä»¶ï¼")).arg(i + 1));
 		}
 	}
 
@@ -395,7 +395,7 @@ bool QSmartDetect::start()
 
 	m_ctrl.run(true);
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("Éè±¸ÕıÔÚµ¼ÈëÊı¾İÖĞ..."), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("è®¾å¤‡æ­£åœ¨å¯¼å…¥æ•°æ®ä¸­..."), 0);
 	QApplication::processEvents();
 
 	bool bStationStarted = true;
@@ -417,7 +417,7 @@ bool QSmartDetect::start()
 
 	if (nWaitTime <= 0)
 	{
-		System->setTrackInfo(QStringLiteral("µÈ´ı¹¤Î»Æô¶¯Ê§°Ü£¡"));
+		System->setTrackInfo(QStringLiteral("ç­‰å¾…å·¥ä½å¯åŠ¨å¤±è´¥ï¼"));
 		QSystem::closeMessage();
 		return true;
 	}
@@ -441,7 +441,7 @@ void QSmartDetect::stop()
 
 	//m_isHome = false;
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("Éè±¸ÕıÔÚÍ£Ö¹ÖĞ..."), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("è®¾å¤‡æ­£åœ¨åœæ­¢ä¸­..."), 0);
 	QApplication::processEvents();
 
 	QCheckerRunableList::iterator it = m_checkStantion.begin();
@@ -496,5 +496,5 @@ void QSmartDetect::imStop()
 	this->stop();
 	System->userImStop();	
 
-	QSystem::showMessage(QStringLiteral("¸æ¾¯"), QStringLiteral("Éè±¸´¦ÓÚ¼±Í£×´Ì¬¡£"));
+	QSystem::showMessage(QStringLiteral("å‘Šè­¦"), QStringLiteral("è®¾å¤‡å¤„äºæ€¥åœçŠ¶æ€ã€‚"));
 }

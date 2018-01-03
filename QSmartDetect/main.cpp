@@ -1,4 +1,4 @@
-#include "windows.h"
+﻿#include "windows.h"
 #include "tlhelp32.h"
 
 #include "QSmartDetect.h"

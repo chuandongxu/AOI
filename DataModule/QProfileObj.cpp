@@ -1,4 +1,4 @@
-#include "QProfileObj.h"
+ï»¿#include "QProfileObj.h"
 #include <QMath.h>
 
 #include "../lib/VisionLibrary/include/VisionAPI.h"
@@ -24,7 +24,7 @@ QProfileObj::~QProfileObj()
 	clearMeasObjs();
 }
 
-QProfileObj::QProfileObj(const QProfileObj &other)//¸´ÖÆ¹¹Ôìº¯Êý 
+QProfileObj::QProfileObj(const QProfileObj &other)//å¤åˆ¶æž„é€ å‡½æ•° 
 {
 	this->m_objName = other.m_objName;
 
@@ -40,9 +40,9 @@ QProfileObj::QProfileObj(const QProfileObj &other)//¸´ÖÆ¹¹Ôìº¯Êý
 	deepCopy(other);
 }
 
-QProfileObj&  QProfileObj::operator = (const QProfileObj &other)//¸³Öµ·û 
+QProfileObj&  QProfileObj::operator = (const QProfileObj &other)//èµ‹å€¼ç¬¦ 
 {
-	if (this == &other) //Èç¹û¶ÔÏóºÍotherÊÇÓÃÒ»¸ö¶ÔÏó£¬Ö±½Ó·µ»Ø±¾Éí  
+	if (this == &other) //å¦‚æžœå¯¹è±¡å’Œotheræ˜¯ç”¨ä¸€ä¸ªå¯¹è±¡ï¼Œç›´æŽ¥è¿”å›žæœ¬èº«  
 	{
 		return *this;
 	}

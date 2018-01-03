@@ -1,4 +1,4 @@
-#include "QDetectObj.h"
+ï»¿#include "QDetectObj.h"
 #include <QMath.h>
 
 #include "opencv2/opencv.hpp"
@@ -20,7 +20,7 @@ QBoardObj::~QBoardObj()
 
 }
 
-QBoardObj::QBoardObj(const QBoardObj &other)//¸´ÖÆ¹¹Ôìº¯Êý 
+QBoardObj::QBoardObj(const QBoardObj &other)//å¤åˆ¶æž„é€ å‡½æ•° 
 {
 	this->m_nID = other.m_nID;
 	this->m_objName = other.m_objName;
@@ -30,9 +30,9 @@ QBoardObj::QBoardObj(const QBoardObj &other)//¸´ÖÆ¹¹Ôìº¯Êý
 	this->m_boardAlignRecords.assign(other.m_boardAlignRecords.begin(), other.m_boardAlignRecords.end());
 }
 
-QBoardObj&  QBoardObj::operator = (const QBoardObj &other)//¸³Öµ·û 
+QBoardObj&  QBoardObj::operator = (const QBoardObj &other)//èµ‹å€¼ç¬¦ 
 {
-	if (this == &other) //Èç¹û¶ÔÏóºÍotherÊÇÓÃÒ»¸ö¶ÔÏó£¬Ö±½Ó·µ»Ø±¾Éí  
+	if (this == &other) //å¦‚æžœå¯¹è±¡å’Œotheræ˜¯ç”¨ä¸€ä¸ªå¯¹è±¡ï¼Œç›´æŽ¥è¿”å›žæœ¬èº«  
 	{
 		return *this;
 	}
@@ -120,7 +120,7 @@ QDetectObj::~QDetectObj()
 {
 }
 
-QDetectObj::QDetectObj(const QDetectObj &other)//¸´ÖÆ¹¹Ôìº¯Êý 
+QDetectObj::QDetectObj(const QDetectObj &other)//å¤åˆ¶æž„é€ å‡½æ•° 
 {
 	this->m_objName = other.m_objName;
 
@@ -142,9 +142,9 @@ QDetectObj::QDetectObj(const QDetectObj &other)//¸´ÖÆ¹¹Ôìº¯Êý
 	this->m_heightDetectValues.assign(other.m_heightDetectValues.begin(), other.m_heightDetectValues.end());
 }
 
-QDetectObj&  QDetectObj::operator = (const QDetectObj &other)//¸³Öµ·û 
+QDetectObj&  QDetectObj::operator = (const QDetectObj &other)//èµ‹å€¼ç¬¦ 
 {
-	if (this == &other) //Èç¹û¶ÔÏóºÍotherÊÇÓÃÒ»¸ö¶ÔÏó£¬Ö±½Ó·µ»Ø±¾Éí  
+	if (this == &other) //å¦‚æžœå¯¹è±¡å’Œotheræ˜¯ç”¨ä¸€ä¸ªå¯¹è±¡ï¼Œç›´æŽ¥è¿”å›žæœ¬èº«  
 	{
 		return *this;
 	}
