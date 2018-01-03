@@ -58,7 +58,7 @@ void CameraModule::initial(int nWindow)
 void CameraModule::unInit()
 {
 	//  Release all by system already
-	for (int nTmp = 0; nTmp < m_pListViewCtrl.size(); nTmp++)
+	for (int nTmp = 1; nTmp < m_pListViewCtrl.size(); nTmp++)
 	{
 		delete m_pListViewCtrl[nTmp];
 	}

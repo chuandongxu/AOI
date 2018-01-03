@@ -274,6 +274,8 @@ ViewCtrl::ViewCtrl(  QWidget *parent )
 	// initial(); // 由外面初始化
 	m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM;
 
+    m_pCameraOnLive = NULL;
+
 	m_pView3D = new DViewUtility();// = NULL;
 }
 
