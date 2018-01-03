@@ -1,4 +1,4 @@
-#include "MotionMotor.h"
+ï»¿#include "MotionMotor.h"
 #include "../Common/SystemData.h"
 #include "../include/IdDefine.h"
 
@@ -55,7 +55,7 @@ void MotionMotor::initUI()
 {
 	// Init UI
 	QStringList ls;
-	ls << QStringLiteral("Õý·½Ïò") << QStringLiteral("¸º·½Ïò");
+	ls << QStringLiteral("æ­£æ–¹å‘") << QStringLiteral("è´Ÿæ–¹å‘");
 	ui.comboBox_home_dir0->addItems(ls);	
 	ui.comboBox_home_dir1->addItems(ls);
 	ui.comboBox_home_dir2->addItems(ls);
@@ -66,7 +66,7 @@ void MotionMotor::initUI()
 	ui.comboBox_home_dir7->addItems(ls);
 
 	ls.clear();
-	ls << QStringLiteral("»ØÁã") << QStringLiteral("»ØÁã²¢ÕÒË÷Òý");
+	ls << QStringLiteral("å›žé›¶") << QStringLiteral("å›žé›¶å¹¶æ‰¾ç´¢å¼•");
 	ui.comboBox_home_mode0->addItems(ls);
 	ui.comboBox_home_mode1->addItems(ls);
 	ui.comboBox_home_mode2->addItems(ls);
@@ -445,8 +445,8 @@ void MotionMotor::updateMtrProfData()
 	m_moveProfModel.clear();
 
 	QStringList ls;
-	ls << QStringLiteral("Ãû³Æ") << QStringLiteral("ID") << QStringLiteral("ÔËÐÐËÙ¶È")
-		<< QStringLiteral("¼ÓËÙ¶È") << QStringLiteral("¼õËÙ¶È") << QStringLiteral("Æ½»¬Ê±¼ä");
+	ls << QStringLiteral("åç§°") << QStringLiteral("ID") << QStringLiteral("è¿è¡Œé€Ÿåº¦")
+		<< QStringLiteral("åŠ é€Ÿåº¦") << QStringLiteral("å‡é€Ÿåº¦") << QStringLiteral("å¹³æ»‘æ—¶é—´");
 	m_moveProfModel.setHorizontalHeaderLabels(ls);
 
 	for (int i = 0; i < m_pCtrl->getMotorProfilesNum(); i++)
@@ -565,8 +565,8 @@ void MotionMotor::updateMtrPointData()
 	m_movePointModel.clear();
 
 	QStringList ls;
-	ls << QStringLiteral("Ãû³Æ") << QStringLiteral("ID") << QStringLiteral("ÔË¶¯Öá")
-		<< QStringLiteral("Profile") << QStringLiteral("Ä¿±êÎ»ÖÃ");
+	ls << QStringLiteral("åç§°") << QStringLiteral("ID") << QStringLiteral("è¿åŠ¨è½´")
+		<< QStringLiteral("Profile") << QStringLiteral("ç›®æ ‡ä½ç½®");
 	m_movePointModel.setHorizontalHeaderLabels(ls);
 
 	for (int i = 0; i < m_pCtrl->getMotorPointsNum(); i++)

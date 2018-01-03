@@ -1,4 +1,4 @@
-#include "BaseTestCase.h"
+﻿#include "BaseTestCase.h"
 #include <iostream>
 
 #include "../lib/VisionLibrary/include/VisionAPI.h"

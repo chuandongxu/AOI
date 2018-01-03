@@ -1,4 +1,4 @@
-#include "VisionTestCtrl.h"
+﻿#include "VisionTestCtrl.h"
 
 VisionTestCtrl::VisionTestCtrl(QObject *parent)
 	: QObject(parent)

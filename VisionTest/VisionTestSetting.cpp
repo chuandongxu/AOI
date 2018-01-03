@@ -1,4 +1,4 @@
-#include "VisionTestSetting.h"
+ï»¿#include "VisionTestSetting.h"
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -42,37 +42,37 @@ void VisionTestSetting::initUI()
 
 void VisionTestSetting::createActions()
 {
-	newAct = new QAction(QIcon("image/newFile.png"), QStringLiteral("ÐÂ½¨"), this);
+	newAct = new QAction(QIcon("image/newFile.png"), QStringLiteral("æ–°å»º"), this);
 	newAct->setShortcuts(QKeySequence::New);
 	newAct->setStatusTip(tr("Create a new file"));
 	connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
-	openAct = new QAction(QIcon("image/openFile.png"), QStringLiteral("´ò¿ª..."), this);
+	openAct = new QAction(QIcon("image/openFile.png"), QStringLiteral("æ‰“å¼€..."), this);
 	openAct->setShortcuts(QKeySequence::Open);
 	openAct->setStatusTip(tr("Open an existing file"));
 	connect(openAct, SIGNAL(triggered()), this, SLOT(openFile()));
 
-	saveAct = new QAction(QIcon("image/saveFile.png"), QStringLiteral("±£´æ"), this);
+	saveAct = new QAction(QIcon("image/saveFile.png"), QStringLiteral("ä¿å­˜"), this);
 	saveAct->setShortcuts(QKeySequence::Save);
 	saveAct->setStatusTip(tr("Save the document to disk"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
 
-	saveAsAct = new QAction(QIcon("image/saveAsFile.png"), QStringLiteral("Áí´æÎª..."), this);
+	saveAsAct = new QAction(QIcon("image/saveAsFile.png"), QStringLiteral("å¦å­˜ä¸º..."), this);
 	saveAsAct->setShortcuts(QKeySequence::SaveAs);
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAsFile()));
 
-	runOnceAct = new QAction(QIcon("image/runOnce.png"), QStringLiteral("µ¥²½"), this);
+	runOnceAct = new QAction(QIcon("image/runOnce.png"), QStringLiteral("å•æ­¥"), this);
 	runOnceAct->setShortcuts(QKeySequence::ZoomIn);
 	runOnceAct->setStatusTip(tr("Run Once"));
 	connect(runOnceAct, SIGNAL(triggered()), this, SLOT(runOnce()));
 
-	runOverAct = new QAction(QIcon("image/runOver.png"), QStringLiteral("ÔËÐÐ"), this);
+	runOverAct = new QAction(QIcon("image/runOver.png"), QStringLiteral("è¿è¡Œ"), this);
 	runOverAct->setShortcuts(QKeySequence::ZoomOut);
 	runOverAct->setStatusTip(tr("Continuous Run"));
 	connect(runOverAct, SIGNAL(triggered()), this, SLOT(runOver()));
 
-	stopAct = new QAction(QIcon("image/stop.png"), QStringLiteral("Í£Ö¹"), this);
+	stopAct = new QAction(QIcon("image/stop.png"), QStringLiteral("åœæ­¢"), this);
 	stopAct->setShortcuts(QKeySequence::FullScreen);
 	stopAct->setStatusTip(tr("Stop"));
 	connect(stopAct, SIGNAL(triggered()), this, SLOT(stop()));
@@ -91,7 +91,7 @@ void VisionTestSetting::createMenus()
 {
 	ui.mainToolBar->setVisible(false);
 
-	fileMenu = menuBar()->addMenu(QStringLiteral("ÎÄ¼þ"));
+	fileMenu = menuBar()->addMenu(QStringLiteral("æ–‡ä»¶"));
 	//! [implicit tr context]
 	fileMenu->addAction(newAct);
 	fileMenu->addAction(openAct);
@@ -99,7 +99,7 @@ void VisionTestSetting::createMenus()
 	fileMenu->addAction(saveAsAct);
 	fileMenu->addSeparator();
 
-	editMenu = menuBar()->addMenu(QStringLiteral("²Ù×÷"));
+	editMenu = menuBar()->addMenu(QStringLiteral("æ“ä½œ"));
 	editMenu->addAction(runOnceAct);
 	editMenu->addAction(runOverAct);
 	editMenu->addAction(stopAct);
