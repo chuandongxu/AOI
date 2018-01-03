@@ -1,4 +1,4 @@
-#include "VisionTest.h"
+ï»¿#include "VisionTest.h"
 #include "../common/SystemData.h"
 #include "VisionTestSetting.h"
 
@@ -20,7 +20,7 @@ void VisionTest::addSettingWiddget(QTabWidget * tabWidget)
 	if (USER_LEVEL_MANAGER > level) return;
 	if (tabWidget)
 	{
-		tabWidget->addTab(new VisionTestSetting(&m_ctrl), QStringLiteral("×Ô¶¯²âÊÔ"));
+		tabWidget->addTab(new VisionTestSetting(&m_ctrl), QStringLiteral("è‡ªåŠ¨æµ‹è¯•"));
 	}
 }
 

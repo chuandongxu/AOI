@@ -1,4 +1,4 @@
-#include "MotionSetting.h"
+ï»¿#include "MotionSetting.h"
 #include "../common/SystemData.h"
 #include "../include/IdDefine.h"
 #include <QVBoxLayout>
@@ -54,7 +54,7 @@ void MotionSetting::initUI()
 
 	connect(ui.comboBox_triggerNum, SIGNAL(currentIndexChanged(int)), SLOT(onTriggerNumIndexChanged(int)));
 	QStringList ls;
-	ls << QStringLiteral("Ë«Í·DLP¼ì²â") << QStringLiteral("ËÄÍ·DLP¼ì²â");
+	ls << QStringLiteral("åŒå¤´DLPæ£€æµ‹") << QStringLiteral("å››å¤´DLPæ£€æµ‹");
 	ui.comboBox_triggerNum->addItems(ls);
 	int nDlpNumIndex = System->getParam("motion_trigger_dlp_num_index").toInt();
 	ui.comboBox_triggerNum->setCurrentIndex(nDlpNumIndex);

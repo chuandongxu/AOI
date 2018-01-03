@@ -1,4 +1,4 @@
-#include "MotionControl.h"
+ï»¿#include "MotionControl.h"
 #include "../common/SystemData.h"
 #include "../include/IdDefine.h"
 #include "gts.h"
@@ -16,13 +16,13 @@
 #endif
 /////////////////////////////////
 
-// ¶¨Òåhome»ØÁãËÑË÷¾àÀë
+// å®šä¹‰homeå›é›¶æœç´¢è·ç¦»
 #define SEARCH_HOME 200000
-// ¶¨Òåµ½home²¶»ñÎ»ÖÃµÄÆ«ÒÆÁ¿
+// å®šä¹‰åˆ°homeæ•è·ä½ç½®çš„åç§»é‡
 #define HOME_OFFSET 2000
-// ¶¨Òåindex»ØÁãËÑË÷¾àÀë
+// å®šä¹‰indexå›é›¶æœç´¢è·ç¦»
 #define SEARCH_INDEX 15000
-// ¶¨Òåµ½index²¶»ñÎ»ÖÃµÄÆ«ÒÆÁ¿
+// å®šä¹‰åˆ°indexæ•è·ä½ç½®çš„åç§»é‡
 #define INDEX_OFFSET 1000
 
 MotionControl::MotionControl(QObject *parent)
@@ -40,7 +40,7 @@ MotionControl::MotionControl(QObject *parent)
 
 	if (!init())
 	{
-		System->setTrackInfo(QStringLiteral("¿ØÖÆÏµÍ³³õÊ¼»¯³öÎÊÌâ£¡"));
+		System->setTrackInfo(QStringLiteral("æ§åˆ¶ç³»ç»Ÿåˆå§‹åŒ–å‡ºé—®é¢˜ï¼"));
 	}
 
 	loadConfig();
@@ -84,11 +84,11 @@ bool MotionControl::init()
 
 	if (rtn)
 	{
-		System->setTrackInfo(QStringLiteral("¿ØÖÆÏµÍ³LoadÅäÖÃÎÄ¼ş³öÎÊÌâ£¡"));
+		System->setTrackInfo(QStringLiteral("æ§åˆ¶ç³»ç»ŸLoadé…ç½®æ–‡ä»¶å‡ºé—®é¢˜ï¼"));
 		return false;
 	}
 
-	//»ñÈ¡ÏµÍ³ Version
+	//è·å–ç³»ç»Ÿ Version
 	char* version = new char[200];
 	rtn = GT_GetVersion(&version);
 	commandhandler("GT_GetVersion", rtn);
@@ -97,7 +97,7 @@ bool MotionControl::init()
 
 	if (rtn)
 	{
-		System->setTrackInfo(QStringLiteral("¿ØÖÆÏµÍ³»ñÈ¡Version³öÎÊÌâ£¡"));
+		System->setTrackInfo(QStringLiteral("æ§åˆ¶ç³»ç»Ÿè·å–Versionå‡ºé—®é¢˜ï¼"));
 		return false;
 	}
 
@@ -139,10 +139,10 @@ bool MotionControl::reset()
 
 void MotionControl::clearError(int AxisID)
 {
-	// Ö¸Áî·µ»ØÖµ
+	// æŒ‡ä»¤è¿”å›å€¼
 	short sRtn = 0;
 
-	// Çå³ıÖá×´Ì¬
+	// æ¸…é™¤è½´çŠ¶æ€
 	sRtn += GT_ClrSts(AxisID, 8);
 
 	commandhandler("GT_ClrSts", sRtn);
@@ -150,10 +150,10 @@ void MotionControl::clearError(int AxisID)
 
 void MotionControl::clearAllError()
 {
-	// Ö¸Áî·µ»ØÖµ
+	// æŒ‡ä»¤è¿”å›å€¼
 	short sRtn = 0;
 
-	// Çå³ıÖá×´Ì¬
+	// æ¸…é™¤è½´çŠ¶æ€
 	for (int i = 0; i < getMotorAxisNum(); i++)
 	{
 		sRtn += GT_ClrSts(m_mapMtrID.values().at(i), 8);
@@ -169,10 +169,10 @@ bool MotionControl::IsPowerError()
 
 bool MotionControl::setDO(int nPort, int iState)
 {
-	// Ö¸Áî·µ»ØÖµ
+	// æŒ‡ä»¤è¿”å›å€¼
 	short sRtn = 0;
 
-	// EXO6Êä³ö¸ßµçÆ½£¬Ê¹Ö¸Ê¾µÆÃğ
+	// EXO6è¾“å‡ºé«˜ç”µå¹³ï¼Œä½¿æŒ‡ç¤ºç¯ç­
 	//sRtn = GT_SetDo(MC_GPO, 1 << nPort);
 	sRtn = GT_SetDoBit(MC_GPO, nPort, iState);
 	commandhandler("GT_SetDo", sRtn);
@@ -182,13 +182,13 @@ bool MotionControl::setDO(int nPort, int iState)
 
 bool MotionControl::getDO(int nPort, int &iState)
 {
-	// Ö¸Áî·µ»ØÖµ
+	// æŒ‡ä»¤è¿”å›å€¼
 	short sRtn = 0;
 
-	// Í¨ÓÃÊäÈë¶ÁÈ¡Öµ
+	// é€šç”¨è¾“å…¥è¯»å–å€¼
 	long lGpiValue = 0;
 
-	// ¶ÁÈ¡EXI3ÊäÈëÖµ
+	// è¯»å–EXI3è¾“å…¥å€¼
 	sRtn = GT_GetDo(MC_GPO, &lGpiValue);
 
 	//commandhandler("GT_GetDo", sRtn);
@@ -204,13 +204,13 @@ bool MotionControl::getDO(int nPort, int &iState)
 
 bool MotionControl::getDI(int nPort, int &iState)
 {
-	// Ö¸Áî·µ»ØÖµ
+	// æŒ‡ä»¤è¿”å›å€¼
 	short sRtn = 0;
 
-	// Í¨ÓÃÊäÈë¶ÁÈ¡Öµ
+	// é€šç”¨è¾“å…¥è¯»å–å€¼
 	long lGpiValue = 0;
 
-	// ¶ÁÈ¡EXI3ÊäÈëÖµ
+	// è¯»å–EXI3è¾“å…¥å€¼
 	sRtn = GT_GetDi(MC_GPI, &lGpiValue);
 
 	//commandhandler("GT_GetDi", sRtn);
@@ -227,7 +227,7 @@ bool MotionControl::getDI(int nPort, int &iState)
 // 3D Functions:
 bool MotionControl::triggerCapturing(IMotion::TRIGGER emTrig, bool bWaitDone)
 {
-	// Ö¸Áî·µ»ØÖµ
+	// æŒ‡ä»¤è¿”å›å€¼
 	short rtn = 0;
 
 	short sMultPulseSts = 0;
@@ -305,7 +305,7 @@ bool MotionControl::triggerCapturing(IMotion::TRIGGER emTrig, bool bWaitDone)
 
 void MotionControl::setupTrigger(IMotion::TRIGGER emTrig)
 {
-	// Ö¸Áî·µ»ØÖµ
+	// æŒ‡ä»¤è¿”å›å€¼
 	short rtn = 0;
 
 	TMultiDOPulseCfg strMDoPulseCfg;	
@@ -344,10 +344,10 @@ void MotionControl::setupTrigger(IMotion::TRIGGER emTrig)
 	int nPatternNum = System->getParam("motion_trigger_pattern_num").toInt();
 	for (int i = 0; i < nDlpNum; i++)
 	{
-		strMDoPulseCfg.firstLevel[i] = 1;  //¸ÃgroupÊ×ÏÈ³öÏÖµÄµçÆ½×´Ì¬,0:µÍµçÆ½;1:¸ßµçÆ½
-		strMDoPulseCfg.highLevelTime[i] = dPatternExposure;  //¸ßµçÆ½³ÖĞøÊ±¼ä[ms]
-		strMDoPulseCfg.lowLevelTime[i] = (dPatternPeriod > dPatternExposure) ? (dPatternPeriod  - dPatternExposure): 0; //µÍµçÆ½³ÖĞøÊ±¼ä[ms]
-		strMDoPulseCfg.pulseNum[i] = nPatternNum; //¸ÃgroupÊä³öÂö³åµÄ¸öÊı,È¡Öµ·¶Î§:·Ç¸ºÊı,µ±Îª0Ê±,±íÊ¾ÎŞÏŞÊä³öÂö³å,Ö±µ½Óöµ½¹Ø±ÕÖ¸Áî
+		strMDoPulseCfg.firstLevel[i] = 1;  //è¯¥groupé¦–å…ˆå‡ºç°çš„ç”µå¹³çŠ¶æ€,0:ä½ç”µå¹³;1:é«˜ç”µå¹³
+		strMDoPulseCfg.highLevelTime[i] = dPatternExposure;  //é«˜ç”µå¹³æŒç»­æ—¶é—´[ms]
+		strMDoPulseCfg.lowLevelTime[i] = (dPatternPeriod > dPatternExposure) ? (dPatternPeriod  - dPatternExposure): 0; //ä½ç”µå¹³æŒç»­æ—¶é—´[ms]
+		strMDoPulseCfg.pulseNum[i] = nPatternNum; //è¯¥groupè¾“å‡ºè„‰å†²çš„ä¸ªæ•°,å–å€¼èŒƒå›´:éè´Ÿæ•°,å½“ä¸º0æ—¶,è¡¨ç¤ºæ— é™è¾“å‡ºè„‰å†²,ç›´åˆ°é‡åˆ°å…³é—­æŒ‡ä»¤
 		strMDoPulseCfg.pulseEnable[i] = (i == nTriggerIndex) ? 1 : 0;
 		//strMDoPulseCfg.intervaltime[i]  = 0;  
 	}
@@ -358,7 +358,7 @@ void MotionControl::setupTrigger(IMotion::TRIGGER emTrig)
 
 void MotionControl::commandhandler(char *command, short error)
 {
-	// Èç¹ûÖ¸ÁîÖ´ĞĞ·µ»ØÖµÎª·Ç0£¬ËµÃ÷Ö¸ÁîÖ´ĞĞ´íÎó£¬ÏòÆÁÄ»Êä³ö´íÎó½á¹û
+	// å¦‚æœæŒ‡ä»¤æ‰§è¡Œè¿”å›å€¼ä¸ºé0ï¼Œè¯´æ˜æŒ‡ä»¤æ‰§è¡Œé”™è¯¯ï¼Œå‘å±å¹•è¾“å‡ºé”™è¯¯ç»“æœ
 	if (error)
 	{
 		System->setTrackInfo(QStringLiteral("%1 error, error code = %2").arg(command).arg(error));
@@ -430,7 +430,7 @@ int MotionControl::getMotorAxisIndex(int AxisID)
 
 bool MotionControl::enable(int AxisID)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
 	sRtn = GT_AxisOn(AxisID);
 	commandhandler("GT_AxisOn", sRtn);
 
@@ -439,7 +439,7 @@ bool MotionControl::enable(int AxisID)
 
 bool MotionControl::disable(int AxisID)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
 	sRtn = GT_AxisOff(AxisID);
 	commandhandler("GT_AxisOff", sRtn);
 
@@ -448,7 +448,7 @@ bool MotionControl::disable(int AxisID)
 
 bool MotionControl::enableAllAxis()
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
 	for (int i = 0; i < getMotorAxisNum(); i++)
 	{
 		sRtn += GT_AxisOn(m_mapMtrID.values().at(i));		
@@ -460,16 +460,16 @@ bool MotionControl::enableAllAxis()
 
 bool MotionControl::isEnabled(int AxisID)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
-	long lAxisStatus = 0; // Öá×´Ì¬
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
+	long lAxisStatus = 0; // è½´çŠ¶æ€
 
-	short bFlagServoOn = FALSE; // ËÅ·şÊ¹ÄÜ±êÖ¾
+	short bFlagServoOn = FALSE; // ä¼ºæœä½¿èƒ½æ ‡å¿—
 
-	// ¶ÁÈ¡Öá×´Ì¬
+	// è¯»å–è½´çŠ¶æ€
 	sRtn = GT_GetSts(AxisID, &lAxisStatus);
 	commandhandler("GT_GetSts", sRtn);
 
-	// ËÅ·şÊ¹ÄÜ±êÖ¾
+	// ä¼ºæœä½¿èƒ½æ ‡å¿—
 	if (lAxisStatus & 0x200)
 	{
 		bFlagServoOn = TRUE;		
@@ -484,17 +484,17 @@ bool MotionControl::isEnabled(int AxisID)
 
 bool MotionControl::IsError(int AxisID)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
-	long lAxisStatus = 0; // Öá×´Ì¬
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
+	long lAxisStatus = 0; // è½´çŠ¶æ€
 
-	short bFlagAlarm = FALSE; // ËÅ·ş±¨¾¯±êÖ¾
-	short bFlagMError = FALSE; // ¸úËæÎó²îÔ½ÏŞ±êÖ¾
+	short bFlagAlarm = FALSE; // ä¼ºæœæŠ¥è­¦æ ‡å¿—
+	short bFlagMError = FALSE; // è·Ÿéšè¯¯å·®è¶Šé™æ ‡å¿—
 
-	// ¶ÁÈ¡Öá×´Ì¬
+	// è¯»å–è½´çŠ¶æ€
 	sRtn = GT_GetSts(AxisID, &lAxisStatus);
 	commandhandler("GT_GetSts", sRtn);
 
-	// ËÅ·ş±¨¾¯±êÖ¾
+	// ä¼ºæœæŠ¥è­¦æ ‡å¿—
 	if (lAxisStatus & 0x2)
 	{
 		bFlagAlarm = TRUE;		
@@ -504,7 +504,7 @@ bool MotionControl::IsError(int AxisID)
 		bFlagAlarm = FALSE;		
 	}
 
-	// ¸úËæÎó²îÔ½ÏŞ±êÖ¾
+	// è·Ÿéšè¯¯å·®è¶Šé™æ ‡å¿—
 	if (lAxisStatus & 0x10)
 	{
 		bFlagMError = TRUE;		
@@ -519,16 +519,16 @@ bool MotionControl::IsError(int AxisID)
 
 bool MotionControl::IsEMStopError(int AxisID)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
-	long lAxisStatus = 0; // Öá×´Ì¬
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
+	long lAxisStatus = 0; // è½´çŠ¶æ€
 
-	short bFlagAbruptStop = FALSE; // ¼±Í£±êÖ¾
+	short bFlagAbruptStop = FALSE; // æ€¥åœæ ‡å¿—
 
-	// ¶ÁÈ¡Öá×´Ì¬
+	// è¯»å–è½´çŠ¶æ€
 	sRtn = GT_GetSts(AxisID, &lAxisStatus);
 	commandhandler("GT_GetSts", sRtn);
 
-	// ¼±Í£±êÖ¾
+	// æ€¥åœæ ‡å¿—
 	if (lAxisStatus & 0x100)
 	{
 		bFlagAbruptStop = TRUE;		
@@ -543,17 +543,17 @@ bool MotionControl::IsEMStopError(int AxisID)
 
 bool MotionControl::IsLimit(int AxisID)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
-	long lAxisStatus = 0; // Öá×´Ì¬
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
+	long lAxisStatus = 0; // è½´çŠ¶æ€
 
-	short bFlagPosLimit = FALSE; // ÕıÏŞÎ»´¥·¢±êÖ¾
-	short bFlagNegLimit = FALSE; // ¸ºÏŞÎ»´¥·¢±êÖ¾
+	short bFlagPosLimit = FALSE; // æ­£é™ä½è§¦å‘æ ‡å¿—
+	short bFlagNegLimit = FALSE; // è´Ÿé™ä½è§¦å‘æ ‡å¿—
 
-	// ¶ÁÈ¡Öá×´Ì¬
+	// è¯»å–è½´çŠ¶æ€
 	sRtn = GT_GetSts(AxisID, &lAxisStatus);
 	commandhandler("GT_GetSts", sRtn);
 
-	// ÕıÏòÏŞÎ»
+	// æ­£å‘é™ä½
 	if (lAxisStatus & 0x20)
 	{
 		bFlagPosLimit = TRUE;	
@@ -563,7 +563,7 @@ bool MotionControl::IsLimit(int AxisID)
 		bFlagPosLimit = FALSE;
 	}
 
-	// ¸ºÏòÏŞÎ»
+	// è´Ÿå‘é™ä½
 	if (lAxisStatus & 0x40)
 	{
 		bFlagNegLimit = TRUE;		
@@ -578,11 +578,11 @@ bool MotionControl::IsLimit(int AxisID)
 
 bool MotionControl::home(int AxisID, bool bSyn)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
 
 	int nHomeDir = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._dir == 0 ? 1 : -1;
 
-	// Çå×´Ì¬
+	// æ¸…çŠ¶æ€
 	sRtn = GT_ClrSts(AxisID);
 	commandhandler("GT_ClrSts", sRtn);
 
@@ -591,77 +591,77 @@ bool MotionControl::home(int AxisID, bool bSyn)
 		if (!enable(AxisID)) return false;		
 	}
 
-	// ¿ªÆôÖáµÄhome²¶»ñ¹¦ÄÜ
+	// å¼€å¯è½´çš„homeæ•è·åŠŸèƒ½
 	sRtn = GT_SetCaptureMode(AxisID, CAPTURE_HOME);
 	commandhandler("GT_SetCaptureMode", sRtn);
-	// ÉèÖÃÖáÎªµãÎ»ÔË¶¯Ä£Ê½
+	// è®¾ç½®è½´ä¸ºç‚¹ä½è¿åŠ¨æ¨¡å¼
 	sRtn = GT_PrfTrap(AxisID);
 	commandhandler("GT_PrfTrap", sRtn);
-	// ¶ÁÈ¡µãÎ»ÔË¶¯²ÎÊı
+	// è¯»å–ç‚¹ä½è¿åŠ¨å‚æ•°
 	TTrapPrm trapPrm;
 	sRtn = GT_GetTrapPrm(AxisID, &trapPrm);
 	commandhandler("GT_GetTrapPrm", sRtn);
 	trapPrm.acc = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._velPf._acc;
 	trapPrm.dec = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._velPf._dec;
-	// ÉèÖÃµãÎ»ÔË¶¯²ÎÊı
+	// è®¾ç½®ç‚¹ä½è¿åŠ¨å‚æ•°
 	sRtn = GT_SetTrapPrm(AxisID, &trapPrm);
 	commandhandler("GT_SetTrapPrm", sRtn);
-	// ÉèÖÃÄ¿±êËÙ¶È
+	// è®¾ç½®ç›®æ ‡é€Ÿåº¦
 	sRtn = GT_SetVel(AxisID, m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._velPf._vel);
 	commandhandler("GT_SetVel", sRtn);
-	// ÉèÖÃÄ¿±êÎ»ÖÃ
+	// è®¾ç½®ç›®æ ‡ä½ç½®
 	sRtn = GT_SetPos(AxisID, SEARCH_HOME * nHomeDir);
 	commandhandler("GT_SetPos", sRtn);
-	// Æô¶¯ÔË¶¯£¬µÈ´ıhomeĞÅºÅ´¥·¢
+	// å¯åŠ¨è¿åŠ¨ï¼Œç­‰å¾…homeä¿¡å·è§¦å‘
 	sRtn = GT_Update(1 << (AxisID - 1));
 	commandhandler("GT_Update", sRtn);
 
-	// ²¶»ñ×´Ì¬
+	// æ•è·çŠ¶æ€
 	short capture = 0;
-	// ²¶»ñÎ»ÖÃ
+	// æ•è·ä½ç½®
 	long pos = 0;
 
-	// ·Ö±ğÊÇ¹æ»®Î»ÖÃ£¬±àÂëÆ÷Î»
+	// åˆ†åˆ«æ˜¯è§„åˆ’ä½ç½®ï¼Œç¼–ç å™¨ä½
 	double prfPos = 0, encPos = 0;
 
 	int nTimeOut = 30 * 100;// 30 seconds
 	do
 	{
-		// ¶ÁÈ¡²¶»ñ×´Ì¬
+		// è¯»å–æ•è·çŠ¶æ€
 		sRtn = GT_GetCaptureStatus(AxisID, &capture, &pos);
-		// ¶ÁÈ¡¹æ»®Î»ÖÃ
+		// è¯»å–è§„åˆ’ä½ç½®
 		sRtn = GT_GetPrfPos(AxisID, &prfPos);
-		// ¶ÁÈ¡±àÂëÆ÷Î»ÖÃ
+		// è¯»å–ç¼–ç å™¨ä½ç½®
 		sRtn = GT_GetEncPos(AxisID, &encPos);
 	
-		// µç»úÒÑ¾­Í£Ö¹£¬ËµÃ÷Õû¸öËÑË÷¹ı³ÌÖĞhomeĞÅºÅÒ»Ö±Ã»ÓĞ´¥·¢
+		// ç”µæœºå·²ç»åœæ­¢ï¼Œè¯´æ˜æ•´ä¸ªæœç´¢è¿‡ç¨‹ä¸­homeä¿¡å·ä¸€ç›´æ²¡æœ‰è§¦å‘
 		if (isMoveDone(AxisID))
 		{
-			System->setTrackInfo(QStringLiteral("µç»úÒÑ¾­Í£Ö¹, HomeÊ§°Ü£¡"));
+			System->setTrackInfo(QStringLiteral("ç”µæœºå·²ç»åœæ­¢, Homeå¤±è´¥ï¼"));
 			return false;
 		}
 
 		QThread::msleep(10);
-		// Èç¹ûhomeĞÅºÅÒÑ¾­´¥·¢£¬ÔòÍË³öÑ­»·£¬²¶»ñÎ»ÖÃÒÑ¾­ÔÚpos±äÁ¿ÖĞ±£´æ
+		// å¦‚æœhomeä¿¡å·å·²ç»è§¦å‘ï¼Œåˆ™é€€å‡ºå¾ªç¯ï¼Œæ•è·ä½ç½®å·²ç»åœ¨poså˜é‡ä¸­ä¿å­˜
 	} while (0 == capture && nTimeOut-- > 0);
 
 	if (nTimeOut <= 0)
 	{
-		System->setTrackInfo(QStringLiteral("µç»ú»ØÁãTimeOut£¡"));
+		System->setTrackInfo(QStringLiteral("ç”µæœºå›é›¶TimeOutï¼"));
 		return false;
 	}
 
-	// Éè¶¨Ä¿±êÎ»ÖÃÎª²¶»ñÎ»ÖÃ+Æ«ÒÆÁ¿
+	// è®¾å®šç›®æ ‡ä½ç½®ä¸ºæ•è·ä½ç½®+åç§»é‡
 	sRtn = GT_SetPos(AxisID, pos + HOME_OFFSET*nHomeDir);
 	commandhandler("GT_SetPos", sRtn);
-	// Æô¶¯ÔË¶¯
+	// å¯åŠ¨è¿åŠ¨
 	sRtn = GT_Update(1 << (AxisID - 1));
 	commandhandler("GT_Update", sRtn);
 
 	nTimeOut = 30 * 100;// 30 seconds
 	do 
 	{
-		// ¶ÁÈ¡¹æ»®Î»ÖÃ
+		// è¯»å–è§„åˆ’ä½ç½®
 		sRtn = GT_GetPrfPos(AxisID, &prfPos);
 
 		QThread::msleep(10);
@@ -670,71 +670,71 @@ bool MotionControl::home(int AxisID, bool bSyn)
 
 	if (nTimeOut <= 0)
 	{
-		System->setTrackInfo(QStringLiteral("µç»ú»ØÁãTimeOut£¡"));
+		System->setTrackInfo(QStringLiteral("ç”µæœºå›é›¶TimeOutï¼"));
 		return false;
 	}
 
 	if (qAbs(prfPos - (pos + HOME_OFFSET)) > 10)
 	{
-		System->setTrackInfo(QStringLiteral("µç»ú»ØÁãÎ»ÖÃÆ«ÒÆÎÊÌâ£¡"));
+		System->setTrackInfo(QStringLiteral("ç”µæœºå›é›¶ä½ç½®åç§»é—®é¢˜ï¼"));
 		return false;
 	}
 
 	QThread::msleep(200);
 
-	// Æô¶¯index²¶»ñ
+	// å¯åŠ¨indexæ•è·
 	sRtn = GT_SetCaptureMode(AxisID, CAPTURE_INDEX);
 	commandhandler("GT_SetCaptureMode", sRtn);
 
-	// ÉèÖÃµ±Ç°Î»ÖÃ+indexËÑË÷¾àÀëÎªÄ¿±êÎ»ÖÃ
+	// è®¾ç½®å½“å‰ä½ç½®+indexæœç´¢è·ç¦»ä¸ºç›®æ ‡ä½ç½®
 	sRtn = GT_SetPos(AxisID, (long)(prfPos + SEARCH_INDEX * (-nHomeDir)));
 	commandhandler("GT_SetPos", sRtn);
 
-	// Æô¶¯ÔË¶¯
+	// å¯åŠ¨è¿åŠ¨
 	sRtn = GT_Update(1 << (AxisID - 1));
 	commandhandler("GT_Update", sRtn);
 
 	nTimeOut = 30 * 100;// 30 seconds
 	do
 	{
-		// ¶ÁÈ¡²¶»ñ×´Ì¬
+		// è¯»å–æ•è·çŠ¶æ€
 		sRtn = GT_GetCaptureStatus(AxisID, &capture, &pos);
-		// ¶ÁÈ¡¹æ»®Î»ÖÃ
+		// è¯»å–è§„åˆ’ä½ç½®
 		sRtn = GT_GetPrfPos(AxisID, &prfPos);
-		// ¶ÁÈ¡±àÂëÆ÷Î»ÖÃ
+		// è¯»å–ç¼–ç å™¨ä½ç½®
 		sRtn = GT_GetEncPos(AxisID, &encPos);
 	
-		// µç»úÒÑ¾­Í£Ö¹£¬ËµÃ÷Õû¸öËÑË÷¹ı³ÌÖĞindexĞÅºÅÒ»Ö±Ã»ÓĞ´¥·¢
+		// ç”µæœºå·²ç»åœæ­¢ï¼Œè¯´æ˜æ•´ä¸ªæœç´¢è¿‡ç¨‹ä¸­indexä¿¡å·ä¸€ç›´æ²¡æœ‰è§¦å‘
 		if (isMoveDone(AxisID))
 		{
-			System->setTrackInfo(QStringLiteral("µç»úÒÑ¾­Í£Ö¹, IndexÊ§°Ü£¡"));
+			System->setTrackInfo(QStringLiteral("ç”µæœºå·²ç»åœæ­¢, Indexå¤±è´¥ï¼"));
 			return false;
 		}
 
 		QThread::msleep(10);
 
-		// Èç¹ûindexĞÅºÅÒÑ¾­´¥·¢£¬ÔòÍË³öÑ­»·£¬²¶»ñÎ»ÖÃÒÑ¾­ÔÚpos±äÁ¿ÖĞ±£´æ
+		// å¦‚æœindexä¿¡å·å·²ç»è§¦å‘ï¼Œåˆ™é€€å‡ºå¾ªç¯ï¼Œæ•è·ä½ç½®å·²ç»åœ¨poså˜é‡ä¸­ä¿å­˜
 	} while (0 == capture && nTimeOut-- > 0);
 
 	if (nTimeOut <= 0)
 	{
-		System->setTrackInfo(QStringLiteral("µç»ú»ØÁãTimeOut£¡"));
+		System->setTrackInfo(QStringLiteral("ç”µæœºå›é›¶TimeOutï¼"));
 		return false;
 	}
 
-	// ÉèÖÃ²¶»ñÎ»ÖÃ+indexÆ«ÒÆÁ¿ÎªÄ¿±êÎ»ÖÃ
+	// è®¾ç½®æ•è·ä½ç½®+indexåç§»é‡ä¸ºç›®æ ‡ä½ç½®
 	sRtn = GT_SetPos(AxisID, pos + INDEX_OFFSET * (-nHomeDir));
 	commandhandler("GT_SetPos", sRtn);
-	// Æô¶¯ÔË¶¯
+	// å¯åŠ¨è¿åŠ¨
 	sRtn = GT_Update(1 << (AxisID - 1));
 	commandhandler("GT_Update", sRtn);
 
 	nTimeOut = 30 * 100;// 30 seconds
 	do
 	{
-		// ¶ÁÈ¡¹æ»®Î»ÖÃ
+		// è¯»å–è§„åˆ’ä½ç½®
 		sRtn = GT_GetPrfPos(AxisID, &prfPos);
-		// ¶ÁÈ¡±àÂëÆ÷Î»ÖÃ
+		// è¯»å–ç¼–ç å™¨ä½ç½®
 		sRtn = GT_GetEncPos(AxisID, &encPos);
 
 		QThread::msleep(10);
@@ -743,22 +743,22 @@ bool MotionControl::home(int AxisID, bool bSyn)
 
 	if (nTimeOut <= 0)
 	{
-		System->setTrackInfo(QStringLiteral("µç»ú»ØÁãTimeOut£¡"));
+		System->setTrackInfo(QStringLiteral("ç”µæœºå›é›¶TimeOutï¼"));
 		return false;
 	}
 	if (qAbs(prfPos - (pos + INDEX_OFFSET * (-nHomeDir))) > 10)
 	{
-		System->setTrackInfo(QStringLiteral("µç»úIndexÎ»ÖÃÆ«ÒÆÎÊÌâ£¡"));
+		System->setTrackInfo(QStringLiteral("ç”µæœºIndexä½ç½®åç§»é—®é¢˜ï¼"));
 		return false;
 	}
 
 	QThread::msleep(200);
 
-	// ¸üĞÂÔ­µãÎ»ÖÃ
+	// æ›´æ–°åŸç‚¹ä½ç½®
 	sRtn = GT_ZeroPos(AxisID);
 	commandhandler("GT_ZeroPos", sRtn);
 
-	// AXISÖá¹æ»®Î»ÖÃÇåÁã
+	// AXISè½´è§„åˆ’ä½ç½®æ¸…é›¶
 	sRtn = GT_SetPrfPos(AxisID, 0);
 	commandhandler("GT_SetPrfPos", sRtn);
 
@@ -827,14 +827,14 @@ bool MotionControl::moveToPos(int nPointTable, bool bSyn)
 
 bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int smooth, double dPos, bool bSyn)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
 
-	// ½«AXISÖáÉèÎªµãÎ»Ä£Ê½
+	// å°†AXISè½´è®¾ä¸ºç‚¹ä½æ¨¡å¼
 	sRtn = GT_PrfTrap(AxisID);
 	commandhandler("GT_PrfTrap", sRtn);
 
 	TTrapPrm trap;
-	// ¶ÁÈ¡µãÎ»ÔË¶¯²ÎÊı
+	// è¯»å–ç‚¹ä½è¿åŠ¨å‚æ•°
 	sRtn = GT_GetTrapPrm(AxisID, &trap);
 	commandhandler("GT_GetTrapPrm", sRtn);
 
@@ -842,32 +842,32 @@ bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int sm
 	trap.dec = convertAccToPulse(changeToMtrEnum(AxisID), dec);
 	trap.smoothTime = smooth;
 
-	// ÉèÖÃµãÎ»ÔË¶¯²ÎÊı
+	// è®¾ç½®ç‚¹ä½è¿åŠ¨å‚æ•°
 	sRtn = GT_SetTrapPrm(AxisID, &trap);
 	commandhandler("GT_SetTrapPrm", sRtn);
 
-	// ÉèÖÃAXISÖáµÄÄ¿±êÎ»ÖÃ
+	// è®¾ç½®AXISè½´çš„ç›®æ ‡ä½ç½®
 	sRtn = GT_SetPos(AxisID, convertToPulse(changeToMtrEnum(AxisID), dPos));
 	commandhandler("GT_SetPos", sRtn);
 
-	// ÉèÖÃAXISÖáµÄÄ¿±êËÙ¶È
+	// è®¾ç½®AXISè½´çš„ç›®æ ‡é€Ÿåº¦
 	sRtn = GT_SetVel(AxisID, convertVelToPulse(changeToMtrEnum(AxisID), dVec));
 	commandhandler("GT_SetVel", sRtn);
 
-	// Æô¶¯AXISÖáµÄÔË¶¯
+	// å¯åŠ¨AXISè½´çš„è¿åŠ¨
 	sRtn = GT_Update(1 << (AxisID - 1));
 	commandhandler("GT_Update", sRtn);
 
 	if (bSyn)
 	{
-		// ·Ö±ğÊÇ¹æ»®Î»ÖÃ£¬±àÂëÆ÷Î»
+		// åˆ†åˆ«æ˜¯è§„åˆ’ä½ç½®ï¼Œç¼–ç å™¨ä½
 		//double prfPos = 0, encPos = 0;
 		int nTimeOut = 30 * 100;// 30 seconds
 		do
 		{
-			// ¶ÁÈ¡¹æ»®Î»ÖÃ
+			// è¯»å–è§„åˆ’ä½ç½®
 			//sRtn = GT_GetPrfPos(AxisID, &prfPos);
-			// ¶ÁÈ¡±àÂëÆ÷Î»ÖÃ
+			// è¯»å–ç¼–ç å™¨ä½ç½®
 			//sRtn = GT_GetEncPos(AxisID, &encPos);
 
 			QThread::msleep(10);
@@ -876,7 +876,7 @@ bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int sm
 
 		if (nTimeOut <= 0)
 		{
-			System->setTrackInfo(QStringLiteral("µç»úÔË¶¯TimeOut£¡"));
+			System->setTrackInfo(QStringLiteral("ç”µæœºè¿åŠ¨TimeOutï¼"));
 			return false;
 		}
 	}
@@ -892,16 +892,16 @@ bool MotionControl::isHomed(int AxisID)
 
 bool MotionControl::isMoveDone(int AxisID)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
-	long lAxisStatus = 0; // Öá×´Ì¬
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
+	long lAxisStatus = 0; // è½´çŠ¶æ€
 
-	short bFlagMotion = FALSE; // ¹æ»®Æ÷ÔË¶¯±êÖ¾
+	short bFlagMotion = FALSE; // è§„åˆ’å™¨è¿åŠ¨æ ‡å¿—
 
-	// ¶ÁÈ¡Öá×´Ì¬
+	// è¯»å–è½´çŠ¶æ€
 	sRtn = GT_GetSts(AxisID, &lAxisStatus);
 	commandhandler("GT_GetSts", sRtn);
 
-	// ¹æ»®Æ÷ÕıÔÚÔË¶¯±êÖ¾
+	// è§„åˆ’å™¨æ­£åœ¨è¿åŠ¨æ ‡å¿—
 	if (lAxisStatus & 0x400)
 	{
 		bFlagMotion = TRUE;		
@@ -916,7 +916,7 @@ bool MotionControl::isMoveDone(int AxisID)
 
 bool MotionControl::stopMove(int AxisID)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
 
 	long mask = 0;
 
@@ -929,7 +929,7 @@ bool MotionControl::stopMove(int AxisID)
 
 bool MotionControl::EmStop(int AxisID)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
 
 	long mask = 0;
 
@@ -942,11 +942,11 @@ bool MotionControl::EmStop(int AxisID)
 
 bool MotionControl::getCurrentPos(int AxisID, double *pos)
 {
-	short sRtn = 0; // Ö¸Áî·µ»ØÖµ±äÁ¿
+	short sRtn = 0; // æŒ‡ä»¤è¿”å›å€¼å˜é‡
 
 	double dMtrPos = 0;
 
-	// ¶ÁÈ¡axis±àÂëÆ÷Î»ÖÃ
+	// è¯»å–axisç¼–ç å™¨ä½ç½®
 	sRtn = GT_GetEncPos(AxisID, &dMtrPos);
 	commandhandler("GT_GetAxisEncPos", sRtn);
 
@@ -964,29 +964,29 @@ bool MotionControl::getCurrentPos(int AxisID, double *pos)
 
 QString MotionControl::getCurrentStatus(int AxisID)
 {
-	QString szStatus = QStringLiteral("Î´³õÊ¼»¯");
+	QString szStatus = QStringLiteral("æœªåˆå§‹åŒ–");
 	if (isEnabled(AxisID))
 	{		
 		if (isHomed(AxisID))
 		{
-			szStatus = QStringLiteral("ÒÑ»ØÁã");
+			szStatus = QStringLiteral("å·²å›é›¶");
 		}
 		else
 		{
-			szStatus = QStringLiteral("ÒÑÊ¹ÄÜ");
+			szStatus = QStringLiteral("å·²ä½¿èƒ½");
 		}
 	}
 	else if (IsError(AxisID))
 	{
-		szStatus = QStringLiteral("Çı¶¯´íÎó");
+		szStatus = QStringLiteral("é©±åŠ¨é”™è¯¯");
 	}
 	else if (IsLimit(AxisID))
 	{
-		szStatus = QStringLiteral("ÏŞÎ»±¨¾¯");
+		szStatus = QStringLiteral("é™ä½æŠ¥è­¦");
 	}
 	else if (IsEMStopError(AxisID))
 	{
-		szStatus = QStringLiteral("¼±Í£±¨¾¯");
+		szStatus = QStringLiteral("æ€¥åœæŠ¥è­¦");
 	}
 
 	return szStatus;

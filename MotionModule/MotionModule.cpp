@@ -1,4 +1,4 @@
-#include "MotionModule.h"
+ï»¿#include "MotionModule.h"
 #include "../common/SystemData.h"
 #include "MotionSetting.h"
 
@@ -20,7 +20,7 @@ void MotionModule::addSettingWiddget(QTabWidget * tabWidget)
 	if (USER_LEVEL_MANAGER > level) return;
 	if (tabWidget)
 	{
-		tabWidget->addTab(new MotionSetting(&m_ctrl), QStringLiteral("MotionÉèÖÃ"));
+		tabWidget->addTab(new MotionSetting(&m_ctrl), QStringLiteral("Motionè®¾ç½®"));
 	}
 }
 
