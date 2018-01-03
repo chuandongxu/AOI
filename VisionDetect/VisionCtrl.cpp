@@ -88,11 +88,12 @@ VisionCtrl::~VisionCtrl()
 		m_pVLProflieEditor = NULL;
 	}
 
-	if (m_pView)
-	{
-		delete m_pView;
-		m_pView = NULL;
-	}
+    //XSG: To prevent crash, because it is shared to another widget, and it is released by other widget.
+	//if (m_pView)
+	//{
+	//	delete m_pView;
+	//	m_pView = NULL;
+	//}
 }
 
 VisionView* VisionCtrl::getVisionView()

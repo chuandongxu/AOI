@@ -146,6 +146,7 @@ QProfMeasureObj* QProfileObj::getMeasObj(int nIndex)
 	{
 		return m_profMeasObjs[nIndex];
 	}
+    return NULL;
 }
 
 void QProfileObj::removeMeasObj(int nIndex)

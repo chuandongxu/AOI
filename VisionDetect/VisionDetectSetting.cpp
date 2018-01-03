@@ -538,63 +538,64 @@ void VisionDetectSetting::onSrhLineDetect()
 		////cv::drawContours(hole, contours1, -1, Scalar(255), CV_FILLED); //在遮罩图层上，用白色像素填充轮廓 
 		//m_mainView->setImage(hole);
 
-		Vision::PR_CALIPER_CMD  stCmd;
-		stCmd.matInputImg = matImage;
-		stCmd.rectRotatedROI = m_pVLMaskEditor->getSelect();
-		stCmd.matMask = m_pVLMaskEditor->getMaskImage();
-		stCmd.enDetectDir = nSrhLineDir ? Vision::PR_CALIPER_DIR::DARK_TO_BRIGHT : Vision::PR_CALIPER_DIR::BRIGHT_TO_DARK;
-		stCmd.enAlgorithm = Vision::PR_CALIPER_ALGORITHM::PROJECTION;
+        //PR_Caliper is replaced by PR_FindLine.
+		//Vision::PR_CALIPER_CMD  stCmd;
+		//stCmd.matInputImg = matImage;
+		//stCmd.rectRotatedROI = m_pVLMaskEditor->getSelect();
+		//stCmd.matMask = m_pVLMaskEditor->getMaskImage();
+		//stCmd.enDetectDir = nSrhLineDir ? Vision::PR_CALIPER_DIR::DARK_TO_BRIGHT : Vision::PR_CALIPER_DIR::BRIGHT_TO_DARK;
+		//stCmd.enAlgorithm = Vision::PR_CALIPER_ALGORITHM::PROJECTION;
 
-		bool bSrhLineLinerity = ui.checkBox_SrhLineLinerity->isChecked();
-		if (bSrhLineLinerity)
-		{
-			double dSrhLinePointMaxOft = ui.lineEdit_SrhLinePointMaxOft->text().toDouble();
-			double dSrhLineMinLinerity = ui.lineEdit_SrhLineMinLinerity->text().toDouble();
+		//bool bSrhLineLinerity = ui.checkBox_SrhLineLinerity->isChecked();
+		//if (bSrhLineLinerity)
+		//{
+		//	double dSrhLinePointMaxOft = ui.lineEdit_SrhLinePointMaxOft->text().toDouble();
+		//	double dSrhLineMinLinerity = ui.lineEdit_SrhLineMinLinerity->text().toDouble();
 
-			stCmd.bCheckLinerity = bSrhLineLinerity;
-			stCmd.fPointMaxOffset = convertToPixel(dSrhLinePointMaxOft);
-			stCmd.fMinLinerity = dSrhLineMinLinerity;
-		}
+		//	stCmd.bCheckLinerity = bSrhLineLinerity;
+		//	stCmd.fPointMaxOffset = convertToPixel(dSrhLinePointMaxOft);
+		//	stCmd.fMinLinerity = dSrhLineMinLinerity;
+		//}
 
 
-		bool bSrhLineAngle = ui.checkBox_SrhLineAngle->isChecked();
-		if (bSrhLineAngle)
-		{
-			double dSrhLineExpectAngle = ui.lineEdit_SrhLineExpectAngle->text().toDouble();
-			double dSrhLineAngleDiffTol = ui.lineEdit_SrhLineAngleDiffTol->text().toDouble();
+		//bool bSrhLineAngle = ui.checkBox_SrhLineAngle->isChecked();
+		//if (bSrhLineAngle)
+		//{
+		//	double dSrhLineExpectAngle = ui.lineEdit_SrhLineExpectAngle->text().toDouble();
+		//	double dSrhLineAngleDiffTol = ui.lineEdit_SrhLineAngleDiffTol->text().toDouble();
 
-			stCmd.bCheckAngle = bSrhLineAngle;
-			stCmd.fExpectedAngle = dSrhLineExpectAngle;
-			stCmd.fAngleDiffTolerance = dSrhLineAngleDiffTol;
-		}
+		//	stCmd.bCheckAngle = bSrhLineAngle;
+		//	stCmd.fExpectedAngle = dSrhLineExpectAngle;
+		//	stCmd.fAngleDiffTolerance = dSrhLineAngleDiffTol;
+		//}
 
-		Vision::PR_CALIPER_RPY stRpy;
-		Vision::VisionStatus retStatus = Vision::PR_Caliper(&stCmd, &stRpy);
-		if (retStatus == Vision::VisionStatus::OK)
-		{
-			m_pView->displayImage(stRpy.matResultImg);
+		//Vision::PR_CALIPER_RPY stRpy;
+		//Vision::VisionStatus retStatus = Vision::PR_Caliper(&stCmd, &stRpy);
+		//if (retStatus == Vision::VisionStatus::OK)
+		//{
+		//	m_pView->displayImage(stRpy.matResultImg);
 
-			ui.lineEdit_SrhLineSlope->setText(QString("%1").arg(stRpy.fSlope));
-			ui.lineEdit_SrhLineIntercept->setText(QString("%1").arg(convertToUm(stRpy.fIntercept)));
-			ui.checkBox_SrhLineLinerityRst->setChecked(stRpy.bLinerityCheckPass);
-			ui.checkBox_SrhLineAngleRst->setChecked(stRpy.bAngleCheckPass);
+		//	ui.lineEdit_SrhLineSlope->setText(QString("%1").arg(stRpy.fSlope));
+		//	ui.lineEdit_SrhLineIntercept->setText(QString("%1").arg(convertToUm(stRpy.fIntercept)));
+		//	ui.checkBox_SrhLineLinerityRst->setChecked(stRpy.bLinerityCheckPass);
+		//	ui.checkBox_SrhLineAngleRst->setChecked(stRpy.bAngleCheckPass);
 
-			QString szMessage = QString("Search Line formula: %1").arg(stRpy.bReversedFit ? QString("x = fSlope * y + fIntercept") : QString("y = fSlope * x + fIntercept"));
-			System->setTrackInfo(szMessage);
+		//	QString szMessage = QString("Search Line formula: %1").arg(stRpy.bReversedFit ? QString("x = fSlope * y + fIntercept") : QString("y = fSlope * x + fIntercept"));
+		//	System->setTrackInfo(szMessage);
 
-			szMessage = QString("Search Line angle: %1").arg(qAtan(stRpy.fSlope) * 180 / M_PI);
-			System->setTrackInfo(szMessage);
-		}
-		else
-		{
-			m_pView->addImageText(QString("Error at CALIPER, error code = %1").arg((int)retStatus));
+		//	szMessage = QString("Search Line angle: %1").arg(qAtan(stRpy.fSlope) * 180 / M_PI);
+		//	System->setTrackInfo(szMessage);
+		//}
+		//else
+		//{
+		//	m_pView->addImageText(QString("Error at CALIPER, error code = %1").arg((int)retStatus));
 
-			ui.lineEdit_SrhLineSlope->setText(QString("%1").arg(0.0));
-			ui.lineEdit_SrhLineIntercept->setText(QString("%1").arg(0.0));
-			ui.checkBox_SrhLineLinerityRst->setChecked(false);
-			ui.checkBox_SrhLineAngleRst->setChecked(false);
+		//	ui.lineEdit_SrhLineSlope->setText(QString("%1").arg(0.0));
+		//	ui.lineEdit_SrhLineIntercept->setText(QString("%1").arg(0.0));
+		//	ui.checkBox_SrhLineLinerityRst->setChecked(false);
+		//	ui.checkBox_SrhLineAngleRst->setChecked(false);
 
-		}
+		//}
 	}
 	else
 	{
