@@ -53,7 +53,7 @@ void CameraOnLive::run()
 	{
 		if (bHardwareTrigger)
 		{
-			if (bHardwareFirstCaptured)
+			/*if (bHardwareFirstCaptured)
 			{
 				bHardwareFirstCaptured = false;
 
@@ -74,7 +74,7 @@ void CameraOnLive::run()
 				}
 				m_pCtrl->clearImage();
 				if (m_bQuit)break;
-			}
+			}*/
 
 			m_pCameraTmp->startGrabing(m_pCtrl->getImageBufferNum());
 

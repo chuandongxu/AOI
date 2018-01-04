@@ -81,6 +81,13 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, ViewCtrl* mainWidget, QWid
 	connect(ui.comboBox_captureMode, SIGNAL(currentIndexChanged(int)), SLOT(onCaptureModeIndexChanged(int)));
 	ui.groupBox_imgDLP->setEnabled(2 == nCaptureMode);
 
+	ls.clear();
+	ls << QStringLiteral("标准图像(12帧)采集") << QStringLiteral("单帧采集");
+	ui.comboBox_captureNumMode->addItems(ls);
+	int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
+	ui.comboBox_captureNumMode->setCurrentIndex(nCaptureNumMode);
+	connect(ui.comboBox_captureNumMode, SIGNAL(currentIndexChanged(int)), SLOT(onCaptureNumModeIndexChanged(int)));
+
 	connect(ui.checkBox, SIGNAL(stateChanged(int)), SLOT(onStateChangeHWTrig(int)));
 	connect(ui.checkBox_2, SIGNAL(stateChanged(int)), SLOT(onStateChangeCapture(int)));
 	connect(ui.checkBox_3, SIGNAL(stateChanged(int)), SLOT(onStateChangeHWTrigCon(int)));
@@ -375,6 +382,14 @@ void CameraSetting::onCaptureModeIndexChanged(int iIndex)
 	ui.groupBox_imgDLP->setEnabled(2 == nCaptureMode);
 	
 	System->setParam("camera_capture_mode", nCaptureMode);
+
+	QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("重启软件，相机采集模式才可以应用！"));
+}
+
+void CameraSetting::onCaptureNumModeIndexChanged(int iIndex)
+{
+	int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
+	System->setParam("camera_capture_num_mode", nCaptureNumMode);
 
 	QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("重启软件，相机采集模式才可以应用！"));
 }

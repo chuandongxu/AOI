@@ -5,6 +5,7 @@
 
 #include <QApplication>
 #include <QThread>
+#include <qdebug.h>
 
 ////////////////////////////////////////
 #ifndef FALSE
@@ -17,11 +18,11 @@
 /////////////////////////////////
 
 // 定义home回零搜索距离
-#define SEARCH_HOME 200000
+#define SEARCH_HOME 400000
 // 定义到home捕获位置的偏移量
 #define HOME_OFFSET 2000
 // 定义index回零搜索距离
-#define SEARCH_INDEX 15000
+#define SEARCH_INDEX 150000
 // 定义到index捕获位置的偏移量
 #define INDEX_OFFSET 1000
 
@@ -72,7 +73,7 @@ bool MotionControl::init()
 
 	QString path = QApplication::applicationDirPath();
 	path += "/config/motion/";
-	std::string fileName = QString(path + "GTS800.cfg").toStdString();
+	std::string fileName = QString(path + "GTS800_InHouse.cfg").toStdString();
 	const char *expr = fileName.c_str();
 	char *buf = new char[strlen(expr) + 1];
 	strcpy(buf, expr);
@@ -164,6 +165,31 @@ void MotionControl::clearAllError()
 
 bool MotionControl::IsPowerError()
 {
+	return true;
+}
+
+bool MotionControl::setDOs(QVector<int>& nPorts, int iState)
+{
+	// 指令返回值
+	short sRtn = 0;
+
+	long value = 0;
+	ushort mask = 0;
+
+	int nSet = iState > 0 ? 1 : 0;
+	for (int i = 0; i < nPorts.size(); i++)
+	{
+		value = value | (nSet << (nPorts[i] -1));
+		mask = mask | (1 << (nPorts[i] - 1));
+	}
+
+	// EXO6输出高电平，使指示灯灭
+	sRtn = GT_SetDoMask(MC_GPO, mask, value);
+	//sRtn = GT_SetDo(MC_GPO, value);	
+	//sRtn = GT_SetDoBit(MC_GPO, nPort, iState);
+
+	commandhandler("setDOs", sRtn);
+
 	return true;
 }
 
@@ -603,6 +629,7 @@ bool MotionControl::home(int AxisID, bool bSyn)
 	commandhandler("GT_GetTrapPrm", sRtn);
 	trapPrm.acc = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._velPf._acc;
 	trapPrm.dec = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._velPf._dec;
+	trapPrm.smoothTime = 40;
 	// 设置点位运动参数
 	sRtn = GT_SetTrapPrm(AxisID, &trapPrm);
 	commandhandler("GT_SetTrapPrm", sRtn);
@@ -767,6 +794,226 @@ bool MotionControl::home(int AxisID, bool bSyn)
 	return true;
 }
 
+bool MotionControl::homeLimit(int AxisID, bool bSyn)
+{
+	short sRtn = 0; // 指令返回值变量
+
+	int nHomeDir = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._dir == 0 ? 1 : -1;
+
+	// 清状态
+	sRtn = GT_ClrSts(AxisID);
+	commandhandler("GT_ClrSts", sRtn);
+
+	if (!isEnabled(AxisID))
+	{
+		if (!enable(AxisID)) return false;
+	}
+
+	// 开启轴的home捕获功能
+	sRtn = GT_SetCaptureMode(AxisID, CAPTURE_HOME);
+	commandhandler("GT_SetCaptureMode", sRtn);
+	// 设置轴为点位运动模式
+	sRtn = GT_PrfTrap(AxisID);
+	commandhandler("GT_PrfTrap", sRtn);
+	// 读取点位运动参数
+	TTrapPrm trapPrm;
+	sRtn = GT_GetTrapPrm(AxisID, &trapPrm);
+	commandhandler("GT_GetTrapPrm", sRtn);
+	trapPrm.acc = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._velPf._acc;
+	trapPrm.dec = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._velPf._dec;
+	trapPrm.smoothTime = 40;
+	// 设置点位运动参数
+	sRtn = GT_SetTrapPrm(AxisID, &trapPrm);
+	commandhandler("GT_SetTrapPrm", sRtn);
+	// 设置目标速度
+	sRtn = GT_SetVel(AxisID, m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._velPf._vel);
+	commandhandler("GT_SetVel", sRtn);
+	// 设置目标位置
+	sRtn = GT_SetPos(AxisID, SEARCH_HOME * nHomeDir);
+	commandhandler("GT_SetPos", sRtn);
+	// 启动运动，等待home信号触发
+	sRtn = GT_Update(1 << (AxisID - 1));
+	commandhandler("GT_Update", sRtn);
+
+	// 捕获状态
+	short capture = 0;
+	// 捕获位置
+	long pos = 0;
+
+	// 分别是规划位置，编码器位
+	double prfPos = 0, encPos = 0;
+
+	int nTimeOut = 120 * 100;// 30 seconds
+	do
+	{
+		// 读取捕获状态
+		sRtn = GT_GetCaptureStatus(AxisID, &capture, &pos);
+		// 读取规划位置
+		sRtn = GT_GetPrfPos(AxisID, &prfPos);
+		// 读取编码器位置
+		sRtn = GT_GetEncPos(AxisID, &encPos);
+
+		// 电机已经停止，说明整个搜索过程中home信号一直没有触发
+		if (isMoveDone(AxisID))
+		{
+			if (!isMoveLimit(AxisID))
+			{
+				System->setTrackInfo(QStringLiteral("电机已经停止, Home失败！"));
+				return false;
+			}
+
+			break;
+		}
+
+		QThread::msleep(10);
+		// 如果home信号已经触发，则退出循环，捕获位置已经在pos变量中保存
+	} while (0 == capture && nTimeOut-- > 0);
+
+	if (nTimeOut <= 0)
+	{
+		System->setTrackInfo(QStringLiteral("电机回零TimeOut！"));
+		return false;
+	}
+
+	//// 设定目标位置为捕获位置+偏移量
+	//sRtn = GT_SetPos(AxisID, pos + HOME_OFFSET*nHomeDir);
+	//commandhandler("GT_SetPos", sRtn);
+	//// 启动运动
+	//sRtn = GT_Update(1 << (AxisID - 1));
+	//commandhandler("GT_Update", sRtn);
+
+	//nTimeOut = 30 * 100;// 30 seconds
+	//do
+	//{
+	//	// 读取规划位置
+	//	sRtn = GT_GetPrfPos(AxisID, &prfPos);
+
+	//	QThread::msleep(10);
+	//} while (!isMoveDone(AxisID) && nTimeOut-- > 0);
+
+
+	//if (nTimeOut <= 0)
+	//{
+	//	System->setTrackInfo(QStringLiteral("电机回零TimeOut！"));
+	//	return false;
+	//}
+
+	//if (qAbs(prfPos - (pos + HOME_OFFSET)) > 10)
+	//{
+	//	System->setTrackInfo(QStringLiteral("电机回零位置偏移问题！"));
+	//	return false;
+	//}
+
+	QThread::msleep(200);
+
+	// 清状态
+	sRtn = GT_ClrSts(AxisID);
+	commandhandler("GT_ClrSts", sRtn);
+
+	// 清状态
+	sRtn = GT_ClearCaptureStatus(AxisID);
+	commandhandler("GT_ClearCaptureStatus", sRtn);
+
+
+	// 启动index捕获
+	sRtn = GT_SetCaptureMode(AxisID, CAPTURE_INDEX);
+	commandhandler("GT_SetCaptureMode", sRtn);
+
+	// 设置当前位置+index搜索距离为目标位置
+	sRtn = GT_SetPos(AxisID, (long)(prfPos + SEARCH_INDEX * (-nHomeDir)));
+	commandhandler("GT_SetPos", sRtn);
+
+	// 启动运动
+	sRtn = GT_Update(1 << (AxisID - 1));
+	commandhandler("GT_Update", sRtn);
+
+	nTimeOut = 30 * 100;// 30 seconds
+	do
+	{
+		// 读取捕获状态
+		sRtn = GT_GetCaptureStatus(AxisID, &capture, &pos);
+		// 读取规划位置
+		sRtn = GT_GetPrfPos(AxisID, &prfPos);
+		// 读取编码器位置
+		sRtn = GT_GetEncPos(AxisID, &encPos);
+
+		// 电机已经停止，说明整个搜索过程中index信号一直没有触发
+		if (isMoveDone(AxisID))
+		{
+			System->setTrackInfo(QStringLiteral("电机已经停止, Index失败！"));
+			return false;
+		}
+
+		QThread::msleep(10);
+
+		// 如果index信号已经触发，则退出循环，捕获位置已经在pos变量中保存
+	} while (0 == capture && nTimeOut-- > 0);
+
+	if (nTimeOut <= 0)
+	{
+		System->setTrackInfo(QStringLiteral("电机回零TimeOut！"));
+		return false;
+	}
+
+	//// 设置捕获位置+index偏移量为目标位置
+	//sRtn = GT_SetPos(AxisID, pos + INDEX_OFFSET * (-nHomeDir));
+	//commandhandler("GT_SetPos", sRtn);
+	//// 启动运动
+	//sRtn = GT_Update(1 << (AxisID - 1));
+	//commandhandler("GT_Update", sRtn);
+
+	//nTimeOut = 30 * 100;// 30 seconds
+	//do
+	//{
+	//	// 读取规划位置
+	//	sRtn = GT_GetPrfPos(AxisID, &prfPos);
+	//	// 读取编码器位置
+	//	sRtn = GT_GetEncPos(AxisID, &encPos);
+
+	//	QThread::msleep(10);
+
+	//} while (!isMoveDone(AxisID) && nTimeOut-- > 0);
+
+	//if (nTimeOut <= 0)
+	//{
+	//	System->setTrackInfo(QStringLiteral("电机回零TimeOut！"));
+	//	return false;
+	//}
+	//if (qAbs(prfPos - (pos + INDEX_OFFSET * (-nHomeDir))) > 10)
+	//{
+	//	System->setTrackInfo(QStringLiteral("电机Index位置偏移问题！"));
+	//	return false;
+	//}
+
+	// 清状态
+	sRtn = GT_ClrSts(AxisID);
+	commandhandler("GT_ClrSts", sRtn);
+
+	// 清状态
+	sRtn = GT_ClearCaptureStatus(AxisID);
+	commandhandler("GT_ClearCaptureStatus", sRtn);
+
+	// 停止
+	stopMove(AxisID);
+
+	QThread::msleep(200);
+
+	// 更新原点位置
+	sRtn = GT_ZeroPos(AxisID);
+	commandhandler("GT_ZeroPos", sRtn);
+
+	// AXIS轴规划位置清零
+	sRtn = GT_SetPrfPos(AxisID, 0);
+	commandhandler("GT_SetPrfPos", sRtn);
+
+	//sRtn = GT_SetEncPos(AxisID, 0);
+	//commandhandler("GT_SetEncPos", sRtn);	
+
+	m_bHome[changeToMtrEnum(AxisID)] = true;
+
+	return true;
+}
+
 bool MotionControl::move(int AxisID, int nProfile, double dDist, bool bSyn)
 {
 	QMtrMoveProfile mtrProf = getMotorProfile(nProfile);
@@ -845,6 +1092,9 @@ bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int sm
 	// 设置点位运动参数
 	sRtn = GT_SetTrapPrm(AxisID, &trap);
 	commandhandler("GT_SetTrapPrm", sRtn);
+	
+	//long lPulse = convertToPulse(changeToMtrEnum(AxisID), dPos);
+	//qDebug() << "move to Pos: " << AxisID << " : " << lPulse;
 
 	// 设置AXIS轴的目标位置
 	sRtn = GT_SetPos(AxisID, convertToPulse(changeToMtrEnum(AxisID), dPos));
@@ -914,6 +1164,37 @@ bool MotionControl::isMoveDone(int AxisID)
 	return !bFlagMotion;
 }
 
+bool MotionControl::isMoveLimit(int AxisID)
+{
+	short sRtn = 0; // 指令返回值变量
+	long lAxisStatus = 0; // 轴状态
+
+	bool bHitLimit = false;
+
+	// 读取轴状态
+	sRtn = GT_GetSts(AxisID, &lAxisStatus);
+	commandhandler("GT_GetSts", sRtn);
+
+	// 规划器正在运动标志
+	if ((lAxisStatus & 0x20) == 0x20)
+	{
+		bHitLimit = true;
+		//printf("Pos lmt is hit!\n");
+	}
+	if ((lAxisStatus & 0x40) == 0x40)
+	{
+		bHitLimit = true;
+		//printf("Neg lmt is hit!\n");
+	}
+	if ((lAxisStatus & 0x10) == 0x10)
+	{
+		bHitLimit = true;
+		//printf("PosErr OverLmt!\n");
+	}
+
+	return bHitLimit;
+}
+
 bool MotionControl::stopMove(int AxisID)
 {
 	short sRtn = 0; // 指令返回值变量
@@ -949,6 +1230,8 @@ bool MotionControl::getCurrentPos(int AxisID, double *pos)
 	// 读取axis编码器位置
 	sRtn = GT_GetEncPos(AxisID, &dMtrPos);
 	commandhandler("GT_GetAxisEncPos", sRtn);
+	
+	//qDebug() << "get enc Pos: " << AxisID << " : " << dMtrPos;
 
 	if (sRtn)
 	{
@@ -957,7 +1240,7 @@ bool MotionControl::getCurrentPos(int AxisID, double *pos)
 	}
 	else
 	{
-		*pos = convertToUm(changeToMtrEnum(AxisID), dMtrPos);
+		*pos = convertToUm(changeToMtrEnum(AxisID), dMtrPos) * 2;
 		return true;
 	}
 }

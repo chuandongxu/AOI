@@ -180,8 +180,11 @@ void DalsaCameraDevice::openCamera()
 		m_camera = new Camera_t(m_hv_AcqHandle);
 		m_camera->Open();
 
-		m_camera->UserSetSelector.SetValue(Basler_CLCameraParams::UserSetSelector_UserSet1);
+		int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
+		m_camera->UserSetSelector.SetValue(0 == nCaptureNumMode ? Basler_CLCameraParams::UserSetSelector_UserSet1 : Basler_CLCameraParams::UserSetSelector_UserSet2);
 		m_camera->UserSetLoad.Execute();
+
+		//m_camera->ExposureTimeAbs.SetValue(3);	
 	}
 	catch (GenICam::GenericException &e)
 	{
@@ -239,6 +242,10 @@ void DalsaCameraDevice::setExposureTime(double exposureTime)
 {
 	if (m_bOpen)
 	{	
+	/*	if (m_camera)
+		{
+			m_camera->ExposureTimeAbs.SetValue(exposureTime);			
+		}*/
 	}
 }
 

@@ -1,4 +1,4 @@
-#include "lightsetting.h"
+ï»¿#include "lightsetting.h"
 #include "../Common/SystemData.h"
 #include "LightDefine.h"
 
@@ -10,7 +10,7 @@ QLightSetting::QLightSetting(QLightCtrl * pCtrl,QWidget *parent)
 	int n = System->getParam(LIGHT_COUNT).toInt();
 	for(int i = 0; i<n; i++)
 	{
-		QString str = QString(QStringLiteral("¹âÔ´¿ØÖÆÆ÷%0")).arg(i+1);
+		QString str = QString(QStringLiteral("å…‰æºæ§åˆ¶å™¨%0")).arg(i+1);
 		ui.tabWidget->addTab(new QDeviceFrom(m_lightCtrl->getLightDevice(i),this),str);
 	}
 
@@ -28,7 +28,7 @@ QLightSetting::~QLightSetting()
 void QLightSetting::onAddLightCtrl()
 {
 	int n = ui.tabWidget->count();
-	QString str = QString(QStringLiteral("¹âÔ´¿ØÖÆÆ÷%0")).arg(n+1);
+	QString str = QString(QStringLiteral("å…‰æºæ§åˆ¶å™¨%0")).arg(n+1);
 	QString name = QString("light%0").arg(n+1);
 
 	QLightDevice * pDevice = new QLightDevice(name,NULL);

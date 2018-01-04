@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -913,7 +913,7 @@
       </rect>
      </property>
      <property name="maximum">
-      <double>999.990000000000009</double>
+      <double>9999.989999999999782</double>
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="doubleSpinBox_resn1">
@@ -926,7 +926,7 @@
       </rect>
      </property>
      <property name="maximum">
-      <double>999.990000000000009</double>
+      <double>9999.989999999999782</double>
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="doubleSpinBox_resn2">
@@ -939,7 +939,7 @@
       </rect>
      </property>
      <property name="maximum">
-      <double>999.990000000000009</double>
+      <double>9999.989999999999782</double>
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="doubleSpinBox_resn3">
@@ -952,7 +952,7 @@
       </rect>
      </property>
      <property name="maximum">
-      <double>999.990000000000009</double>
+      <double>9999.989999999999782</double>
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="doubleSpinBox_resn4">
@@ -965,7 +965,7 @@
       </rect>
      </property>
      <property name="maximum">
-      <double>999.990000000000009</double>
+      <double>9999.989999999999782</double>
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="doubleSpinBox_resn5">
@@ -978,7 +978,7 @@
       </rect>
      </property>
      <property name="maximum">
-      <double>999.990000000000009</double>
+      <double>9999.989999999999782</double>
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="doubleSpinBox_resn6">
@@ -991,7 +991,7 @@
       </rect>
      </property>
      <property name="maximum">
-      <double>999.990000000000009</double>
+      <double>9999.989999999999782</double>
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="doubleSpinBox_resn7">

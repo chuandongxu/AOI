@@ -68,6 +68,8 @@ void DLPControlModuleSetting::onBindDLPSNB()
 	int nIndexEnd = serialNB.indexOf('&', nIndexStart + 3);
 	serialNB = serialNB.mid(nIndexStart + 3, nIndexEnd - nIndexStart - 3);
 
+	serialNB = QString("SN%1").arg(n, 2, 10, QChar('0'));
+
 	System->setParam(QString("dlp_param_serial_number_%1").arg(nDLPIndex + 1), serialNB);
 	m_pCtrl->setDLPSerialNumber(nDLPIndex, serialNB);
 	ui.lineEdit_dlpInfo->setText(serialNB);

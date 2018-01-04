@@ -25,7 +25,7 @@ CameraDevice::CameraDevice(QString cameraName, QString  cameraID)
 	QString user;
 	int level = 0;
 	System->getUser(user, level);
-	if (USER_LEVEL_TECH > level)
+	if (USER_LEVEL_MANAGER > level)
 	{
 		m_bSaveAsEncrypt = true;
 	}
@@ -73,7 +73,6 @@ void CameraDevice::saveImage(cv::Mat& image, QString name, QString path)
 
 			QFile::remove(strSave);
 		}
-
 	}
 }
 

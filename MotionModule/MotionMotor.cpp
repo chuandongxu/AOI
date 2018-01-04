@@ -44,6 +44,7 @@ MotionMotor::MotionMotor(MotionControl* pCtrl, QWidget *parent)
 
 MotionMotor::~MotionMotor()
 {
+	onAutoStop();
 	if (m_pThreadOnLive)
 	{
 		delete m_pThreadOnLive;
@@ -100,9 +101,16 @@ void MotionMotor::initUI()
 	connect(ui.pushButton_prof_del, SIGNAL(clicked()), SLOT(onDelProf()));
 	connect(ui.pushButton_prof_save, SIGNAL(clicked()), SLOT(onProfSave()));
 
-	ui.lineEdit_move_vel->setText(QString("%1").arg(20));
-	ui.lineEdit_move_acc->setText(QString("%1").arg(10));
-	ui.lineEdit_move_dec->setText(QString("%1").arg(10));
+	ui.lineEdit_mtr_vec->setText(QString("%1").arg(100));
+	ui.lineEdit_mtr_acc->setText(QString("%1").arg(500));
+	ui.lineEdit_mtr_dec->setText(QString("%1").arg(500));
+	ui.lineEdit_mtr_smooth->setText(QString("%1").arg(40));
+	ui.lineEdit_mtr_dist->setText(QString("%1").arg(10));
+	ui.lineEdit_mtr_posn->setText(QString("%1").arg(0));
+
+	ui.lineEdit_move_vel->setText(QString("%1").arg(100));
+	ui.lineEdit_move_acc->setText(QString("%1").arg(500));
+	ui.lineEdit_move_dec->setText(QString("%1").arg(500));
 
 	ui.tableView_pt->setModel(&m_movePointModel);
 	ui.tableView_pt->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -711,7 +719,7 @@ void MotionMotor::onHome()
 	{
 		if (axisSelected[i] && m_pCtrl->isEnabled(m_pCtrl->getMotorAxisID(i)))
 		{
-			m_pCtrl->home(m_pCtrl->getMotorAxisID(i), false);
+			m_pCtrl->homeLimit(m_pCtrl->getMotorAxisID(i), false);
 		}
 	}
 }

@@ -12,4 +12,4 @@
 # define DATAMODULE_EXPORT
 #endif
 
-#define STATION_COUNT 2
+//#define STATION_COUNT 2

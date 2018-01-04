@@ -1,4 +1,4 @@
-#include "lightmodule.h"
+ï»¿#include "lightmodule.h"
 #include "lightsetting.h"
 #include "lightctrl.h"
 #include "LightDefine.h"
@@ -100,7 +100,7 @@ void QLightModule::addSettingWiddget(QTabWidget *tabWidget)
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
 	if(ctrl)
 	{
-		tabWidget->addTab(new QLightSetting(ctrl),QStringLiteral("µÆ¹â¿ØÖÆ"));
+		tabWidget->addTab(new QLightSetting(ctrl),QStringLiteral("ç¯å…‰æ§åˆ¶"));
 	}
 }
 

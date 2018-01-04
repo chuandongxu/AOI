@@ -1,4 +1,4 @@
-#include "devicefrom.h"
+ï»¿#include "devicefrom.h"
 #include "LightDefine.h"
 #include "SystemData.h"
 QDeviceFrom::QDeviceFrom(QLightDevice * device,QWidget *parent)
@@ -12,8 +12,8 @@ QDeviceFrom::QDeviceFrom(QLightDevice * device,QWidget *parent)
 	ls = QLightDevice::enumCommBound();
 	ui.comboBox_2->addItems(ls);
 
-	if(m_device->isOpenCommPort())ui.pushButton->setText(QStringLiteral("¹Ø±Õ"));
-	else ui.pushButton->setText(QStringLiteral("´ò¿ª"));
+	if(m_device->isOpenCommPort())ui.pushButton->setText(QStringLiteral("å…³é—­"));
+	else ui.pushButton->setText(QStringLiteral("æ‰“å¼€"));
 
 	QString key = QString("%0-%1").arg(m_device->getDeviceName()).arg(COMM_PORT);
 	QVariant data = System->getParam(key);
@@ -68,8 +68,8 @@ void QDeviceFrom::onOpenCommPort()
 	else m_device->openCommPort(name,bound);
 	
 
-	if(m_device->isOpenCommPort())ui.pushButton->setText(QStringLiteral("¹Ø±Õ"));
-	else ui.pushButton->setText(QStringLiteral("´ò¿ª"));
+	if(m_device->isOpenCommPort())ui.pushButton->setText(QStringLiteral("å…³é—­"));
+	else ui.pushButton->setText(QStringLiteral("æ‰“å¼€"));
 }
 
 void QDeviceFrom::onSendTestData()
@@ -84,6 +84,7 @@ void QDeviceFrom::onDataReady()
 	//m_device->recvHexData(str);
 	//ui.textEdit->setText(str);
 }
+
 void QDeviceFrom::onSaveData()
 {
 	QString data = ui.comboBox->currentText();
@@ -92,6 +93,20 @@ void QDeviceFrom::onSaveData()
 	data = ui.comboBox_2->currentText();
 	key = QString("%0-%1").arg(m_device->getDeviceName()).arg(COMM_BOUND);
 	System->setParam(key,data);
+
+	QLineEdit * editCtrls[4] = { ui.lineEdit, ui.lineEdit_2, ui.lineEdit_3, ui.lineEdit_4 };
+	QSlider * sliderCtrls[4] = { ui.horizontalSlider, ui.horizontalSlider_2, ui.horizontalSlider_3, ui.horizontalSlider_4 };
+	QLineEdit * editLums[4] = { ui.lineEdit_6, ui.lineEdit_7, ui.lineEdit_8, ui.lineEdit_9 };
+	for (int i = 0; i < 4; i++)
+	{
+		key = QString("%0-%1%2").arg(m_device->getDeviceName()).arg(NAMED_CH).arg(i);
+		data = editCtrls[i]->text();
+		System->setParam(key, data);
+
+		key = QString("%0-%1%2").arg(m_device->getDeviceName()).arg(LUM_CH).arg(i);
+		data = QString("%1").arg(sliderCtrls[i]->value());
+		System->setParam(key, data);
+	}
 }
 void QDeviceFrom::onSliderChanged1(int lum)
 {

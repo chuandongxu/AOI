@@ -37,13 +37,28 @@ MotionIO::MotionIO(MotionControl* pCtrl, QWidget *parent)
 
 	updataIO();
 
+	connect(ui.checkBox_21, SIGNAL(stateChanged(int)), SLOT(updataOutPort0(int)));
+	connect(ui.checkBox_22, SIGNAL(stateChanged(int)), SLOT(updataOutPort1(int)));
+	connect(ui.checkBox_23, SIGNAL(stateChanged(int)), SLOT(updataOutPort2(int)));
+	connect(ui.checkBox_24, SIGNAL(stateChanged(int)), SLOT(updataOutPort3(int)));
 	connect(ui.checkBox_25, SIGNAL(stateChanged(int)), SLOT(updataOutPort4(int)));
 	connect(ui.checkBox_26, SIGNAL(stateChanged(int)), SLOT(updataOutPort5(int)));
+	connect(ui.checkBox_27, SIGNAL(stateChanged(int)), SLOT(updataOutPort6(int)));
+	connect(ui.checkBox_28, SIGNAL(stateChanged(int)), SLOT(updataOutPort7(int)));
+	connect(ui.checkBox_29, SIGNAL(stateChanged(int)), SLOT(updataOutPort8(int)));
+	connect(ui.checkBox_30, SIGNAL(stateChanged(int)), SLOT(updataOutPort9(int)));
+	connect(ui.checkBox_31, SIGNAL(stateChanged(int)), SLOT(updataOutPort10(int)));
+	connect(ui.checkBox_32, SIGNAL(stateChanged(int)), SLOT(updataOutPort11(int)));
+	connect(ui.checkBox_33, SIGNAL(stateChanged(int)), SLOT(updataOutPort12(int)));
+	connect(ui.checkBox_34, SIGNAL(stateChanged(int)), SLOT(updataOutPort13(int)));
 
 	connect(ui.pushButton_onLive, SIGNAL(clicked()), SLOT(onAutoLive()));
 	connect(ui.pushButton_onStop, SIGNAL(clicked()), SLOT(onAutoStop()));
 	ui.pushButton_onLive->setEnabled(true);
 	ui.pushButton_onStop->setEnabled(false);
+
+	connect(ui.pushButton_onCombTriggerOn, SIGNAL(clicked()), SLOT(onCombTriggerOn()));
+	connect(ui.pushButton_onCombTriggerOff, SIGNAL(clicked()), SLOT(onCombTriggerOff()));
 }
 
 MotionIO::~MotionIO()
@@ -77,20 +92,28 @@ void MotionIO::initDI()
 
 void MotionIO::initDO()
 {
-	m_doIO[0] = DO_YELLOW_LIGHT;
-	m_doIO[1] = DO_GREEN_LIGHT;
-	m_doIO[2] = DO_RED_LIGHT;
-	m_doIO[3] = DO_BUZZER;
-	m_doIO[4] = DO_TRIGGER_DLP1;
-	m_doIO[5] = DO_TRIGGER_DLP2;
-	m_doIO[6] = DO_TRIGGER_DLP3;
-	m_doIO[7] = DO_TRIGGER_DLP4;
-	m_doIO[8] = 0;
-	m_doIO[9] = 0;
-	m_doIO[10] = 0;
-	m_doIO[11] = 0;
-	m_doIO[12] = 0;
-	m_doIO[13] = 0;
+	//m_doIO[0] = DO_YELLOW_LIGHT;
+	//m_doIO[1] = DO_GREEN_LIGHT;
+	//m_doIO[2] = DO_RED_LIGHT;
+	//m_doIO[3] = DO_BUZZER;
+	//m_doIO[4] = DO_TRIGGER_DLP1;
+	//m_doIO[5] = DO_TRIGGER_DLP2;
+	//m_doIO[6] = DO_TRIGGER_DLP3;
+	//m_doIO[7] = DO_TRIGGER_DLP4;
+	m_doIO[0] = DO_CAMERA_TRIGGER1;
+	m_doIO[1] = DO_CAMERA_TRIGGER2;
+	m_doIO[2] = DO_TRIGGER_DLP1;
+	m_doIO[3] = DO_TRIGGER_DLP2;
+	m_doIO[4] = DO_TRIGGER_DLP3;
+	m_doIO[5] = DO_TRIGGER_DLP4;
+	m_doIO[6] = DO_LIGHT1_CH1;
+	m_doIO[7] = DO_LIGHT1_CH2;
+	m_doIO[8] = DO_LIGHT1_CH3;
+	m_doIO[9] = DO_LIGHT1_CH4;
+	m_doIO[10] = DO_LIGHT2_CH1;
+	m_doIO[11] = DO_LIGHT2_CH2;
+	m_doIO[12] = DO_LIGHT2_CH3;
+	m_doIO[13] = DO_LIGHT2_CH4;
 	m_doIO[14] = 0;
 	m_doIO[15] = 0;
 }
@@ -161,6 +184,46 @@ void MotionIO::updataIO()
 	//this->updataDO();
 }
 
+void MotionIO::updataOutPort0(int index)
+{
+	int portNO = m_doIO[0];
+	int portvalue = 0;
+	if (ui.checkBox_21->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+
+void MotionIO::updataOutPort1(int index)
+{
+	int portNO = m_doIO[1];
+	int portvalue = 0;
+	if (ui.checkBox_22->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+
+void MotionIO::updataOutPort2(int index)
+{
+	int portNO = m_doIO[2];
+	int portvalue = 0;
+	if (ui.checkBox_23->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+
+void MotionIO::updataOutPort3(int index)
+{
+	int portNO = m_doIO[3];
+	int portvalue = 0;
+	if (ui.checkBox_24->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+
 void MotionIO::updataOutPort4(int index)
 {
 	int portNO = m_doIO[4];
@@ -175,6 +238,82 @@ void MotionIO::updataOutPort5(int index)
 	int portNO = m_doIO[5];
 	int portvalue = 0;
 	if (ui.checkBox_26->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+void MotionIO::updataOutPort6(int index)
+{
+	int portNO = m_doIO[6];
+	int portvalue = 0;
+	if (ui.checkBox_27->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+
+void MotionIO::updataOutPort7(int index)
+{
+	int portNO = m_doIO[7];
+	int portvalue = 0;
+	if (ui.checkBox_28->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+
+void MotionIO::updataOutPort8(int index)
+{
+	int portNO = m_doIO[8];
+	int portvalue = 0;
+	if (ui.checkBox_29->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+
+void MotionIO::updataOutPort9(int index)
+{
+	int portNO = m_doIO[9];
+	int portvalue = 0;
+	if (ui.checkBox_30->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+
+void MotionIO::updataOutPort10(int index)
+{
+	int portNO = m_doIO[10];
+	int portvalue = 0;
+	if (ui.checkBox_31->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+void MotionIO::updataOutPort11(int index)
+{
+	int portNO = m_doIO[11];
+	int portvalue = 0;
+	if (ui.checkBox_32->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+void MotionIO::updataOutPort12(int index)
+{
+	int portNO = m_doIO[12];
+	int portvalue = 0;
+	if (ui.checkBox_33->isChecked())portvalue = 1;
+
+	m_pCtrl->setDO(portNO, portvalue);
+}
+
+void MotionIO::updataOutPort13(int index)
+{
+	int portNO = m_doIO[13];
+	int portvalue = 0;
+	if (ui.checkBox_34->isChecked())portvalue = 1;
 
 	m_pCtrl->setDO(portNO, portvalue);
 }
@@ -208,5 +347,45 @@ void MotionIO::onAutoStop()
 		ui.pushButton_onLive->setEnabled(true);
 		ui.pushButton_onStop->setEnabled(false);
 	}
+}
+
+void MotionIO::onCombTriggerOn()
+{
+	QCheckBox * checkBoxTrigger[16] = { ui.checkBox_21, ui.checkBox_22, ui.checkBox_23, ui.checkBox_24,
+		ui.checkBox_25, ui.checkBox_26, ui.checkBox_27, ui.checkBox_28, 
+		ui.checkBox_29, ui.checkBox_30, ui.checkBox_31, ui.checkBox_32, 
+		ui.checkBox_33, ui.checkBox_34, ui.checkBox_35, ui.checkBox_36 };
+
+	QVector<int> nPorts;
+	for (int i = 0; i < 16; i++)
+	{	
+		if (checkBoxTrigger[i]->isChecked())
+		{
+			int nPort = m_doIO[i];
+			nPorts.push_back(nPort);
+		}
+	}
+
+	m_pCtrl->setDOs(nPorts, 1);
+}
+
+void MotionIO::onCombTriggerOff()
+{
+	QCheckBox * checkBoxTrigger[16] = { ui.checkBox_21, ui.checkBox_22, ui.checkBox_23, ui.checkBox_24,
+		ui.checkBox_25, ui.checkBox_26, ui.checkBox_27, ui.checkBox_28,
+		ui.checkBox_29, ui.checkBox_30, ui.checkBox_31, ui.checkBox_32,
+		ui.checkBox_33, ui.checkBox_34, ui.checkBox_35, ui.checkBox_36 };
+
+	QVector<int> nPorts;
+	for (int i = 0; i < 16; i++)
+	{
+		if (checkBoxTrigger[i]->isChecked())
+		{
+			int nPort = m_doIO[i];
+			nPorts.push_back(nPort);
+		}
+	}
+
+	m_pCtrl->setDOs(nPorts, 0);
 }
 

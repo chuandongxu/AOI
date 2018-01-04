@@ -1,4 +1,4 @@
-#include "lightdevice.h"
+﻿#include "lightdevice.h"
 #include "../Common/SystemData.h"
 #include "LightDefine.h"
 #include <qvariant>
@@ -7,10 +7,14 @@
 #include <qthread.h>
 #include <qmutex.h>
 
+#include "CommPort.h"
+
 
 QLightDevice::QLightDevice(const QString & devName,QObject *parent)
 	: m_devName(devName),QObject(parent),m_bOpened(false)
 {
+	m_comPort = NULL;
+
 	this->open();
 	//qDebug() << "thread : " << (unsigned int)this;
 	
@@ -64,13 +68,26 @@ void QLightDevice::open()
 void QLightDevice::openCommPort(const QString & name,int bound)
 {
 	int nPort = mapPortName(name);
-	m_light = openLigh(nPort,bound);
+	m_comPort = new QCommPort();
+
+	if (!m_comPort->open(name, bound))
+	{
+		delete m_comPort;
+		m_comPort = NULL;
+		System->setTrackInfo("open com Device Fail");
+
+		return;
+	}
 }
 	
 void QLightDevice::closeCommPort()
 {
-	close(m_light);
-	m_light = NULL;
+	if (m_comPort)
+	{
+		m_comPort->close();	
+		delete m_comPort;
+		m_comPort = NULL;	
+	}
 }
 
 
@@ -91,7 +108,59 @@ bool QLightDevice::isOpenLight(int ch)
 
 void QLightDevice::setChLuminance(int ch,int luminance)
 {
-	setLightValue(m_light,ch,luminance);
+	if (m_comPort)
+	{
+		QString strValue = QString("%1").arg(luminance, 4, 10, QLatin1Char('0'));
+
+		QString szCh = "";
+		switch (ch)
+		{
+		case 0:
+			szCh = "A";
+			break;
+		case 1:
+			szCh = "B";
+			break;
+		case 2:
+			szCh = "C";
+			break;
+		case 3:
+			szCh = "D";
+			break;
+		default:
+			break;
+		}
+
+		QString szCmd = "SI" + strValue + szCh + "#";
+		m_comPort->write(szCmd.toLocal8Bit());
+
+		QString szRetValue = "I" + szCh;
+
+		int nWaitTime = 1 * 100;
+		while (nWaitTime-- > 0 )
+		{
+			QByteArray readLine;
+			if (m_comPort->read(readLine))
+			{
+				QString value = readLine;
+				if (!value.trimmed().isEmpty())
+				{
+					if (value != szRetValue)
+					{
+						System->setTrackInfo("set light setChLuminance fail, ret=" + value);
+					}
+					break;
+				}			
+			}
+
+			QThread::msleep(10);
+		}
+
+		if (nWaitTime <= 0)
+		{
+			System->setTrackInfo("set light setChLuminance fail. Wait Timeout!");
+		}		
+	}
 }
 
 	

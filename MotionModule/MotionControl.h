@@ -127,6 +127,7 @@ public:
 	bool IsPowerError();
 
 	// IO Functions:
+	bool setDOs(QVector<int>& nPorts, int iState);
 	bool setDO(int nPort, int iState);
 	bool getDO(int nPort, int &iState);
 	bool getDI(int nPort, int &iState);
@@ -144,6 +145,7 @@ public:
 	bool IsLimit(int AxisID);
 
 	bool home(int AxisID, bool bSyn);
+	bool homeLimit(int AxisID, bool bSyn);
 	bool move(int AxisID, int nProfile, double dDist, bool bSyn);
 	bool moveTo(int AxisID, int nProfile, double dPos, bool bSyn);
 
@@ -154,6 +156,7 @@ public:
 
 	bool isHomed(int AxisID);
 	bool isMoveDone(int AxisID);
+	bool isMoveLimit(int AxisID);
 	bool stopMove(int AxisID);
 	bool EmStop(int AxisID);
 

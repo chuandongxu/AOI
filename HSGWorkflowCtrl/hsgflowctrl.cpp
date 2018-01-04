@@ -1209,7 +1209,7 @@ void QFlowCtrl::start()
 		return;
 	}	
 
-	int nStationNum = STATION_COUNT;	
+	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
 
 	m_checkStantion.clear();
 	for (int i = 0; i < nStationNum; i++)
@@ -1261,7 +1261,8 @@ void QFlowCtrl::stop()
 	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在停止中..."), 0);
 	QApplication::processEvents();
 
-	for(int i = 0; i <STATION_COUNT; i++)
+	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+	for (int i = 0; i <nStationNum; i++)
 	{
 		imStopStation(i);
 	}
@@ -1293,8 +1294,8 @@ void QFlowCtrl::stop()
 	{
 		pCam->endUpCapture();
 	}
-
-	for (int i = 0; i < STATION_COUNT; i++)
+	
+	for (int i = 0; i < nStationNum; i++)
 	{
 		if (pDlp->isConnected(i))
 		{

@@ -1,4 +1,4 @@
-#include "lightctrl.h"
+﻿#include "lightctrl.h"
 #include "../Common/SystemData.h"
 #include "LightDefine.h"
 #include <qvariant.h>

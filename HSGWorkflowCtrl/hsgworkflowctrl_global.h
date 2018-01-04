@@ -9,7 +9,7 @@
 # define HSGWORKFLOWCTRL_EXPORT Q_DECL_IMPORT
 #endif
 
-#define STATION_COUNT 2
+//#define STATION_COUNT 2
 
 #define PARAM_STATION_ID			"param-station-id"
 #define PARAM_STATION_START_IO		"param-station-start-io"

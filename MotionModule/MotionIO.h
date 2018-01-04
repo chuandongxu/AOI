@@ -39,11 +39,26 @@ public:
 	void updataIO();
 
 private slots:
+	void updataOutPort0(int index);
+	void updataOutPort1(int index);
+	void updataOutPort2(int index);
+	void updataOutPort3(int index);
 	void updataOutPort4(int index);
 	void updataOutPort5(int index);
+	void updataOutPort6(int index);
+	void updataOutPort7(int index);
+	void updataOutPort8(int index);
+	void updataOutPort9(int index);
+	void updataOutPort10(int index);
+	void updataOutPort11(int index);
+	void updataOutPort12(int index);
+	void updataOutPort13(int index);
 
 	void onAutoLive();
 	void onAutoStop();
+
+	void onCombTriggerOn();
+	void onCombTriggerOff();
 
 protected:
 	void initDI();

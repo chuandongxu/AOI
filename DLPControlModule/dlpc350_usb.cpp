@@ -124,6 +124,7 @@ int DLPUsb::DLPC350_USB_OpenByProductStr(std::string& productStr)
 {
 	std::string path = "";
 
+	int nIndex = 0;
 	hid_device_info* deviceInfoList = hid_enumerate(MY_VID, MY_PID);
 	hid_device_info* deviceInfo = deviceInfoList;
 	while (deviceInfo != NULL)
@@ -143,14 +144,18 @@ int DLPUsb::DLPC350_USB_OpenByProductStr(std::string& productStr)
 
 			pathTmp = pathTmp.substr(nIndexStart + 3, nIndexEnd - nIndexStart - 3);
 
-			if (pathTmp == productStr)
+			QString serialNB = QString("SN%1").arg(nIndex, 2, 10, QChar('0'));
+
+			if (serialNB.toStdString() == productStr)
 			{
 				path = deviceInfo->path;
 				break;
-			}			
+			}
+
+			nIndex++;
 		}
 
-		deviceInfo = deviceInfo->next;
+		deviceInfo = deviceInfo->next;		
 	}
 	hid_free_enumeration(deviceInfoList);
 

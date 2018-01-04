@@ -106,7 +106,7 @@ bool MotionModule::IsLimit(int AxisID)
 
 bool MotionModule::home(int AxisID, bool bSyn)
 {
-	return m_ctrl.home(AxisID, bSyn);
+	return m_ctrl.homeLimit(AxisID, bSyn);
 }
 
 bool MotionModule::move(int AxisID, int nProfile, double dDist, bool bSyn)

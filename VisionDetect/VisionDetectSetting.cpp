@@ -94,7 +94,7 @@ VisionDetectSetting::VisionDetectSetting(VisionCtrl* pCtrl, QWidget *parent)
 	int level = 0;
 	System->getUser(user, level);
 	m_nLevel = level;
-	if (USER_LEVEL_TECH > level)
+	if (USER_LEVEL_MANAGER > level)
 	{
 		ui.tabWidget->removeTab(1);
 	}

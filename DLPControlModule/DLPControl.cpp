@@ -1,10 +1,13 @@
 #include "DLPControl.h"
 #include "dlpcontrolmodule_global.h"
 
+#include "../Common/SystemData.h"
+
 DLPControl::DLPControl(QObject *parent)
 	: QObject(parent)
-{	
-	for (int i = 0; i < STATION_COUNT; i++)
+{
+	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+	for (int i = 0; i < nStationNum; i++)
 	{
 		MainWindow* mainWin = new MainWindow();
 		mainWin->setDLP(i);

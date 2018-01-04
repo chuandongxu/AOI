@@ -82,7 +82,8 @@ QWorkSetting::QWorkSetting(QFlowCtrl *p, QWidget *parent)
 
 	connect(ui.comboBoxSelectStation,SIGNAL(currentIndexChanged(int)),SLOT(onStationIndexChanged(int)));
 	ls.clear();
-	for (int i = 0; i< STATION_COUNT; i++)
+	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+	for (int i = 0; i< nStationNum; i++)
 	{
 		ls << QStringLiteral("工位") + QString("%0").arg(i+1);
 
