@@ -34,7 +34,7 @@
 
 using namespace AOI;
 
-#define  SMART_DETECT_APP 
+//#define  SMART_DETECT_APP 
 
 VisionDetectSetting::VisionDetectSetting(VisionCtrl* pCtrl, QWidget *parent)
 	: m_pCtrl(pCtrl), QMainWindow(parent)
