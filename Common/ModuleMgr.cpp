@@ -5,7 +5,7 @@
 #include <QXmlStreamReader>
 #include "Track.h"
 
-typedef QModuleInterface * (*func_crateModule)(int id,const QString &name);
+typedef QModuleInterface * (*func_createModule)(int id,const QString &name);
 typedef void (*func_destoryModule)(QModuleInterface * interface);
 
 QMoudleMgr * QMoudleMgr::_instance_ = NULL;
@@ -82,7 +82,7 @@ QModuleInterface * QMoudleMgr::loadModule(const QString &dllfile,int id,const QS
 	QLibrary * p = new QLibrary(path);
 	if(p && p->load())
 	{
-		func_crateModule func = (func_crateModule)p->resolve("crateModule");
+		func_createModule func = (func_createModule)p->resolve("createModule");
 		if(func)
 		{
 			QModuleInterface * pFace = (*func)(id,name);
@@ -180,7 +180,6 @@ void QMoudleMgr::loadPlugins()
 					int id = attr.value("id").toInt();
 					QString dllfile = attr.value("file").toString();
 					QString name = attr.value("name").toString();
-
 
 					if(!dllfile.isEmpty())
 					{

@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	a.setFont(font);
 
 	QStartupWidget widget;
-	if(QDialog::Rejected ==  widget.exec())
+	if(QDialog::Rejected == widget.exec())
 	{
 		return -1;
 	}

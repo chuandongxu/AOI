@@ -257,6 +257,44 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\3DViewUtility\3DViewUtility.vcxproj">
+      <Project>{2c5f05e5-74bb-4e2b-a07c-049a5835cac9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\CarameModel\CarameModel.vcxproj">
+      <Project>{36fef6c6-b396-4362-8c71-12e477a0d3c9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Common.vcxproj">
+      <Project>{9df4c4d5-b741-395a-a734-b78e8d285d2d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\CurveEditor\CurveEditor.vcxproj">
+      <Project>{1b96a876-39af-4c9e-8168-866cb449a3c5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\DataModule\DataModule.vcxproj">
+      <Project>{02de2b4c-cfb0-47d9-ac39-3d7e79dc7644}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\DLPControlModule\DLPControlModule.vcxproj">
+      <Project>{0ccbedbe-be8d-45bc-bf7b-cc5291c450a3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\HSGWorkflowCtrl\HSGWorkflowCtrl.vcxproj">
+      <Project>{71e20fdc-163b-4920-be28-5e0cac449a67}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\LightModule\LightModule.vcxproj">
+      <Project>{ef98b2b3-63e7-4704-96f6-6f6916cbbd13}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\MotionModule\MotionModule.vcxproj">
+      <Project>{ea84d5ef-8c5c-44d5-b886-2b16468a3d70}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\VisionDetect\VisionDetect.vcxproj">
+      <Project>{bf710eed-8bbe-41de-afd3-f575981accf1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\VisionTest\VisionTest.vcxproj">
+      <Project>{214d8033-c29c-4d9e-b790-864663da4a9d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\VisionUI\VisionUI.vcxproj">
+      <Project>{1795f236-00db-4229-a2e2-fd21754b6206}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

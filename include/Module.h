@@ -43,7 +43,7 @@ public:
 
 #define QMOUDLE_INSTANCE(type) \
 extern "C"{ \
-   Q_DECL_EXPORT QModuleInterface * crateModule(int id,const QString &name){return new type(id,name);}\
+   Q_DECL_EXPORT QModuleInterface * createModule(int id,const QString &name){return new type(id,name);}\
    Q_DECL_EXPORT void destoryModule(QModuleInterface * p){type * tem = (type*)p;if(tem)delete tem;}\
 };
 
