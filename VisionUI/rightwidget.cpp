@@ -2,6 +2,7 @@
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IData.h"
+#include "../include/IVision.h"
 #include <QStyleOption>
 #include <QPainter>
 #include "../common/SystemData.h"
@@ -15,9 +16,11 @@ QRightWidget::QRightWidget(QWidget *parent)
 	this->setFixedWidth(410);
 
 	IData * pData = getModule<IData>(DATA_MODEL);
-	if (pData)
+	IVision* pVision = getModule<IVision>(VISION_MODEL);
+	if (pData && pVision)
 	{
-		m_widgetEdit = pData->getToolWidget(true);
+		m_widgetEdit = pVision->getDetectView();
+		//m_widgetEdit = pData->getToolWidget(true);
 		m_widgetRun = pData->getToolWidget(false);
 		m_widgetRun->setVisible(false);
 

@@ -77,15 +77,6 @@
     <ClCompile Include="DalsaDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_QMainView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_QMainView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="QMainView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_QMainCameraOnLive.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -113,6 +104,15 @@
     <ClCompile Include="HObjectEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_QMainProcess.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_QMainProcess.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="QMainProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="caramemodel_global.h">
@@ -138,9 +138,6 @@
     </ClInclude>
     <ClInclude Include="MatHeader.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_QMainView.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="HWndCtrl.h">
       <Filter>Header Files</Filter>
@@ -171,12 +168,6 @@
     <CustomBuild Include="viewctrl.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="QMainView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="QMainView.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="QMainCameraOnLive.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -184,6 +175,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\DataModule\QDetectObj.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QMainProcess.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -1,7 +1,4 @@
 ﻿#include "QMainView.h"
-#include "CameraCtrl.h"
-#include "QMainCameraOnLive.h"
-#include "caramemodel_global.h"
 
 #include <QFileDialog>
 #include "../Common/SystemData.h"
@@ -9,6 +6,7 @@
 #include "../include/IdDefine.h"
 #include "../include/IData.h"
 #include "../include/IVision.h"
+#include "../include/ICamera.h"
 #include "../Common/ThreadPrioc.h"
 #include "../Common/eos.h"
 #include <QVBoxLayout>
@@ -43,8 +41,8 @@ const int MODE_VIEW_NONE = 1;
 const int MODE_VIEW_SELECT = 2;
 const int MODE_VIEW_MOVE = 3;
 
-QMainView::QMainView(CameraCtrl* pCameraCtrl, QWidget *parent)
-	: m_pCameraCtrl(pCameraCtrl), QMainWindow(parent)
+QMainView::QMainView(QWidget *parent)
+	:QMainWindow(parent)
 {
 	ui.setupUi(this);
 
@@ -71,14 +69,6 @@ QMainView::QMainView(CameraCtrl* pCameraCtrl, QWidget *parent)
 
 	m_mouseLeftPressed = false;
 	m_mouseRightPressed = false;
-
-	m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM;
-	m_bCaptureDone = false;
-	m_bCaptureLocker = false;
-
-	m_nStation = -1;
-
-	m_pCameraOnLive = NULL;
 
 	m_bShow3DInitial = false;
 	m_bMainView3DInitial = false;
@@ -230,11 +220,11 @@ void QMainView::openFile()
 
 void QMainView::cameraFile()
 {
-	CameraDevice * tmpDevice = m_pCameraCtrl->getCamera(0);
-	if (tmpDevice)
+	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	if (pCam)
 	{
 		cv::Mat img;
-		if (tmpDevice->captureImage(img))
+		if (pCam->grabCamImage(0, img, true))
 		{
 			m_hoImage = img;
 
@@ -419,7 +409,7 @@ void QMainView::addImageText(QString szText)
 
 	cv::Mat image = m_hoImage.clone();
 	double fontScale = dScaleFactor*2.0f;
-	cv::putText(image, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, Scalar(0, 0, 255), 2);
+	cv::putText(image, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
 
 	// show
 	displayImage(image);
@@ -707,7 +697,7 @@ void QMainView::displayAllObjs()
 		QDetectObj* pObj = pData->getObj(i, EM_DATA_TYPE_OBJ);
 		if (pObj)
 		{
-			Point2f vertices[4];
+			cv::Point2f vertices[4];
 			pObj->getFrame().points(vertices);
 
 			if (true)
@@ -722,19 +712,19 @@ void QMainView::displayAllObjs()
 				cv::String text = QString("%1").arg(i + 1).toStdString();
 
 				double fontScale = dScaleFactor*3.0f;
-				cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, Scalar(0, 255, 255), 2);
+				cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 255, 255), 2);
 			}
 
 			for (int i = 0; i < 4; i++)
 			{
-				line(matImage, vertices[i], vertices[(i + 1) % 4], Scalar(128, 255, 255), 5);
+				line(matImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(128, 255, 255), 5);
 			}
 
 			pObj->getLoc().points(vertices);
 
 			for (int i = 0; i < 4; i++)
 			{
-				line(matImage, vertices[i], vertices[(i + 1) % 4], Scalar(255, 255, 0), 5);
+				line(matImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 255, 0), 5);
 			}
 
 			for (int j = 0; j < pObj->getHeightBaseNum(); j++)
@@ -753,12 +743,12 @@ void QMainView::displayAllObjs()
 					cv::String text = QString("%1").arg(j + 1).toStdString();
 
 					double fontScale = dScaleFactor*2.0f;
-					cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, Scalar(0, 0, 255), 2);
+					cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
 				}
 
 				for (int i = 0; i < 4; i++)
 				{
-					line(matImage, vertices[i], vertices[(i + 1) % 4], Scalar(255, 0, 0), 5);
+					line(matImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 0, 0), 5);
 				}
 			}
 
@@ -778,12 +768,12 @@ void QMainView::displayAllObjs()
 					cv::String text = QString("%1").arg(j + 1).toStdString();
 
 					double fontScale = dScaleFactor*2.0f;
-					cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, Scalar(0, 0, 255), 2);
+					cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
 				}
 
 				for (int i = 0; i < 4; i++)
 				{
-					line(matImage, vertices[i], vertices[(i + 1) % 4], Scalar(0, 255, 0), 5);
+					line(matImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(0, 255, 0), 5);
 				}
 			}
 		}
@@ -794,7 +784,7 @@ void QMainView::displayAllObjs()
 
 void QMainView::loadImage(QString& fileName)
 {
-	m_hoImage = imread(fileName.toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_COLOR);
+	m_hoImage = cv::imread(fileName.toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_COLOR);
 
 	m_imageWidth = m_hoImage.size().width;
 	m_imageHeight = m_hoImage.size().height;
@@ -814,18 +804,18 @@ void QMainView::repaintAll()
 	{
 		cv::Mat matRect = matImage(m_selectROI);
 		//rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
-		cv::Mat imgLayer(m_selectROI.height, m_selectROI.width, matImage.type()/*CV_8UC3*/, Scalar(255, 128, 0));
+		cv::Mat imgLayer(m_selectROI.height, m_selectROI.width, matImage.type()/*CV_8UC3*/, cv::Scalar(255, 128, 0));
 
 		double alpha = 0.3;
 		addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
 
-		cv::rectangle(matImage, m_selectROI, Scalar(128, 64, 0), 1, 8, 0);
+		cv::rectangle(matImage, m_selectROI, cv::Scalar(128, 64, 0), 1, 8, 0);
 	}
 
 	displayImage(matImage);
 }
 
-void QMainView::A_Transform(Mat& src, Mat& dst, int dx, int dy)
+void QMainView::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 {
 	CV_Assert(src.depth() == CV_8U);//CV_Assert（）若括号中的表达式值为false，则返回一个错误信息。  
 	const int rows = src.rows;
@@ -835,19 +825,19 @@ void QMainView::A_Transform(Mat& src, Mat& dst, int dx, int dy)
 	//dst.row(i).setTo(Scalar(255));
 	//dst.col(j).setTo(Scalar(255));
 
-	dst.setTo(Scalar(0, 0, 0));
+	dst.setTo(cv::Scalar(0, 0, 0));
 
-	Vec3b *p;   //定义一个存放3通道的容器指针p  
+	cv::Vec3b *p;   //定义一个存放3通道的容器指针p  
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			p = dst.ptr<Vec3b>(i);//指向行数的容器p  
+			p = dst.ptr<cv::Vec3b>(i);//指向行数的容器p  
 			int x = j - dx;
 			int y = i - dy;
 			if (x>0 && y>0 && x < cols&&y < rows)//平移后的像素坐标在原图像的行数和列数内  
 			{
-				p[i, j] = src.ptr<Vec3b>(y)[x];//平移后的图像（i,j)对应于原图像的（y,x)  
+				p[i, j] = src.ptr<cv::Vec3b>(y)[x];//平移后的图像（i,j)对应于原图像的（y,x)  
 			}
 		}
 	}
@@ -1127,168 +1117,17 @@ void QMainView::setButtonsEnable(bool flag)
 	//moveAct->setEnabled(flag);
 }
 
-void QMainView::pushImageBuffer(cv::Mat& matImage)
-{
-	m_bufferImages.push_back(matImage);
-}
-
-void QMainView::setImageBuffer(QVector<cv::Mat>& matImages)
-{
-	for (int i = 0; i < matImages.size(); i++)
-	{
-		m_bufferImages.push_back(matImages[i]);
-	}
-}
-
-const QVector<cv::Mat>& QMainView::getImageBuffer()
-{
-	return m_bufferImages;
-}
-
-const cv::Mat& QMainView::getImageItemBuffer(int nIndex)
-{
-	return (m_bufferImages[nIndex]);
-}
-
-int	QMainView::getImageBufferNum()
-{
-	return m_nCaptureNum;
-}
-
-int QMainView::getImageBufferCaptureNum()
-{
-	return m_bufferImages.size();
-}
-
-void QMainView::clearImageBuffer()
-{
-	m_bufferImages.clear();
-	m_bCaptureDone = false;
-}
-
-bool QMainView::startCapturing()
-{
-	if (m_pCameraCtrl->getCameraCount() <= 0) return false;
-
-	//m_pCameraCtrl->getCamera(0)->startGrabing(getImageBufferNum());	
-
-	clearImageBuffer();
-
-	int nWaitTime = 2* 1000;
-	while (!m_pCameraCtrl->getCamera(0)->isGrabing() && (nWaitTime-- > 0))
-	{
-		QThread::msleep(1);
-	}
-
-	if (nWaitTime > 0)
-	{		
-		return true;
-	}
-
-	return false;	
-}
-
-void QMainView::setCaptureImageBufferDone()
-{
-	m_bCaptureDone = true;
-}
-
-bool QMainView::isCaptureImageBufferDone()
-{
-	return m_bCaptureDone;
-}
-
-bool QMainView::lockCameraCapture(int iStation)
-{
-	QAutoLocker loacker(&m_mutex);
-
-	if (m_bCaptureLocker)
-	{
-		return false;
-	}
-	else
-	{
-		m_nStation = iStation;
-		m_bCaptureLocker = true;
-		return true;
-	}
-}
-
-void QMainView::unlockCameraCapture()
-{
-	QAutoLocker loacker(&m_mutex);	
-
-	m_bCaptureLocker = false;
-}
-
-bool QMainView::isCameraCaptureAvaiable()
-{
-	QAutoLocker loacker(&m_mutex);
-
-	return !m_bCaptureLocker;
-}
-
-int QMainView::getStation()
-{
-	return m_nStation;
-}
-
 bool QMainView::startUpCapture()
 {	
-	if (m_pCameraCtrl->getCameraCount() <= 0)
-	{
-		return false;
-	}
-
-	if (!m_pCameraOnLive)
-	{
-		int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
-		bool bMotionCardTrigger = (1 == nDlpMode);
-
-		if (bMotionCardTrigger)
-		{
-			int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-
-			m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;
-		}
-		else
-		{
-			m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM;
-		}		
-
-		setButtonsEnable(false);
-		fullImage();		
-
-		//m_pCameraOnLive = new MainCameraOnLive(this, m_pCameraCtrl->getCamera(0));
-		m_pCameraOnLive->start();
-	}
+	setButtonsEnable(false);
+	fullImage();	
 
 	return true;
 }
 
 bool QMainView::endUpCapture()
 {
-	if (m_pCameraCtrl->getCameraCount() <= 0)
-	{
-		return false;
-	}
-
-	if (m_pCameraOnLive)
-	{
-		m_pCameraCtrl->getCamera(0)->stopGrabing();
-
-		m_pCameraOnLive->setQuitFlag();
-		while (m_pCameraOnLive->isRuning())
-		{
-			QThread::msleep(10);
-			QApplication::processEvents();
-		}
-		QThread::msleep(200);
-		delete m_pCameraOnLive;
-		m_pCameraOnLive = NULL;
-
-		setButtonsEnable(true);
-	}
+	setButtonsEnable(true);
 
 	return true;
 }

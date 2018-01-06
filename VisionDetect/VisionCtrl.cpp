@@ -4,7 +4,6 @@
 #include "visiondetect_global.h"
 
 #include "VLCellEditor.h"
-#include "VisionView.h"
 #include "VLProfileEditor.h"
 
 #include <QDateTime>
@@ -38,7 +37,6 @@ VisionCtrl::VisionCtrl(QObject *parent)
 	m_pVLCellTmpEditor = new QVLCellEditor(EM_DATA_TYPE_TMP);
 	m_pVLCellObjEditor = new QVLCellEditor(EM_DATA_TYPE_OBJ);
 	m_pVLProflieEditor = new QVLProfileEditor(this);
-	m_pView = new VisionView(this);
 
 	Vision::PR_VERSION_INFO info;
 	Vision::PR_GetVersion(&info);
@@ -86,20 +84,9 @@ VisionCtrl::~VisionCtrl()
 	{
 		delete m_pVLProflieEditor;
 		m_pVLProflieEditor = NULL;
-	}
-
-    //XSG: To prevent crash, because it is shared to another widget, and it is released by other widget.
-	//if (m_pView)
-	//{
-	//	delete m_pView;
-	//	m_pView = NULL;
-	//}
+	}   
 }
 
-VisionView* VisionCtrl::getVisionView()
-{
-	return m_pView;
-}
 
 QVLCellEditor* VisionCtrl::getCellTmpEditor()
 {

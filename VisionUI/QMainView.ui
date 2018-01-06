@@ -1,26 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>VisionDetectSetting</class>
- <widget class="QMainWindow" name="VisionDetectSetting">
+ <class>QMainView</class>
+ <widget class="QMainWindow" name="QMainView">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
-    <height>850</height>
+    <width>1226</width>
+    <height>861</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>VisionDetectSetting</string>
+   <string>QMainView</string>
   </property>
-  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QLabel" name="label_Img">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1200</width>
+      <height>800</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
-     <height>26</height>
+     <width>1226</width>
+     <height>23</height>
     </rect>
    </property>
   </widget>

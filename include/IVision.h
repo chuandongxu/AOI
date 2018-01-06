@@ -9,6 +9,9 @@ class QProfileObj;
 class IVision
 {
 public:
+	virtual QWidget* getDetectView() = 0;
+
+public:
 	virtual bool loadCmdData(int nStation) = 0;
 	virtual bool loadImage(cv::Mat& matImg) = 0;
 

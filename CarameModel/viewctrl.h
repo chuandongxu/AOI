@@ -13,8 +13,6 @@
 
 #include "opencv/cv.h"
 
-using namespace cv;
-
 class ViewCtrl;
 class CameraOnLive :public QThread
 {

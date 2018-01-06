@@ -3,11 +3,11 @@
 #include <QObject>
 #include <QRunnable>
 
-class VisionDetectSetting;
+class VisionDetectRunView;
 class QCameraRunnable : public QRunnable
 {
 public:
-	QCameraRunnable(VisionDetectSetting* pSetting);
+	QCameraRunnable(VisionDetectRunView* pSetting);
 	~QCameraRunnable();
 
 	void quit();	
@@ -33,5 +33,5 @@ private:
 	bool m_bCapturing;
 	//QMutex m_mutex;
 
-	VisionDetectSetting* m_pSetting;
+	VisionDetectRunView* m_pSetting;
 };

@@ -4,12 +4,12 @@
 #include "../Common/SystemData.h"
 #include "AttchWidget.h"
 #include "qlist.h"
+#include "QMainProcess.h"
 #include "CameraSetting.h"
 
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-
 
 CameraModule::CameraModule(int id, const QString &name)
 	:QModuleBase(id, name)
@@ -37,8 +37,7 @@ void CameraModule::initial(int nWindow)
 
 	m_pSetting = NULL;
 
-	m_pMainView = NULL;
-	m_pMainView = new QMainView(m_pCameraCtrl);
+	m_pMainProcess = QSharedPointer<QMainProcess>(new QMainProcess(m_pCameraCtrl));
 
 	// 错误码
 	setErrorMap();
@@ -54,12 +53,6 @@ void CameraModule::unInit()
 		delete m_pCameraCtrl;
 		m_pCameraCtrl = NULL;
 	}
-
-	/*if (m_pMainView)
-	{
-		delete m_pMainView;
-		m_pMainView = NULL;
-	}*/
 }
 
 void CameraModule::openCamera()
@@ -89,9 +82,9 @@ bool CameraModule::startUpCapture()
 		m_pSetting->endUpCapture();
 	}
 
-	if (m_pMainView)
+	if (m_pMainProcess)
 	{
-		return m_pMainView->startUpCapture();
+		return m_pMainProcess->startUpCapture();
 	}
 
 	return false;
@@ -99,81 +92,61 @@ bool CameraModule::startUpCapture()
 
 bool CameraModule::endUpCapture()
 {	
-	if (m_pMainView)
+	if (m_pMainProcess)
 	{
-		return m_pMainView->endUpCapture();
+		return m_pMainProcess->endUpCapture();
 	}
 	return false;
 }
 
 const QVector<cv::Mat>& CameraModule::getImageBuffer()
 {
-	return m_pMainView->getImageBuffer();
+	return m_pMainProcess->getImageBuffer();
 }
 
 const cv::Mat& CameraModule::getImageItemBuffer(int nIndex)
 {
-	return m_pMainView->getImageItemBuffer(nIndex);
+	return m_pMainProcess->getImageItemBuffer(nIndex);
 }
 
 int CameraModule::getImageBufferNum()
 {	
-	return m_pMainView->getImageBufferNum();
+	return m_pMainProcess->getImageBufferNum();
 }
 
 int CameraModule::getImageBufferCaptureNum()
 {
-	return m_pMainView->getImageBufferCaptureNum();
+	return m_pMainProcess->getImageBufferCaptureNum();
 }
 
 bool CameraModule::startCapturing()
 {
-	return m_pMainView->startCapturing();
+	return m_pMainProcess->startCapturing();
 }
 
 void CameraModule::clearImageBuffer()
 {
-	m_pMainView->clearImageBuffer();
+	m_pMainProcess->clearImageBuffer();
 }
 
 bool CameraModule::isCaptureImageBufferDone()
 {
-	return m_pMainView->isCaptureImageBufferDone();
+	return m_pMainProcess->isCaptureImageBufferDone();
 }
 
 bool CameraModule::lockCameraCapture(int iStation)
 {
-	return m_pMainView->lockCameraCapture(iStation);
+	return m_pMainProcess->lockCameraCapture(iStation);
 }
 
 void CameraModule::unlockCameraCapture()
 {
-	m_pMainView->unlockCameraCapture();
+	m_pMainProcess->unlockCameraCapture();
 }
 
 bool CameraModule::isCameraCaptureAvaiable()
 {
-	return m_pMainView->isCameraCaptureAvaiable();
-}
-
-void CameraModule::addImageText(QString& szText)
-{
-	m_pMainView->addImageText(szText);
-}
-
-void CameraModule::clearImage()
-{
-	m_pMainView->clearImage();
-}
-
-void CameraModule::setImage(cv::Mat& image, bool bDisplay)
-{
-	m_pMainView->setImage(image, bDisplay);
-}
-
-void CameraModule::setHeightData(cv::Mat& matHeight)
-{
-	m_pMainView->setHeightData(matHeight);
+	return m_pMainProcess->isCameraCaptureAvaiable();
 }
 
 bool CameraModule::grabCamImage(int nCamera, cv::Mat& image, bool bSync)
@@ -224,11 +197,6 @@ void CameraModule::addSettingWiddget(QTabWidget *tabWidget)
 		//tabWidget->setEnabled(false);
 	}
 		
-}
-
-QWidget* CameraModule::getMainView()
-{
-	return m_pMainView;
 }
 
 void CameraModule::load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues)

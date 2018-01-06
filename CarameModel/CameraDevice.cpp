@@ -299,7 +299,7 @@ bool BaslerCameraDevice::captureImage(cv::Mat &imageMat)
 				fc.Convert(image, ptrGrabResult);
 				//imageMat = cv::Mat(height, width, CV_8UC3, image.GetBuffer(), Mat::AUTO_STEP).clone();
 
-				Mat imageNew(height, width, CV_8UC3);
+				cv::Mat imageNew(height, width, CV_8UC3);
 				memcpy(imageNew.ptr(), image.GetBuffer(), 3 * width*height);
 
 				imageMat = imageNew;
@@ -414,7 +414,7 @@ bool BaslerCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 				CPylonImage image;
 				fc.Convert(image, ptrGrabResult);
 
-				Mat imageNew(height, width, CV_8UC3);
+				cv::Mat imageNew(height, width, CV_8UC3);
 				memcpy(imageNew.ptr(), image.GetBuffer(), 3 * width*height);
 
 				image.Release();

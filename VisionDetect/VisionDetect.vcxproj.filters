@@ -182,6 +182,15 @@
     <ClCompile Include="QCameraRunnable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_VisionDetectRunView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_VisionDetectRunView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="VisionDetectRunView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VisionDetect.h">
@@ -218,6 +227,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_QProfileView.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_VisionDetectRunView.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -307,6 +319,12 @@
     </CustomBuild>
     <CustomBuild Include="QCameraRunnable.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="VisionDetectRunView.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="VisionDetectRunView.ui">
+      <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
