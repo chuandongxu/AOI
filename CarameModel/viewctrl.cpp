@@ -53,7 +53,7 @@ void CameraOnLive::run()
 	{
 		if (bHardwareTrigger)
 		{
-			/*if (bHardwareFirstCaptured)
+			if (bHardwareFirstCaptured)
 			{
 				bHardwareFirstCaptured = false;
 
@@ -74,7 +74,7 @@ void CameraOnLive::run()
 				}
 				m_pCtrl->clearImage();
 				if (m_bQuit)break;
-			}*/
+			}
 
 			m_pCameraTmp->startGrabing(m_pCtrl->getImageBufferNum());
 
@@ -418,15 +418,6 @@ void ViewCtrl::connectCameraCtrl( CameraCtrl* pCameralCtrl )
 
 void ViewCtrl::onMenu_Draw_Triggered(QAction * action)
 {
-	//Mat* pHo = NULL;
-	//Mat* pHo2 = NULL;
-	//cv::Mat * pHo = &(m_hoRegionDrawObject);
-	//cv::Mat * pHo2 = &(m_hoImageDrawObject);
-	//cv::Mat * pHv = &(m_hvDrawObject);
-	//pHo->release();
-	//pHo2->release();
-	//pHv->release();
-
 	if (m_hoImage.empty()) return;
 	
 	m_hwndCtrl.setShowFlag(false);	
@@ -473,9 +464,6 @@ void ViewCtrl::onMenu_Draw_Triggered(QAction * action)
 	// show
 	m_hwndCtrl.clearList();
 	m_hwndCtrl.addObj( m_hoImage, true );
-	//m_hwndCtrl.changeGraphicSettings( "DrawMode", "margin");
-	//m_hwndCtrl.changeGraphicSettings( "Color", "red");
-	//m_hwndCtrl.addObj(*pHo);
 	m_hwndCtrl.repaint();
 
 	m_hwndCtrl.setShowFlag(true);
@@ -526,31 +514,6 @@ QRect  ViewCtrl::getHWindowRect()
 {
 	QRect tmp = ui.toolButton_firstPic->geometry();
 	return QRect( tmp.left(), tmp.top() + tmp.height() + 3 , this->width() - 2 *tmp.left() , this->height() - tmp.top() - tmp.height() - 6  );
-}
-
-void   ViewCtrl::getDrawObjects(  int nCamera,   void *pHo_Region , void * pHv_ofRegion, void *pHo_Image ) 
-{
-	if (!pHo_Region)
-	{
-		return;
-	}
-
-	cv::Mat *pHo_RegionTmp = (cv::Mat*)pHo_Region;
-	cv::Mat  *pHv_ofRegionTmp = (cv::Mat*)pHv_ofRegion;
-	cv::Mat *pHo_ImageTmp = (cv::Mat*)pHo_Image;
-	pHo_RegionTmp->release();
-
-	*pHo_RegionTmp = m_hoRegionDrawObject;
-	if (NULL != pHv_ofRegion)
-	{
-		*pHv_ofRegionTmp = m_hvDrawObject;
-	}
-
-	if (NULL != pHo_Image)
-	{
-		pHo_ImageTmp->release();
-		*pHo_ImageTmp = m_hoImageDrawObject;
-	}
 }
 
 void ViewCtrl::addImageText(QString szText)
@@ -918,12 +881,6 @@ void  ViewCtrl::onToolButton_3DView()
 	show3D();
 }
 
-
-HWndCtrl *   ViewCtrl::getHwndCtrl( )
-{
-	return &m_hwndCtrl;
-	 
-}
 
 CameraCtrl * ViewCtrl::getCameraCtrl()
 {

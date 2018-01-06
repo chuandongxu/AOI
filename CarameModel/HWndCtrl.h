@@ -1,7 +1,6 @@
 #pragma once
 #include <QMessageBox>
 #include <QGraphicsView>
-#include "GraphicsContext.h"
 #include "HObjectEntry.h"
 #include "qlineedit.h"
 #include <QLabel>
@@ -44,7 +43,7 @@ public:
 	~HWndCtrl(void);
 
 private:
-	QLabel* hv_windowHandle; // Halcon 窗口
+	QLabel* hv_windowHandle; 
 
 public:
 	/// <summary>Error message when an exception is thrown</summary>
@@ -62,7 +61,7 @@ private:
 	/* dispROI is a flag to know when to add the ROI models to the
 	   paint routine and whether or not to respond to mouse events for
 	   ROI objects */
-	int           dispROI;
+	int   dispROI;
 
 	/* Basic parameters, like dimension of window and displayed image part */
 	int   windowWidth;
@@ -70,16 +69,12 @@ private:
 	int   imageWidth;
 	int   imageHeight;
 
-	// 		 int[] CompRangeX;
-	// 		 int[] CompRangeY;
-
-
 	int    prevCompX, prevCompY;
 	double stepSizeX, stepSizeY;
 
 
 	/* Image coordinates, which describe the image part that is displayed
-	   in the HALCON window */
+	   in the window */
 	double ImgRow1, ImgCol1, ImgRow2, ImgCol2;
 
 	//public double  zoomWndFactor;
@@ -87,32 +82,23 @@ private:
 	int     zoomWndSize;
 
 	/// <summary> 
-	/// List of HALCON objects to be drawn into the HALCON window. 
+	/// List of objects to be drawn into the window. 
 	/// The list shouldn't contain more than MAXNUMOBJLIST objects, 
 	/// otherwise the first entry is removed from the list.
 	/// </summary>
 	QList<HObjectEntry> HObjList;
-
-	/// <summary>
-	/// Instance that describes the graphical context for the
-	/// HALCON window. According on the graphical settings
-	/// attached to each HALCON object, this graphical context list 
-	/// is updated constantly.
-	/// </summary>
-	GraphicsContext	 mGC; // 当前设置状态，每次添加新的对象则同时添加当前设置
-
 
 private:
 	void initial(QRect rect);
 
 	QDialog   *m_pWidgetValue;  // 显示像素值
 	QLineEdit *m_pPosEdit;
-	QLineEdit *m_pValueEdit;
-	void showPixelValue(double posX, double posY);
+	QLineEdit *m_pValueEdit;	
 	bool m_bShowFlag;  // 是否显示像素值标志位
 
-	QWidget * m_parent;
+	void showPixelValue(double posX, double posY);
 
+	QWidget * m_parent;
 protected:
 	void mouseMoveEvent(QMouseEvent * event);
 	void mousePressEvent(QMouseEvent * event);
@@ -127,19 +113,22 @@ public:
 	void resetAll(int flag = 0);
 	void clearList();
 	void setImagePart(int r1, int c1, int r2, int c2);
-	void repaint();
-	QImage cvMat2QImage(const cv::Mat& mat);
-	cv::Mat QImage2cvMat(QImage image);
-	void A_Transform(Mat& src, Mat& dst, int dx, int dy);
-	void changeGraphicSettings(QString mode, QString val);
-	void setViewState(int state);
+	void repaint();	
+	
 	void zoomImage(double x, double y, double scale);
 	void moveImage(double motionX, double motionY);
 	void setHWindowSize(QRect rect = QRect());
+	void setViewState(int state);
 	void setShowFlag(bool bShowFlag);
 	QLabel* getHWindowHandle();
 
 	int getImageWidth();
 	int getImageHeight();
+
+private:
+	QImage cvMat2QImage(const cv::Mat& mat);
+	cv::Mat QImage2cvMat(QImage image);
+
+	void A_Transform(Mat& src, Mat& dst, int dx, int dy);	
 };
 

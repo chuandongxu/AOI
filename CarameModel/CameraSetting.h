@@ -13,8 +13,13 @@ class CameraSetting : public QWidget
 	Q_OBJECT
 
 public:
-	CameraSetting(CameraCtrl* pCameraCtrl, ViewCtrl* mainWidget, QWidget *parent = Q_NULLPTR);
+	CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent = Q_NULLPTR);
 	~CameraSetting();
+
+public:
+	void endUpCapture();
+	void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues);
+	void show3DView();
 
 protected slots:
 	void onStateChangeHWTrig(int iState);
@@ -55,7 +60,7 @@ private:
 
 private:
 	Ui::CameraSetting ui;
-	CameraCtrl*      m_pCameraCtrl;
+	CameraCtrl* m_pCameraCtrl;
 	ViewCtrl* m_mainView;
 	IGraphicEditor *m_pGraphicsEditor;	
 };

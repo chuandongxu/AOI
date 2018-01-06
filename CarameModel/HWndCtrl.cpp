@@ -16,10 +16,6 @@
 HWndCtrl::HWndCtrl( QWidget *parent  ) 
 	:QWidget(parent) , m_parent(parent)
 {
-	//QRect rect = QRect(0 , 0 ,30,30);
- 	//this->setGeometry( rect );
-
-	//rectWindow = QRect(0,0 ,rect.width(), rect.height() );
 	rectWindow = geometry();
 
 	stateView = MODE_VIEW_NONE;
@@ -40,8 +36,6 @@ HWndCtrl::HWndCtrl( QWidget *parent  )
 
 	dispROI = MODE_INCLUDE_ROI;//1;
 
-	mGC =  GraphicsContext();
-
 	QVBoxLayout *vboxLayout = new QVBoxLayout();
 	hv_windowHandle = new QLabel(this);	
 	vboxLayout->addWidget(hv_windowHandle);
@@ -50,7 +44,6 @@ HWndCtrl::HWndCtrl( QWidget *parent  )
 
 	// 用于显示像素值的窗口
  	m_pWidgetValue = new QDialog( this );
-	//m_pWidgetValue->setWindowFlags( Qt::FramelessWindowHint );  // 注意，这样设置后就无法显示了，昏 
 	m_pWidgetValue->setWindowFlags( Qt::Dialog | Qt::FramelessWindowHint );
  	QLabel *pLabel1 = new QLabel(m_pWidgetValue);
  	pLabel1->setText("pos   : ");
@@ -106,16 +99,7 @@ int HWndCtrl::getImageHeight()
 void HWndCtrl::paintEvent( QPaintEvent *event )
 {
 	if (hv_windowHandle)
-	{
-		//QRect rect = this->geometry();
-		//if (rect.width() > windowWidth)
-		//{
-		//	rectWindow = QRect(rect.x(), rect.y(), rect.width(), rect.height());
-		//	windowWidth = rectWindow.width();
-		//	windowHeight = rectWindow.height();
-		//	qDebug() << "x " << rect.x() << " Y " << rect.y() << " width " << windowWidth << " height " << windowHeight;
-		//}	
-		
+	{			
 		QPalette palette;
 		palette.setColor(QPalette::Background, QColor(0, 0, 0));
 		this->setPalette(palette);
@@ -286,7 +270,7 @@ void HWndCtrl::addObj(cv::Mat &obj, bool bImage)
 		}
 	}
 
-	HObjectEntry entry = HObjectEntry(obj, mGC.copyContextList());
+	HObjectEntry entry = HObjectEntry(obj);
 	HObjList<<entry;
 
 	if (HObjList.length() > MAXNUMOBJLIST)
@@ -364,11 +348,8 @@ void HWndCtrl::clearList()
 	 for (int i = 0; i < count; i++)
 	 {
 		 HObjectEntry entry = ((HObjectEntry)HObjList[i]);
-		 mGC.applyContext(hv_windowHandle, entry.gContext);	
 
 		 QRect rect = hv_windowHandle->geometry();
-
-		 //qDebug() << rect.x() << " " << rect.y() << " " << rect.width() << " " << rect.height();
 
 		 cv::Mat mat, matMoved;
 		 double fScaleW = rect.width()*1.0 / entry._Obj.size().width;
@@ -385,12 +366,7 @@ void HWndCtrl::clearList()
 			 {
 				 cvtColor(mat, mat, CV_GRAY2RGB);
 			 }
-			 A_Transform(mat, matMoved, rect.x(), rect.y());
-			
-			 //Rect rects = Rect(0, 0, mat.cols, mat.rows);//建立与srcImage一样大小的矩形框（0,0）坐标是起点 
-			 //matMoved = Mat::zeros(mat.rows * 2, mat.cols * 4, mat.type());//设置移动区域A  			 
-			 //Mat ImageROI = matMoved(rects);
-			 //addWeighted(ImageROI, 0.1, mat, 1, 0., ImageROI);
+			 A_Transform(mat, matMoved, rect.x(), rect.y());		
 
 			 QImage image = QImage((uchar*)matMoved.data, matMoved.cols, matMoved.rows, ToInt(matMoved.step), QImage::Format_RGB888);
 			 //QImage image = cvMat2QImage(matMoved);
@@ -475,8 +451,6 @@ void HWndCtrl::clearList()
 	 const int cols = src.cols;
 	 dst.create(rows, cols, src.type());
 
-	 //dst.row(i).setTo(Scalar(255));
-	 //dst.col(j).setTo(Scalar(255));
 
 	 dst.setTo(Scalar(0, 0, 0));
 	
@@ -497,10 +471,6 @@ void HWndCtrl::clearList()
 
  }
 
- void HWndCtrl:: changeGraphicSettings(QString mode, QString val)
- {
-	 mGC.addValue(mode, val);
- }
 
  void HWndCtrl::setViewState( int state)
  {
@@ -556,9 +526,7 @@ void HWndCtrl::clearList()
 		 zoomWndFactor *= scale;
 		 setImagePart(ImgRow1, ImgCol1, ImgRow2, ImgCol2);
 		 repaint();
-
-	 } 
-	
+	 } 	
  }
 
  void HWndCtrl::moveImage(double motionX, double motionY)
@@ -576,7 +544,7 @@ void HWndCtrl::clearList()
 	 setImagePart(ImgRow1, ImgCol1, ImgRow2, ImgCol2);
 	 repaint();
 
-	 qDebug() << QString("move %1,%2").arg(motionX).arg(motionY) << endl;
+	 //qDebug() << QString("move %1,%2").arg(motionX).arg(motionY) << endl;
  }
 
  void HWndCtrl:: setHWindowSize( QRect rect  )

@@ -184,7 +184,7 @@ void QCellView::cameraFile()
 	if (pCam)
 	{
 		cv::Mat img;
-		if (pCam->grabCamImage(0, &img, true))
+		if (pCam->grabCamImage(0, img, true))
 		{
 			if (img.type() == CV_8UC1)
 			{

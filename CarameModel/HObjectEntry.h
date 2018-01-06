@@ -9,13 +9,10 @@
 class HObjectEntry
 {
 public:
-	HObjectEntry(cv::Mat obj, QMap<QString, QString> gc);
+	HObjectEntry(cv::Mat obj);
 	~HObjectEntry(void);
 
 public:
-	/// <summary>Hashlist defining the graphical context for HObj</summary>
-	QMap<QString, QString>	gContext;
-	/// <summary>HALCON object</summary>
 	cv::Mat _Obj;
 
 public:

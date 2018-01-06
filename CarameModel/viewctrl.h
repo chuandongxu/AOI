@@ -49,7 +49,7 @@ class ViewCtrl : public QWidget
 	Q_OBJECT
 
 public:
-	ViewCtrl(   QWidget *parent = 0);
+	ViewCtrl(QWidget *parent = 0);
 	~ViewCtrl();
 	void initial( int nWindow = 0 );
 	void setMyLayout();
@@ -68,26 +68,21 @@ private:
 	// 参数List
 	CameraCtrl      *m_pCameralCtrl;      // 相机
 	cv::Mat          m_hoImage;
-	HWndCtrl         m_hwndCtrl;          // Halcon 窗口控制
- 	QLabel*          m_hv_windowHandle;   // Halcon 窗口句柄
+	HWndCtrl         m_hwndCtrl;          // 窗口控制
+ 	QLabel*          m_hv_windowHandle;   // 窗口句柄
 
 	// 离线图片
 	QList<QString> m_picPath;       // 文件夹下所有 图片的路径 ， QList的长度即 m_hoImages 的个数
 	int            m_picIndCur;     // 当前图片序号
-	int           m_picNum;        // 图片数量
-	
-	// 绘图数据
-	cv::Mat  m_hoRegionDrawObject;  // 通过 draw 获取到的 region ， QList的长度即 m_indShow
-	cv::Mat  m_hoImageDrawObject;   // region 对应的图像
-	cv::Mat  m_hvDrawObject;        // 表示该region 的 htuple 数据
+	int            m_picNum;        // 图片数量
 
 	// 当前参数
 	CameraDevice  *m_pCameraCur;           // 当前相机
+
 public:
 	void setCurDevice( int indCam);
 
 public:
-	HWndCtrl   * getHwndCtrl( );
 	CameraCtrl * getCameraCtrl();
 	cv::Mat      getImage( int indPic =  -1 );
 	void		 setImageBuffer(QVector<cv::Mat>& matImages);
@@ -96,8 +91,7 @@ public:
 	void		 clearImageBuffer();
 	void         setButtonsEnable( bool flag);
 	void         freshCur();   // 当前主要使用变量值获取
-	void         freshNavigation();
-	void         getDrawObjects(  int nCamera,   void *pHo_Region , void * pHv_ofRegion = NULL , void *pHo_Image = NULL ) ;
+	void         freshNavigation();	
 
 	CameraDevice* getCurrentDevice(){
 		return m_pCameraCur;

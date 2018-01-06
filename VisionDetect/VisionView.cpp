@@ -186,7 +186,7 @@ void VisionView::cameraFile()
 	if (pCam)
 	{
 		cv::Mat img;
-		if (pCam->grabCamImage(0, &img, true))
+		if (pCam->grabCamImage(0, img, true))
 		{
 			m_hoImage = img;
 

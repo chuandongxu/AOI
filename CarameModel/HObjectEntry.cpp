@@ -4,10 +4,9 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-HObjectEntry::HObjectEntry(cv::Mat obj, QMap<QString, QString> gc)
+HObjectEntry::HObjectEntry(cv::Mat obj)
 {
-	_Obj = obj;
-	gContext = gc;
+	_Obj = obj;	
 }
 
 HObjectEntry::~HObjectEntry(void)
@@ -16,6 +15,5 @@ HObjectEntry::~HObjectEntry(void)
 
 void HObjectEntry::clear()
 {
-	_Obj.release();
-	gContext.clear();
+	_Obj.release();	
 }

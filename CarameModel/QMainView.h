@@ -69,6 +69,7 @@ private:
 
 	QAction *show3DAct;
 	QAction *selectROI;
+
 protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dragMoveEvent(QDragMoveEvent *event);

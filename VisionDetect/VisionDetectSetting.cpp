@@ -2252,9 +2252,9 @@ void VisionDetectSetting::on3DDetectShow()
 					zValues.push_back(mat3DHeight.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
 				}
 
-				pCam->show3DView(0);
-				pCam->load3DViewData(0, nSizeY, nSizeX, xValues, yValues, zValues);
-				pCam->show3DView(0);
+				pCam->show3DView();
+				pCam->load3DViewData(nSizeY, nSizeX, xValues, yValues, zValues);
+				pCam->show3DView();
 			}
 		}
 		else
@@ -2278,9 +2278,9 @@ void VisionDetectSetting::on3DDetectShow()
 				zValues.push_back(m_3DMatHeightMerge.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
 			}
 
-			pCam->show3DView(0);
-			pCam->load3DViewData(0, nSizeY, nSizeX, xValues, yValues, zValues);
-			pCam->show3DView(0);
+			pCam->show3DView();
+			pCam->load3DViewData(nSizeY, nSizeX, xValues, yValues, zValues);
+			pCam->show3DView();
 		}			
 	}
 

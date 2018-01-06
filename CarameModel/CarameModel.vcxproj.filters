@@ -41,15 +41,6 @@
     <ClCompile Include="CameraCtrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsContext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HObjectEntry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HWndCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="viewctrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -116,6 +107,12 @@
     <ClCompile Include="GeneratedFiles\Release\moc_QDetectObj.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="HWndCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HObjectEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="caramemodel_global.h">
@@ -125,12 +122,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CameraCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsContext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HObjectEntry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_viewctrl.h">
@@ -151,6 +142,12 @@
     <ClInclude Include="GeneratedFiles\ui_QMainView.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="HWndCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HObjectEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="viewctrl.ui">
@@ -160,9 +157,6 @@
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="AttchWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="HWndCtrl.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="CameraSetting.h">

@@ -14,13 +14,6 @@ VisionTestSetting::VisionTestSetting(VisionTestCtrl* pCtrl, QWidget *parent)
 {
 	ui.setupUi(this);
 
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	
-	QWidget* pWidget = pCam->getViewWidget(2);
-	ui.verticalLayout->addWidget(pWidget);;
-	pWidget->setFixedSize(600, 600);
-	//ui.verticalLayout->setAlignment(Qt::AlignTop);
-
 	initUI();
 }
 

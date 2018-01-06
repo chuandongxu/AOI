@@ -29,7 +29,6 @@ QWorkFlowWidget::QWorkFlowWidget(QWidget *parent)
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);	
 
 	m_subVLayout = new QHBoxLayout;
-	//QWidget* pWidget = pCam->getViewWidget(1);
 	QWidget* pWidget = pCam->getMainView();
 	m_subVLayout->addWidget(pWidget);;	
 	pWidget->setFixedSize(1200, 800);

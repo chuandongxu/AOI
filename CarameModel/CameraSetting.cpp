@@ -27,12 +27,16 @@ using namespace AOI;
 #define VISION_LOG_ALL		2
 #define VISION_LOG_FAIL		1
 
-CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, ViewCtrl* mainWidget, QWidget *parent)
-	: m_pCameraCtrl(pCameraCtrl), m_mainView(mainWidget), QWidget(parent)
+CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
+	: m_pCameraCtrl(pCameraCtrl), QWidget(parent)
 {
 	ui.setupUi(this);
 	
-	QHBoxLayout* pHBoxLayout = new QHBoxLayout();
+	m_mainView = new ViewCtrl();
+	m_mainView->initial();
+	m_mainView->connectCameraCtrl(pCameraCtrl);
+
+	QHBoxLayout* pHBoxLayout = new QHBoxLayout();	
 	pHBoxLayout->addWidget(m_mainView);
 	pHBoxLayout->setContentsMargins(0, 0, 0, 0);
 	pHBoxLayout->setAlignment(Qt::AlignTop);
@@ -40,7 +44,7 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, ViewCtrl* mainWidget, QWid
 	pHBoxLayout->setSpacing(1);
 	m_mainView->setFixedSize(750, 750);
 	ui.frame->setLayout(pHBoxLayout);
-
+	
 	m_pGraphicsEditor = new IGraphicEditor();
 	m_pGraphicsEditor->setViewPos(100, 0);
 	m_pGraphicsEditor->setScale(1.0, 100);		
@@ -215,6 +219,29 @@ CameraSetting::~CameraSetting()
 	}
 }
 
+void CameraSetting::endUpCapture()
+{
+	if (m_mainView)
+	{
+		m_mainView->endUpCapture();
+	}	
+}
+
+void CameraSetting::load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues)
+{
+	if (m_mainView)
+	{
+		m_mainView->load3DViewData(nSizeX, nSizeY, xValues, yValues, zValues);
+	}
+}
+
+void CameraSetting::show3DView()
+{
+	if (m_mainView)
+	{
+		m_mainView->show3D();
+	}
+}
 
 void CameraSetting::onStateChangeHWTrig(int iState)
 {
