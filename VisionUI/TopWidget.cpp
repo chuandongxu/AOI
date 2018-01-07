@@ -50,25 +50,31 @@ QTopWidget::QTopWidget(QWidget *parent) :
 	m_titleLayout->addStretch(0);
     m_titleLayout->addWidget(m_exitBtn,0,Qt::AlignRight|Qt::AlignTop);
 
-
+	QString stytleStr = "background-color: rgb(32, 105, 138);color:white;";
 	m_toolBtnAutoRun = new QPushButton();
 	m_toolBtnAutoRun->setFixedSize(100, 25);
 	m_toolBtnAutoRun->setText(QStringLiteral("开始运行"));
+	m_toolBtnAutoRun->setStyleSheet(stytleStr);
 	m_toolBtnSys = new QPushButton();
 	m_toolBtnSys->setFixedSize(100, 25);
 	m_toolBtnSys->setText(QStringLiteral("系统标定"));
+	m_toolBtnSys->setStyleSheet(stytleStr);
 	m_toolBtnHw = new QPushButton();
 	m_toolBtnHw->setFixedSize(100, 25);
 	m_toolBtnHw->setText(QStringLiteral("周边设备"));
+	m_toolBtnHw->setStyleSheet(stytleStr);
 	m_toolBtnTools = new QPushButton();
 	m_toolBtnTools->setFixedSize(100, 25);
 	m_toolBtnTools->setText(QStringLiteral("常用工具"));
+	m_toolBtnTools->setStyleSheet(stytleStr);
 	m_toolBtnSetting = new QPushButton();
 	m_toolBtnSetting->setFixedSize(100, 25);
 	m_toolBtnSetting->setText(QStringLiteral("参数设置"));
+	m_toolBtnSetting->setStyleSheet(stytleStr);
 	m_toolBtnData = new QPushButton();
 	m_toolBtnData->setFixedSize(100, 25);
 	m_toolBtnData->setText(QStringLiteral("元件资料"));
+	m_toolBtnData->setStyleSheet(stytleStr);
 
 	m_toolLayout->addSpacing(1000);
 	m_toolLayout->addWidget(m_toolBtnAutoRun, 0, Qt::AlignLeft | Qt::AlignBottom);
