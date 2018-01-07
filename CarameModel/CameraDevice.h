@@ -11,8 +11,6 @@ using namespace Pylon;
 
 #include "opencv/cv.h"
 
-using namespace cv;
-
 // Settings to use Basler GigE cameras.
 #include <pylon/gige/BaslerGigEInstantCamera.h>
 #include <pylon/AcquireSingleFrameConfiguration.h>

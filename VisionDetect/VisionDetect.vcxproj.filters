@@ -62,15 +62,6 @@
     <ClCompile Include="VisionDetectSetting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_VisionView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_VisionView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="VisionView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VLMaskEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -182,15 +173,21 @@
     <ClCompile Include="QCameraRunnable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_VisionDetectRunView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_VisionDetectRunView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="VisionDetectRunView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VisionDetect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_VisionDetectSetting.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_VisionView.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_QVLMaskEditor.h">
@@ -220,6 +217,9 @@
     <ClInclude Include="GeneratedFiles\ui_QProfileView.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_VisionDetectRunView.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="visiondetect_global.h">
@@ -234,12 +234,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="VisionDetectSetting.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="VisionView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="VisionView.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="QVLMaskEditor.ui">
@@ -307,6 +301,12 @@
     </CustomBuild>
     <CustomBuild Include="QCameraRunnable.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="VisionDetectRunView.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="VisionDetectRunView.ui">
+      <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

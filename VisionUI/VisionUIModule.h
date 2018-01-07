@@ -5,6 +5,7 @@
 #include "../include/VisionUI.h"
 #include "../Common/modulebase.h"
 
+class VisionView;
 class QVisionUIModule : public IVisionUI,public QModuleBase
 {
 public:
@@ -20,8 +21,20 @@ public:
 	void setCneterwidget(QWidget * centWidget);
 	void setTitle(const QString & str,const QString &ver);
 
+	virtual QWidget* getVisionView();
+	virtual void setImage(cv::Mat& matImage, bool bDisplay);
+	virtual void setHeightData(cv::Mat& matHeight);
+	virtual bool startUpCapture();
+	virtual bool endUpCapture();
+
+	virtual cv::Mat getImage();
+	virtual void clearImage();
+	virtual void addImageText(QString szText);
+	virtual void displayImage(cv::Mat& image);
+
 private:
 	void * m_mainWidget;
+	VisionView* m_pVisionView;
 };
 
 #endif // VISIONUI_H

@@ -1,20 +1,20 @@
 ﻿#include "QMainCameraOnLive.h"
 
-#include "QMainView.h"
+#include "QMainProcess.h"
 #include "CameraCtrl.h"
 
 #include <QFileDialog>
 #include "../Common/SystemData.h"
 #include <qdatetime.h>
 
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 #define ToInt(value)                (static_cast<int>(value))
 
-MainCameraOnLive::MainCameraOnLive(QMainView* pView, CameraDevice *pCameraTmp)
-	:m_pView(pView), m_pCameraTmp(pCameraTmp)
+MainCameraOnLive::MainCameraOnLive(QMainProcess* pMainProcess, CameraDevice *pCameraTmp)
+	:m_pMainProcess(pMainProcess), m_pCameraTmp(pCameraTmp)
 {
 	m_bQuit = false;
 	m_bRuning = false;
@@ -40,12 +40,11 @@ void MainCameraOnLive::preProcess()
 		//}
 		//m_pCameraTmp->clearGrabing();
 
-		m_pView->clearImage();
 		m_bPreCondition = false;
 	}
 
-	m_pView->clearImageBuffer();
-	m_pView->setCaptureImageBufferDone();
+	m_pMainProcess->clearImageBuffer();
+	m_pMainProcess->setCaptureImageBufferDone();
 
 	m_bRuning = true;
 }
@@ -56,13 +55,13 @@ void MainCameraOnLive::run()
 	
 	while (!m_bQuit)
 	{
-		if (m_pView->isCaptureImageBufferDone() && !m_bQuit)//debug functions
+		if (m_pMainProcess->isCaptureImageBufferDone() && !m_bQuit)//debug functions
 		{
 			QThread::msleep(1);			
 			continue;
 		}		
 		
-		if (m_pView->getStation() == 0)
+		if (m_pMainProcess->getStation() == 0)
 		{
 			System->setTrackInfo(QStringLiteral("启动测试..."));
 		}		
@@ -71,7 +70,7 @@ void MainCameraOnLive::run()
 			//System->setTrackInfo(QStringLiteral("start grabing by station %1").arg(m_pView->getStation()));
 		}
 
-		if (!m_pCameraTmp->startGrabing(m_pView->getImageBufferNum()))
+		if (!m_pCameraTmp->startGrabing(m_pMainProcess->getImageBufferNum()))
 		{
 			System->setTrackInfo("startGrabing error!");
 			QThread::msleep(100);
@@ -82,8 +81,8 @@ void MainCameraOnLive::run()
 		if (m_pCameraTmp->captureImageByFrameTrig(buffers))
 		{
 			m_pCameraTmp->stopGrabing();			
-			m_pView->setImageBuffer(buffers);
-			m_pView->setCaptureImageBufferDone();	
+			m_pMainProcess->setImageBuffer(buffers);
+			m_pMainProcess->setCaptureImageBufferDone();
 
 			//System->setTrackInfo(QString("XXX System captureImages Image Num: %1").arg(buffers.size()));
 
@@ -92,7 +91,7 @@ void MainCameraOnLive::run()
 		else
 		{
 			m_pCameraTmp->stopGrabing();
-			m_pView->setCaptureImageBufferDone();
+			m_pMainProcess->setCaptureImageBufferDone();
 			System->setTrackInfo("Capture Images Time Out. Try again!");
 		}
 
@@ -166,11 +165,11 @@ void MainCameraOnLive::drawCross(cv::Mat& image)
 	startPt.y = image.size().height / 2;
 	endPt.x = image.size().width;
 	endPt.y = image.size().height / 2;
-	cv::line(image, startPt, endPt, Scalar(255, 0, 0), 2, 8);
+	cv::line(image, startPt, endPt, cv::Scalar(255, 0, 0), 2, 8);
 
 	startPt.x = image.size().width / 2;
 	startPt.y = 0;
 	endPt.x = image.size().width / 2;
 	endPt.y = image.size().height;
-	cv::line(image, startPt, endPt, Scalar(255, 0, 0), 2, 8);
+	cv::line(image, startPt, endPt, cv::Scalar(255, 0, 0), 2, 8);
 }

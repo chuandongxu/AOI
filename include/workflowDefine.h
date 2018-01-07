@@ -86,8 +86,12 @@
 #define RUN_OBJ_PROFILE					 162
 #define RUN_OBJ_PROFILE_EDIT			 163
 
+#define EVENT_UI_STATE		 "eventUIState"
+#define RUN_UI_STATE_SETTING			 170
+
+
 #define EVENT_BARCODE_CHANGE "barCodeChange"
-#define STATION_STATE_BARCODE             170
+#define STATION_STATE_BARCODE             180
 
 #define EVENT_AI_STATE			"AIStateChange"
 #define EVENT_CHANGE_USER		"changeUserLevel"

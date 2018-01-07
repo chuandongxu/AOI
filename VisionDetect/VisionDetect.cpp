@@ -1,11 +1,12 @@
 ﻿#include "VisionDetect.h"
 #include "../common/SystemData.h"
 #include "VisionDetectSetting.h"
+#include "VisionDetectRunView.h"
 
 VisionDetect::VisionDetect(int id, const QString &name)
 	:QModuleBase(id, name)
 {
-
+	m_pDetectView = new VisionDetectRunView(&m_ctrl);
 }
 
 VisionDetect::~VisionDetect()
@@ -29,6 +30,11 @@ void VisionDetect::addSettingWiddget(QTabWidget * tabWidget)
 	}	
 }
 
+QWidget* VisionDetect::getDetectView()
+{
+	return m_pDetectView;
+}
+
 bool VisionDetect::loadCmdData(int nStation)
 {
 	return m_ctrl.loadCmdData(nStation);
@@ -40,7 +46,7 @@ bool VisionDetect::loadImage(cv::Mat& matImg)
 	{
 		cvtColor(matImg, matImg, CV_GRAY2RGB);
 	}
-	m_ctrl.getVisionView()->setImage(matImg);
+	//m_ctrl.getVisionView()->setImage(matImg);
 	m_ctrl.getCellTmpEditor()->setImage(matImg);
 	m_ctrl.getCellObjEditor()->setImage(matImg);
 	return true;

@@ -6,6 +6,7 @@
 #include "../include/IVision.h"
 #include "VisionCtrl.h"
 
+class VisionDetectRunView;
 class  VisionDetect : public QModuleBase, public IVision
 {
 public:
@@ -15,6 +16,8 @@ public:
 	virtual void addSettingWiddget(QTabWidget * tabWidget);
 
 public:
+	virtual QWidget* getDetectView();
+
 	virtual bool loadCmdData(int nStation);
 	virtual bool loadImage(cv::Mat& matImg);
 
@@ -36,4 +39,5 @@ public:
 
 private:
 	VisionCtrl m_ctrl;
+	VisionDetectRunView* m_pDetectView;
 };

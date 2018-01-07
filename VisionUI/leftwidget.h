@@ -27,6 +27,7 @@ public slots:
 	void onManageUser();
 	void onChangeLang(const QString &text);
 	void onRunState(const QVariantList &data);
+	void onUIState(const QVariantList &data);
 
 protected:
 	void paintEvent(QPaintEvent *event);

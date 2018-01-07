@@ -18,7 +18,6 @@ typedef std::vector <std::vector<float>> QResultDataVec;
 class QVLCellEditor;
 class QVLProfileEditor;
 class QDetectObj;
-class VisionView;
 Q_DECL_EXPORT class VisionCtrl : public QObject
 {
 	Q_OBJECT
@@ -28,7 +27,6 @@ public:
 	~VisionCtrl();
 
 public:
-	VisionView* getVisionView();
 	QVLCellEditor* getCellTmpEditor();
 	QVLCellEditor* getCellObjEditor();
 	QVLProfileEditor* getProfileEditor();
@@ -65,8 +63,7 @@ private:
 private:
 	QVLCellEditor *m_pVLCellObjEditor;
 	QVLCellEditor *m_pVLCellTmpEditor;
-	QVLProfileEditor *m_pVLProflieEditor;
-	VisionView* m_pView;
+	QVLProfileEditor *m_pVLProflieEditor;	
 	//QVector<cv::Mat> m_matBaseSurfaces;
 	QVector<AOI::Vision::PR_CALC_3D_HEIGHT_CMD> m_stCalcHeightCmds;
 };

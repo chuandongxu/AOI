@@ -3,6 +3,8 @@
 #include <qapplication.h>
 #include <qbytearray.h>
 #include "../common/SystemData.h"
+#include "../Common/eos.h"
+#include "../include/IdDefine.h"
 #include <QPainter>
 
 #define HIDE_DEBUG_TOOL_BTN  0
@@ -31,6 +33,7 @@ QTopWidget::QTopWidget(QWidget *parent) :
 
     m_mainLayout = new QHBoxLayout;
     m_titleLayout = new QHBoxLayout;
+	m_toolLayout = new QHBoxLayout;
 	m_verLayout = new QVBoxLayout;
 
 	m_verLayout->addStretch();
@@ -39,23 +42,62 @@ QTopWidget::QTopWidget(QWidget *parent) :
  
     m_mainLayout->setContentsMargins(0,0,0,0);
     m_titleLayout->setContentsMargins(0,0,0,0);
- 
-	m_titleLayout->addSpacing(350);
+	m_toolLayout->setContentsMargins(0, 0, 0, 0);
+
+	m_titleLayout->addSpacing(420);
 	//m_titleLayout->addWidget(m_titleLabel,0,Qt::AlignHCenter);
 	//m_titleLayout->addLayout(m_verLayout);
 	m_titleLayout->addStretch(0);
     m_titleLayout->addWidget(m_exitBtn,0,Qt::AlignRight|Qt::AlignTop);
-	m_mainLayout->addLayout(m_titleLayout);
+
+	QString stytleStr = "background-color: rgb(32, 105, 138);color:white;";
+	m_toolBtnAutoRun = new QPushButton();
+	m_toolBtnAutoRun->setFixedSize(100, 25);
+	m_toolBtnAutoRun->setText(QStringLiteral("开始运行"));
+	m_toolBtnAutoRun->setStyleSheet(stytleStr);
+	m_toolBtnSys = new QPushButton();
+	m_toolBtnSys->setFixedSize(100, 25);
+	m_toolBtnSys->setText(QStringLiteral("系统标定"));
+	m_toolBtnSys->setStyleSheet(stytleStr);
+	m_toolBtnHw = new QPushButton();
+	m_toolBtnHw->setFixedSize(100, 25);
+	m_toolBtnHw->setText(QStringLiteral("周边设备"));
+	m_toolBtnHw->setStyleSheet(stytleStr);
+	m_toolBtnTools = new QPushButton();
+	m_toolBtnTools->setFixedSize(100, 25);
+	m_toolBtnTools->setText(QStringLiteral("常用工具"));
+	m_toolBtnTools->setStyleSheet(stytleStr);
+	m_toolBtnSetting = new QPushButton();
+	m_toolBtnSetting->setFixedSize(100, 25);
+	m_toolBtnSetting->setText(QStringLiteral("参数设置"));
+	m_toolBtnSetting->setStyleSheet(stytleStr);
+	m_toolBtnData = new QPushButton();
+	m_toolBtnData->setFixedSize(100, 25);
+	m_toolBtnData->setText(QStringLiteral("元件资料"));
+	m_toolBtnData->setStyleSheet(stytleStr);
+
+	m_toolLayout->addSpacing(1000);
+	m_toolLayout->addWidget(m_toolBtnAutoRun, 0, Qt::AlignLeft | Qt::AlignBottom);
+	m_toolLayout->addWidget(m_toolBtnSys, 0, Qt::AlignLeft | Qt::AlignBottom);
+	m_toolLayout->addWidget(m_toolBtnHw, 0, Qt::AlignLeft | Qt::AlignBottom);
+	m_toolLayout->addWidget(m_toolBtnTools, 0, Qt::AlignLeft | Qt::AlignBottom);
+	m_toolLayout->addWidget(m_toolBtnSetting, 0, Qt::AlignLeft | Qt::AlignBottom);
+	m_toolLayout->addWidget(m_toolBtnData, 0, Qt::AlignLeft | Qt::AlignBottom);
+
+	m_mainLayout->addLayout(m_toolLayout);
+	m_mainLayout->addLayout(m_titleLayout);	
     this->setLayout(m_mainLayout);
 	
 	m_nTimerId = this->startTimer(100);
     connect(m_exitBtn,SIGNAL(clicked()),this,SIGNAL(closeBtnclick()));
-	/*
-    connect(m_debugBtn,SIGNAL(clicked()),this,SLOT(onDiagonseClick()));
-    connect(m_settingBtn,SIGNAL(clicked()),this,SLOT(onSettingClick()));
-	connect(m_warringLogBtn,SIGNAL(clicked()),this,SLOT(onShowWarring()));
-	connect(m_goHomeBtn,SIGNAL(clicked()),this,SLOT(onGoHome()));
-	*/
+	
+	connect(m_toolBtnAutoRun, SIGNAL(clicked()), this, SLOT(onAutoRun()));
+	connect(m_toolBtnSys, SIGNAL(clicked()), this, SLOT(onSystem()));
+	connect(m_toolBtnHw, SIGNAL(clicked()), this, SLOT(onHardware()));
+	connect(m_toolBtnTools, SIGNAL(clicked()), this, SLOT(onTools()));
+	connect(m_toolBtnSetting, SIGNAL(clicked()), this, SLOT(onSetting()));
+	connect(m_toolBtnData, SIGNAL(clicked()), this, SLOT(onData()));
+	
 }
 
 void QTopWidget::paintEvent(QPaintEvent *event)
@@ -79,22 +121,34 @@ void QTopWidget::setTitle(const QString &title)
 	m_titleLabel->setText(title);
 }
 
-void QTopWidget::onDiagonseClick()
+void QTopWidget::onAutoRun()
+{
+
+}
+
+
+void QTopWidget::onSystem()
+{
+
+}
+
+
+void QTopWidget::onHardware()
 {
  
 }
 
-void QTopWidget::onSettingClick()
+void QTopWidget::onTools()
 {
    
 }
 
-void QTopWidget::onShowWarring()
+void QTopWidget::onSetting()
 {
-	
+	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_SETTING);
 }
 
-void QTopWidget::onGoHome()
+void QTopWidget::onData()
 {
 	
 }

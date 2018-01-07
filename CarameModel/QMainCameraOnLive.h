@@ -5,14 +5,14 @@
 
 #include "opencv/cv.h"
 
-class QMainView;
+class QMainProcess;
 class CameraDevice;
 class MainCameraOnLive : public QThread
 {
 	Q_OBJECT
 
 public:
-	MainCameraOnLive(QMainView* pView, CameraDevice *pCameraTmp);
+	MainCameraOnLive(QMainProcess* pMainProcess, CameraDevice *pCameraTmp);
 	~MainCameraOnLive(){};
 
 public:
@@ -29,7 +29,7 @@ private:
 
 	void drawCross(cv::Mat& image);
 private:
-	QMainView*		m_pView;
+	QMainProcess*		m_pMainProcess;
 	CameraDevice *m_pCameraTmp;
 	bool          m_bQuit;
 	bool          m_bRuning;

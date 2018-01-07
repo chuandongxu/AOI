@@ -6,6 +6,7 @@
 #include "../include/IdDefine.h"
 #include "../Common/SystemData.h"
 #include "../include/ICamera.h"
+#include "../include/VisionUI.h"
 #include "hsgworkflowctrl_global.h"
 #include <QMessagebox>
 #include <qdesktopwidget.h>
@@ -26,11 +27,11 @@ QWorkFlowWidget::QWorkFlowWidget(QWidget *parent)
 	QEos::Attach(EVENT_AI_STATE,this,SLOT(onAIStateChange(const QVariantList &)));	
 	QEos::Attach(EVENT_CHANGE_USER,this,SLOT(onChangeUser(const QVariantList &)));
 
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);	
+	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
 
 	m_subVLayout = new QHBoxLayout;
-	QWidget* pWidget = pCam->getMainView();
-	m_subVLayout->addWidget(pWidget);;	
+	QWidget* pWidget = pUI->getVisionView();
+	m_subVLayout->addWidget(pWidget);;
 	pWidget->setFixedSize(1200, 800);
 	m_subVLayout->setAlignment(Qt::AlignTop);
 	

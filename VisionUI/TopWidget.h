@@ -21,21 +21,32 @@ signals:
     void closeBtnclick();
 
 public slots:
-    void onDiagonseClick();
-    void onSettingClick();
-	void onShowWarring();
-	void onGoHome();
+	void onAutoRun();
+	void onSystem();
+	void onHardware();
+	void onTools();
+	void onSetting();
+	void onData();
+
 protected:
 	void paintEvent(QPaintEvent *event);
 	virtual void timerEvent(QTimerEvent * event);
 private:
     QHBoxLayout * m_mainLayout;
     QHBoxLayout * m_titleLayout;
+	QHBoxLayout * m_toolLayout;
 	QVBoxLayout * m_verLayout;
     QLabel * m_titleLabel;
 	QLabel * m_versionLabel;
     QPushButton * m_exitBtn;
 	int m_nTimerId;
+
+	QPushButton* m_toolBtnAutoRun;
+	QPushButton* m_toolBtnSys;
+	QPushButton* m_toolBtnHw;
+	QPushButton* m_toolBtnTools;
+	QPushButton* m_toolBtnSetting;
+	QPushButton* m_toolBtnData;
 };
 
 #endif // TOPWIDGET_H

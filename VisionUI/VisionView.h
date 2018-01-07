@@ -2,32 +2,34 @@
 
 #include <QMainWindow>
 #include "ui_VisionView.h"
+
 #include <QToolBar>
 #include <QAction>
-#include "VisionCtrl.h"
+#include <QDockWidget>
+#include <QMutex>
 
 #include "opencv/cv.h"
 
-using namespace cv;
-
+class DViewUtility;
 class VisionView : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	VisionView(VisionCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
+	VisionView(QWidget *parent = Q_NULLPTR);
 	~VisionView();
 
 public:
-	void setImage(cv::Mat& matImage);
+	void setImage(cv::Mat& matImage, bool bDisplay);
 	cv::Mat getImage();
 	void clearImage();
 	void addImageText(QString szText);
 	void displayImage(cv::Mat& image);
 
-private slots:	
+	private slots:
+	void onResultEvent(const QVariantList &data);
+
 	void openFile();
-	void openFileFolder();
 	void cameraFile();
 	void saveAsFile();
 	void zoomIn();
@@ -35,53 +37,75 @@ private slots:
 	void fullScreen();
 	void moveScreen();
 
+	void show3D();
+	void showSelectROI3D();
+
 private:
 	void init();
-	void createActions();	
+	void createActions();
 	void createToolBars();
 	void createStatusBar();
 
 	QMenu *fileMenu;
-	QMenu *editMenu;	
+	QMenu *editMenu;
+	QMenu *detectMenu;
 
 	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
+	QToolBar *detectToolBar;
 	QAction *openAct;
-	QAction *openFolderAct;
 	QAction *cameraAct;
 	QAction *saveAsAct;
 	QAction *zoomInAct;
 	QAction *zoomOutAct;
-	QAction *fullScreenAct;	
+	QAction *fullScreenAct;
 	QAction *moveAct;
 
+	QAction *show3DAct;
+	QAction *selectROI;
+
 protected:
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dragMoveEvent(QDragMoveEvent *event);
+	void dropEvent(QDropEvent *event);
+
 	void mouseMoveEvent(QMouseEvent * event);
 	void mousePressEvent(QMouseEvent * event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void wheelEvent(QWheelEvent * event);
 
 private:
+	void addNodeByDrag(int nType, int nObjID, QPoint ptPos);
+	void displayAllObjs();
+
 	void loadImage(QString& fileName);
 	void repaintAll();
-	void A_Transform(Mat& src, Mat& dst, int dx, int dy);
-	void setViewState(int state);	
-	double convertToImgX(double dMouseValue);
-	double convertToImgY(double dMouseValue);
+	void A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy);
+	void setViewState(int state);
+	double convertToImgX(double dMouseValue, bool bLen = false);
+	double convertToImgY(double dMouseValue, bool bLen = false);
+	double convertToMouseX(double dImgValue, bool bLen = false);
+	double convertToMouseY(double dImgValue, bool bLen = false);
 
-private:
-	bool convertToGrayImage(QString& szFilePath, cv::Mat &matGray);
-
+	void show3DView(cv::Rect& rectROI);
 private:
 	void fullImage();
 	void zoomImage(double scale);
 	void moveImage(double motionX, double motionY);
 
+	void setButtonsEnable(bool flag);
+
+public:
+	bool startUpCapture();
+	bool endUpCapture();
+
+	void setHeightData(cv::Mat& matHeight);
 private:
 	int    m_stateView;
 	bool   m_mouseLeftPressed;
 	bool   m_mouseRightPressed;
 	double m_startX, m_startY;
+	double m_preMoveX, m_preMoveY;
 
 	int   m_windowWidth;
 	int   m_windowHeight;
@@ -94,7 +118,16 @@ private:
 
 private:
 	Ui::VisionView ui;
+
 	cv::Mat	m_hoImage;
 	cv::Mat	m_dispImage;
-	VisionCtrl* m_pCtrl;
+
+	cv::Mat m_3DMatHeight;
+private:
+	DViewUtility   *m_pMainViewFull3D;
+	DViewUtility   *m_pView3D;
+	cv::Rect m_selectROI;
+	QDockWidget *m_pSelectView;
+	bool m_bShow3DInitial;
+	bool m_bMainView3DInitial;
 };

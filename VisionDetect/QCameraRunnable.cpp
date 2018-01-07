@@ -1,13 +1,13 @@
 ﻿#include "QCameraRunnable.h"
 #include "../Common/SystemData.h"
 
-#include "VisionDetectSetting.h"
+#include "VisionDetectRunView.h"
 
 #include <time.h>
 #include <qthread.h>
 #include <qthreadpool.h>
 
-QCameraRunnable::QCameraRunnable(VisionDetectSetting* pSetting)
+QCameraRunnable::QCameraRunnable(VisionDetectRunView* pSetting)
 	: m_pSetting(pSetting), QRunnable()
 {
 	m_exit = false;

@@ -1,7 +1,7 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 
-#include "../lib//VisionLibrary/include/opencv/cv.h"
+#include "../lib/VisionLibrary/include/opencv/cv.h"
 
 #include <QWidget>
 
@@ -40,19 +40,11 @@ public:
 	virtual bool lockCameraCapture(int iStation) = 0;
 	virtual void unlockCameraCapture() = 0;
 	virtual bool isCameraCaptureAvaiable() = 0;
-
-	virtual void addImageText(QString& szText) = 0;
-	virtual void clearImage() = 0;
-	virtual void setImage(cv::Mat& image, bool bDisplay = true) = 0;
-
-	virtual void setHeightData(cv::Mat& matHeight) = 0;
+	
 
 	/************************************************************************/
 	/*  辅助功能   */
 	/************************************************************************/	
-
-	// 获取窗口指针		
-	virtual QWidget*   getMainView() = 0;
 
 	// 初始化3D数据
 	virtual void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues) = 0;

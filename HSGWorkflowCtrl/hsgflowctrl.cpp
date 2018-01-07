@@ -14,6 +14,7 @@
 #include "../include/IDlp.h"
 #include "../include/ICamera.h"
 #include "../include/IVision.h"
+#include "../include/VisionUI.h"
 #include "../include/IdDefine.h"
 #include "../Common/eos.h"
 #include "../Common/CVSFile.h"
@@ -579,6 +580,9 @@ bool QMainRunable::captureImages()
 	IVision* pVision = getModule<IVision>(VISION_MODEL);
 	if (!pVision) return false;
 
+	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+	if (!pUI) return false;
+
 	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_CAPTURING, 0);
 
 	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
@@ -658,7 +662,8 @@ bool QMainRunable::captureImages()
 
 	m_matImage = matGray;
 
-	pCam->setImage(m_matImage, false);
+
+	pUI->setImage(m_matImage, false);
 	QEos::Notify(EVENT_RESULT_DISPLAY, 0, STATION_RESULT_IMAGE_DISPLAY);
 
 
@@ -675,7 +680,7 @@ bool QMainRunable::captureImages()
 		return false;
 	}
 
-	pCam->setHeightData(m_3DMatHeight);
+	pUI->setHeightData(m_3DMatHeight);
 	
 	return true;
 }
@@ -793,7 +798,11 @@ void QMainRunable::displayAllObjs()
 		}
 	}
 
-	pCam->setImage(matDisplay, false);
+	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+	if (pUI)
+	{
+		pUI->setImage(matDisplay, false);
+	}
 	QEos::Notify(EVENT_RESULT_DISPLAY, 0, STATION_RESULT_IMAGE_DISPLAY);
 }
 
@@ -1178,6 +1187,9 @@ void QFlowCtrl::start()
 	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
 	if (!pDlp) return;
 
+	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+	if (!pUI) return;
+
 	if(!m_isHome)
 	{		
 		QSystem::showMessage(QStringLiteral("提示"),QStringLiteral("请先将设备回零"));
@@ -1195,7 +1207,7 @@ void QFlowCtrl::start()
 
 	if (pCam->getCameraNum() > 0)
 	{
-		if (!pCam->startUpCapture())
+		if (!pCam->startUpCapture() || !pUI->startUpCapture())
 		{
 			QSystem::closeMessage();
 			QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));
@@ -1255,6 +1267,9 @@ void QFlowCtrl::stop()
 
 	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
 	if (!pDlp) return;	
+
+	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+	if (!pUI) return;
 	
 	//m_isHome = false;
 
@@ -1294,6 +1309,7 @@ void QFlowCtrl::stop()
 	{
 		pCam->endUpCapture();
 	}
+	pUI->endUpCapture();
 	
 	for (int i = 0; i < nStationNum; i++)
 	{
