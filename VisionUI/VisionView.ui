@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>QMainView</class>
- <widget class="QMainWindow" name="QMainView">
+ <class>VisionView</class>
+ <widget class="QMainWindow" name="VisionView">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>QMainView</string>
+   <string>VisionView</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QLabel" name="label_Img">
@@ -34,7 +34,7 @@
      <x>0</x>
      <y>0</y>
      <width>1226</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

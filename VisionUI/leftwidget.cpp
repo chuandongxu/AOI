@@ -54,6 +54,7 @@ QLeftWidget::QLeftWidget(QWidget *parent)
 	connect(ui.comboBox,SIGNAL(currentIndexChanged(const QString &)),this,SLOT(onChangeLang(const QString &)));
 
 	QEos::Attach(EVENT_RUN_STATE,this,SLOT(onRunState(const QVariantList &)));
+	QEos::Attach(EVENT_UI_STATE, this, SLOT(onUIState(const QVariantList &)));
 
 	m_timerId = this->startTimer(1000);
 	ui.pushButton->setText("");
@@ -231,4 +232,13 @@ void QLeftWidget::onRunState(const QVariantList &data)
 			}
 		}
 	}
+}
+
+void QLeftWidget::onUIState(const QVariantList &data)
+{
+	int iBoard = data[0].toInt();
+	int iEvent = data[1].toInt();
+	if (iEvent != RUN_UI_STATE_SETTING) return;
+
+	onSettingClick();
 }

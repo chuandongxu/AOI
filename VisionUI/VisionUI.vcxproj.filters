@@ -151,15 +151,6 @@
     <ClCompile Include="rightwidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QMainView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_QMainView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_QMainView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\DataModule\QDetectObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -168,6 +159,15 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_QDetectObj.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_VisionView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_VisionView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="VisionView.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -228,14 +228,14 @@
     <CustomBuild Include="rightwidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="QMainView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="QMainView.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\DataModule\QDetectObj.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="VisionView.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="VisionView.ui">
+      <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -257,7 +257,7 @@
     <ClInclude Include="..\..\OpenCSG-1.4.1\include\opencsg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_QMainView.h">
+    <ClInclude Include="GeneratedFiles\ui_VisionView.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

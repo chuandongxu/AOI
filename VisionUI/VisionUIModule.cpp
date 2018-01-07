@@ -1,14 +1,14 @@
 ﻿#include "visionuiModule.h"
 #include "AppMainWidget.h"
 
-#include "QMainView.h"
+#include "VisionView.h"
 
 QVisionUIModule::QVisionUIModule(int id,const QString &name)
 	:QModuleBase(id,name)
 {
 	int n = 0;
 
-	m_pMainView = new QMainView();
+	m_pVisionView = new VisionView();
 }
 
 QVisionUIModule::~QVisionUIModule()
@@ -63,32 +63,32 @@ void QVisionUIModule::setTitle(const QString & str,const QString &ver)
 	}
 }
 
-QWidget* QVisionUIModule::getMainView()
+QWidget* QVisionUIModule::getVisionView()
 {
-	return m_pMainView;
+	return m_pVisionView;
 }
 
 void QVisionUIModule::setImage(cv::Mat& matImage, bool bDisplay)
 {
-	if (m_pMainView)
+	if (m_pVisionView)
 	{
-		m_pMainView->setImage(matImage, bDisplay);
+		m_pVisionView->setImage(matImage, bDisplay);
 	}
 }
 
 void QVisionUIModule::setHeightData(cv::Mat& matHeight)
 {
-	if (m_pMainView)
+	if (m_pVisionView)
 	{
-		m_pMainView->setHeightData(matHeight);
+		m_pVisionView->setHeightData(matHeight);
 	}
 }
 
 bool QVisionUIModule::startUpCapture()
 {
-	if (m_pMainView)
+	if (m_pVisionView)
 	{
-		return m_pMainView->startUpCapture();
+		return m_pVisionView->startUpCapture();
 	}
 
 	return false;
@@ -96,9 +96,9 @@ bool QVisionUIModule::startUpCapture()
 
 bool QVisionUIModule::endUpCapture()
 {
-	if (m_pMainView)
+	if (m_pVisionView)
 	{
-		return m_pMainView->endUpCapture();
+		return m_pVisionView->endUpCapture();
 	}
 
 	return false;
@@ -106,9 +106,9 @@ bool QVisionUIModule::endUpCapture()
 
 cv::Mat QVisionUIModule::getImage()
 {
-	if (m_pMainView)
+	if (m_pVisionView)
 	{
-		return m_pMainView->getImage();
+		return m_pVisionView->getImage();
 	}
 
 	return cv::Mat();
@@ -116,25 +116,25 @@ cv::Mat QVisionUIModule::getImage()
 
 void QVisionUIModule::clearImage()
 {
-	if (m_pMainView)
+	if (m_pVisionView)
 	{
-		m_pMainView->clearImage();
+		m_pVisionView->clearImage();
 	}
 }
 
 void QVisionUIModule::addImageText(QString szText)
 {
-	if (m_pMainView)
+	if (m_pVisionView)
 	{
-		m_pMainView->addImageText(szText);
+		m_pVisionView->addImageText(szText);
 	}
 }
 
 void QVisionUIModule::displayImage(cv::Mat& image)
 {
-	if (m_pMainView)
+	if (m_pVisionView)
 	{
-		m_pMainView->displayImage(image);
+		m_pVisionView->displayImage(image);
 	}
 }
 

@@ -1,4 +1,4 @@
-ï»¿#include "QMainView.h"
+#include "VisionView.h"
 
 #include <QFileDialog>
 #include "../Common/SystemData.h"
@@ -41,8 +41,8 @@ const int MODE_VIEW_NONE = 1;
 const int MODE_VIEW_SELECT = 2;
 const int MODE_VIEW_MOVE = 3;
 
-QMainView::QMainView(QWidget *parent)
-	:QMainWindow(parent)
+VisionView::VisionView(QWidget *parent)
+	: QMainWindow(parent)
 {
 	ui.setupUi(this);
 
@@ -74,7 +74,7 @@ QMainView::QMainView(QWidget *parent)
 	m_bMainView3DInitial = false;
 }
 
-QMainView::~QMainView()
+VisionView::~VisionView()
 {
 	if (m_pView3D)
 	{
@@ -89,7 +89,7 @@ QMainView::~QMainView()
 	}
 }
 
-void QMainView::init()
+void VisionView::init()
 {
 	createActions();
 	createToolBars();
@@ -104,7 +104,7 @@ void QMainView::init()
 	m_pMainViewFull3D = new DViewUtility();
 
 	m_pView3D = new DViewUtility();// = NULL;
-	
+
 	m_pSelectView = new QDockWidget(this);
 	m_pSelectView->setGeometry(QRect(0, 0, 500, 500));
 	m_pSelectView->setWidget(m_pView3D->getQGLWidget());
@@ -113,44 +113,44 @@ void QMainView::init()
 	m_pSelectView->setVisible(false);
 }
 
-void QMainView::createActions()
+void VisionView::createActions()
 {
-	cameraAct = new QAction(QIcon("image/cameraFile.png"), QStringLiteral("æŠ“å–"), this);
+	cameraAct = new QAction(QIcon("image/cameraFile.png"), QStringLiteral("×¥È¡"), this);
 	cameraAct->setShortcuts(QKeySequence::Open);
 	cameraAct->setStatusTip(tr("Grab file from camera"));
 	connect(cameraAct, SIGNAL(triggered()), this, SLOT(cameraFile()));
 
-	openAct = new QAction(QIcon("image/openFile.png"), QStringLiteral("æ‰“å¼€..."), this);
+	openAct = new QAction(QIcon("image/openFile.png"), QStringLiteral("´ò¿ª..."), this);
 	openAct->setShortcuts(QKeySequence::Open);
 	openAct->setStatusTip(tr("Open an existing file"));
 	connect(openAct, SIGNAL(triggered()), this, SLOT(openFile()));
 
-	saveAsAct = new QAction(QIcon("image/saveAsFile.png"), QStringLiteral("å¦å­˜ä¸º..."), this);
+	saveAsAct = new QAction(QIcon("image/saveAsFile.png"), QStringLiteral("Áí´æÎª..."), this);
 	saveAsAct->setShortcuts(QKeySequence::SaveAs);
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAsFile()));
 
-	zoomInAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("ç¼©å°"), this);
+	zoomInAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("ËõĞ¡"), this);
 	zoomInAct->setShortcuts(QKeySequence::ZoomIn);
 	zoomInAct->setStatusTip(tr("Zoom in window"));
 	connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-	zoomOutAct = new QAction(QIcon("image/zoomIn.png"), QStringLiteral("æ”¾å¤§"), this);
+	zoomOutAct = new QAction(QIcon("image/zoomIn.png"), QStringLiteral("·Å´ó"), this);
 	zoomOutAct->setShortcuts(QKeySequence::ZoomOut);
 	zoomOutAct->setStatusTip(tr("Zoom out window"));
 	connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
-	fullScreenAct = new QAction(QIcon("image/fullScreen.png"), QStringLiteral("å…¨å±"), this);
+	fullScreenAct = new QAction(QIcon("image/fullScreen.png"), QStringLiteral("È«ÆÁ"), this);
 	fullScreenAct->setShortcuts(QKeySequence::FullScreen);
 	fullScreenAct->setStatusTip(tr("Full screen"));
 	connect(fullScreenAct, SIGNAL(triggered()), this, SLOT(fullScreen()));
 
-	moveAct = new QAction(QIcon("image/moveView.png"), QStringLiteral("ç§»åŠ¨"), this);
+	moveAct = new QAction(QIcon("image/moveView.png"), QStringLiteral("ÒÆ¶¯"), this);
 	moveAct->setShortcuts(QKeySequence::MoveToEndOfBlock);
 	moveAct->setStatusTip(tr("Move screen"));
 	connect(moveAct, SIGNAL(triggered()), this, SLOT(moveScreen()));
 
-	show3DAct = new QAction(QIcon("image/cutSurface.png"), QStringLiteral("æ˜¾ç¤ºä¸‰ç»´æ•°æ®"), this);
+	show3DAct = new QAction(QIcon("image/cutSurface.png"), QStringLiteral("ÏÔÊ¾ÈıÎ¬Êı¾İ"), this);
 	show3DAct->setShortcuts(QKeySequence::Underline);
 	show3DAct->setStatusTip(tr("Show 3D"));
 	connect(show3DAct, SIGNAL(triggered()), this, SLOT(show3D()));
@@ -163,7 +163,7 @@ void QMainView::createActions()
 	setContextMenuPolicy(Qt::ActionsContextMenu);
 }
 
-void QMainView::createToolBars()
+void VisionView::createToolBars()
 {
 	//! [0]
 	ui.mainToolBar->addAction(cameraAct);
@@ -182,14 +182,14 @@ void QMainView::createToolBars()
 	detectToolBar->addAction(show3DAct);
 }
 
-void QMainView::createStatusBar()
+void VisionView::createStatusBar()
 {
 	//statusBar()->showMessage(tr("Ready"));
 	statusBar()->hide();
 	statusBar()->setSizeGripEnabled(false);
 }
 
-void QMainView::onResultEvent(const QVariantList &data)
+void VisionView::onResultEvent(const QVariantList &data)
 {
 	int iBoard = data[0].toInt();
 	int iEvent = data[1].toInt();
@@ -198,13 +198,13 @@ void QMainView::onResultEvent(const QVariantList &data)
 	displayImage(m_hoImage);
 }
 
-void QMainView::openFile()
+void VisionView::openFile()
 {
 	QString path = QApplication::applicationDirPath();
 	path += "/";
 
 	QString picFilter = "Image(*.tif *.tiff *.gif *.bmp *.jpg *.jpeg *.jp2 *.png *.pcx *.pgm *.ppm *.pbm *.xwd *.ima)";
-	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡"), path/*/*/, picFilter);
+	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("´ò¿ªÍ¼Æ¬"), path/*/*/, picFilter);
 
 	if (!strFileName.isEmpty())
 	{
@@ -218,7 +218,7 @@ void QMainView::openFile()
 	}
 }
 
-void QMainView::cameraFile()
+void VisionView::cameraFile()
 {
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (pCam)
@@ -246,15 +246,15 @@ void QMainView::cameraFile()
 		}
 	}
 
-	QMessageBox::warning(this, "", QStringLiteral("æ— å‘æŠ“å–å›¾åƒ"));
+	QMessageBox::warning(this, "", QStringLiteral("ÎŞ·¢×¥È¡Í¼Ïñ"));
 }
 
-void QMainView::saveAsFile()
+void VisionView::saveAsFile()
 {
 	if (!m_dispImage.empty())
 	{
 		QString picFilter = "Image( *.bmp )";
-		QString strSave = QFileDialog::getSaveFileName(this, QStringLiteral("ä¿å­˜å›¾ç‰‡"), "/", picFilter);
+		QString strSave = QFileDialog::getSaveFileName(this, QStringLiteral("±£´æÍ¼Æ¬"), "/", picFilter);
 		if (!strSave.isEmpty())
 		{
 			IplImage frameImg = IplImage(m_dispImage);
@@ -262,40 +262,40 @@ void QMainView::saveAsFile()
 		}
 		else
 		{
-			QMessageBox::warning(this, "", QStringLiteral("è¾“å…¥æ–‡ä»¶å"));
+			QMessageBox::warning(this, "", QStringLiteral("ÊäÈëÎÄ¼şÃû"));
 		}
 	}
 	else
 	{
-		QMessageBox::warning(this, "", QStringLiteral("æ— å›¾åƒ"));
+		QMessageBox::warning(this, "", QStringLiteral("ÎŞÍ¼Ïñ"));
 	}
 }
 
-void QMainView::zoomIn()
+void VisionView::zoomIn()
 {
 	zoomImage(0.8);
 }
 
-void QMainView::zoomOut()
+void VisionView::zoomOut()
 {
 	zoomImage(1.2);
 }
 
-void QMainView::fullScreen()
+void VisionView::fullScreen()
 {
 	fullImage();
 }
 
-void QMainView::moveScreen()
+void VisionView::moveScreen()
 {
 	setViewState(MODE_VIEW_MOVE);
 }
 
-void QMainView::show3D()
+void VisionView::show3D()
 {
 	if (m_pMainViewFull3D->isShown())
 	{
-		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("3Dç•Œé¢å·²æ˜¾ç¤ºï¼Œè¯·å…³é—­åå†æ‰“å¼€"));
+		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("3D½çÃæÒÑÏÔÊ¾£¬Çë¹Ø±ÕºóÔÙ´ò¿ª"));
 		return;
 	}
 
@@ -317,13 +317,13 @@ void QMainView::show3D()
 		m_pMainViewFull3D->prepareROIDisplay(QImage(), false);
 		//m_pMainViewFull3D->show();
 		//m_pMainViewFull3D->hide();
-		
+
 		QApplication::processEvents();
 
 		m_bMainView3DInitial = true;
 	}
 
-	m_pMainViewFull3D->hide();	
+	m_pMainViewFull3D->hide();
 
 	QApplication::processEvents();
 
@@ -348,7 +348,7 @@ void QMainView::show3D()
 
 			xValues.push_back(col - nSizeY / 2);
 			yValues.push_back(row - nSizeX / 2);
-			
+
 			zValues.push_back(mat3DHeight.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
 		}
 
@@ -365,12 +365,12 @@ void QMainView::show3D()
 	}
 }
 
-void QMainView::showSelectROI3D()
+void VisionView::showSelectROI3D()
 {
 	setViewState(MODE_VIEW_SELECT);
 }
 
-void QMainView::setImage(cv::Mat& matImage, bool bDisplay)
+void VisionView::setImage(cv::Mat& matImage, bool bDisplay)
 {
 	m_hoImage.release();
 	m_hoImage = matImage.clone();
@@ -380,19 +380,19 @@ void QMainView::setImage(cv::Mat& matImage, bool bDisplay)
 	if (bDisplay) displayImage(m_hoImage);
 }
 
-cv::Mat QMainView::getImage()
+cv::Mat VisionView::getImage()
 {
 	return m_hoImage;
 }
 
-void QMainView::clearImage()
+void VisionView::clearImage()
 {
 	if (m_hoImage.empty()) return;
 	m_hoImage.release();
 	m_dispImage.release();
 }
 
-void QMainView::addImageText(QString szText)
+void VisionView::addImageText(QString szText)
 {
 	if (m_hoImage.empty()) return;
 
@@ -415,7 +415,7 @@ void QMainView::addImageText(QString szText)
 	displayImage(image);
 }
 
-void QMainView::dragEnterEvent(QDragEnterEvent *event)
+void VisionView::dragEnterEvent(QDragEnterEvent *event)
 {
 	if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
 		if (event->source() == this) {
@@ -431,7 +431,7 @@ void QMainView::dragEnterEvent(QDragEnterEvent *event)
 	}
 }
 
-void QMainView::dragMoveEvent(QDragMoveEvent *event)
+void VisionView::dragMoveEvent(QDragMoveEvent *event)
 {
 	if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
 
@@ -465,7 +465,7 @@ void QMainView::dragMoveEvent(QDragMoveEvent *event)
 	}
 }
 
-void QMainView::dropEvent(QDropEvent *event)
+void VisionView::dropEvent(QDropEvent *event)
 {
 	if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
 		QByteArray itemData = event->mimeData()->data("application/x-dnditemdata");
@@ -505,7 +505,7 @@ void QMainView::dropEvent(QDropEvent *event)
 }
 
 
-void QMainView::mouseMoveEvent(QMouseEvent * event)
+void VisionView::mouseMoveEvent(QMouseEvent * event)
 {
 	double mouseX = event->x(), mouseY = event->y();
 
@@ -550,7 +550,7 @@ void QMainView::mouseMoveEvent(QMouseEvent * event)
 
 					repaintAll();
 				}
-			}			
+			}
 			break;
 		case MODE_VIEW_MOVE:
 			moveImage(mouseX - m_preMoveX, mouseY - m_preMoveY);
@@ -572,7 +572,7 @@ void QMainView::mouseMoveEvent(QMouseEvent * event)
 	m_preMoveY = event->y();
 }
 
-void QMainView::mousePressEvent(QMouseEvent * event)
+void VisionView::mousePressEvent(QMouseEvent * event)
 {
 	if (Qt::LeftButton == event->buttons())
 	{
@@ -596,7 +596,7 @@ void QMainView::mousePressEvent(QMouseEvent * event)
 	{
 		switch (m_stateView)
 		{
-		case MODE_VIEW_SELECT:		
+		case MODE_VIEW_SELECT:
 			break;
 		case MODE_VIEW_NONE:
 			break;
@@ -612,7 +612,7 @@ void QMainView::mousePressEvent(QMouseEvent * event)
 	}
 }
 
-void QMainView::mouseReleaseEvent(QMouseEvent *event)
+void VisionView::mouseReleaseEvent(QMouseEvent *event)
 {
 	if (event->button() & Qt::LeftButton)
 	{
@@ -642,7 +642,7 @@ void QMainView::mouseReleaseEvent(QMouseEvent *event)
 	m_mouseRightPressed = false;
 }
 
-void QMainView::wheelEvent(QWheelEvent * event)
+void VisionView::wheelEvent(QWheelEvent * event)
 {
 	switch (m_stateView)
 	{
@@ -653,7 +653,7 @@ void QMainView::wheelEvent(QWheelEvent * event)
 	}
 }
 
-void QMainView::addNodeByDrag(int nType, int nObjID, QPoint ptPos)
+void VisionView::addNodeByDrag(int nType, int nObjID, QPoint ptPos)
 {
 	IData * pData = getModule<IData>(DATA_MODEL);
 	if (!pData) return;
@@ -676,10 +676,10 @@ void QMainView::addNodeByDrag(int nType, int nObjID, QPoint ptPos)
 
 			break;
 		}
-	}	
+	}
 }
 
-void QMainView::displayAllObjs()
+void VisionView::displayAllObjs()
 {
 	IData * pData = getModule<IData>(DATA_MODEL);
 	if (!pData) return;
@@ -688,7 +688,7 @@ void QMainView::displayAllObjs()
 
 	if (matImage.type() == CV_8UC1)
 	{
-		cvtColor(matImage, matImage, CV_GRAY2RGB);		
+		cvtColor(matImage, matImage, CV_GRAY2RGB);
 	}
 
 	bool bShowNumber = false;
@@ -782,7 +782,7 @@ void QMainView::displayAllObjs()
 	displayImage(matImage);
 }
 
-void QMainView::loadImage(QString& fileName)
+void VisionView::loadImage(QString& fileName)
 {
 	m_hoImage = cv::imread(fileName.toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_COLOR);
 
@@ -796,7 +796,7 @@ void QMainView::loadImage(QString& fileName)
 	displayImage(m_hoImage);
 }
 
-void QMainView::repaintAll()
+void VisionView::repaintAll()
 {
 	cv::Mat matImage = m_hoImage.clone();
 
@@ -815,9 +815,9 @@ void QMainView::repaintAll()
 	displayImage(matImage);
 }
 
-void QMainView::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
+void VisionView::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 {
-	CV_Assert(src.depth() == CV_8U);//CV_Assertï¼ˆï¼‰è‹¥æ‹¬å·ä¸­çš„è¡¨è¾¾å¼å€¼ä¸ºfalseï¼Œåˆ™è¿”å›ä¸€ä¸ªé”™è¯¯ä¿¡æ¯ã€‚  
+	CV_Assert(src.depth() == CV_8U);//CV_Assert£¨£©ÈôÀ¨ºÅÖĞµÄ±í´ïÊ½ÖµÎªfalse£¬Ôò·µ»ØÒ»¸ö´íÎóĞÅÏ¢¡£  
 	const int rows = src.rows;
 	const int cols = src.cols;
 	dst.create(rows, cols, src.type());
@@ -827,24 +827,24 @@ void QMainView::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 
 	dst.setTo(cv::Scalar(0, 0, 0));
 
-	cv::Vec3b *p;   //å®šä¹‰ä¸€ä¸ªå­˜æ”¾3é€šé“çš„å®¹å™¨æŒ‡é’ˆp  
+	cv::Vec3b *p;   //¶¨ÒåÒ»¸ö´æ·Å3Í¨µÀµÄÈİÆ÷Ö¸Õëp  
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			p = dst.ptr<cv::Vec3b>(i);//æŒ‡å‘è¡Œæ•°çš„å®¹å™¨p  
+			p = dst.ptr<cv::Vec3b>(i);//Ö¸ÏòĞĞÊıµÄÈİÆ÷p  
 			int x = j - dx;
 			int y = i - dy;
-			if (x>0 && y>0 && x < cols&&y < rows)//å¹³ç§»åçš„åƒç´ åæ ‡åœ¨åŸå›¾åƒçš„è¡Œæ•°å’Œåˆ—æ•°å†…  
+			if (x>0 && y>0 && x < cols&&y < rows)//Æ½ÒÆºóµÄÏñËØ×ø±êÔÚÔ­Í¼ÏñµÄĞĞÊıºÍÁĞÊıÄÚ  
 			{
-				p[i, j] = src.ptr<cv::Vec3b>(y)[x];//å¹³ç§»åçš„å›¾åƒï¼ˆi,j)å¯¹åº”äºåŸå›¾åƒçš„ï¼ˆy,x)  
+				p[i, j] = src.ptr<cv::Vec3b>(y)[x];//Æ½ÒÆºóµÄÍ¼Ïñ£¨i,j)¶ÔÓ¦ÓÚÔ­Í¼ÏñµÄ£¨y,x)  
 			}
 		}
 	}
 
 }
 
-void QMainView::setViewState(int state)
+void VisionView::setViewState(int state)
 {
 	m_stateView = state;
 
@@ -865,7 +865,7 @@ void QMainView::setViewState(int state)
 	}
 }
 
-void QMainView::displayImage(cv::Mat& image)
+void VisionView::displayImage(cv::Mat& image)
 {
 	m_dispImage = image;
 
@@ -902,7 +902,7 @@ void QMainView::displayImage(cv::Mat& image)
 	}
 }
 
-double QMainView::convertToImgX(double dMouseValue, bool bLen)
+double VisionView::convertToImgX(double dMouseValue, bool bLen)
 {
 	QRect rect = ui.label_Img->geometry();
 	double fScaleW = m_windowWidth*1.0 / m_imageWidth;
@@ -920,7 +920,7 @@ double QMainView::convertToImgX(double dMouseValue, bool bLen)
 	}
 }
 
-double QMainView::convertToImgY(double dMouseValue, bool bLen)
+double VisionView::convertToImgY(double dMouseValue, bool bLen)
 {
 	QRect rect = ui.label_Img->geometry();
 	double fScaleW = m_windowWidth*1.0 / m_imageWidth;
@@ -938,7 +938,7 @@ double QMainView::convertToImgY(double dMouseValue, bool bLen)
 	}
 }
 
-double QMainView::convertToMouseX(double dImgValue, bool bLen)
+double VisionView::convertToMouseX(double dImgValue, bool bLen)
 {
 	QRect rect = ui.label_Img->geometry();
 	double fScaleW = m_windowWidth*1.0 / m_imageWidth;
@@ -956,7 +956,7 @@ double QMainView::convertToMouseX(double dImgValue, bool bLen)
 	}
 }
 
-double QMainView::convertToMouseY(double dImgValue, bool bLen)
+double VisionView::convertToMouseY(double dImgValue, bool bLen)
 {
 	QRect rect = ui.label_Img->geometry();
 	double fScaleW = m_windowWidth*1.0 / m_imageWidth;
@@ -974,25 +974,25 @@ double QMainView::convertToMouseY(double dImgValue, bool bLen)
 	}
 }
 
-void QMainView::show3DView(cv::Rect& rectROI)
+void VisionView::show3DView(cv::Rect& rectROI)
 {
 	if (!m_bShow3DInitial)
 	{
 		QVector<double> xValues, yValues, zValues;
 		for (int i = 0; i < 100; i++)
 		{
-			int col = i%10 + 1;
+			int col = i % 10 + 1;
 			int row = i / 10 + 1;
 
 			xValues.push_back(col);
 			yValues.push_back(row);
 			zValues.push_back(0);
-		}		
+		}
 
 		m_pView3D->previousROIDisplay();
 		m_pView3D->loadFile(false, 10, 10, xValues, yValues, zValues);
 		m_pView3D->prepareROIDisplay(QImage(), false);
-		m_pSelectView->setGeometry(QRect(0,0,10,10));
+		m_pSelectView->setGeometry(QRect(0, 0, 10, 10));
 		m_pSelectView->setVisible(true);
 
 		QApplication::processEvents();
@@ -1038,16 +1038,16 @@ void QMainView::show3DView(cv::Rect& rectROI)
 
 		cv::Mat matTexture = m_hoImage(rectROI);
 		/*	cv::Mat matTextureTranspose;
-			cv::transpose(matTexture, matTextureTranspose);
-			cv::Mat matTextureFlip;
-			cv::flip(matTextureTranspose, matTextureFlip, nSizeY/2);
-			QImage imageTexture = QImage((uchar*)matTextureFlip.data, matTextureFlip.cols, matTextureFlip.rows, ToInt(matTextureFlip.step), QImage::Format_RGB888);*/
+		cv::transpose(matTexture, matTextureTranspose);
+		cv::Mat matTextureFlip;
+		cv::flip(matTextureTranspose, matTextureFlip, nSizeY/2);
+		QImage imageTexture = QImage((uchar*)matTextureFlip.data, matTextureFlip.cols, matTextureFlip.rows, ToInt(matTextureFlip.step), QImage::Format_RGB888);*/
 		QImage imageTexture = QImage((uchar*)matTexture.data, matTexture.cols, matTexture.rows, ToInt(matTexture.step), QImage::Format_RGB888);
 		//QMatrix matrix;
 		//matrix.rotate(270);
 		//QImage imageTextureTranspose = imageTexture.transformed(matrix);
 		m_pView3D->prepareROIDisplay(imageTexture, true);
-		
+
 		QRect rectDisplay;
 		rectDisplay.setX(convertToMouseX(rectROI.x));
 		rectDisplay.setY(convertToMouseY(rectROI.y));
@@ -1072,7 +1072,7 @@ void QMainView::show3DView(cv::Rect& rectROI)
 	}
 }
 
-void QMainView::fullImage()
+void VisionView::fullImage()
 {
 	m_dScale = 1.0;
 	m_dMovedX = 0.0;
@@ -1084,7 +1084,7 @@ void QMainView::fullImage()
 		displayImage(m_hoImage);
 }
 
-void QMainView::zoomImage(double scale)
+void VisionView::zoomImage(double scale)
 {
 	m_dScale *= scale;
 	if (m_dScale < 1.0) m_dScale = 1.0;
@@ -1095,7 +1095,7 @@ void QMainView::zoomImage(double scale)
 		displayImage(m_hoImage);
 }
 
-void QMainView::moveImage(double motionX, double motionY)
+void VisionView::moveImage(double motionX, double motionY)
 {
 	m_dMovedX += motionX;
 	m_dMovedY += motionY;
@@ -1106,7 +1106,7 @@ void QMainView::moveImage(double motionX, double motionY)
 		displayImage(m_hoImage);
 }
 
-void QMainView::setButtonsEnable(bool flag)
+void VisionView::setButtonsEnable(bool flag)
 {
 	openAct->setEnabled(flag);
 	cameraAct->setEnabled(flag);
@@ -1117,22 +1117,23 @@ void QMainView::setButtonsEnable(bool flag)
 	//moveAct->setEnabled(flag);
 }
 
-bool QMainView::startUpCapture()
-{	
+bool VisionView::startUpCapture()
+{
 	setButtonsEnable(false);
-	fullImage();	
+	fullImage();
 
 	return true;
 }
 
-bool QMainView::endUpCapture()
+bool VisionView::endUpCapture()
 {
 	setButtonsEnable(true);
 
 	return true;
 }
 
-void QMainView::setHeightData(cv::Mat& matHeight)
+void VisionView::setHeightData(cv::Mat& matHeight)
 {
 	m_3DMatHeight = matHeight;
 }
+

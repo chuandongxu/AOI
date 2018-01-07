@@ -30,7 +30,7 @@ QWorkFlowWidget::QWorkFlowWidget(QWidget *parent)
 	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
 
 	m_subVLayout = new QHBoxLayout;
-	QWidget* pWidget = pUI->getMainView();
+	QWidget* pWidget = pUI->getVisionView();
 	m_subVLayout->addWidget(pWidget);;
 	pWidget->setFixedSize(1200, 800);
 	m_subVLayout->setAlignment(Qt::AlignTop);

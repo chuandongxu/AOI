@@ -62,15 +62,6 @@
     <ClCompile Include="VisionDetectSetting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_VisionView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_VisionView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="VisionView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VLMaskEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -199,9 +190,6 @@
     <ClInclude Include="GeneratedFiles\ui_VisionDetectSetting.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_VisionView.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_QVLMaskEditor.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -246,12 +234,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="VisionDetectSetting.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="VisionView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="VisionView.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="QVLMaskEditor.ui">
