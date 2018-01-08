@@ -1,4 +1,4 @@
-#include "VisionView.h"
+ï»¿#include "VisionView.h"
 
 #include <QFileDialog>
 #include "../Common/SystemData.h"
@@ -116,42 +116,42 @@ void VisionView::init()
 
 void VisionView::createActions()
 {
-	cameraAct = new QAction(QIcon("image/cameraFile.png"), QStringLiteral("×¥È¡"), this);
+	cameraAct = new QAction(QIcon("image/cameraFile.png"), QStringLiteral("æŠ“å–"), this);
 	cameraAct->setShortcuts(QKeySequence::Open);
 	cameraAct->setStatusTip(tr("Grab file from camera"));
 	connect(cameraAct, SIGNAL(triggered()), this, SLOT(cameraFile()));
 
-	openAct = new QAction(QIcon("image/openFile.png"), QStringLiteral("´ò¿ª..."), this);
+	openAct = new QAction(QIcon("image/openFile.png"), QStringLiteral("æ‰“å¼€..."), this);
 	openAct->setShortcuts(QKeySequence::Open);
 	openAct->setStatusTip(tr("Open an existing file"));
 	connect(openAct, SIGNAL(triggered()), this, SLOT(openFile()));
 
-	saveAsAct = new QAction(QIcon("image/saveAsFile.png"), QStringLiteral("Áí´æÎª..."), this);
+	saveAsAct = new QAction(QIcon("image/saveAsFile.png"), QStringLiteral("å¦å­˜ä¸º..."), this);
 	saveAsAct->setShortcuts(QKeySequence::SaveAs);
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAsFile()));
 
-	zoomInAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("ËõĞ¡"), this);
+	zoomInAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("ç¼©å°"), this);
 	zoomInAct->setShortcuts(QKeySequence::ZoomIn);
 	zoomInAct->setStatusTip(tr("Zoom in window"));
 	connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-	zoomOutAct = new QAction(QIcon("image/zoomIn.png"), QStringLiteral("·Å´ó"), this);
+	zoomOutAct = new QAction(QIcon("image/zoomIn.png"), QStringLiteral("æ”¾å¤§"), this);
 	zoomOutAct->setShortcuts(QKeySequence::ZoomOut);
 	zoomOutAct->setStatusTip(tr("Zoom out window"));
 	connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
-	fullScreenAct = new QAction(QIcon("image/fullScreen.png"), QStringLiteral("È«ÆÁ"), this);
+	fullScreenAct = new QAction(QIcon("image/fullScreen.png"), QStringLiteral("å…¨å±"), this);
 	fullScreenAct->setShortcuts(QKeySequence::FullScreen);
 	fullScreenAct->setStatusTip(tr("Full screen"));
 	connect(fullScreenAct, SIGNAL(triggered()), this, SLOT(fullScreen()));
 
-	moveAct = new QAction(QIcon("image/moveView.png"), QStringLiteral("ÒÆ¶¯"), this);
+	moveAct = new QAction(QIcon("image/moveView.png"), QStringLiteral("ç§»åŠ¨"), this);
 	moveAct->setShortcuts(QKeySequence::MoveToEndOfBlock);
 	moveAct->setStatusTip(tr("Move screen"));
 	connect(moveAct, SIGNAL(triggered()), this, SLOT(moveScreen()));
 
-	show3DAct = new QAction(QIcon("image/cutSurface.png"), QStringLiteral("ÏÔÊ¾ÈıÎ¬Êı¾İ"), this);
+	show3DAct = new QAction(QIcon("image/cutSurface.png"), QStringLiteral("æ˜¾ç¤ºä¸‰ç»´æ•°æ®"), this);
 	show3DAct->setShortcuts(QKeySequence::Underline);
 	show3DAct->setStatusTip(tr("Show 3D"));
 	connect(show3DAct, SIGNAL(triggered()), this, SLOT(show3D()));
@@ -205,7 +205,7 @@ void VisionView::openFile()
 	path += "/";
 
 	QString picFilter = "Image(*.tif *.tiff *.gif *.bmp *.jpg *.jpeg *.jp2 *.png *.pcx *.pgm *.ppm *.pbm *.xwd *.ima)";
-	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("´ò¿ªÍ¼Æ¬"), path/*/*/, picFilter);
+	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡"), path/*/*/, picFilter);
 
 	if (!strFileName.isEmpty())
 	{
@@ -235,7 +235,7 @@ void VisionView::cameraFile()
 		}
 	}
 
-	QMessageBox::warning(this, "", QStringLiteral("ÎŞ·¢×¥È¡Í¼Ïñ"));
+	QMessageBox::warning(this, "", QStringLiteral("æ— å‘æŠ“å–å›¾åƒ"));
 }
 
 void VisionView::saveAsFile()
@@ -243,7 +243,7 @@ void VisionView::saveAsFile()
 	if (!m_dispImage.empty())
 	{
 		QString picFilter = "Image( *.bmp )";
-		QString strSave = QFileDialog::getSaveFileName(this, QStringLiteral("±£´æÍ¼Æ¬"), "/", picFilter);
+		QString strSave = QFileDialog::getSaveFileName(this, QStringLiteral("ä¿å­˜å›¾ç‰‡"), "/", picFilter);
 		if (!strSave.isEmpty())
 		{
 			IplImage frameImg = IplImage(m_dispImage);
@@ -251,12 +251,12 @@ void VisionView::saveAsFile()
 		}
 		else
 		{
-			QMessageBox::warning(this, "", QStringLiteral("ÊäÈëÎÄ¼şÃû"));
+			QMessageBox::warning(this, "", QStringLiteral("è¾“å…¥æ–‡ä»¶å"));
 		}
 	}
 	else
 	{
-		QMessageBox::warning(this, "", QStringLiteral("ÎŞÍ¼Ïñ"));
+		QMessageBox::warning(this, "", QStringLiteral("æ— å›¾åƒ"));
 	}
 }
 
@@ -284,7 +284,7 @@ void VisionView::show3D()
 {
 	if (m_pMainViewFull3D->isShown())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("3D½çÃæÒÑÏÔÊ¾£¬Çë¹Ø±ÕºóÔÙ´ò¿ª"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("3Dç•Œé¢å·²æ˜¾ç¤ºï¼Œè¯·å…³é—­åå†æ‰“å¼€"));
 		return;
 	}
 
@@ -815,7 +815,7 @@ void VisionView::repaintAll()
 
 void VisionView::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 {
-	CV_Assert(src.depth() == CV_8U);//CV_Assert£¨£©ÈôÀ¨ºÅÖĞµÄ±í´ïÊ½ÖµÎªfalse£¬Ôò·µ»ØÒ»¸ö´íÎóĞÅÏ¢¡£  
+	CV_Assert(src.depth() == CV_8U);//CV_Assertï¼ˆï¼‰è‹¥æ‹¬å·ä¸­çš„è¡¨è¾¾å¼å€¼ä¸ºfalseï¼Œåˆ™è¿”å›ä¸€ä¸ªé”™è¯¯ä¿¡æ¯ã€‚  
 	const int rows = src.rows;
 	const int cols = src.cols;
 	dst.create(rows, cols, src.type());
@@ -825,17 +825,17 @@ void VisionView::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 
 	dst.setTo(cv::Scalar(0, 0, 0));
 
-	cv::Vec3b *p;   //¶¨ÒåÒ»¸ö´æ·Å3Í¨µÀµÄÈİÆ÷Ö¸Õëp  
+	cv::Vec3b *p;   //å®šä¹‰ä¸€ä¸ªå­˜æ”¾3é€šé“çš„å®¹å™¨æŒ‡é’ˆp  
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			p = dst.ptr<cv::Vec3b>(i);//Ö¸ÏòĞĞÊıµÄÈİÆ÷p  
+			p = dst.ptr<cv::Vec3b>(i);//æŒ‡å‘è¡Œæ•°çš„å®¹å™¨p  
 			int x = j - dx;
 			int y = i - dy;
-			if (x>0 && y>0 && x < cols&&y < rows)//Æ½ÒÆºóµÄÏñËØ×ø±êÔÚÔ­Í¼ÏñµÄĞĞÊıºÍÁĞÊıÄÚ  
+			if (x>0 && y>0 && x < cols&&y < rows)//å¹³ç§»åçš„åƒç´ åæ ‡åœ¨åŸå›¾åƒçš„è¡Œæ•°å’Œåˆ—æ•°å†…  
 			{
-				p[i, j] = src.ptr<cv::Vec3b>(y)[x];//Æ½ÒÆºóµÄÍ¼Ïñ£¨i,j)¶ÔÓ¦ÓÚÔ­Í¼ÏñµÄ£¨y,x)  
+				p[i, j] = src.ptr<cv::Vec3b>(y)[x];//å¹³ç§»åçš„å›¾åƒï¼ˆi,j)å¯¹åº”äºåŸå›¾åƒçš„ï¼ˆy,x)  
 			}
 		}
 	}
