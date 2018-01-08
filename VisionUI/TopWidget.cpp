@@ -61,15 +61,15 @@ QTopWidget::QTopWidget(QWidget *parent) :
 	m_toolBtnSys->setStyleSheet(stytleStr);
 	m_toolBtnHw = new QPushButton();
 	m_toolBtnHw->setFixedSize(100, 25);
-	m_toolBtnHw->setText(QStringLiteral("周边设备"));
+	m_toolBtnHw->setText(QStringLiteral("采集设备"));
 	m_toolBtnHw->setStyleSheet(stytleStr);
 	m_toolBtnTools = new QPushButton();
 	m_toolBtnTools->setFixedSize(100, 25);
-	m_toolBtnTools->setText(QStringLiteral("常用工具"));
+	m_toolBtnTools->setText(QStringLiteral("编辑工具"));
 	m_toolBtnTools->setStyleSheet(stytleStr);
 	m_toolBtnSetting = new QPushButton();
 	m_toolBtnSetting->setFixedSize(100, 25);
-	m_toolBtnSetting->setText(QStringLiteral("参数设置"));
+	m_toolBtnSetting->setText(QStringLiteral("检测设置"));
 	m_toolBtnSetting->setStyleSheet(stytleStr);
 	m_toolBtnData = new QPushButton();
 	m_toolBtnData->setFixedSize(100, 25);
@@ -135,12 +135,12 @@ void QTopWidget::onSystem()
 
 void QTopWidget::onHardware()
 {
- 
+	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_HARDWARE);
 }
 
 void QTopWidget::onTools()
 {
-   
+	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_TOOLS);
 }
 
 void QTopWidget::onSetting()

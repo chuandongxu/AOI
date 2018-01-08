@@ -10,10 +10,10 @@ class IVision
 {
 public:
 	virtual QWidget* getDetectView() = 0;
+	virtual QWidget* getCellEditorView() = 0;
 
 public:
 	virtual bool loadCmdData(int nStation) = 0;
-	virtual bool loadImage(cv::Mat& matImg) = 0;
 
 	virtual bool setHeightData(cv::Mat& matHeight) = 0;
 	virtual bool setProfGrayImg(cv::Mat& imgGray) = 0;

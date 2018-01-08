@@ -27,7 +27,7 @@ public:
 	~VisionCtrl();
 
 public:
-	QVLCellEditor* getCellTmpEditor();
+	//QVLCellEditor* getCellTmpEditor();
 	QVLCellEditor* getCellObjEditor();
 	QVLProfileEditor* getProfileEditor();
 
@@ -62,7 +62,7 @@ private:
 	void addImageText(cv::Mat image, cv::Point ptPos, QString szText);
 private:
 	QVLCellEditor *m_pVLCellObjEditor;
-	QVLCellEditor *m_pVLCellTmpEditor;
+	//QVLCellEditor *m_pVLCellTmpEditor;
 	QVLProfileEditor *m_pVLProflieEditor;	
 	//QVector<cv::Mat> m_matBaseSurfaces;
 	QVector<AOI::Vision::PR_CALC_3D_HEIGHT_CMD> m_stCalcHeightCmds;

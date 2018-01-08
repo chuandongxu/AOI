@@ -16,6 +16,8 @@ public:
 	virtual void initial(int nWindow = 0 )=0;   // nWindow 设置显示窗口的个数， = 0 则设置窗口个数等于相机个数， 如果无相机则打开一个窗口
 	virtual void unInit() = 0;
 
+	virtual QWidget* getSettingView() = 0;
+
 	virtual void openCamera() = 0;
 	virtual void closeCamera() = 0;
 	virtual int getCameraNum() = 0;
@@ -45,10 +47,6 @@ public:
 	/************************************************************************/
 	/*  辅助功能   */
 	/************************************************************************/	
-
-	// 初始化3D数据
-	virtual void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues) = 0;
-	virtual void show3DView() = 0;
 };
 
 #endif

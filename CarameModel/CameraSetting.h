@@ -3,7 +3,6 @@
 #include <QWidget>
 #include "ui_CameraSetting.h"
 #include "CameraCtrl.h"
-#include "viewctrl.h"
 
 #include "opencv/cv.h"
 
@@ -15,11 +14,6 @@ class CameraSetting : public QWidget
 public:
 	CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent = Q_NULLPTR);
 	~CameraSetting();
-
-public:
-	void endUpCapture();
-	void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues);
-	void show3DView();
 
 protected slots:
 	void onStateChangeHWTrig(int iState);
@@ -45,7 +39,6 @@ protected slots:
 	void onSelImgDLP2Path();
 	void onSaveImgDLP2Path();
 	void onCalibration();
-	void onView3D();
 
 private:
 	double convertToPixel(double umValue);
@@ -61,6 +54,5 @@ private:
 private:
 	Ui::CameraSetting ui;
 	CameraCtrl* m_pCameraCtrl;
-	ViewCtrl* m_mainView;
 	IGraphicEditor *m_pGraphicsEditor;	
 };

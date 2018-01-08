@@ -17,9 +17,10 @@ public:
 
 public:
 	virtual QWidget* getDetectView();
+	virtual QWidget* getCellEditorView();
 
+public:
 	virtual bool loadCmdData(int nStation);
-	virtual bool loadImage(cv::Mat& matImg);
 
 	virtual bool setHeightData(cv::Mat& matHeight);
 	virtual bool setProfGrayImg(cv::Mat& imgGray);

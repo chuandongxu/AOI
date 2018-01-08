@@ -16,18 +16,18 @@ VisionDetect::~VisionDetect()
 
 void VisionDetect::addSettingWiddget(QTabWidget * tabWidget)
 {
-	if (tabWidget)
-	{
-		tabWidget->addTab(new VisionDetectSetting(&m_ctrl), QStringLiteral("视觉检测"));
-	}
+	//if (tabWidget)
+	//{
+	//	tabWidget->addTab(new VisionDetectSetting(&m_ctrl), QStringLiteral("视觉检测"));
+	//}
 
-	QString user;
-	int level = 0;
-	System->getUser(user, level);
-	if (USER_LEVEL_MANAGER > level)
-	{
-		//tabWidget->setEnabled(false);
-	}	
+	//QString user;
+	//int level = 0;
+	//System->getUser(user, level);
+	//if (USER_LEVEL_MANAGER > level)
+	//{
+	//	//tabWidget->setEnabled(false);
+	//}	
 }
 
 QWidget* VisionDetect::getDetectView()
@@ -35,21 +35,14 @@ QWidget* VisionDetect::getDetectView()
 	return m_pDetectView;
 }
 
+QWidget* VisionDetect::getCellEditorView()
+{
+	return m_pDetectView->getCellEditorView();
+}
+
 bool VisionDetect::loadCmdData(int nStation)
 {
 	return m_ctrl.loadCmdData(nStation);
-}
-
-bool VisionDetect::loadImage(cv::Mat& matImg)
-{
-	if (matImg.type() == CV_8UC1)
-	{
-		cvtColor(matImg, matImg, CV_GRAY2RGB);
-	}
-	//m_ctrl.getVisionView()->setImage(matImg);
-	m_ctrl.getCellTmpEditor()->setImage(matImg);
-	m_ctrl.getCellObjEditor()->setImage(matImg);
-	return true;
 }
 
 bool VisionDetect::setHeightData(cv::Mat& matHeight)

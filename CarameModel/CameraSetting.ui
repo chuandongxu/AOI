@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>418</width>
     <height>850</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
      <x>10</x>
      <y>10</y>
      <width>401</width>
-     <height>750</height>
+     <height>801</height>
     </rect>
    </property>
    <property name="tabPosition">
@@ -672,19 +672,6 @@
        <string>匹配分数：</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_4">
-      <property name="geometry">
-       <rect>
-        <x>70</x>
-        <y>410</y>
-        <width>230</width>
-        <height>34</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>3D View</string>
-      </property>
-     </widget>
      <widget class="Line" name="line_3">
       <property name="geometry">
        <rect>
@@ -776,7 +763,6 @@
      <zorder>label_6</zorder>
      <zorder>lineEdit_7</zorder>
      <zorder>label_8</zorder>
-     <zorder>pushButton_4</zorder>
      <zorder>lineEdit_8</zorder>
      <zorder>label_19</zorder>
      <zorder>label_20</zorder>
@@ -785,24 +771,6 @@
     </widget>
    </widget>
   </widget>
-  <widget class="QFrame" name="frame">
-   <property name="geometry">
-    <rect>
-     <x>419</x>
-     <y>10</y>
-     <width>760</width>
-     <height>750</height>
-    </rect>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
-  </widget>
-  <zorder>frame</zorder>
-  <zorder>tabWidget</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

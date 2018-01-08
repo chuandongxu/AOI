@@ -176,10 +176,14 @@ VisionDetectRunView::~VisionDetectRunView()
 	}
 }
 
+QWidget* VisionDetectRunView::getCellEditorView()
+{
+	return m_pVLCellObjEditor;
+}
+
 void VisionDetectRunView::initUI()
 {
 	m_pVLMaskEditor = new QVLMaskEditor();
-	m_pVLCellTmpEditor = m_pCtrl->getCellTmpEditor();
 	m_pVLCellObjEditor = m_pCtrl->getCellObjEditor();
 	m_pVLProflieEditor = m_pCtrl->getProfileEditor();
 
@@ -335,9 +339,8 @@ void VisionDetectRunView::initUI()
 	connect(ui.pushButton_3DDetectMerge, SIGNAL(clicked()), SLOT(on3DDetectMerge()));
 	connect(ui.pushButton_3DHeightDetect, SIGNAL(clicked()), SLOT(on3DHeightDetect()));
 
-	connect(ui.pushButton_3DHeightCellTmpEdit, SIGNAL(clicked()), SLOT(on3DHeightCellTmpEdit()));
-	connect(ui.pushButton_3DHeightCellObjEdit, SIGNAL(clicked()), SLOT(on3DHeightCellObjEdit()));
 
+	connect(ui.pushButton_3DHeightCellObjEdit, SIGNAL(clicked()), SLOT(on3DHeightCellObjEdit()));
 	connect(ui.pushButton_3DProfileEdit, SIGNAL(clicked()), SLOT(on3DProfileEdit()));
 
 
@@ -477,12 +480,7 @@ void VisionDetectRunView::onObjEvent(const QVariantList &data)
 	if (iEvent != RUN_OBJ_EDITOR && iEvent != RUN_OBJ_PROFILE && iEvent != RUN_OBJ_PROFILE_EDIT)return;
 	int nRowIndex = data[2].toInt();
 
-	if (RUN_OBJ_EDITOR == iEvent)
-	{
-		m_pVLCellObjEditor->loadConfigData(nRowIndex);
-		m_pVLCellObjEditor->show();
-	}
-	else if (RUN_OBJ_PROFILE == iEvent)
+	if (RUN_OBJ_PROFILE == iEvent)
 	{
 		m_pVLProflieEditor->show();
 	}
@@ -1975,32 +1973,12 @@ void VisionDetectRunView::on3DDetect()
 			matGray += mat / IMAGE_COUNT;
 		}
 
-		m_pVLCellTmpEditor->setImage(matGray);
-		m_pVLCellObjEditor->setImage(matGray);
-
 		IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
 		if (pUI)
 		{
 			pUI->setHeightData(m_3DMatHeights[nDLPIndex]);
 			pUI->setImage(matGray, false);
-		}
-
-		//double dMinValue = 0, dMaxValue = 0;
-		//cv::Mat matMask = stRpy.matHeight == stRpy.matHeight;
-		//cv::minMaxIdx(stRpy.matHeight, &dMinValue, &dMaxValue, 0, 0, matMask);
-		//cv::Mat matNewPhase = stRpy.matHeight - dMinValue;
-		//float dRatio = 255.f / (dMaxValue - dMinValue);
-		//matNewPhase = matNewPhase * dRatio;
-
-		//cv::Mat mat;
-		//matNewPhase.convertTo(mat, CV_8UC1);
-		//m_pView->displayImage(mat);
-
-		/*	QString path = QApplication::applicationDirPath();
-		path += "/capture/";
-		cv::imwrite(path.toStdString() + "HeightToGray.bmp", matNewPhase);
-		cv::Mat mat = cv::imread(path.toStdString() + "HeightToGray.bmp", cv::IMREAD_GRAYSCALE);
-		m_pView->displayImage(mat);*/
+		}	
 	}
 	else
 	{
@@ -2062,209 +2040,24 @@ void VisionDetectRunView::on3DDetectMerge()
 	}
 }
 
-//void VisionDetectSetting::on3DDetect()
-//{
-//	QString sz3DDetectFile = ui.lineEdit_3DDetectFile->text();
-//	if (sz3DDetectFile.isEmpty())
-//	{
-//		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
-//		return;
-//	}
-//
-//	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
-//	if (sz3DCaliRstFile.isEmpty())
-//	{
-//		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择校准输出文件"));
-//		return;
-//	}
-//
-//	const int IMAGE_COUNT = 8;
-//	std::string strFolder = sz3DDetectFile.toStdString();
-//	Vision::PR_CALC_3D_HEIGHT_CMD stCmd;
-//	Vision::PR_CALC_3D_HEIGHT_RPY stRpy;
-//	for (int i = 1; i <= IMAGE_COUNT; ++i) 
-//	{
-//		char chArrFileName[100];
-//		_snprintf(chArrFileName, sizeof(chArrFileName), "%02d.bmp", i);
-//		std::string strImageFile = strFolder + chArrFileName;
-//		cv::Mat mat = cv::imread(strImageFile, cv::IMREAD_GRAYSCALE);
-//		stCmd.vecInputImgs.push_back(mat);
-//	}
-//
-//	bool b3DDetectGaussionFilter = ui.checkBox_3DDetectGaussionFilter->isChecked();
-//	bool b3DDetectReverseSeq = ui.checkBox_3DDetectReverseSeq->isChecked();
-//	double d3DDetectMinIntDiff = ui.lineEdit_3DDetectMinIntDiff->text().toDouble();
-//	double d3DDetectMinIntAvg = ui.lineEdit_3DDetectMinAvgInt->text().toDouble();
-//	stCmd.bEnableGaussianFilter = b3DDetectGaussionFilter;
-//	stCmd.bReverseSeq = b3DDetectReverseSeq;
-//	stCmd.fMinIntensityDiff = d3DDetectMinIntDiff;
-//	stCmd.fMinAvgIntensity = d3DDetectMinIntAvg;
-//
-//	std::string strResultMatPath = sz3DCaliRstFile.toStdString();
-//	cv::FileStorage fs(strResultMatPath, cv::FileStorage::READ);
-//	cv::FileNode fileNode = fs["K"];
-//	cv::read(fileNode, stCmd.matThickToThinStripeK, cv::Mat());
-//
-//	cv::Mat matBaseSurfaceParam;
-//	fileNode = fs["PPz"];
-//	cv::read(fileNode, matBaseSurfaceParam, cv::Mat());
-//
-//	//fileNode = fs["PhaseToHeightK"];
-//	//cv::read(fileNode, stCmd.matPhaseToHeightK, cv::Mat());
-//
-//	fileNode = fs["BaseStartAvgPhase"];
-//	cv::read(fileNode, stCmd.fBaseStartAvgPhase, 0);
-//
-//	fs.release();
-//
-//	int nStation = ui.comboBox_selectDLP->currentIndex();
-//	if (m_matBaseSurfaces[nStation].empty())
-//	{
-//		Vision::PR_CALC_3D_BASE_CMD stCalc3DBaseCmd;
-//		Vision::PR_CALC_3D_BASE_RPY stCalc3DBaseRpy;
-//		stCalc3DBaseCmd.matBaseSurfaceParam = matBaseSurfaceParam;
-//		PR_Calc3DBase(&stCalc3DBaseCmd, &stCalc3DBaseRpy);
-//		if (Vision::VisionStatus::OK != stCalc3DBaseRpy.enStatus) {
-//			System->setTrackInfo(QString("PR_Calc3DBase fail. Status = ").arg(ToInt32(stCalc3DBaseRpy.enStatus)));
-//		}
-//		m_matBaseSurfaces[nStation] = stCalc3DBaseRpy.matBaseSurface;
-//	}
-//	stCmd.matBaseSurface = m_matBaseSurfaces[nStation];
-//
-//	QString path = QApplication::applicationDirPath();
-//	path += "/3D/config/";
-//
-//	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-//	QString fileName = QString("IntegrateCalibResult") + QString::number(nDLPIndex + 1, 'g', 2) + QString(".yml");
-//
-//	std::string strIntegratedCalibResultPath = path.toStdString() + fileName.toStdString();
-//	cv::FileStorage fsIntegrated(strIntegratedCalibResultPath, cv::FileStorage::READ);
-//	cv::FileNode fileNodeIntegrated = fsIntegrated["IntegratedK"];
-//	cv::read(fileNodeIntegrated, stCmd.matIntegratedK, cv::Mat());
-//	fileNodeIntegrated = fsIntegrated["Order3CurveSurface"];
-//	cv::read(fileNodeIntegrated, stCmd.matOrder3CurveSurface, cv::Mat());
-//	fsIntegrated.release();
-//
-//	QDateTime dateTM = QDateTime::currentDateTime();
-//	Vision::VisionStatus retStatus = PR_Calc3DHeight(&stCmd, &stRpy);
-//	System->setTrackInfo(QString("PR_Calc3DHeight time %1 ms").arg(dateTM.msecsTo(QDateTime::currentDateTime())));
-//
-//	path = QApplication::applicationDirPath();
-//	path += "/Vision/";
-//	Vision::PR_DumpTimeLog(path.toStdString() + "timelog.log");
-//
-//	if (retStatus == Vision::VisionStatus::OK)
-//	{
-//		m_3DMatHeight = stRpy.matHeight;
-//		cv::patchNaNs(m_3DMatHeight, 0.0);
-//
-//		//cv::Mat matHeightResultImg = drawHeightGrid(stRpy.matHeight, 9, 9);
-//		//cv::imwrite("./data/HeightGridImg.png", matHeightResultImg);
-//		//cv::Mat matPhaseResultImg = drawHeightGrid(stRpy.matPhase, 9, 9);
-//		//cv::imwrite("./data/PhaseGridImg.png", matPhaseResultImg);
-//
-//		//cv::Mat matHeightResultImg = drawHeightGrid2(stRpy.matHeight, 9, 9)/*drawHeightGray(stRpy.matHeight)*/;
-//		cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
-//		m_pView->displayImage(matHeightResultImg);
-//
-//		cv::Mat matGray;
-//		const int IMAGE_COUNT = 4;
-//		std::string strFolder = sz3DDetectFile.toStdString();
-//		for (int i = 1; i <= IMAGE_COUNT; ++i)
-//		{
-//			char chArrFileName[100];
-//			_snprintf(chArrFileName, sizeof(chArrFileName), "%02d.bmp", i);
-//			std::string strImageFile = strFolder + chArrFileName;
-//			cv::Mat mat = cv::imread(strImageFile, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_COLOR);
-//
-//			if (matGray.empty())
-//			{
-//				matGray = mat.clone();
-//				matGray.setTo(0);
-//			}
-//			matGray += mat / IMAGE_COUNT;
-//		}
-//
-//		m_pVLCellEditor->setImage(matGray);
-//
-//		ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-//		if (pCam)
-//		{
-//			pCam->setImage(matGray);
-//			pCam->setHeightData(m_3DMatHeight);
-//		}
-//
-//		//double dMinValue = 0, dMaxValue = 0;
-//		//cv::Mat matMask = stRpy.matHeight == stRpy.matHeight;
-//		//cv::minMaxIdx(stRpy.matHeight, &dMinValue, &dMaxValue, 0, 0, matMask);
-//		//cv::Mat matNewPhase = stRpy.matHeight - dMinValue;
-//		//float dRatio = 255.f / (dMaxValue - dMinValue);
-//		//matNewPhase = matNewPhase * dRatio;
-//
-//		//cv::Mat mat;
-//		//matNewPhase.convertTo(mat, CV_8UC1);
-//		//m_pView->displayImage(mat);
-//
-//	/*	QString path = QApplication::applicationDirPath();
-//		path += "/capture/";
-//		cv::imwrite(path.toStdString() + "HeightToGray.bmp", matNewPhase);
-//		cv::Mat mat = cv::imread(path.toStdString() + "HeightToGray.bmp", cv::IMREAD_GRAYSCALE);
-//		m_pView->displayImage(mat);*/
-//	}
-//	else
-//	{
-//		m_pView->addImageText(QString("Error at 3D Height Calculation, error code = %1").arg((int)retStatus));
-//	}
-//}
-
 void VisionDetectRunView::on3DDetectShow()
 {
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-
-	if (pCam)
+	if (m_3DMatHeightMerge.empty())
 	{
-		if (m_3DMatHeightMerge.empty())
+		int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
+
+		if (!m_3DMatHeights[nDLPIndex].empty())
 		{
-			int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-
-			if (!m_3DMatHeights[nDLPIndex].empty())
-			{
-				//auto vecMatNewPhase = matToVector<float>(m_3DMatHeight);
-				int nSizeY = m_3DMatHeights[nDLPIndex].rows;
-				int nSizeX = m_3DMatHeights[nDLPIndex].cols;
-
-				int nDataNum = nSizeX * nSizeY;
-
-				double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-
-				cv::Mat mat3DHeight = m_3DMatHeights[nDLPIndex].clone();
-				cv::patchNaNs(mat3DHeight, 0);
-
-				QVector<double> xValues, yValues, zValues;
-				for (int i = 0; i < nDataNum; i++)
-				{
-					int col = i%nSizeY + 1;
-					int row = i / nSizeY + 1;
-
-					xValues.push_back(col - nSizeY / 2);
-					yValues.push_back(row - nSizeX / 2);
-
-					zValues.push_back(mat3DHeight.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
-				}
-
-				pCam->show3DView();
-				pCam->load3DViewData(nSizeY, nSizeX, xValues, yValues, zValues);
-				pCam->show3DView();
-			}
-		}
-		else
-		{
-			int nSizeY = m_3DMatHeightMerge.rows;
-			int nSizeX = m_3DMatHeightMerge.cols;
+			//auto vecMatNewPhase = matToVector<float>(m_3DMatHeight);
+			int nSizeY = m_3DMatHeights[nDLPIndex].rows;
+			int nSizeX = m_3DMatHeights[nDLPIndex].cols;
 
 			int nDataNum = nSizeX * nSizeY;
 
 			double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+
+			cv::Mat mat3DHeight = m_3DMatHeights[nDLPIndex].clone();
+			cv::patchNaNs(mat3DHeight, 0);
 
 			QVector<double> xValues, yValues, zValues;
 			for (int i = 0; i < nDataNum; i++)
@@ -2275,44 +2068,39 @@ void VisionDetectRunView::on3DDetectShow()
 				xValues.push_back(col - nSizeY / 2);
 				yValues.push_back(row - nSizeX / 2);
 
-				zValues.push_back(m_3DMatHeightMerge.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
+				zValues.push_back(mat3DHeight.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
 			}
 
-			pCam->show3DView();
-			pCam->load3DViewData(nSizeY, nSizeX, xValues, yValues, zValues);
-			pCam->show3DView();
+			getVisionUI()->show3DView();
+			getVisionUI()->load3DViewData(nSizeY, nSizeX, xValues, yValues, zValues);
+			getVisionUI()->show3DView();
 		}
-	}
-
-	/*cv::Mat matMask = m_3DMatHeights[nDLPIndex] == m_3DMatHeights[nDLPIndex];
-
-	int nSizeY = m_3DMatHeights[nDLPIndex].rows;
-	int nSizeX = m_3DMatHeights[nDLPIndex].cols;
-
-	int nDataNum = nSizeX * nSizeY;
-
-	QVector<double> xValues, yValues, zValues;
-	for (int i = 0; i < nDataNum; i++)
-	{
-	int col = i%nSizeX + 1;
-	int row = i / nSizeX + 1;
-
-	xValues.push_back(col);
-	yValues.push_back(row);
-
-	if (matMask.at<bool>(row - 1, col - 1))
-	{
-	zValues.push_back(m_3DMatHeights[nDLPIndex].at<float>(row - 1, col - 1) * 100);
 	}
 	else
 	{
-	zValues.push_back(0);
-	}
-	}
+		int nSizeY = m_3DMatHeightMerge.rows;
+		int nSizeX = m_3DMatHeightMerge.cols;
 
-	pCam->show3DView(0);
-	pCam->load3DViewData(0, nSizeX, nSizeY, xValues, yValues, zValues);
-	pCam->show3DView(0);*/
+		int nDataNum = nSizeX * nSizeY;
+
+		double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+
+		QVector<double> xValues, yValues, zValues;
+		for (int i = 0; i < nDataNum; i++)
+		{
+			int col = i%nSizeY + 1;
+			int row = i / nSizeY + 1;
+
+			xValues.push_back(col - nSizeY / 2);
+			yValues.push_back(row - nSizeX / 2);
+
+			zValues.push_back(m_3DMatHeightMerge.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
+		}
+
+		getVisionUI()->show3DView();
+		getVisionUI()->load3DViewData(nSizeY, nSizeX, xValues, yValues, zValues);
+		getVisionUI()->show3DView();
+	}
 }
 
 void VisionDetectRunView::onSave3DDetectParams()
@@ -2332,14 +2120,9 @@ void VisionDetectRunView::onSave3DDetectParams()
 	System->setParam("3d_detect_phase_shift", d3DDetectPhaseShift);
 }
 
-void VisionDetectRunView::on3DHeightCellTmpEdit()
-{
-	m_pVLCellTmpEditor->show();
-}
-
 void VisionDetectRunView::on3DHeightCellObjEdit()
 {
-	m_pVLCellObjEditor->show();
+	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_TOOLS);
 }
 
 void VisionDetectRunView::on3DHeightDetect()

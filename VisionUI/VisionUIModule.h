@@ -32,6 +32,16 @@ public:
 	virtual void addImageText(QString szText);
 	virtual void displayImage(cv::Mat& image);
 
+	virtual void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues);
+	virtual void show3DView();
+
+	virtual void setSelect();
+	virtual cv::Mat getSelectImage();
+	virtual void clearSelect();
+	virtual cv::Rect2f getSelectScale();
+
+	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
+
 private:
 	void * m_mainWidget;
 	VisionView* m_pVisionView;

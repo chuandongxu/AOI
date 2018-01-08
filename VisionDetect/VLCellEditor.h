@@ -2,7 +2,6 @@
 
 #include <QWidget>
 #include "ui_VLCellEditor.h"
-#include "QCellView.h"
 
 #include "../include/IData.h"
 
@@ -11,6 +10,7 @@
 
 using namespace cv;
 
+class IVisionUI;
 class QVLMaskEditor;
 class QVLCellEditor : public QWidget
 {
@@ -19,6 +19,9 @@ class QVLCellEditor : public QWidget
 public:
 	QVLCellEditor(DataTypeEnum emType, QWidget *parent = Q_NULLPTR);
 	~QVLCellEditor();
+
+private:
+	IVisionUI* getVisionUI();
 
 protected:
 	void closeEvent(QCloseEvent *e);
@@ -75,7 +78,6 @@ private:
 
 private:
 	Ui::QVLCellEditor ui;
-	QCellView* m_pView;
 	QGraphicsScene * m_BitmapScene;
 
 	QStandardItemModel m_model;

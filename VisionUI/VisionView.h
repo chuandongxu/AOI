@@ -10,6 +10,7 @@
 
 #include "opencv/cv.h"
 
+class QDetectObj;
 class DViewUtility;
 class VisionView : public QMainWindow
 {
@@ -26,7 +27,17 @@ public:
 	void addImageText(QString szText);
 	void displayImage(cv::Mat& image);
 
-	private slots:
+	void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues);
+	void show3DView();
+
+	void setSelect();
+	cv::Mat getSelectImage();
+	void clearSelect();
+	cv::Rect2f getSelectScale();
+
+	void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
+
+private slots:
 	void onResultEvent(const QVariantList &data);
 
 	void openFile();

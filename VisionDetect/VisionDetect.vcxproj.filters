@@ -107,15 +107,6 @@
     <ClCompile Include="VLCellEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_QCellView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_QCellView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="QCellView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\DataModule\QDetectObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -202,9 +193,6 @@
     <ClInclude Include="GeneratedFiles\ui_VLCellEditor.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_QCellView.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_QDlpMTFRsltDisplay.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -261,12 +249,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="VLCellEditor.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="QCellView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="QCellView.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\DataModule\QDetectObj.h">

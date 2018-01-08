@@ -41,27 +41,6 @@
     <ClCompile Include="CameraCtrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="viewctrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_viewctrl.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_viewctrl.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_camRes.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AttchWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_AttchWidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_AttchWidget.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="cameramodule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -98,12 +77,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_QDetectObj.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="HWndCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HObjectEntry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_QMainProcess.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -124,9 +97,6 @@
     <ClInclude Include="CameraCtrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_viewctrl.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -139,23 +109,8 @@
     <ClInclude Include="MatHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HWndCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HObjectEntry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="viewctrl.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="camRes.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="AttchWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="CameraSetting.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -163,9 +118,6 @@
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="DalsaDevice.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="viewctrl.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="QMainCameraOnLive.h">
@@ -180,8 +132,5 @@
     <CustomBuild Include="QMainProcess.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="CarameModel.rc" />
   </ItemGroup>
 </Project>

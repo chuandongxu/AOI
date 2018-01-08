@@ -1,4 +1,4 @@
-#include "DLPControl.h"
+﻿#include "DLPControl.h"
 #include "dlpcontrolmodule_global.h"
 
 #include "../Common/SystemData.h"

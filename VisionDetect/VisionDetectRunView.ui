@@ -462,8 +462,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>401</width>
-        <height>700</height>
+        <width>100</width>
+        <height>30</height>
        </rect>
       </property>
       <attribute name="label">
@@ -1344,8 +1344,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>421</width>
-        <height>670</height>
+        <width>100</width>
+        <height>30</height>
        </rect>
       </property>
       <attribute name="label">
@@ -1806,8 +1806,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>421</width>
-        <height>670</height>
+        <width>100</width>
+        <height>30</height>
        </rect>
       </property>
       <attribute name="label">
@@ -2182,15 +2182,15 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="page_3">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>400</width>
-        <height>541</height>
+        <width>100</width>
+        <height>30</height>
        </rect>
       </property>
       <attribute name="label">
@@ -2408,8 +2408,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>401</width>
-        <height>481</height>
+        <width>100</width>
+        <height>30</height>
        </rect>
       </property>
       <attribute name="label">
@@ -2839,8 +2839,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>401</width>
-        <height>481</height>
+        <width>400</width>
+        <height>541</height>
        </rect>
       </property>
       <attribute name="label">
@@ -3016,8 +3016,8 @@
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>396</y>
-          <width>120</width>
+          <y>400</y>
+          <width>361</width>
           <height>34</height>
          </rect>
         </property>
@@ -3204,8 +3204,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>401</width>
-        <height>481</height>
+        <width>100</width>
+        <height>30</height>
        </rect>
       </property>
       <attribute name="label">
@@ -3427,7 +3427,7 @@
         <x>0</x>
         <y>0</y>
         <width>400</width>
-        <height>531</height>
+        <height>541</height>
        </rect>
       </property>
       <attribute name="label">
@@ -3438,64 +3438,25 @@
         <rect>
          <x>0</x>
          <y>170</y>
-         <width>401</width>
+         <width>391</width>
          <height>301</height>
         </rect>
        </property>
        <property name="title">
         <string>元器件资料</string>
        </property>
-       <widget class="QGroupBox" name="groupBox_13">
+       <widget class="QPushButton" name="pushButton_3DHeightCellObjEdit">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>140</y>
-          <width>381</width>
-          <height>71</height>
+          <x>20</x>
+          <y>30</y>
+          <width>361</width>
+          <height>34</height>
          </rect>
         </property>
-        <property name="title">
-         <string>元件资料</string>
+        <property name="text">
+         <string>编辑检测元器件</string>
         </property>
-        <widget class="QPushButton" name="pushButton_3DHeightCellObjEdit">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>20</y>
-           <width>361</width>
-           <height>34</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>编辑检测元器件</string>
-         </property>
-        </widget>
-       </widget>
-       <widget class="QGroupBox" name="groupBox_2">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>50</y>
-          <width>381</width>
-          <height>71</height>
-         </rect>
-        </property>
-        <property name="title">
-         <string>模板资料</string>
-        </property>
-        <widget class="QPushButton" name="pushButton_3DHeightCellTmpEdit">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>20</y>
-           <width>361</width>
-           <height>34</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>编辑元器件模板</string>
-         </property>
-        </widget>
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox_15">
@@ -3503,7 +3464,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>411</width>
+         <width>391</width>
          <height>161</height>
         </rect>
        </property>

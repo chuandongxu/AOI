@@ -39,7 +39,8 @@ const int LABEL_IMAGE_HEIGHT = 800;
 
 const int MODE_VIEW_NONE = 1;
 const int MODE_VIEW_SELECT = 2;
-const int MODE_VIEW_MOVE = 3;
+const int MODE_VIEW_SELECT_ROI = 3;
+const int MODE_VIEW_MOVE = 4;
 
 VisionView::VisionView(QWidget *parent)
 	: QMainWindow(parent)
@@ -208,13 +209,7 @@ void VisionView::openFile()
 
 	if (!strFileName.isEmpty())
 	{
-		loadImage(strFileName);
-
-		IVision* pVision = getModule<IVision>(VISION_MODEL);
-		if (pVision)
-		{
-			pVision->loadImage(m_hoImage);
-		}
+		loadImage(strFileName);	
 	}
 }
 
@@ -235,13 +230,7 @@ void VisionView::cameraFile()
 			m_dMovedX = 0.0;
 			m_dMovedY = 0.0;
 
-			displayImage(m_hoImage);
-
-			IVision* pVision = getModule<IVision>(VISION_MODEL);
-			if (pVision)
-			{
-				pVision->loadImage(m_hoImage);
-			}
+			displayImage(m_hoImage);		
 			return;
 		}
 	}
@@ -518,6 +507,7 @@ void VisionView::mouseMoveEvent(QMouseEvent * event)
 		switch (m_stateView)
 		{
 		case MODE_VIEW_SELECT:
+		case MODE_VIEW_SELECT_ROI:
 			if ((0 != (int)motionX) || (0 != (int)motionY))
 			{
 				if ((int)motionX >= 0 && (int)motionY >= 0)
@@ -543,10 +533,12 @@ void VisionView::mouseMoveEvent(QMouseEvent * event)
 						select.height = (select.y + select.height) > m_hoImage.size().height ? (m_hoImage.size().height - select.y) : select.height;
 					}
 
-					if (select.width > 500) select.width = 500;
-					if (select.height > 500) select.height = 500;
+					if (MODE_VIEW_SELECT == m_stateView && select.width > 500) select.width = 500;
+					if (MODE_VIEW_SELECT == m_stateView && select.height > 500) select.height = 500;
 
 					m_selectROI = select;
+
+					//qDebug() << m_selectROI.x << ":" << m_selectROI.y << ":" << m_selectROI.width << ":" << m_selectROI.height;
 
 					repaintAll();
 				}
@@ -585,6 +577,7 @@ void VisionView::mousePressEvent(QMouseEvent * event)
 		switch (m_stateView)
 		{
 		case MODE_VIEW_SELECT:
+		case MODE_VIEW_SELECT_ROI:
 			break;
 		case MODE_VIEW_NONE:
 			break;
@@ -596,7 +589,9 @@ void VisionView::mousePressEvent(QMouseEvent * event)
 	{
 		switch (m_stateView)
 		{
-		case MODE_VIEW_SELECT:
+		case MODE_VIEW_SELECT:					
+			break;
+		case MODE_VIEW_SELECT_ROI:		
 			break;
 		case MODE_VIEW_NONE:
 			break;
@@ -625,6 +620,9 @@ void VisionView::mouseReleaseEvent(QMouseEvent *event)
 			}
 			m_selectROI.width = 0;
 			m_selectROI.height = 0;
+			setViewState(MODE_VIEW_NONE);
+			break;
+		case MODE_VIEW_SELECT_ROI:	
 			setViewState(MODE_VIEW_NONE);
 			break;
 		case MODE_VIEW_NONE:
@@ -853,6 +851,9 @@ void VisionView::setViewState(int state)
 	case MODE_VIEW_SELECT:
 		setCursor(Qt::CrossCursor);
 		break;
+	case MODE_VIEW_SELECT_ROI:
+		setCursor(Qt::CrossCursor);
+		break;
 	case MODE_VIEW_MOVE:
 		setCursor(Qt::OpenHandCursor);
 		break;
@@ -900,6 +901,130 @@ void VisionView::displayImage(cv::Mat& image)
 		QImage imagePixmap = QImage((uchar*)matMoved.data, matMoved.cols, matMoved.rows, ToInt(matMoved.step), QImage::Format_RGB888);
 		ui.label_Img->setPixmap(QPixmap::fromImage(imagePixmap));
 	}
+}
+
+void VisionView::load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues)
+{
+	if (m_pView3D)
+	{
+		m_pView3D->loadFile(false, nSizeX, nSizeY, xValues, yValues, zValues);
+	}
+}
+
+void VisionView::show3DView()
+{
+	if (m_pView3D)
+	{
+		m_pView3D->show();
+	}
+}
+
+void VisionView::setSelect()
+{
+	setViewState(MODE_VIEW_SELECT_ROI);
+}
+
+cv::Mat VisionView::getSelectImage()
+{
+	return (m_selectROI.size().width <= 5 || m_selectROI.size().height <= 5) ? m_hoImage : m_hoImage(m_selectROI);
+}
+
+void VisionView::clearSelect()
+{
+	m_selectROI.x = 0;
+	m_selectROI.y = 0;
+	m_selectROI.width = 0;
+	m_selectROI.height = 0;
+}
+
+cv::Rect2f VisionView::getSelectScale()
+{
+	//cv::Rect2f scale;
+	//scale.x = m_selectROI.x;
+	//scale.y = m_selectROI.y;
+	//scale.width = m_selectROI.width / m_imageWidth;
+	//scale.height = m_selectROI.height / m_imageHeight;
+
+	return m_selectROI;
+}
+
+void VisionView::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
+{
+	cv::Mat matImage = m_hoImage.clone();	
+
+	for (int i = 0; i < objs.size(); i++)
+	{
+		QDetectObj* pObj = objs[i];
+		if (pObj)
+		{
+			cv::Point2f vertices[4];
+			pObj->getFrame().points(vertices);
+
+			for (int i = 0; i < 4; i++)
+			{
+				line(matImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(128, 255, 255), 5);
+			}
+
+			pObj->getLoc().points(vertices);
+
+			for (int i = 0; i < 4; i++)
+			{
+				line(matImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 255, 0), 5);
+			}
+
+			for (int j = 0; j < pObj->getHeightBaseNum(); j++)
+			{
+				pObj->getHeightBase(j).points(vertices);
+
+				if (bShowNumber)
+				{
+					const int ImageWidth = 2048;
+					double dScaleFactor = (double)m_imageWidth / ImageWidth;
+
+					cv::Point p1;
+					p1.x = pObj->getHeightBase(j).center.x;
+					p1.y = pObj->getHeightBase(j).center.y;
+
+					cv::String text = QString("%1").arg(j + 1).toStdString();
+
+					double fontScale = dScaleFactor*2.0f;
+					cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
+				}
+
+				for (int i = 0; i < 4; i++)
+				{
+					line(matImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 0, 0), 5);
+				}
+			}
+
+			for (int j = 0; j < pObj->getHeightDetectNum(); j++)
+			{
+				pObj->getHeightDetect(j).points(vertices);
+
+				if (bShowNumber)
+				{
+					const int ImageWidth = 2048;
+					double dScaleFactor = (double)m_imageWidth / ImageWidth;
+
+					cv::Point p1;
+					p1.x = pObj->getHeightDetect(j).center.x;
+					p1.y = pObj->getHeightDetect(j).center.y;
+
+					cv::String text = QString("%1").arg(j + 1).toStdString();
+
+					double fontScale = dScaleFactor*2.0f;
+					cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
+				}
+
+				for (int i = 0; i < 4; i++)
+				{
+					line(matImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(0, 255, 0), 5);
+				}
+			}
+		}
+	}
+
+	displayImage(matImage);
 }
 
 double VisionView::convertToImgX(double dMouseValue, bool bLen)

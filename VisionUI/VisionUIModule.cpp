@@ -138,4 +138,64 @@ void QVisionUIModule::displayImage(cv::Mat& image)
 	}
 }
 
+void QVisionUIModule::load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues)
+{
+	if (m_pVisionView)
+	{
+		m_pVisionView->load3DViewData(nSizeX, nSizeY, xValues, yValues, zValues);
+	}
+}
+
+void QVisionUIModule::show3DView()
+{
+	if (m_pVisionView)
+	{
+		m_pVisionView->show3DView();
+	}
+}
+
+void QVisionUIModule::setSelect()
+{
+	if (m_pVisionView)
+	{
+		m_pVisionView->setSelect();
+	}
+}
+
+cv::Mat QVisionUIModule::getSelectImage()
+{
+	if (m_pVisionView)
+	{
+		return m_pVisionView->getSelectImage();
+	}
+
+	return cv::Mat();
+}
+
+void QVisionUIModule::clearSelect()
+{
+	if (m_pVisionView)
+	{
+		m_pVisionView->clearSelect();
+	}
+}
+
+cv::Rect2f QVisionUIModule::getSelectScale()
+{
+	if (m_pVisionView)
+	{
+		return m_pVisionView->getSelectScale();
+	}
+
+	return cv::Rect2f();
+}
+
+void QVisionUIModule::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
+{
+	if (m_pVisionView)
+	{
+		m_pVisionView->displayObjs(objs, bShowNumber);
+	}
+}
+
 QMOUDLE_INSTANCE(QVisionUIModule)
