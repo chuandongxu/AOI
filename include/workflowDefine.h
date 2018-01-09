@@ -87,7 +87,9 @@
 #define RUN_OBJ_PROFILE_EDIT			 163
 
 #define EVENT_UI_STATE		 "eventUIState"
-#define RUN_UI_STATE_SETTING			 170
+#define RUN_UI_STATE_HARDWARE			 170
+#define RUN_UI_STATE_SETTING			 171
+#define RUN_UI_STATE_TOOLS				 172
 
 
 #define EVENT_BARCODE_CHANGE "barCodeChange"

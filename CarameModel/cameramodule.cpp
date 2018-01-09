@@ -1,8 +1,6 @@
 ﻿#include "cameramodule.h"
 #include "CameraCtrl.h"
-#include "viewctrl.h"
 #include "../Common/SystemData.h"
-#include "AttchWidget.h"
 #include "qlist.h"
 #include "QMainProcess.h"
 #include "CameraSetting.h"
@@ -35,9 +33,9 @@ void CameraModule::initial(int nWindow)
 	m_pCameraCtrl = new CameraCtrl();
 	m_pCameraCtrl->initial();
 
-	m_pSetting = NULL;
-
 	m_pMainProcess = QSharedPointer<QMainProcess>(new QMainProcess(m_pCameraCtrl));
+
+	m_pSetting = new CameraSetting(m_pCameraCtrl);
 
 	// 错误码
 	setErrorMap();
@@ -53,6 +51,11 @@ void CameraModule::unInit()
 		delete m_pCameraCtrl;
 		m_pCameraCtrl = NULL;
 	}
+}
+
+QWidget* CameraModule::getSettingView()
+{
+	return m_pSetting;
 }
 
 void CameraModule::openCamera()
@@ -77,11 +80,6 @@ int CameraModule::getCameraNum()
 
 bool CameraModule::startUpCapture()
 {
-	if (m_pSetting)
-	{
-		m_pSetting->endUpCapture();
-	}
-
 	if (m_pMainProcess)
 	{
 		return m_pMainProcess->startUpCapture();
@@ -183,37 +181,20 @@ void CameraModule::setExposureTime(int nCamera, double exposureTime)
 
 void CameraModule::addSettingWiddget(QTabWidget *tabWidget)
 {
-	if (tabWidget)
-	{
-		m_pSetting = new CameraSetting(m_pCameraCtrl);
-		tabWidget->addTab(m_pSetting, QStringLiteral("相机设定"));
-	}
+	//if (tabWidget)
+	//{
+	//	tabWidget->addTab(new CameraSetting(m_pCameraCtrl), QStringLiteral("相机设定"));
+	//}
 
-	QString user;
-	int level = 0;
-	System->getUser(user, level);
-	if (USER_LEVEL_MANAGER > level)
-	{
-		//tabWidget->setEnabled(false);
-	}
-		
+	//QString user;
+	//int level = 0;
+	//System->getUser(user, level);
+	//if (USER_LEVEL_MANAGER > level)
+	//{
+	//	//tabWidget->setEnabled(false);
+	//}		
 }
 
-void CameraModule::load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues)
-{
-	if (m_pSetting)
-	{
-		m_pSetting->load3DViewData(nSizeX, nSizeY, xValues, yValues, zValues);
-	}
-}
-
-void CameraModule::show3DView()
-{	
-	if (m_pSetting)
-	{
-		m_pSetting->show3DView();
-	}
-}
 
 void CameraModule::showSettingWidget()
 {

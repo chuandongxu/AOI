@@ -3,11 +3,14 @@
 #include "../include/workflowDefine.h"
 #include "../Common/eos.h"
 #include "../Common/SystemData.h"
+#include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
+#include "../include/VisionUI.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QDebug>
 #include <QMath.h>
+#include <QMessageBox>
 
 #include "opencv2/opencv.hpp"
 #include <opencv2/core/core.hpp>
@@ -31,20 +34,7 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 	: m_pCameraCtrl(pCameraCtrl), QWidget(parent)
 {
 	ui.setupUi(this);
-	
-	m_mainView = new ViewCtrl();
-	m_mainView->initial();
-	m_mainView->connectCameraCtrl(pCameraCtrl);
 
-	QHBoxLayout* pHBoxLayout = new QHBoxLayout();	
-	pHBoxLayout->addWidget(m_mainView);
-	pHBoxLayout->setContentsMargins(0, 0, 0, 0);
-	pHBoxLayout->setAlignment(Qt::AlignTop);
-	pHBoxLayout->addStretch(0);
-	pHBoxLayout->setSpacing(1);
-	m_mainView->setFixedSize(750, 750);
-	ui.frame->setLayout(pHBoxLayout);
-	
 	m_pGraphicsEditor = new IGraphicEditor();
 	m_pGraphicsEditor->setViewPos(100, 0);
 	m_pGraphicsEditor->setScale(1.0, 100);		
@@ -157,7 +147,6 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 	ui.lineEdit_8->setText(QString("%1").arg(10));
 
 	connect(ui.pushButton_3, SIGNAL(clicked()), SLOT(onCalibration()));
-	connect(ui.pushButton_4, SIGNAL(clicked()), SLOT(onView3D()));
 
 	double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	double dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
@@ -219,30 +208,6 @@ CameraSetting::~CameraSetting()
 	}
 }
 
-void CameraSetting::endUpCapture()
-{
-	if (m_mainView)
-	{
-		m_mainView->endUpCapture();
-	}	
-}
-
-void CameraSetting::load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues)
-{
-	if (m_mainView)
-	{
-		m_mainView->load3DViewData(nSizeX, nSizeY, xValues, yValues, zValues);
-	}
-}
-
-void CameraSetting::show3DView()
-{
-	if (m_mainView)
-	{
-		m_mainView->show3D();
-	}
-}
-
 void CameraSetting::onStateChangeHWTrig(int iState)
 {
 	int data = 0;
@@ -251,9 +216,9 @@ void CameraSetting::onStateChangeHWTrig(int iState)
 	if (QMessageBox::Ok == QMessageBox::warning(NULL, QStringLiteral("提示"),
 		QStringLiteral("设置硬件触发方式？"), QMessageBox::Ok, QMessageBox::Cancel))
 	{
-		if (m_mainView)
+		if (m_pCameraCtrl->getCameraCount() > 0)
 		{
-			CameraDevice* pDev = m_mainView->getCurrentDevice();
+			CameraDevice* pDev = m_pCameraCtrl->getCamera(0);
 			if (pDev)
 			{
 				pDev->setHardwareTrigger((bool)data);
@@ -459,13 +424,16 @@ void CameraSetting::onSaveImgDLP2Path()
 
 void CameraSetting::onCalibration()
 {
+	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+	if (!pUI) return;
+
 	int nRow = ui.lineEdit_2->text().toInt();
 	int nCol = ui.lineEdit_3->text().toInt();
 	double dDist = ui.lineEdit_4->text().toDouble();
 	double dScore = ui.lineEdit_7->text().toDouble();
 	double dPixelOffsDiff = ui.lineEdit_8->text().toDouble();
 
-	cv::Mat matImage = m_mainView->getImage();
+	cv::Mat matImage = pUI->getImage();
 	if (!matImage.empty())
 	{
 		Vision::PR_CALIBRATE_CAMERA_CMD  stCmd;
@@ -474,7 +442,7 @@ void CameraSetting::onCalibration()
 		stCmd.fPatternDist = dDist;
 		stCmd.fMinTmplMatchScore = dScore;
 
-		m_mainView->clearImage();
+		pUI->clearImage();
 
 		Vision::PR_CALIBRATE_CAMERA_RPY stRpy;
 		Vision::VisionStatus retStatus = Vision::PR_CalibrateCamera(&stCmd, &stRpy);
@@ -562,7 +530,7 @@ void CameraSetting::onCalibration()
 					select.y = ptImage.y - nRectSize/2;
 					select.width = nRectSize;
 					select.height = nRectSize;
-					cv::rectangle(stRpy.matCornerPointsImg, select, Scalar(0, 255, 255), 3, 8, 0);
+					cv::rectangle(stRpy.matCornerPointsImg, select, cv::Scalar(0, 255, 255), 3, 8, 0);
 				}
 			}	
 			splineX.name = "Corrected X";
@@ -574,13 +542,13 @@ void CameraSetting::onCalibration()
 			m_pGraphicsEditor->setSplines(splines);
 			m_pGraphicsEditor->show();
 
-			m_mainView->setImage(stRpy.matCornerPointsImg);					
+			pUI->setImage(stRpy.matCornerPointsImg);
 		}
 		else
 		{
 			ui.lineEdit_5->setText(QString("%1").arg(0.0));
 			ui.lineEdit_6->setText(QString("%1").arg(0.0));
-			m_mainView->addImageText(QString("Error at Calibration, error code = %1").arg((int)retStatus));
+			pUI->addImageText(QString("Error at Calibration, error code = %1").arg((int)retStatus));
 		}
 	}
 	else
@@ -588,11 +556,6 @@ void CameraSetting::onCalibration()
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
 	}
 	
-}
-
-void CameraSetting::onView3D()
-{
-	m_mainView->show3D();
 }
 
 double CameraSetting::convertToPixel(double umValue)

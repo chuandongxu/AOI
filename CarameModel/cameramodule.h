@@ -20,6 +20,8 @@ public:
 	 void unInit();
 
 public:
+	QWidget* getSettingView();
+
 	bool startUpCapture();
 	bool endUpCapture();
 
@@ -42,9 +44,6 @@ public:
 
 	 bool grabCamImage(int nCamera, cv::Mat& image, bool bSync);
 	 void setExposureTime(int nCamera, double exposureTime);	
-
-	 void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues);
-	 void show3DView();
 
 private:
 	virtual void addSettingWiddget(QTabWidget *tabWidget);

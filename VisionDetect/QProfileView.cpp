@@ -76,9 +76,6 @@ QProfileView::QProfileView(QWidget *parent)
 	connect(ui.pushButton_CaptureDone, SIGNAL(clicked()), SLOT(onDone()));
 
 	setViewState(MODE_VIEW_DRAG);
-
-	openAct->setEnabled(false);
-	saveAsAct->setEnabled(false);
 }
 
 QProfileView::~QProfileView()
@@ -103,21 +100,6 @@ void QProfileView::init()
 
 void QProfileView::createActions()
 {
-	profileAct = new QAction(QIcon("image/showMesh.png"), QStringLiteral("抓取Profile"), this);
-	profileAct->setShortcuts(QKeySequence::Open);
-	profileAct->setStatusTip(tr("Grab file from camera"));
-	connect(profileAct, SIGNAL(triggered()), this, SLOT(profileFile()));
-
-	openAct = new QAction(QIcon("image/openFile.png"), QStringLiteral("打开..."), this);
-	openAct->setShortcuts(QKeySequence::Open);
-	openAct->setStatusTip(tr("Open an existing file"));
-	connect(openAct, SIGNAL(triggered()), this, SLOT(openFile()));
-
-	saveAsAct = new QAction(QIcon("image/saveAsFile.png"), QStringLiteral("另存为..."), this);
-	saveAsAct->setShortcuts(QKeySequence::SaveAs);
-	saveAsAct->setStatusTip(tr("Save the document under a new name"));
-	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAsFile()));
-
 	zoomInAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("缩小"), this);
 	zoomInAct->setShortcuts(QKeySequence::ZoomIn);
 	zoomInAct->setStatusTip(tr("Zoom in window"));
@@ -142,11 +124,6 @@ void QProfileView::createActions()
 void QProfileView::createToolBars()
 {
 	//! [0]
-	//ui.mainToolBar->addAction(profileAct);
-
-	fileToolBar = addToolBar(tr("File"));
-	fileToolBar->addAction(openAct);
-	fileToolBar->addAction(saveAsAct);
 
 	editToolBar = addToolBar(tr("Edit"));
 	editToolBar->addAction(zoomInAct);
@@ -159,47 +136,6 @@ void QProfileView::createStatusBar()
 {
 	statusBar()->hide();
 	statusBar()->setSizeGripEnabled(false);
-}
-
-void QProfileView::openFile()
-{
-	QString path = QApplication::applicationDirPath();
-	path += "/";
-
-	QString picFilter = "Image(*.tif *.tiff *.gif *.bmp *.jpg *.jpeg *.jp2 *.png *.pcx *.pgm *.ppm *.pbm *.xwd *.ima)";
-	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("打开图片"), "/"/*path*/, picFilter);
-
-	if (!strFileName.isEmpty())
-	{
-		loadImage(strFileName);
-	}
-}
-
-void QProfileView::profileFile()
-{
-	
-}
-
-void QProfileView::saveAsFile()
-{
-	if (!m_dispImage.empty())
-	{
-		QString picFilter = "Image( *.bmp )";
-		QString strSave = QFileDialog::getSaveFileName(this, QStringLiteral("保存图片"), "/", picFilter);
-		if (!strSave.isEmpty())
-		{
-			IplImage frameImg = IplImage(m_dispImage);
-			cvSaveImage((strSave + ".bmp").toStdString().c_str(), &frameImg);
-		}
-		else
-		{
-			QMessageBox::warning(this, "", QStringLiteral("输入文件名"));
-		}
-	}
-	else
-	{
-		QMessageBox::warning(this, "", QStringLiteral("无图像"));
-	}
 }
 
 void QProfileView::zoomIn()

@@ -4,6 +4,7 @@
 #include "../Common/SystemData.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
+#include "../include/VisionUI.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -33,11 +34,8 @@ QVLCellEditor::QVLCellEditor(DataTypeEnum emType, QWidget *parent)
 {
 	ui.setupUi(this);
 
-	setWindowFlags(Qt::Dialog);
-	setWindowModality(Qt::ApplicationModal);
-
-	m_pView = new QCellView(this);
-	ui.verticalLayout->addWidget(m_pView);
+	//setWindowFlags(Qt::Dialog);
+	//setWindowModality(Qt::ApplicationModal);
 
 	m_pVLMaskEditor = new QVLMaskEditor();
 	m_curObj = NULL;
@@ -93,12 +91,6 @@ QVLCellEditor::QVLCellEditor(DataTypeEnum emType, QWidget *parent)
 
 QVLCellEditor::~QVLCellEditor()
 {
-	if (m_pView)
-	{
-		delete m_pView;
-		m_pView = NULL;
-	}
-
 	if (m_pVLMaskEditor)
 	{
 		delete m_pVLMaskEditor;
@@ -110,6 +102,11 @@ QVLCellEditor::~QVLCellEditor()
 		delete m_BitmapScene;
 		m_BitmapScene = NULL;
 	}
+}
+
+IVisionUI* QVLCellEditor::getVisionUI()
+{
+	return getModule<IVisionUI>(UI_MODEL);
 }
 
 void QVLCellEditor::closeEvent(QCloseEvent *e){
@@ -159,7 +156,7 @@ void QVLCellEditor::initValue()
 
 void QVLCellEditor::setImage(cv::Mat& matImage)
 {
-	m_pView->setImage(matImage);
+	getVisionUI()->setImage(matImage);
 }
 
 void QVLCellEditor::onCellTypeChanged(int iIndex)
@@ -187,7 +184,7 @@ void QVLCellEditor::onCellIndexChanged(int iIndex)
 		displayAllObjs();
 	}
 
-	m_pView->clearSelect();
+	if (getVisionUI()) getVisionUI()->clearSelect();
 
 	updateDBMenu();
 	refreshDBRelation();
@@ -293,7 +290,7 @@ void QVLCellEditor::displayObj()
 	{
 		QVector<QDetectObj*> cellObjs;
 		cellObjs.push_back(m_curObj);
-		m_pView->displayObjs(cellObjs, ui.checkBox_showNumber->isChecked());
+		getVisionUI()->displayObjs(cellObjs, ui.checkBox_showNumber->isChecked());
 
 		
 		QString path = QApplication::applicationDirPath();
@@ -330,12 +327,12 @@ void QVLCellEditor::displayAllObjs()
 	{
 		cellObjs.push_back(pData->getObj(i, m_dataTypeEnum));
 	}
-	m_pView->displayObjs(cellObjs, ui.checkBox_showNumber->isChecked());
+	if (getVisionUI()) getVisionUI()->displayObjs(cellObjs, ui.checkBox_showNumber->isChecked());
 }
 
 void QVLCellEditor::onEditCellROI()
 {
-	if (m_pView->getImage().empty())
+	if (getVisionUI()->getImage().empty())
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
 		return;
@@ -347,19 +344,19 @@ void QVLCellEditor::onEditCellROI()
 		return;
 	}	
 
-	m_pView->setSelect();
-	while (!m_pView->isSelect())
-	{
-		QThread::msleep(100);
-		QApplication::processEvents();
-	}
+	getVisionUI()->setSelect();
+	//while (!m_pView->isSelect())
+	//{
+	//	QThread::msleep(100);
+	//	QApplication::processEvents();
+	//}
 
-	QMessageBox::information(this, QStringLiteral("提示"), QStringLiteral("检测区域设置完成"));
+	QMessageBox::information(this, QStringLiteral("提示"), QStringLiteral("请鼠标选择检测区域..."));
 }
 
 void QVLCellEditor::onEditCellFrame()
 {
-	if (!m_pView || m_pView->getImage().empty())
+	if (getVisionUI()->getImage().empty())
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
 		return;
@@ -371,10 +368,10 @@ void QVLCellEditor::onEditCellFrame()
 		return;
 	}	
 
-	m_pVLMaskEditor->setImage(m_pView->getSelectImage(), true);
+	m_pVLMaskEditor->setImage(getVisionUI()->getSelectImage(), true);
 	if (m_curObj->isFrameCreated())
 	{
-		Rect2f rtScale = m_pView->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectScale();
 
 		cv::RotatedRect frameRect = m_curObj->getFrame();
 		frameRect.center.x -= rtScale.x;
@@ -397,7 +394,7 @@ void QVLCellEditor::onEditCellFrame()
 	{
 		RotatedRect cellFrameRect = m_pVLMaskEditor->getSelect();
 
-		Rect2f rtScale = m_pView->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectScale();
 
 		cellFrameRect.center.x += rtScale.x;
 		cellFrameRect.center.y += rtScale.y;		
@@ -414,7 +411,7 @@ void QVLCellEditor::onEditCellFrame()
 
 void QVLCellEditor::onEditCellLocFrame()
 {
-	if (m_pView->getImage().empty())
+	if (getVisionUI()->getImage().empty())
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
 		return;
@@ -432,10 +429,10 @@ void QVLCellEditor::onEditCellLocFrame()
 		return;
 	}	
 
-	m_pVLMaskEditor->setImage(m_pView->getSelectImage(), true);
+	m_pVLMaskEditor->setImage(getVisionUI()->getSelectImage(), true);
 	if (m_curObj->isLocCreated())
 	{
-		Rect2f rtScale = m_pView->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectScale();
 
 		cv::RotatedRect locRect = m_curObj->getLoc();
 		locRect.center.x -= rtScale.x;
@@ -459,7 +456,7 @@ void QVLCellEditor::onEditCellLocFrame()
 	{
 		RotatedRect cellLocRect = m_pVLMaskEditor->getSelect();
 
-		Rect2f rtScale = m_pView->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectScale();
 
 		cellLocRect.center.x += rtScale.x;
 		cellLocRect.center.y += rtScale.y;
@@ -472,7 +469,7 @@ void QVLCellEditor::onEditCellLocFrame()
 
 void QVLCellEditor::onEditCellLocLearn()
 {
-	if (m_pView->getImage().empty())
+	if (getVisionUI()->getImage().empty())
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
 		return;
@@ -510,7 +507,7 @@ void QVLCellEditor::onEditCellLocLearn()
 	}
 
 	Vision::PR_LRN_TEMPLATE_CMD  stCmd;
-	stCmd.matInputImg = m_pView->getImage();
+	stCmd.matInputImg = getVisionUI()->getImage();
 	stCmd.enAlgorithm = Vision::PR_MATCH_TMPL_ALGORITHM::SQUARE_DIFF;
 	stCmd.rectROI = m_curObj->getLoc().boundingRect();
 
@@ -522,7 +519,7 @@ void QVLCellEditor::onEditCellLocLearn()
 	}
 	else
 	{
-		m_pView->addImageText(QString("Error at Learn Template Match, error code = %1").arg((int)retStatus));
+		getVisionUI()->addImageText(QString("Error at Learn Template Match, error code = %1").arg((int)retStatus));
 	}
 
 	cv::RotatedRect rtRect = m_curObj->getLoc();
@@ -530,15 +527,15 @@ void QVLCellEditor::onEditCellLocLearn()
 	rtRect.size.height *= 2;
 	
 	cv::Rect searchRect = rtRect.boundingRect();
-	int nImgWidth = m_pView->getImage().cols;
-	int nImgHeight = m_pView->getImage().rows;
+	int nImgWidth = getVisionUI()->getImage().cols;
+	int nImgHeight = getVisionUI()->getImage().rows;
 	if (searchRect.x < 0) searchRect.x = 0;
 	if (searchRect.y < 0) searchRect.y = 0;
 	if (searchRect.x + searchRect.width > nImgWidth) searchRect.width = nImgWidth - searchRect.x;
 	if (searchRect.y + searchRect.height > nImgHeight) searchRect.height = nImgHeight - searchRect.y;
 
 	Vision::PR_MATCH_TEMPLATE_CMD  stCmdSrh;
-	stCmdSrh.matInputImg = m_pView->getImage();
+	stCmdSrh.matInputImg = getVisionUI()->getImage();
 	stCmdSrh.enAlgorithm = Vision::PR_MATCH_TMPL_ALGORITHM::SQUARE_DIFF;
 	stCmdSrh.nRecordId = m_curObj->getRecordID();
 	stCmdSrh.rectSrchWindow = searchRect;
@@ -554,13 +551,13 @@ void QVLCellEditor::onEditCellLocLearn()
 	}
 	else
 	{
-		m_pView->addImageText(QString("Error at Template Match, error code = %1").arg((int)retStatusSrh));
+		getVisionUI()->addImageText(QString("Error at Template Match, error code = %1").arg((int)retStatusSrh));
 	}
 }
 
 void QVLCellEditor::onEditCellBaseFrame()
 {
-	if (m_pView->getImage().empty())
+	if (getVisionUI()->getImage().empty())
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
 		return;
@@ -578,10 +575,10 @@ void QVLCellEditor::onEditCellBaseFrame()
 		return;
 	}
 
-	m_pVLMaskEditor->setImage(m_pView->getSelectImage(), true);
+	m_pVLMaskEditor->setImage(getVisionUI()->getSelectImage(), true);
 	if (m_curObj->isHgtBaseCreated())
 	{
-		Rect2f rtScale = m_pView->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectScale();
 
 		for (int i = 0; i < m_curObj->getHeightBaseNum(); i++)
 		{
@@ -611,7 +608,7 @@ void QVLCellEditor::onEditCellBaseFrame()
 	m_curObj->clearHeightBase();
 	if (m_pVLMaskEditor->getSelectNum() > 0)
 	{		
-		Rect2f rtScale = m_pView->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectScale();
 
 		for (int i = 0; i < m_pVLMaskEditor->getSelectNum(); i++)
 		{
@@ -630,7 +627,7 @@ void QVLCellEditor::onEditCellBaseFrame()
 
 void QVLCellEditor::onEditCellDetectFrame()
 {
-	if (m_pView->getImage().empty())
+	if (getVisionUI()->getImage().empty())
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
 		return;
@@ -648,10 +645,10 @@ void QVLCellEditor::onEditCellDetectFrame()
 		return;
 	}
 
-	m_pVLMaskEditor->setImage(m_pView->getSelectImage(), true);
+	m_pVLMaskEditor->setImage(getVisionUI()->getSelectImage(), true);
 	if (m_curObj->isHgtDetectCreated())
 	{
-		Rect2f rtScale = m_pView->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectScale();
 
 		for (int i = 0; i < m_curObj->getHeightDetectNum(); i++)
 		{
@@ -681,7 +678,7 @@ void QVLCellEditor::onEditCellDetectFrame()
 	m_curObj->clearHeightDetect();
 	if (m_pVLMaskEditor->getSelectNum() > 0)
 	{
-		Rect2f rtScale = m_pView->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectScale();
 
 		for (int i = 0; i < m_pVLMaskEditor->getSelectNum(); i++)
 		{
@@ -700,7 +697,7 @@ void QVLCellEditor::onEditCellDetectFrame()
 
 void QVLCellEditor::onSearchCell()
 {
-	if (m_pView->getImage().empty())
+	if (getVisionUI()->getImage().empty())
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
 		return;
@@ -729,15 +726,15 @@ void QVLCellEditor::onSearchCell()
 	rtRect.size.height *= 2;
 
 	cv::Rect searchRect = rtRect.boundingRect();
-	int nImgWidth = m_pView->getImage().cols;
-	int nImgHeight = m_pView->getImage().rows;
+	int nImgWidth = getVisionUI()->getImage().cols;
+	int nImgHeight = getVisionUI()->getImage().rows;
 	if (searchRect.x < 0) searchRect.x = 0;
 	if (searchRect.y < 0) searchRect.y = 0;
 	if (searchRect.x + searchRect.width > nImgWidth) searchRect.width = nImgWidth - searchRect.x;
 	if (searchRect.y + searchRect.height > nImgHeight) searchRect.height = nImgHeight - searchRect.y;
 
 	Vision::PR_MATCH_TEMPLATE_CMD  stCmdSrh;
-	stCmdSrh.matInputImg = m_pView->getImage();
+	stCmdSrh.matInputImg = getVisionUI()->getImage();
 	stCmdSrh.enAlgorithm = Vision::PR_MATCH_TMPL_ALGORITHM::SQUARE_DIFF;
 	stCmdSrh.nRecordId = m_curObj->getRecordID();
 	stCmdSrh.rectSrchWindow = searchRect;
@@ -758,7 +755,7 @@ void QVLCellEditor::onSearchCell()
 	}
 	else
 	{
-		m_pView->addImageText(QString("Error at Template Match, error code = %1").arg((int)retStatusSrh));
+		getVisionUI()->addImageText(QString("Error at Template Match, error code = %1").arg((int)retStatusSrh));
 	}
 
 	displayObj();
@@ -894,13 +891,13 @@ void QVLCellEditor::onAddBoardAlign()
 	QBoardObj* pBoardObj = pData->getBoardObj();
 	if (!pBoardObj) return;
 
-	if (m_pView->getImage().empty())
+	if (getVisionUI()->getImage().empty())
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
 		return;
 	}
 
-	m_pVLMaskEditor->setImage(m_pView->getImage(), true);
+	m_pVLMaskEditor->setImage(getVisionUI()->getImage(), true);
 	if (pBoardObj->isBoardCreated())
 	{
 		for (int i = 0; i < pBoardObj->getBoardAlignNum(); i++)
@@ -945,7 +942,7 @@ void QVLCellEditor::onAddBoardAlign()
 			int nRecordID = 0;
 
 			Vision::PR_LRN_TEMPLATE_CMD  stCmd;
-			stCmd.matInputImg = m_pView->getImage();
+			stCmd.matInputImg = getVisionUI()->getImage();
 			stCmd.enAlgorithm = Vision::PR_MATCH_TMPL_ALGORITHM::SQUARE_DIFF;
 			stCmd.rectROI = rect.boundingRect();
 
@@ -957,7 +954,7 @@ void QVLCellEditor::onAddBoardAlign()
 			}
 			else
 			{
-				m_pView->addImageText(QString("Error at Learn Template Match, error code = %1").arg((int)retStatus));
+				getVisionUI()->addImageText(QString("Error at Learn Template Match, error code = %1").arg((int)retStatus));
 			}			
 
 			pBoardObj->addBoardAlign(rect, nRecordID);

@@ -1,4 +1,4 @@
-#include "DLPControlModule.h"
+ï»¿#include "DLPControlModule.h"
 #include "../common/SystemData.h"
 #include "DLPControlModuleSetting.h"
 
@@ -17,7 +17,7 @@ void DLPControlModule::addSettingWiddget(QTabWidget * tabWidget)
 {
 	if (tabWidget)
 	{
-		tabWidget->addTab(new DLPControlModuleSetting(&m_ctrl), QStringLiteral("DLPÉèÖÃ"));
+		tabWidget->addTab(new DLPControlModuleSetting(&m_ctrl), QStringLiteral("DLPè®¾ç½®"));
 	}
 
 	QString user;

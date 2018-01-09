@@ -19,14 +19,15 @@ protected:
 
 public slots:
 	void onRunState(const QVariantList &data);
+	void onUIState(const QVariantList &data);
 
 private:
 	Ui::rightwidget ui;
 
 protected:
-	QWidget * m_widgetRun;
-	QWidget * m_widgetEdit;
+	//QWidget * m_widgetRun;
+	//QWidget * m_widgetEdit;
 
-	QHBoxLayout * m_subVLayout;
-	QVBoxLayout * m_mainLayout;
+	//QHBoxLayout * m_subVLayout;
+	//QVBoxLayout * m_mainLayout;
 };

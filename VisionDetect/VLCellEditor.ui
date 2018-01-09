@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1172</width>
+    <width>350</width>
     <height>828</height>
    </rect>
   </property>
@@ -452,17 +452,6 @@
      <string>选择区域</string>
     </property>
    </widget>
-  </widget>
-  <widget class="QWidget" name="verticalLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>350</x>
-     <y>20</y>
-     <width>801</width>
-     <height>761</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout"/>
   </widget>
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">

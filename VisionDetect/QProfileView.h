@@ -44,9 +44,6 @@ public:
 	int getWindowHeight() { return m_imageHeight; }
 
 private slots:
-	void openFile();
-	void profileFile();
-	void saveAsFile();
 	void zoomIn();
 	void zoomOut();
 	void fullScreen();
@@ -62,15 +59,10 @@ private:
 	void createToolBars();
 	void createStatusBar();
 
-	QMenu *fileMenu;
 	QMenu *editMenu;
 
-	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
 
-	QAction *openAct;
-	QAction *profileAct;
-	QAction *saveAsAct;
 	QAction *zoomInAct;
 	QAction *zoomOutAct;
 	QAction *fullScreenAct;

@@ -34,7 +34,7 @@ using namespace AOI;
 VisionCtrl::VisionCtrl(QObject *parent)
 	: QObject(parent)
 {
-	m_pVLCellTmpEditor = new QVLCellEditor(EM_DATA_TYPE_TMP);
+	//m_pVLCellTmpEditor = new QVLCellEditor(EM_DATA_TYPE_TMP);
 	m_pVLCellObjEditor = new QVLCellEditor(EM_DATA_TYPE_OBJ);
 	m_pVLProflieEditor = new QVLProfileEditor(this);
 
@@ -68,17 +68,11 @@ VisionCtrl::VisionCtrl(QObject *parent)
 
 VisionCtrl::~VisionCtrl()
 {
-	if (m_pVLCellTmpEditor)
-	{
-		delete m_pVLCellTmpEditor;
-		m_pVLCellTmpEditor = NULL;
-	}
-
-	if (m_pVLCellObjEditor)
-	{
-		delete m_pVLCellObjEditor;
-		m_pVLCellObjEditor = NULL;
-	}
+	//if (m_pVLCellTmpEditor)
+	//{
+	//	delete m_pVLCellTmpEditor;
+	//	m_pVLCellTmpEditor = NULL;
+	//}
 
 	if (m_pVLProflieEditor)
 	{
@@ -88,10 +82,10 @@ VisionCtrl::~VisionCtrl()
 }
 
 
-QVLCellEditor* VisionCtrl::getCellTmpEditor()
-{
-	return m_pVLCellTmpEditor;
-}
+//QVLCellEditor* VisionCtrl::getCellTmpEditor()
+//{
+//	return m_pVLCellTmpEditor;
+//}
 
 QVLCellEditor* VisionCtrl::getCellObjEditor()
 {

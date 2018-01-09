@@ -6,6 +6,7 @@
 
 #include "../lib/VisionLibrary/include/opencv/cv.h"
 
+class QDetectObj;
 class IVisionUI 
 {
 public:
@@ -27,7 +28,18 @@ public:
 
 	virtual void setHeightData(cv::Mat& matHeight) = 0;
 	virtual bool startUpCapture() = 0;
-	virtual bool endUpCapture() = 0;	
+	virtual bool endUpCapture() = 0;
+
+	virtual void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues) = 0;
+	virtual void show3DView() = 0;
+
+	virtual void setSelect() = 0;
+	virtual cv::Mat getSelectImage() = 0;
+	virtual void clearSelect() = 0;
+	virtual cv::Rect2f getSelectScale() = 0;
+
+	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber = false) = 0;
+
 };
 
 #endif

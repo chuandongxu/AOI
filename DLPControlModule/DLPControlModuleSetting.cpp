@@ -1,4 +1,4 @@
-#include "DLPControlModuleSetting.h"
+ï»¿#include "DLPControlModuleSetting.h"
 #include "../include/hidapi.h"
 
 #include "../Common/SystemData.h"
@@ -79,7 +79,7 @@ void DLPControlModuleSetting::refreshHWInfo()
 {
 	m_model.clear();
 	QStringList ls;
-	ls << QStringLiteral("²úÆ·Ãû³Æ") << QStringLiteral("ĞòÁĞºÅ");
+	ls << QStringLiteral("äº§å“åç§°") << QStringLiteral("åºåˆ—å·");
 	m_model.setHorizontalHeaderLabels(ls);
 	ui.tableView_dlpInfoList->setColumnWidth(0, 100);
 	ui.tableView_dlpInfoList->setColumnWidth(1, 350);
@@ -90,19 +90,19 @@ void DLPControlModuleSetting::refreshHWInfo()
 
 	while (deviceInfo != NULL)
 	{
-		//DWORD dwNum = WideCharToMultiByte(CP_OEMCP, NULL, deviceInfo->serial_number, -1, NULL, 0, NULL, FALSE);// WideCharToMultiByteµÄÔËÓÃ  
-		//char *psText; // psTextÎªchar*µÄÁÙÊ±Êı×é£¬×÷Îª¸³Öµ¸østd::stringµÄÖĞ¼ä±äÁ¿  
+		//DWORD dwNum = WideCharToMultiByte(CP_OEMCP, NULL, deviceInfo->serial_number, -1, NULL, 0, NULL, FALSE);// WideCharToMultiByteçš„è¿ç”¨  
+		//char *psText; // psTextä¸ºchar*çš„ä¸´æ—¶æ•°ç»„ï¼Œä½œä¸ºèµ‹å€¼ç»™std::stringçš„ä¸­é—´å˜é‡  
 		//psText = new char[dwNum];
-		//WideCharToMultiByte(CP_OEMCP, NULL, deviceInfo->serial_number, -1, psText, dwNum, NULL, FALSE);// WideCharToMultiByteµÄÔÙ´ÎÔËÓÃ  
-		//std::string szDst = psText;// std::string¸³Öµ  
-		//delete[]psText;// psTextµÄÇå³ı
+		//WideCharToMultiByte(CP_OEMCP, NULL, deviceInfo->serial_number, -1, psText, dwNum, NULL, FALSE);// WideCharToMultiByteçš„å†æ¬¡è¿ç”¨  
+		//std::string szDst = psText;// std::stringèµ‹å€¼  
+		//delete[]psText;// psTextçš„æ¸…é™¤
 
-		DWORD dwNum = WideCharToMultiByte(CP_OEMCP, NULL, deviceInfo->product_string, -1, NULL, 0, NULL, FALSE);// WideCharToMultiByteµÄÔËÓÃ  
-		char *psText; // psTextÎªchar*µÄÁÙÊ±Êı×é£¬×÷Îª¸³Öµ¸østd::stringµÄÖĞ¼ä±äÁ¿  
+		DWORD dwNum = WideCharToMultiByte(CP_OEMCP, NULL, deviceInfo->product_string, -1, NULL, 0, NULL, FALSE);// WideCharToMultiByteçš„è¿ç”¨  
+		char *psText; // psTextä¸ºchar*çš„ä¸´æ—¶æ•°ç»„ï¼Œä½œä¸ºèµ‹å€¼ç»™std::stringçš„ä¸­é—´å˜é‡  
 		psText = new char[dwNum];
-		WideCharToMultiByte(CP_OEMCP, NULL, deviceInfo->product_string, -1, psText, dwNum, NULL, FALSE);// WideCharToMultiByteµÄÔÙ´ÎÔËÓÃ  
-		std::string szDst = psText;// std::string¸³Öµ  
-		delete[]psText;// psTextµÄÇå³ı
+		WideCharToMultiByte(CP_OEMCP, NULL, deviceInfo->product_string, -1, psText, dwNum, NULL, FALSE);// WideCharToMultiByteçš„å†æ¬¡è¿ç”¨  
+		std::string szDst = psText;// std::stringèµ‹å€¼  
+		delete[]psText;// psTextçš„æ¸…é™¤
 
 		if (szDst == "DLPC350") 
 		{

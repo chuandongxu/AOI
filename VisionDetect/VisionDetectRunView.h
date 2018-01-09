@@ -25,6 +25,9 @@ public:
 	VisionDetectRunView(VisionCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
 	~VisionDetectRunView();
 
+public:
+	QWidget* getCellEditorView();
+
 private:
 	void initUI();
 	void initLimits();
@@ -84,7 +87,6 @@ private slots:
 	void onSave3DDetectParams();
 	void on3DHeightDetect();
 	void onSaveDataParams();
-	void on3DHeightCellTmpEdit();
 	void on3DHeightCellObjEdit();
 
 	void on3DProfileEdit();
@@ -157,7 +159,6 @@ private:
 	int m_nLevel;
 	VisionCtrl* m_pCtrl;
 	QVLMaskEditor *m_pVLMaskEditor;
-	QVLCellEditor *m_pVLCellTmpEditor;
 	QVLCellEditor *m_pVLCellObjEditor;
 	QVLProfileEditor *m_pVLProflieEditor;
 
