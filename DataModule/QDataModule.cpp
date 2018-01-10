@@ -11,6 +11,7 @@ QDataModule::QDataModule(int id, const QString &name)
 	m_pDataToolWidget = new DataToolWidget();
 	m_pStatisticsWidget = new QStatisticsWidget(&m_ctrl);
 	m_pDataEditor = new DataEditor();
+    m_pDataWidget = new DataWidget();
 }
 
 QDataModule::~QDataModule()
@@ -40,6 +41,11 @@ QWidget* QDataModule::getToolWidget(bool bDataTool)
 QWidget* QDataModule::getDataEditor()
 {
 	return m_pDataEditor;
+}
+
+QWidget* QDataModule::getDataWidget()
+{
+    return m_pDataWidget;
 }
 
 void QDataModule::incrementCycleTests()
