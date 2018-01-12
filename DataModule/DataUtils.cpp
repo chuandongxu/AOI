@@ -29,9 +29,23 @@ DataUtils::~DataUtils()
         strErrorMsg = "Failed to open file " + strFilePath;
         return -1;
     }
-    std::string strLine;
+
+    char chChangeLine = '\r';
+    {
+        char chArray[500];
+        fs.read ( chArray, sizeof ( chArray ) );
+        std::string strTemp(chArray);
+        auto nPosOfCR = strTemp.find_first_of('\r');
+        auto nPosOfLF = strTemp.find_first_of('\n');
+        if ( nPosOfLF < nPosOfCR  )
+            chChangeLine = '\n';
+        fs.seekg (0);
+    }
+    
     int nLineNumber = 1;
-    while ( std::getline ( fs, strLine, '\r' ) ) {
+    
+    std::string strLine;
+    while ( std::getline ( fs, strLine, chChangeLine ) ) {
         auto vecData = splitString ( strLine, '\t' );
         if ( vecData.size() != vecColumns.size() ) {
             strErrorMsg = "Line " + std::to_string ( nLineNumber) + " data columns is not following the input data columns.";
@@ -55,7 +69,7 @@ DataUtils::~DataUtils()
                 cadData.angle = std::atof ( vecData[index].c_str () );
                 break;
             case CAD_DATA_COLUMNS::TOP_BOTTOM:
-                cadData.bBottom = vecData[index] == "B";
+                cadData.isBottom = vecData[index] == "B";
                 break;
             case CAD_DATA_COLUMNS::TYPE:
                 cadData.type = vecData[index];

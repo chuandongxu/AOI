@@ -44,7 +44,7 @@ struct CadData {
     float           width;
     float           length;
     float           angle;
-    bool            bBottom;
+    bool            isBottom;
     std::string     type;
     std::string     group;
     bool            placement;
@@ -62,7 +62,7 @@ struct PackageSize {
         Width(Width) {}
 
     float Length;
-    float Width;    
+    float Width;
 };
 
 using MapTypePackageSize = std::unordered_map<std::string, PackageSize>;

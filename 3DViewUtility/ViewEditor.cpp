@@ -115,12 +115,12 @@ void ViewEditor::createActions()
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAsFile()));
 
-	zoomInAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("缩小"), this);
+	zoomInAct = new QAction(QIcon("image/zoomIn.png"), QStringLiteral("缩小"), this);
 	zoomInAct->setShortcuts(QKeySequence::ZoomIn);
 	zoomInAct->setStatusTip(tr("Zoom in window"));
 	connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-	zoomOutAct = new QAction(QIcon("image/zoomIn.png"), QStringLiteral("放大"), this);
+	zoomOutAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("放大"), this);
 	zoomOutAct->setShortcuts(QKeySequence::ZoomOut);
 	zoomOutAct->setStatusTip(tr("Zoom out window"));
 	connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));

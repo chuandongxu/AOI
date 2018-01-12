@@ -13,8 +13,8 @@ QLoginEdit::QLoginEdit(QWidget *parent)
 
 	//ui.lineEdit->setText("operator");
 	//ui.lineEdit_2->setText("123");
-	ui.lineEdit->setText("admin");
-	ui.lineEdit_2->setText("Lvr/CB");
+	ui.lineEditUser->setText("admin");
+	ui.lineEditPassword->setText("Lvr/CB");
 
 	connect(ui.pushButton,SIGNAL(clicked()),SLOT(onOkBtn()));
 	connect(ui.pushButton_2,SIGNAL(clicked()),SLOT(onExitBtn()));
@@ -22,7 +22,6 @@ QLoginEdit::QLoginEdit(QWidget *parent)
 
 QLoginEdit::~QLoginEdit()
 {
-
 }
 
 void QLoginEdit::onOkBtn()
@@ -33,12 +32,12 @@ void QLoginEdit::onOkBtn()
 		return;
 	}
 
-	QString user = ui.lineEdit->text();
-	QString pwd = ui.lineEdit_2->text();
+	QString user = ui.lineEditUser->text();
+	QString pwd = ui.lineEditPassword->text();
 
 	QString targPwd;
 	int level;
-	if(System->getUserPwd(user,targPwd,level))
+	if(System->getUserPwd(user, targPwd, level))
 	{
 		if ( (level > USER_LEVEL_OPT) && PWD_INVENTOR)
 		{
@@ -78,7 +77,7 @@ void QLoginEdit::onOkBtn()
 		}
 	}
 	
-	QMessageBox::warning(this,QStringLiteral("错误"),QStringLiteral("用户名或密码错误"));
+	QMessageBox::warning(this, QStringLiteral("错误"), QStringLiteral("用户名或密码错误"));
 }
 
 void QLoginEdit::onExitBtn()

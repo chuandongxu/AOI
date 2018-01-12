@@ -2,6 +2,16 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <fstream>
+#include <set>
+#include "DataStoreAPI.h"
+#include "constants.h"
+#include "SystemData.h"
+#include <map>
+#include "../Common/ModuleMgr.h"
+#include "../include/IdDefine.h"
+#include "../include/VisionUI.h"
+
+using namespace NFG::AOI;
 
 ImportCADWidget::ImportCADWidget(QWidget *parent)
     : QWidget(parent)
@@ -116,6 +126,12 @@ void ImportCADWidget::on_btnImportCAD_clicked() {
         }
     }
 
+    std::map<int, Engine::DeviceVector> mapVecDevice;
+    QVector<cv::RotatedRect> vecDeviceWindows;
+    double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    double dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    dResolutionX = 10.;
+    dResolutionY = 10.;
     for ( auto &cadData : vecCadData ) {
         if ( ! bCadWithWidthLength ) {
             std::string strOutputPackage, strOutputType;
@@ -129,5 +145,40 @@ void ImportCADWidget::on_btnImportCAD_clicked() {
                 }
             }
         }
+        Engine::Device device;
+
+        device.name = cadData.name;
+        device.boardId = cadData.boardNo;
+        device.x = cadData.x;
+        device.y = cadData.y;
+        device.width = cadData.width;
+        device.height = cadData.length;
+        device.isBottom = cadData.isBottom;
+        device.pinCount = cadData.pinCount;
+        device.group = cadData.group;
+        device.type = cadData.group;
+        device.angle = cadData.angle;
+        mapVecDevice[device.boardId].push_back ( device );
+        
+        auto x = device.x / dResolutionX;
+        x = -x; //The board rotated 180 degree when put inside.
+        auto y = device.y / dResolutionY;
+        auto width  = device.width  / dResolutionX;
+        auto height = device.height / dResolutionY;
+        cv::RotatedRect deviceWindow(cv::Point2f(x, y), cv::Size2f(width,height), device.angle );
+        vecDeviceWindows.push_back ( deviceWindow );
     }
+
+    QString user;
+    int level;
+    System->getUser( user, level );
+    Engine::CreateProject ( DEFAULT_PROJECT, user.toStdString() );
+    for ( auto iter = mapVecDevice.begin(); iter != mapVecDevice.end(); ++ iter ) {
+        Engine::Board board;
+        Engine::CreateBoard ( board );
+        Engine::CreateDevice ( iter->first, iter->second );
+    }
+
+    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    pUI->setDeviceWindows ( vecDeviceWindows );
 }

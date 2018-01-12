@@ -198,4 +198,18 @@ void QVisionUIModule::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
 	}
 }
 
+void QVisionUIModule::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows) {
+    if (m_pVisionView)
+	{
+		m_pVisionView->setDeviceWindows(vecWindows);
+	}
+}
+
+void QVisionUIModule::setViewState(VISION_VIEW_MODE enViewMode) {
+    if (m_pVisionView)
+	{
+		m_pVisionView->setViewState(enViewMode);
+	}
+}
+
 QMOUDLE_INSTANCE(QVisionUIModule)
