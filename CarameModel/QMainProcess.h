@@ -28,14 +28,13 @@ public:
 	bool startCapturing();
 	void setCaptureImageBufferDone();
 	bool isCaptureImageBufferDone();
-	bool lockCameraCapture(int iStation);
+	bool lockCameraCapture();
 	void unlockCameraCapture();
 	bool isCameraCaptureAvaiable();
 
-	int getStation();
-
 	bool startUpCapture();
 	bool endUpCapture();
+	bool selectCaptureMode(int nCaptureMode);
 
 private:
 	CameraCtrl* m_pCameraCtrl;
@@ -50,5 +49,4 @@ private:
 	bool m_bCaptureDone;
 	bool m_bCaptureLocker;
 	QMutex m_mutex;
-	int m_nStation;
 };

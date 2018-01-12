@@ -133,7 +133,7 @@ public:
 	bool getDI(int nPort, int &iState);
 
 	// 3D Functions:
-	bool triggerCapturing(IMotion::TRIGGER emTrig, bool bWaitDone);
+	bool triggerCapturing(IMotion::TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig);
 
 	// Motor Functions:
 	bool enable(int AxisID);
@@ -190,7 +190,7 @@ private:
 
 private:
 	void commandhandler(char *command, short error);
-	void setupTrigger(IMotion::TRIGGER emTrig);
+	void setupTrigger(IMotion::TRIGGER emTrig, int nGroupNum);
 
 public:
 	void clearMotorParams();

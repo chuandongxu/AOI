@@ -23,12 +23,13 @@ public:
 	virtual bool IsPowerError();
 
 	// IO Functions:
+	virtual bool setDOs(QVector<int>& nPorts, int iState);
 	virtual bool setDO(int nPort, int iState);
 	virtual bool getDO(int nPort, int &iState);
 	virtual bool getDI(int nPort, int &iState);
 
 	// 3D Functions:
-	virtual bool triggerCapturing(TRIGGER emTrig, bool bWaitDone);
+	virtual bool triggerCapturing(TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig);
 
 	// Motor Functions:
 	virtual bool enable(int AxisID);

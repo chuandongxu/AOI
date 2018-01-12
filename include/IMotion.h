@@ -40,12 +40,13 @@ public:
 	virtual bool IsPowerError() = 0;
 
 	// IO Functions:
+	virtual bool setDOs(QVector<int>& nPorts, int iState) = 0;
 	virtual bool setDO(int nPort, int iState) = 0;// nPort 0 : n-1
 	virtual bool getDO(int nPort, int &iState) = 0;
 	virtual bool getDI(int nPort, int &iState) = 0;
 
 	// 3D Functions:
-	virtual bool triggerCapturing(TRIGGER emTrig, bool bWaitDone = false) = 0;
+	virtual bool triggerCapturing(TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig = false) = 0;
 
 	// Motor Functions:
 	virtual bool enable(int AxisID) = 0;

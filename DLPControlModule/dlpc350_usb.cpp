@@ -144,9 +144,9 @@ int DLPUsb::DLPC350_USB_OpenByProductStr(std::string& productStr)
 
 			pathTmp = pathTmp.substr(nIndexStart + 3, nIndexEnd - nIndexStart - 3);
 
-			QString serialNB = QString("SN%1").arg(nIndex, 2, 10, QChar('0'));
+			//QString serialNB = QString("SN%1").arg(nIndex, 2, 10, QChar('0'));
 
-			if (serialNB.toStdString() == productStr)
+			if (pathTmp /*serialNB.toStdString()*/ == productStr)
 			{
 				path = deviceInfo->path;
 				break;

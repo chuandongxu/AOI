@@ -143,7 +143,8 @@ public:
 private:
 	bool startCaliGuide();
 	void stopCaliGuide();
-	bool guideReadImages(int nDLP, QVector<cv::Mat>& matImgs);
+	bool guideReadImages(QVector<cv::Mat>& matImgs);
+	bool guideReadImage(cv::Mat& matImg);
 
 	void startCameraCapturing();
 	bool stopCameraCaptureing();

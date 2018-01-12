@@ -21,9 +21,6 @@ CameraCtrl::CameraCtrl(void)
 {	
 	//Pylon::PylonAutoInitTerm autoInitTerm;
 	PylonInitialize();
-
-	m_bCrossGap = false;
-	m_nCrossWidth = 0;
 }
 
 
@@ -259,24 +256,4 @@ CameraDevice * CameraCtrl::getCamera( int n)
 	}
 	
 	return NULL;
-}
-
-void CameraCtrl::setCrossEnable(bool bEnable)
-{
-	m_bCrossGap = bEnable;
-}
-
-bool CameraCtrl::isCrossEnable()
-{
-	return m_bCrossGap;
-}
-
-void CameraCtrl::setCrossGap(int nGapWidth)
-{
-	m_nCrossWidth = nGapWidth;
-}
-
-int CameraCtrl::getCrossGap()
-{
-	return m_nCrossWidth;
 }

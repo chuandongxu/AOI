@@ -30,6 +30,7 @@ public:
 	/************************************************************************/
 	virtual bool startUpCapture() = 0;
 	virtual bool endUpCapture() = 0;
+	virtual bool selectCaptureMode(int nCaptureMode) = 0; // 0 - all images (DLP num * 12), 1 - 12 images, 2 - 1 image
 	
 	virtual const QVector<cv::Mat>& getImageBuffer() = 0;
 	virtual const cv::Mat& getImageItemBuffer(int nIndex) = 0;
@@ -39,7 +40,7 @@ public:
 	virtual void clearImageBuffer() = 0;
 	virtual bool isCaptureImageBufferDone() = 0;
 
-	virtual bool lockCameraCapture(int iStation) = 0;
+	virtual bool lockCameraCapture() = 0;
 	virtual void unlockCameraCapture() = 0;
 	virtual bool isCameraCaptureAvaiable() = 0;
 	
