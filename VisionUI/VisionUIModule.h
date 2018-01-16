@@ -6,7 +6,7 @@
 #include "../Common/modulebase.h"
 
 class VisionView;
-class QVisionUIModule : public IVisionUI,public QModuleBase
+class QVisionUIModule : public IVisionUI, public QModuleBase
 {
 public:
 	QVisionUIModule(int id,const QString &name);
@@ -40,7 +40,11 @@ public:
 	virtual void clearSelect();
 	virtual cv::Rect2f getSelectScale();
 
-	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
+	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber) override;
+    virtual void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows) override;
+    virtual void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows) override;
+    virtual void setViewState(VISION_VIEW_MODE enViewMode) override;
+    virtual void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) override; 
 
 private:
 	void * m_mainWidget;

@@ -5,6 +5,7 @@
 #include "../Common/modulebase.h"
 #include "../include/IData.h"
 #include "DataCtrl.h"
+#include "DataWidget.h"
 
 class QDataModule : public QModuleBase, public IData
 {
@@ -12,10 +13,11 @@ public:
 	QDataModule(int id, const QString &name);
 	~QDataModule();
 
-	virtual void addSettingWiddget(QTabWidget * tabWidget);
+	virtual void addSettingWiddget(QTabWidget * tabWidget);    
 
-	virtual QWidget* getToolWidget(bool bDataTool);
-	virtual QWidget* getDataEditor();
+	virtual QWidget* getToolWidget(bool bDataTool) override;
+	virtual QWidget* getDataEditor() override;
+    virtual QWidget* getDataWidget() override;
 
 	virtual void incrementCycleTests();
 	virtual void decrementCycleTests();
@@ -49,4 +51,5 @@ private:
 	QWidget* m_pDataToolWidget;
 	QWidget* m_pStatisticsWidget;
 	QWidget* m_pDataEditor;
+    QWidget* m_pDataWidget;
 };

@@ -17,6 +17,7 @@ class IData
 public:
 	virtual QWidget* getToolWidget(bool bDataTool = true) = 0;
 	virtual QWidget* getDataEditor() = 0;
+    virtual QWidget* getDataWidget() = 0;
 
 	virtual void incrementCycleTests() = 0;
 	virtual void decrementCycleTests() = 0;

@@ -454,6 +454,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
+    <ClInclude Include="..\include\constants.h" />
     <ClInclude Include="CVSFile.h" />
     <ClInclude Include="dog_vcode.h" />
     <ClInclude Include="encrypted_string1.h" />

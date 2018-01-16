@@ -112,8 +112,7 @@ public:
 	static void waitTime(int msTime);
 
 	static void queryWarring(QStandardItemModel &model);
-	static void queryOptLog(QStandardItemModel &model);
-	
+	static void queryOptLog(QStandardItemModel &model);	
 
 public:
 	void * dataPtr(const QString &key);

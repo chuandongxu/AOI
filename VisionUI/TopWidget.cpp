@@ -126,12 +126,10 @@ void QTopWidget::onAutoRun()
 
 }
 
-
 void QTopWidget::onSystem()
 {
 
 }
-
 
 void QTopWidget::onHardware()
 {
@@ -150,7 +148,7 @@ void QTopWidget::onSetting()
 
 void QTopWidget::onData()
 {
-	
+	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_DATA);
 }
 
 void QTopWidget::timerEvent(QTimerEvent * event)

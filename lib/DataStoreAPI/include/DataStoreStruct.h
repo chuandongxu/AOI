@@ -64,8 +64,8 @@ struct Device {
     float               height;
     float               angle;
     BOOL                isBottom;
-    String const        type;
-    String const        group;
+    String              type;
+    String              group;
     BOOL                isPlaced;
     Int32               pinCount;
 };

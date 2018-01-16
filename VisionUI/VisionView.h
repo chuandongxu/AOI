@@ -7,9 +7,11 @@
 #include <QAction>
 #include <QDockWidget>
 #include <QMutex>
+#include "VisionAPI.h"
+#include "constants.h"
 #include <QThread>
 
-#include "opencv/cv.h"
+using namespace AOI::Vision;
 
 class VisionView;
 class CameraOnLive :public QThread
@@ -45,6 +47,7 @@ public:
 	~VisionView();
 
 public:
+    void setViewState(VISION_VIEW_MODE state);
 	void setImage(cv::Mat& matImage, bool bDisplay);
 	cv::Mat getImage();
 	void clearImage();
@@ -60,7 +63,9 @@ public:
 	cv::Rect2f getSelectScale();
 
 	void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
-
+    void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows);
+    void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows);
+    void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const;
 private slots:
 	void onResultEvent(const QVariantList &data);
 
@@ -123,18 +128,23 @@ private:
 	void loadImage(QString& fileName);
 	void repaintAll();
 	void A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy);
-	void setViewState(int state);
 	double convertToImgX(double dMouseValue, bool bLen = false);
 	double convertToImgY(double dMouseValue, bool bLen = false);
 	double convertToMouseX(double dImgValue, bool bLen = false);
 	double convertToMouseY(double dImgValue, bool bLen = false);
 
 	void show3DView(cv::Rect& rectROI);
-private:
+
 	void fullImage();
 	void zoomImage(double scale);
 	void moveImage(double motionX, double motionY);
 
+	void setButtonsEnable(bool flag);
+    void _zoomImageForDisplay(const cv::Mat &matInputImg, cv::Mat &matOutput);
+    void _cutImageForDisplay(const cv::Mat &matInputImg, cv::Mat &matOutput);
+    void _drawDeviceWindows(cv::Mat &matImg);
+    void _calcMoveRange();
+    void _checkSelectedDevice(const cv::Point &ptMousePos);
 	void setButtonsEnable(bool flag, bool bLiveVideo);
 
 public:
@@ -143,11 +153,11 @@ public:
 
 	void setHeightData(cv::Mat& matHeight);
 private:
-	int    m_stateView;
-	bool   m_mouseLeftPressed;
-	bool   m_mouseRightPressed;
-	double m_startX, m_startY;
-	double m_preMoveX, m_preMoveY;
+	VISION_VIEW_MODE    m_stateView;
+	bool                m_mouseLeftPressed;
+	bool                m_mouseRightPressed;
+	double              m_startX, m_startY;
+	double              m_preMoveX, m_preMoveY;
 
 	int   m_windowWidth;
 	int   m_windowHeight;
@@ -165,7 +175,6 @@ private:
 
 	cv::Mat	m_hoImage;
 	cv::Mat	m_dispImage;
-
 	cv::Mat m_3DMatHeight;
 private:
 	DViewUtility   *m_pMainViewFull3D;
@@ -174,4 +183,20 @@ private:
 	QDockWidget *m_pSelectView;
 	bool m_bShow3DInitial;
 	bool m_bMainView3DInitial;
+    QVector<cv::RotatedRect>    m_vecDeviceWindows;
+    QVector<cv::RotatedRect>    m_vecSelectedFM;   //FM for fiducial mark
+    cv::RotatedRect             m_selectedDevice;
+    cv::Size m_szCadOffset;
+    cv::Size _szMoveRange;
+
+    static const cv::Scalar _constRedScalar;
+    static const cv::Scalar _constBlueScalar;
+    static const cv::Scalar _constCyanScalar;
+    static const cv::Scalar _constGreenScalar;
+    static const cv::Scalar _constYellowScalar;
+    const float             _constMaxZoomScale = 4.f;
+    const float             _constMinZoomScale = 0.25;
+    const float             _constZoomInStep = 2.0;
+    const float             _constZoomOutStep = 0.5;
+    const int               _constDeviceWindowLineWidth = 5;
 };

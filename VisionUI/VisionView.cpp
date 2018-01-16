@@ -37,10 +37,11 @@
 const int LABEL_IMAGE_WIDTH = 1200;
 const int LABEL_IMAGE_HEIGHT = 800;
 
-const int MODE_VIEW_NONE = 1;
-const int MODE_VIEW_SELECT = 2;
-const int MODE_VIEW_SELECT_ROI = 3;
-const int MODE_VIEW_MOVE = 4;
+/*static*/ const cv::Scalar VisionView::_constRedScalar    (0,   0,   255 );
+/*static*/ const cv::Scalar VisionView::_constBlueScalar   (255, 0,   0   );
+/*static*/ const cv::Scalar VisionView::_constCyanScalar   (255, 255, 0   );
+/*static*/ const cv::Scalar VisionView::_constGreenScalar  (0,   255, 0   );
+/*static*/ const cv::Scalar VisionView::_constYellowScalar (0,   255, 255 );
 
 CameraOnLive::CameraOnLive(VisionView* pView)
 	:m_pView(pView)
@@ -299,12 +300,12 @@ void VisionView::createActions()
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAsFile()));
 
-	zoomInAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("缩小"), this);
+	zoomInAct = new QAction(QIcon("image/zoomIn.png"), QStringLiteral("放大"), this);
 	zoomInAct->setShortcuts(QKeySequence::ZoomIn);
 	zoomInAct->setStatusTip(tr("Zoom in window"));
 	connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-	zoomOutAct = new QAction(QIcon("image/zoomIn.png"), QStringLiteral("放大"), this);
+	zoomOutAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("缩小"), this);
 	zoomOutAct->setShortcuts(QKeySequence::ZoomOut);
 	zoomOutAct->setStatusTip(tr("Zoom out window"));
 	connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
@@ -444,12 +445,12 @@ void VisionView::saveAsFile()
 
 void VisionView::zoomIn()
 {
-	zoomImage(0.8);
+	zoomImage(_constZoomInStep);
 }
 
 void VisionView::zoomOut()
 {
-	zoomImage(1.2);
+	zoomImage(_constZoomOutStep);
 }
 
 void VisionView::fullScreen()
@@ -644,11 +645,9 @@ void VisionView::showSelectROI3D()
 
 void VisionView::setImage(cv::Mat& matImage, bool bDisplay)
 {
-	m_hoImage.release();
 	m_hoImage = matImage.clone();
 	m_imageWidth = m_hoImage.size().width;
 	m_imageHeight = m_hoImage.size().height;
-
 	if (bDisplay) displayImage(m_hoImage);
 }
 
@@ -830,6 +829,11 @@ void VisionView::mouseMoveEvent(QMouseEvent * event)
 		case MODE_VIEW_MOVE:
 			moveImage(mouseX - m_preMoveX, mouseY - m_preMoveY);
 			break;
+        case MODE_VIEW_SET_FIDUCIAL_MARK:
+            m_szCadOffset.width  += ( mouseX - m_preMoveX ) / m_dScale;
+            m_szCadOffset.height += ( mouseY - m_preMoveY ) / m_dScale;
+            repaintAll();
+            break;
 		case MODE_VIEW_NONE:
 			break;
 		default:
@@ -863,7 +867,7 @@ void VisionView::mousePressEvent(QMouseEvent * event)
 		case MODE_VIEW_SELECT_ROI:
 			break;
 		case MODE_VIEW_NONE:
-			break;
+			break;            
 		default:
 			break;
 		}
@@ -894,6 +898,9 @@ void VisionView::mouseReleaseEvent(QMouseEvent *event)
 {
 	if (event->button() & Qt::LeftButton)
 	{
+        const QPoint pos = event->pos();
+        auto rectCentralWidget = ui.centralWidget->geometry();
+        const QPoint posOnImageLabel ( pos.x() - rectCentralWidget.x(), pos.y() - rectCentralWidget.y() );
 		switch (m_stateView)
 		{
 		case MODE_VIEW_SELECT:
@@ -908,6 +915,9 @@ void VisionView::mouseReleaseEvent(QMouseEvent *event)
 		case MODE_VIEW_SELECT_ROI:	
 			setViewState(MODE_VIEW_NONE);
 			break;
+        case MODE_VIEW_SET_FIDUCIAL_MARK:            
+            _checkSelectedDevice( cv::Point ( posOnImageLabel.x(), posOnImageLabel.y() ) );
+            break;
 		case MODE_VIEW_NONE:
 			break;
 		default:
@@ -918,7 +928,7 @@ void VisionView::mouseReleaseEvent(QMouseEvent *event)
 	{
 	}
 
-	repaintAll();
+	//repaintAll();
 	m_mouseLeftPressed = false;
 	m_mouseRightPressed = false;
 }
@@ -1122,10 +1132,9 @@ void VisionView::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 			}
 		}
 	}
-
 }
 
-void VisionView::setViewState(int state)
+void VisionView::setViewState(VISION_VIEW_MODE state)
 {
 	m_stateView = state;
 
@@ -1151,39 +1160,18 @@ void VisionView::setViewState(int state)
 
 void VisionView::displayImage(cv::Mat& image)
 {
+    if ( image.empty() )
+        return;
+
 	m_dispImage = image;
+    _calcMoveRange();
 
-	QRect rect = ui.label_Img->geometry();
-	rect.setX(0); rect.setY(0);
-	rect.setWidth(LABEL_IMAGE_WIDTH); rect.setHeight(LABEL_IMAGE_HEIGHT);
-	ui.label_Img->setGeometry(rect);
-
-	cv::Mat mat, matMoved;
-	double fScaleW = rect.width()*1.0 / image.size().width;
-	double fScaleH = rect.height()*1.0 / image.size().height;
-	if (!image.empty())
-	{
-		cv::resize(image, mat, cv::Size(image.size().width*fScaleW*m_dScale, image.size().height*fScaleH*m_dScale), (0, 0), (0, 0), 3);
-
-		if (mat.type() == CV_8UC3)
-		{
-			cvtColor(mat, mat, CV_BGR2RGB);
-		}
-		else if (mat.type() == CV_8UC1)
-		{
-			cvtColor(mat, mat, CV_GRAY2RGB);
-		}
-		/*	else if (mat.type() == CV_32F)
-		{
-		cvtColor(mat, mat, CV_HSV2RGB);
-		}*/
-		//qDebug() << "mat type " << mat.type();
-		double scaleOffset = image.size().width*fScaleW*(m_dScale - 1.0) / 2;
-		A_Transform(mat, matMoved, m_dMovedX - scaleOffset, m_dMovedY);
-
-		QImage imagePixmap = QImage((uchar*)matMoved.data, matMoved.cols, matMoved.rows, ToInt(matMoved.step), QImage::Format_RGB888);
-		ui.label_Img->setPixmap(QPixmap::fromImage(imagePixmap));
-	}
+    cv::Mat matDisplay;
+    _drawDeviceWindows( m_dispImage );
+    _cutImageForDisplay ( m_dispImage, matDisplay );
+    cv::cvtColor ( matDisplay, matDisplay, CV_BGR2RGB );
+    QImage imagePixmap = QImage((uchar*)matDisplay.data, matDisplay.cols, matDisplay.rows, ToInt(matDisplay.step), QImage::Format_RGB888);
+	ui.label_Img->setPixmap(QPixmap::fromImage(imagePixmap));
 }
 
 void VisionView::load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues)
@@ -1308,6 +1296,27 @@ void VisionView::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
 	}
 
 	displayImage(matImage);
+}
+
+void VisionView::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows)
+{
+    m_vecDeviceWindows = vecWindows;
+    //Reset the device window offset.
+    m_szCadOffset.width = 0;
+    m_szCadOffset.height = 0;
+    repaintAll();
+}
+
+void VisionView::setSelectedFM(const QVector<cv::RotatedRect> &vecWindows)
+{
+    m_vecSelectedFM = vecWindows;
+    repaintAll();
+}
+
+void VisionView::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const {
+    rrectImageWindow = rrectCadWindow = m_selectedDevice;
+    rrectImageWindow.center.x += m_szCadOffset.width;
+    rrectImageWindow.center.y += m_szCadOffset.height;
 }
 
 double VisionView::convertToImgX(double dMouseValue, bool bLen)
@@ -1494,8 +1503,13 @@ void VisionView::fullImage()
 
 void VisionView::zoomImage(double scale)
 {
+    if ( m_dScale >= _constMaxZoomScale && scale > 1. )
+        return;
+
+    if ( m_dScale < _constMinZoomScale && scale < 1. )
+        return;
+
 	m_dScale *= scale;
-	if (m_dScale < 1.0) m_dScale = 1.0;
 
 	if (!m_dispImage.empty())
 		displayImage(m_dispImage);
@@ -1507,6 +1521,16 @@ void VisionView::moveImage(double motionX, double motionY)
 {
 	m_dMovedX += motionX;
 	m_dMovedY += motionY;
+
+    if ( m_dMovedX > _szMoveRange.width )
+        m_dMovedX = _szMoveRange.width;
+    else if ( m_dMovedX < -_szMoveRange.width )
+        m_dMovedX = - _szMoveRange.width;
+
+    if ( m_dMovedY > _szMoveRange.height )
+        m_dMovedY = _szMoveRange.height;
+    else if ( m_dMovedY < -_szMoveRange.height )
+        m_dMovedY = - _szMoveRange.height;
 
 	if (!m_dispImage.empty())
 		displayImage(m_dispImage);
@@ -1568,3 +1592,185 @@ void VisionView::setHeightData(cv::Mat& matHeight)
 	m_3DMatHeight = matHeight;
 }
 
+void VisionView::_zoomImageForDisplay(const cv::Mat &matImg, cv::Mat &matOutput) {
+    QRect rect = ui.label_Img->geometry();
+	rect.setX(0); rect.setY(0);
+	rect.setWidth(LABEL_IMAGE_WIDTH); rect.setHeight(LABEL_IMAGE_HEIGHT);
+	ui.label_Img->setGeometry(rect);
+
+	cv::Mat mat;
+	double fScaleW = rect.width()*1.0 / matImg.size().width;
+	double fScaleH = rect.height()*1.0 / matImg.size().height;
+	if (!matImg.empty())
+	{
+		cv::resize(matImg, mat, cv::Size(matImg.size().width*fScaleW*m_dScale, matImg.size().height*fScaleH*m_dScale), (0, 0), (0, 0), 3);
+
+		if (mat.type() == CV_8UC3)
+		{
+			cvtColor(mat, mat, CV_BGR2RGB);
+		}
+		else if (mat.type() == CV_8UC1)
+		{
+			cvtColor(mat, mat, CV_GRAY2RGB);
+		}
+		/*	else if (mat.type() == CV_32F)
+		{
+		cvtColor(mat, mat, CV_HSV2RGB);
+		}*/
+		//qDebug() << "mat type " << mat.type();
+		double scaleOffset = matImg.size().width*fScaleW*(m_dScale - 1.0) / 2;
+		A_Transform ( mat, matOutput, m_dMovedX - scaleOffset, m_dMovedY );
+	}
+}
+
+void VisionView::_cutImageForDisplay(const cv::Mat &matInputImg, cv::Mat &matOutput)
+{
+    if ( matInputImg.empty() )
+        return;
+
+    QRect rect = ui.label_Img->geometry();
+    auto displayWidth  = rect.width();
+    auto displayHeight = rect.height();
+    matOutput = cv::Mat::ones( displayHeight, displayWidth, matInputImg.type() ) * 255;
+    matOutput.setTo(cv::Scalar(255, 255, 255));
+
+    cv::Mat matZoomResult;
+    cv::resize ( matInputImg, matZoomResult, cv::Size(), m_dScale, m_dScale );
+
+    if (matZoomResult.cols >= displayWidth && matZoomResult.rows >= displayHeight) {
+        cv::Rect rectROISrc( (matZoomResult.cols - displayWidth) / 2 - m_dMovedX, (matZoomResult.rows - displayHeight) / 2 - m_dMovedY, displayWidth, displayHeight);
+        cv::Mat matSrc( matZoomResult, rectROISrc);
+        matSrc.copyTo ( matOutput );
+    }
+    else if (matZoomResult.cols >= displayWidth && matZoomResult.rows <= displayHeight) {
+        cv::Rect rectROISrc( (matZoomResult.cols - displayWidth) / 2 - m_dMovedX, 0, displayWidth, matZoomResult.rows);
+        cv::Mat matSrc(matZoomResult, rectROISrc);
+        cv::Rect rectROIDst(0, ( displayHeight - matZoomResult.rows ) / 2, displayWidth, matZoomResult.rows );
+        cv::Mat matDst(matOutput, rectROIDst);
+        matSrc.copyTo(matDst);
+    }else if (matZoomResult.cols <= displayWidth && matZoomResult.rows >= displayHeight) {
+        cv::Rect rectROISrc(0, (matZoomResult.rows - displayHeight) / 2 - m_dMovedY, matZoomResult.cols, displayHeight);
+        cv::Mat matSrc(matZoomResult, rectROISrc);
+        cv::Rect rectROIDst(( displayWidth - matZoomResult.cols ) / 2, 0, matZoomResult.cols, displayHeight );
+        cv::Mat matDst(matOutput, rectROIDst);
+        matSrc.copyTo(matDst);
+    }else if (matZoomResult.cols <= displayWidth && matZoomResult.rows <= displayHeight) {
+        cv::Rect rectROIDst((displayWidth - matZoomResult.cols) / 2, (displayHeight - matZoomResult.rows) / 2, matZoomResult.cols, matZoomResult.rows);
+        cv::Mat matDst(matOutput, rectROIDst);
+        matZoomResult.copyTo(matDst);
+    }
+    else
+    {
+        QMessageBox::critical(nullptr, "Display", "This should not happen, please contact software engineer!", "Quit");
+    }
+}
+
+static VectorOfPoint getCornerOfRotatedRect (const cv::RotatedRect &rotatedRect)
+{
+    VectorOfPoint vecPoint;
+    cv::Point2f arrPt[4];
+    rotatedRect.points(arrPt);
+    for (int i = 0; i < 4; ++i)
+        vecPoint.push_back(arrPt[i]);
+    return vecPoint;
+}
+
+void VisionView::_drawDeviceWindows(cv::Mat &matImg)
+{
+    auto getCornerOfRotatedRect = [](const cv::RotatedRect &rotatedRect) {
+        VectorOfPoint vecPoint;
+        cv::Point2f arrPt[4];
+        rotatedRect.points( arrPt );
+        for ( int i = 0; i < 4; ++ i )
+            vecPoint.push_back ( arrPt[i] );
+        return vecPoint;
+    };
+    VectorOfVectorOfPoint vecContours;
+    cv::Point ptCtrOfImage ( 0, 0 );
+    ptCtrOfImage.x += m_szCadOffset.width;
+    ptCtrOfImage.y += m_szCadOffset.height;
+    vecContours.reserve ( m_vecDeviceWindows.size() );
+
+    if ( ! m_vecDeviceWindows.empty() ) {
+        for ( auto rotatedRect : m_vecDeviceWindows ) {
+            rotatedRect.center.x += ptCtrOfImage.x;
+            rotatedRect.center.y += ptCtrOfImage.y;
+            auto contour = getCornerOfRotatedRect ( rotatedRect );
+            contour.push_back ( contour.front() );
+            vecContours.push_back ( contour );
+        }
+        cv::polylines ( matImg, vecContours, true, _constBlueScalar, _constDeviceWindowLineWidth );
+    }
+
+    if ( ! m_vecSelectedFM.empty() ) {
+        vecContours.clear();
+        for ( auto rotatedRect : m_vecSelectedFM ) {
+            rotatedRect.center.x += ptCtrOfImage.x;
+            rotatedRect.center.y += ptCtrOfImage.y;
+            auto contour = getCornerOfRotatedRect ( rotatedRect );
+            contour.push_back ( contour.front() );
+            vecContours.push_back ( contour );
+        }
+        cv::polylines ( matImg, vecContours, true, _constGreenScalar, _constDeviceWindowLineWidth );
+    }
+
+    auto localSelectedDevice ( m_selectedDevice );
+    localSelectedDevice.center.x += ptCtrOfImage.x;
+    localSelectedDevice.center.y += ptCtrOfImage.y;
+    auto contour = getCornerOfRotatedRect ( localSelectedDevice );
+    contour.push_back ( contour.front() );
+    cv::polylines ( matImg, VectorOfVectorOfPoint ( 1, contour ), true, _constCyanScalar, _constDeviceWindowLineWidth );
+}
+
+void VisionView::_calcMoveRange()
+{
+    if ( m_dispImage.empty() ) {
+        _szMoveRange = cv::Size(0, 0);
+        return;
+    }
+
+    int rows = m_dispImage.rows * m_dScale;
+    int cols = m_dispImage.cols * m_dScale;
+    auto displayWidth = this->size().width();
+    auto displayHeight = this->size().height();
+
+    _szMoveRange.width = ( cols - displayWidth ) / 2;
+    if ( _szMoveRange.width < 0 ) _szMoveRange.width = 0;
+
+    _szMoveRange.height = ( rows - displayHeight ) / 2;
+    if ( _szMoveRange.height < 0 ) _szMoveRange.height = 0;
+
+    if ( m_dMovedX > _szMoveRange.width )
+        m_dMovedX = _szMoveRange.width;
+    else if ( m_dMovedX < -_szMoveRange.width )
+        m_dMovedX = - _szMoveRange.width;
+
+    if ( m_dMovedY > _szMoveRange.height )
+        m_dMovedY = _szMoveRange.height;
+    else if ( m_dMovedY < -_szMoveRange.height )
+        m_dMovedY = - _szMoveRange.height;
+}
+
+void VisionView::_checkSelectedDevice(const cv::Point &ptMousePos) {
+    const auto COLS = m_hoImage.cols;
+    const auto ROWS = m_hoImage.rows;
+    cv::Point ptOnImage;
+    ptOnImage.x = ( ptMousePos.x - m_dMovedX - ( LABEL_IMAGE_WIDTH  - COLS * m_dScale ) / 2 ) / m_dScale;
+    ptOnImage.y = ( ptMousePos.y - m_dMovedY - ( LABEL_IMAGE_HEIGHT - ROWS * m_dScale ) / 2 ) / m_dScale;
+    bool bFoundDevice = false;
+    for ( const auto &rotatedRect : m_vecDeviceWindows ) {
+        auto localRotateRect ( rotatedRect );
+        localRotateRect.center.x += m_szCadOffset.width;
+        localRotateRect.center.y += m_szCadOffset.height;
+        auto contour = getCornerOfRotatedRect ( localRotateRect );
+        contour.push_back ( contour.front() );
+        auto distance = cv::pointPolygonTest ( contour, ptOnImage, false );
+        if ( distance >= 0 ) {
+            bFoundDevice = true;
+            m_selectedDevice = rotatedRect;
+            break;
+        }
+    }
+    if ( bFoundDevice )
+        repaintAll();
+}

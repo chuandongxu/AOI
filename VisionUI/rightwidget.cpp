@@ -48,6 +48,10 @@ QRightWidget::QRightWidget(QWidget *parent)
 		ui.stackedWidget->addWidget(pVision->getCellEditorView());
 	}
 
+    IData * pData = getModule<IData>(DATA_MODEL);	
+	if (pData) {
+        ui.stackedWidget->addWidget( pData->getDataWidget() );
+    }
 	ui.stackedWidget->setCurrentIndex(0);
 
 	QEos::Attach(EVENT_RUN_STATE, this, SLOT(onRunState(const QVariantList &)));
@@ -107,6 +111,9 @@ void QRightWidget::onUIState(const QVariantList &data)
 		break;
 	case RUN_UI_STATE_TOOLS:
 		ui.stackedWidget->setCurrentIndex(2);
+		break;
+    case RUN_UI_STATE_DATA:
+        ui.stackedWidget->setCurrentIndex(3);
 		break;
 	default:
 		break;

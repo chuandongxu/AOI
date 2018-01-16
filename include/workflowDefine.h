@@ -90,6 +90,7 @@
 #define RUN_UI_STATE_HARDWARE			 170
 #define RUN_UI_STATE_SETTING			 171
 #define RUN_UI_STATE_TOOLS				 172
+#define RUN_UI_STATE_DATA                173
 
 
 #define EVENT_BARCODE_CHANGE "barCodeChange"

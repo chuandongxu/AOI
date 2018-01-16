@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>QLoginEdit</string>
   </property>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="lineEditUser">
    <property name="geometry">
     <rect>
      <x>85</x>
@@ -23,7 +23,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
+  <widget class="QLineEdit" name="lineEditPassword">
    <property name="geometry">
     <rect>
      <x>85</x>
