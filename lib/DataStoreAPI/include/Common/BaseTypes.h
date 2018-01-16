@@ -46,7 +46,6 @@
 // Use String::value_type as the matching character type.
 
 #ifdef  SL
-#error  String literal macro (SL) previously defined.
 #undef  SL
 #endif
 

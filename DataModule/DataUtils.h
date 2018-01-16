@@ -75,6 +75,7 @@ class DataUtils
     DataUtils();
     ~DataUtils();
 public:
+    static bool isNumber(std::string const& n);
     static std::vector<std::string> splitString ( const std::string &s, char delim );
     static int parseCAD(const std::string &strFilePath, const std::vector<CAD_DATA_COLUMNS> &vecColumns, VectorOfCadData &vecCadData, std::string &strErrorMsg);
     static int readPackageSize(const std::string &strFilePath, MapGroupPackageSize &mapGroupPackageSize, std::string &strErrorMsg);

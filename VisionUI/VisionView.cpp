@@ -549,7 +549,7 @@ void VisionView::mouseMoveEvent(QMouseEvent * event)
         case MODE_VIEW_SET_FIDUCIAL_MARK:
             m_szCadOffset.width  += ( mouseX - m_preMoveX ) / m_dScale;
             m_szCadOffset.height += ( mouseY - m_preMoveY ) / m_dScale;
-            displayImage( m_hoImage );
+            repaintAll();
             break;
 		case MODE_VIEW_NONE:
 			break;
@@ -584,7 +584,7 @@ void VisionView::mousePressEvent(QMouseEvent * event)
 		case MODE_VIEW_SELECT_ROI:
 			break;
 		case MODE_VIEW_NONE:
-			break;
+			break;            
 		default:
 			break;
 		}
@@ -615,6 +615,9 @@ void VisionView::mouseReleaseEvent(QMouseEvent *event)
 {
 	if (event->button() & Qt::LeftButton)
 	{
+        const QPoint pos = event->pos();
+        auto rectCentralWidget = ui.centralWidget->geometry();
+        const QPoint posOnImageLabel ( pos.x() - rectCentralWidget.x(), pos.y() - rectCentralWidget.y() );
 		switch (m_stateView)
 		{
 		case MODE_VIEW_SELECT:
@@ -629,6 +632,9 @@ void VisionView::mouseReleaseEvent(QMouseEvent *event)
 		case MODE_VIEW_SELECT_ROI:	
 			setViewState(MODE_VIEW_NONE);
 			break;
+        case MODE_VIEW_SET_FIDUCIAL_MARK:            
+            _checkSelectedDevice( cv::Point ( posOnImageLabel.x(), posOnImageLabel.y() ) );
+            break;
 		case MODE_VIEW_NONE:
 			break;
 		default:
@@ -871,7 +877,10 @@ void VisionView::setViewState(VISION_VIEW_MODE state)
 
 void VisionView::displayImage(cv::Mat& image)
 {
-	m_dispImage = image.clone();
+    if ( image.empty() )
+        return;
+
+	m_dispImage = image;
     _calcMoveRange();
 
     cv::Mat matDisplay;
@@ -1009,6 +1018,22 @@ void VisionView::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
 void VisionView::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows)
 {
     m_vecDeviceWindows = vecWindows;
+    //Reset the device window offset.
+    m_szCadOffset.width = 0;
+    m_szCadOffset.height = 0;
+    repaintAll();
+}
+
+void VisionView::setSelectedFM(const QVector<cv::RotatedRect> &vecWindows)
+{
+    m_vecSelectedFM = vecWindows;
+    repaintAll();
+}
+
+void VisionView::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const {
+    rrectImageWindow = rrectCadWindow = m_selectedDevice;
+    rrectImageWindow.center.x += m_szCadOffset.width;
+    rrectImageWindow.center.y += m_szCadOffset.height;
 }
 
 double VisionView::convertToImgX(double dMouseValue, bool bLen)
@@ -1306,18 +1331,18 @@ void VisionView::_cutImageForDisplay(const cv::Mat &matInputImg, cv::Mat &matOut
     cv::Mat matZoomResult;
     cv::resize ( matInputImg, matZoomResult, cv::Size(), m_dScale, m_dScale );
 
-    if (matZoomResult.cols >= displayWidth && matZoomResult.rows >= displayHeight)  {
+    if (matZoomResult.cols >= displayWidth && matZoomResult.rows >= displayHeight) {
         cv::Rect rectROISrc( (matZoomResult.cols - displayWidth) / 2 - m_dMovedX, (matZoomResult.rows - displayHeight) / 2 - m_dMovedY, displayWidth, displayHeight);
         cv::Mat matSrc( matZoomResult, rectROISrc);
         matSrc.copyTo ( matOutput );
     }
-    else if (matZoomResult.cols >= displayWidth && matZoomResult.rows <= displayHeight)  {
+    else if (matZoomResult.cols >= displayWidth && matZoomResult.rows <= displayHeight) {
         cv::Rect rectROISrc( (matZoomResult.cols - displayWidth) / 2 - m_dMovedX, 0, displayWidth, matZoomResult.rows);
         cv::Mat matSrc(matZoomResult, rectROISrc);
         cv::Rect rectROIDst(0, ( displayHeight - matZoomResult.rows ) / 2, displayWidth, matZoomResult.rows );
         cv::Mat matDst(matOutput, rectROIDst);
         matSrc.copyTo(matDst);
-    }else if (matZoomResult.cols <= displayWidth && matZoomResult.rows >= displayHeight)  {
+    }else if (matZoomResult.cols <= displayWidth && matZoomResult.rows >= displayHeight) {
         cv::Rect rectROISrc(0, (matZoomResult.rows - displayHeight) / 2 - m_dMovedY, matZoomResult.cols, displayHeight);
         cv::Mat matSrc(matZoomResult, rectROISrc);
         cv::Rect rectROIDst(( displayWidth - matZoomResult.cols ) / 2, 0, matZoomResult.cols, displayHeight );
@@ -1334,6 +1359,16 @@ void VisionView::_cutImageForDisplay(const cv::Mat &matInputImg, cv::Mat &matOut
     }
 }
 
+static VectorOfPoint getCornerOfRotatedRect (const cv::RotatedRect &rotatedRect)
+{
+    VectorOfPoint vecPoint;
+    cv::Point2f arrPt[4];
+    rotatedRect.points(arrPt);
+    for (int i = 0; i < 4; ++i)
+        vecPoint.push_back(arrPt[i]);
+    return vecPoint;
+}
+
 void VisionView::_drawDeviceWindows(cv::Mat &matImg)
 {
     auto getCornerOfRotatedRect = [](const cv::RotatedRect &rotatedRect) {
@@ -1345,20 +1380,40 @@ void VisionView::_drawDeviceWindows(cv::Mat &matImg)
         return vecPoint;
     };
     VectorOfVectorOfPoint vecContours;
-    cv::Point ptCtrOfImage ( matImg.cols / 2, matImg.rows / 2 );
+    cv::Point ptCtrOfImage ( 0, 0 );
     ptCtrOfImage.x += m_szCadOffset.width;
     ptCtrOfImage.y += m_szCadOffset.height;
     vecContours.reserve ( m_vecDeviceWindows.size() );
-    for ( auto rotatedRect : m_vecDeviceWindows ) {
-        rotatedRect.center.x += ptCtrOfImage.x;
-        rotatedRect.center.y += ptCtrOfImage.y;
-        auto contour = getCornerOfRotatedRect ( rotatedRect );
-        contour.push_back ( contour.front() );
-        vecContours.push_back ( contour );
+
+    if ( ! m_vecDeviceWindows.empty() ) {
+        for ( auto rotatedRect : m_vecDeviceWindows ) {
+            rotatedRect.center.x += ptCtrOfImage.x;
+            rotatedRect.center.y += ptCtrOfImage.y;
+            auto contour = getCornerOfRotatedRect ( rotatedRect );
+            contour.push_back ( contour.front() );
+            vecContours.push_back ( contour );
+        }
+        cv::polylines ( matImg, vecContours, true, _constBlueScalar, _constDeviceWindowLineWidth );
     }
-    cv::polylines ( matImg, vecContours, true, _constBlueScalar, 4 );
-    //for ( int index = 0; index < vecContours.size(); ++ index )
-    //    cv::drawContours ( matImg, vecContours, index, _constBlueScalar, 3 );
+
+    if ( ! m_vecSelectedFM.empty() ) {
+        vecContours.clear();
+        for ( auto rotatedRect : m_vecSelectedFM ) {
+            rotatedRect.center.x += ptCtrOfImage.x;
+            rotatedRect.center.y += ptCtrOfImage.y;
+            auto contour = getCornerOfRotatedRect ( rotatedRect );
+            contour.push_back ( contour.front() );
+            vecContours.push_back ( contour );
+        }
+        cv::polylines ( matImg, vecContours, true, _constGreenScalar, _constDeviceWindowLineWidth );
+    }
+
+    auto localSelectedDevice ( m_selectedDevice );
+    localSelectedDevice.center.x += ptCtrOfImage.x;
+    localSelectedDevice.center.y += ptCtrOfImage.y;
+    auto contour = getCornerOfRotatedRect ( localSelectedDevice );
+    contour.push_back ( contour.front() );
+    cv::polylines ( matImg, VectorOfVectorOfPoint ( 1, contour ), true, _constCyanScalar, _constDeviceWindowLineWidth );
 }
 
 void VisionView::_calcMoveRange()
@@ -1371,7 +1426,7 @@ void VisionView::_calcMoveRange()
     int rows = m_dispImage.rows * m_dScale;
     int cols = m_dispImage.cols * m_dScale;
     auto displayWidth = this->size().width();
-    auto displayHeight = this->size().height();    
+    auto displayHeight = this->size().height();
 
     _szMoveRange.width = ( cols - displayWidth ) / 2;
     if ( _szMoveRange.width < 0 ) _szMoveRange.width = 0;
@@ -1388,4 +1443,28 @@ void VisionView::_calcMoveRange()
         m_dMovedY = _szMoveRange.height;
     else if ( m_dMovedY < -_szMoveRange.height )
         m_dMovedY = - _szMoveRange.height;
+}
+
+void VisionView::_checkSelectedDevice(const cv::Point &ptMousePos) {
+    const auto COLS = m_hoImage.cols;
+    const auto ROWS = m_hoImage.rows;
+    cv::Point ptOnImage;
+    ptOnImage.x = ( ptMousePos.x - m_dMovedX - ( LABEL_IMAGE_WIDTH  - COLS * m_dScale ) / 2 ) / m_dScale;
+    ptOnImage.y = ( ptMousePos.y - m_dMovedY - ( LABEL_IMAGE_HEIGHT - ROWS * m_dScale ) / 2 ) / m_dScale;
+    bool bFoundDevice = false;
+    for ( const auto &rotatedRect : m_vecDeviceWindows ) {
+        auto localRotateRect ( rotatedRect );
+        localRotateRect.center.x += m_szCadOffset.width;
+        localRotateRect.center.y += m_szCadOffset.height;
+        auto contour = getCornerOfRotatedRect ( localRotateRect );
+        contour.push_back ( contour.front() );
+        auto distance = cv::pointPolygonTest ( contour, ptOnImage, false );
+        if ( distance >= 0 ) {
+            bFoundDevice = true;
+            m_selectedDevice = rotatedRect;
+            break;
+        }
+    }
+    if ( bFoundDevice )
+        repaintAll();
 }

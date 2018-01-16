@@ -40,6 +40,8 @@ public:
 
 	void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
     void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows);
+    void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows);
+    void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const;
 private slots:
 	void onResultEvent(const QVariantList &data);
 
@@ -94,7 +96,7 @@ private:
 
 	void loadImage(QString& fileName);
 	void repaintAll();
-	void A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy);	
+	void A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy);
 	double convertToImgX(double dMouseValue, bool bLen = false);
 	double convertToImgY(double dMouseValue, bool bLen = false);
 	double convertToMouseX(double dImgValue, bool bLen = false);
@@ -111,6 +113,7 @@ private:
     void _cutImageForDisplay(const cv::Mat &matInputImg, cv::Mat &matOutput);
     void _drawDeviceWindows(cv::Mat &matImg);
     void _calcMoveRange();
+    void _checkSelectedDevice(const cv::Point &ptMousePos);
 public:
 	bool startUpCapture();
 	bool endUpCapture();
@@ -145,7 +148,9 @@ private:
 	QDockWidget *m_pSelectView;
 	bool m_bShow3DInitial;
 	bool m_bMainView3DInitial;
-    QVector<cv::RotatedRect> m_vecDeviceWindows;
+    QVector<cv::RotatedRect>    m_vecDeviceWindows;
+    QVector<cv::RotatedRect>    m_vecSelectedFM;   //FM for fiducial mark
+    cv::RotatedRect             m_selectedDevice;
     cv::Size m_szCadOffset;
     cv::Size _szMoveRange;
 
@@ -158,4 +163,5 @@ private:
     const float             _constMinZoomScale = 0.25;
     const float             _constZoomInStep = 2.0;
     const float             _constZoomOutStep = 0.5;
+    const int               _constDeviceWindowLineWidth = 5;
 };

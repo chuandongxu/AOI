@@ -1,6 +1,7 @@
 #include "DataUtils.h"
 #include <fstream>
 #include <sstream>
+#include <cctype>
 
 DataUtils::DataUtils()
 {
@@ -8,6 +9,30 @@ DataUtils::DataUtils()
 
 DataUtils::~DataUtils()
 {
+}
+
+/*static*/ bool DataUtils::isNumber(std::string const& n)
+{
+    if ( n.size() <= 0 )
+        return false;
+
+    int nStartIndex = 0;
+    if ( std::isdigit( n[0] ) )
+        nStartIndex = 0;
+    else if ( n[0] == '-' || n[0] == '+' )
+        nStartIndex = 1;
+    else
+        return false;
+
+    bool bWithDigit = false;
+    for (std::string::size_type i = nStartIndex; i < n.size(); ++ i) {
+        if ( ! std::isdigit ( n[i] ) && n[i] != '.')
+            return false;
+        else
+            bWithDigit = true;
+    }
+
+    return bWithDigit;
 }
 
 /*static*/ std::vector<std::string> DataUtils::splitString ( const std::string &s, char delim )
@@ -32,14 +57,14 @@ DataUtils::~DataUtils()
 
     char chChangeLine = '\r';
     {
-        char chArray[500];
+        char chArray[100];
         fs.read ( chArray, sizeof ( chArray ) );
         std::string strTemp(chArray);
         auto nPosOfCR = strTemp.find_first_of('\r');
         auto nPosOfLF = strTemp.find_first_of('\n');
         if ( nPosOfLF < nPosOfCR  )
             chChangeLine = '\n';
-        fs.seekg (0);
+        fs.seekg (0, fs.beg);
     }
     
     int nLineNumber = 1;
@@ -60,12 +85,24 @@ DataUtils::~DataUtils()
                 cadData.name = vecData[index];
                 break;
             case CAD_DATA_COLUMNS::X:
+                if ( ! isNumber ( vecData[index] ) ) {
+                    strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to X, but data \"" + vecData[index] + "\" is not number.";
+                    return -1;
+                }
                 cadData.x = std::atof ( vecData[index].c_str() );
                 break;
             case CAD_DATA_COLUMNS::Y:
+                if ( ! isNumber ( vecData[index] ) ) {
+                    strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to Y, but data \"" + vecData[index] + "\" is not number.";
+                    return -1;
+                }
                 cadData.y = std::atof ( vecData[index].c_str() );
                 break;
             case CAD_DATA_COLUMNS::ANGLE:
+                if ( ! isNumber ( vecData[index] ) ) {
+                    strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to ANGLE, but data \"" + vecData[index] + "\" is not number.";
+                    return -1;
+                }
                 cadData.angle = std::atof ( vecData[index].c_str () );
                 break;
             case CAD_DATA_COLUMNS::TOP_BOTTOM:
@@ -78,15 +115,27 @@ DataUtils::~DataUtils()
                 cadData.group = vecData[index];
                 break;
             case CAD_DATA_COLUMNS::WIDTH:
+                if ( ! isNumber ( vecData[index] ) ) {
+                    strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to WIDTH, but data \"" + vecData[index] + "\" is not number.";
+                    return -1;
+                }
                 cadData.width = std::atof ( vecData[index].c_str() );
                 break;
             case CAD_DATA_COLUMNS::LENGTH:
+                if ( ! isNumber ( vecData[index] ) ) {
+                    strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to LENGTH, but data \"" + vecData[index] + "\" is not number.";
+                    return -1;
+                }
                 cadData.length = std::atof ( vecData[index].c_str() );
                 break;
             case CAD_DATA_COLUMNS::PLACEMENT:
                 cadData.placement = vecData[index] == "Placement";
                 break;
             case CAD_DATA_COLUMNS::BOARD_NO:
+                if ( ! isNumber ( vecData[index] ) ) {
+                    strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to BOARD NO, but data \"" + vecData[index] + "\" is not number.";
+                    return -1;
+                }
                 cadData.boardNo = std::atoi ( vecData[index].c_str () );
                 break;
             default:
@@ -97,6 +146,11 @@ DataUtils::~DataUtils()
         ++ nLineNumber;
     }
     fs.close();
+
+    if ( vecCadData.empty() ) {
+        strErrorMsg = "Cannot read out CAD data from the file " + strFilePath + ".";
+        return -1;
+    }
     return 0;
 }
 

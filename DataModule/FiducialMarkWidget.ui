@@ -13,30 +13,69 @@
   <property name="windowTitle">
    <string>FiducialMarkWidget</string>
   </property>
-  <widget class="QPushButton" name="btnAdjustCAD">
+  <widget class="QPushButton" name="btnAddFiducialMark">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>30</y>
      <width>141</width>
      <height>28</height>
     </rect>
    </property>
    <property name="text">
-    <string>Adjust CAD Data</string>
+    <string>Add Fiducial Mark</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnAddFiducialMark">
+  <widget class="QPushButton" name="btnConfirmFiducialMark">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>80</y>
      <width>141</width>
      <height>28</height>
     </rect>
    </property>
    <property name="text">
-    <string>Add Fiducial Mark</string>
+    <string>Confirm Fiducial Mark</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditFiducialMark">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>80</y>
+     <width>41</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelFiducialMarkCount">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>90</y>
+     <width>121</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Fiducial Mark Count</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnDoAlignment">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>140</y>
+     <width>141</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Do Alignment</string>
    </property>
   </widget>
  </widget>

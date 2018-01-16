@@ -161,24 +161,36 @@ void ImportCADWidget::on_btnImportCAD_clicked() {
         mapVecDevice[device.boardId].push_back ( device );
         
         auto x = device.x / dResolutionX;
-        x = -x; //The board rotated 180 degree when put inside.
         auto y = device.y / dResolutionY;
         auto width  = device.width  / dResolutionX;
         auto height = device.height / dResolutionY;
-        cv::RotatedRect deviceWindow(cv::Point2f(x, y), cv::Size2f(width,height), device.angle );
+        cv::RotatedRect deviceWindow ( cv::Point2f(x, y), cv::Size2f(width, height), device.angle );
         vecDeviceWindows.push_back ( deviceWindow );
+    }
+
+    if ( QFile::exists ( DEFAULT_PROJECT.c_str() ) ) {
+        QFile::remove ( DEFAULT_PROJECT.c_str() );
     }
 
     QString user;
     int level;
     System->getUser( user, level );
-    Engine::CreateProject ( DEFAULT_PROJECT, user.toStdString() );
-    for ( auto iter = mapVecDevice.begin(); iter != mapVecDevice.end(); ++ iter ) {
-        Engine::Board board;
-        Engine::CreateBoard ( board );
-        Engine::CreateDevice ( iter->first, iter->second );
+    auto result = Engine::CreateProject ( DEFAULT_PROJECT, user.toStdString() );
+    if ( Engine::OK == result ) {
+        for ( auto iter = mapVecDevice.begin(); iter != mapVecDevice.end(); ++ iter ) {
+            Engine::Board board;
+            Engine::CreateBoard ( board );
+            Engine::CreateDevice ( iter->first, iter->second );
+        }
+    }else {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail ( errorType, errorMessage );
+        errorMessage = "Failed to create default project, error message " + errorMessage;
+        QMessageBox::critical(nullptr, QStringLiteral("Import CAD"), errorMessage.c_str(), QStringLiteral("Quit"));
     }
 
-    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-    pUI->setDeviceWindows ( vecDeviceWindows );
+    //IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    //pUI->setDeviceWindows ( vecDeviceWindows );
+
+    QMessageBox::information ( nullptr, QStringLiteral("Import CAD"), QStringLiteral("Import CAD Success"), QStringLiteral("Quit") );
 }

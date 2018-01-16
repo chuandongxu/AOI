@@ -205,10 +205,24 @@ void QVisionUIModule::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindow
 	}
 }
 
+void QVisionUIModule::setSelectedFM(const QVector<cv::RotatedRect> &vecWindows) {
+    if (m_pVisionView)
+	{
+		m_pVisionView->setSelectedFM(vecWindows);
+	}
+}
+
 void QVisionUIModule::setViewState(VISION_VIEW_MODE enViewMode) {
     if (m_pVisionView)
 	{
 		m_pVisionView->setViewState(enViewMode);
+	}
+}
+
+void QVisionUIModule::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) {
+    if (m_pVisionView)
+	{
+		m_pVisionView->getSelectDeviceWindow(rrectCadWindow, rrectImageWindow);
 	}
 }
 
