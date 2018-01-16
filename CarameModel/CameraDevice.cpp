@@ -117,7 +117,6 @@ void BaslerCameraDevice::openDevice(QString cameraName, QString cameraID, bool b
 
 		m_bOpen = true;
 
-		//bool bHardwareTriggerContinuous = System->getParam("camera_hw_tri_continuous").toBool();
 		setHardwareTrigger(bHWTrigger);	
 	}
 	catch (GenICam::GenericException &e)

@@ -24,6 +24,7 @@ public:
 
 	bool startUpCapture();
 	bool endUpCapture();
+	bool selectCaptureMode(int nCaptureMode);
 
 	const QVector<cv::Mat>& getImageBuffer();
 	const cv::Mat& getImageItemBuffer(int nIndex);
@@ -33,7 +34,7 @@ public:
 	void clearImageBuffer();
 	bool isCaptureImageBufferDone();
 
-	bool lockCameraCapture(int iStation);
+	bool lockCameraCapture();
 	void unlockCameraCapture();
 	bool isCameraCaptureAvaiable();
 

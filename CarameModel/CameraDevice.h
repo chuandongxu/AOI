@@ -30,6 +30,7 @@ public:
 	virtual void setExposureTime( double expouserTime) = 0;
 	virtual void getExposureTime(double *expouserTime) = 0;  // 注意, 有些相机是不支持的
 	virtual void setHardwareTrigger(bool bOn) = 0;
+	virtual void setTriggerActive(bool bActiveHigh) = 0;
 	virtual bool captureImage(cv::Mat &imageMat) = 0;
 
 	virtual void softwareTrigger() = 0;
@@ -65,6 +66,7 @@ public:
 	virtual void setExposureTime(double expouserTime);
 	virtual void getExposureTime(double *expouserTime);  // 注意, 有些相机是不支持的
 	virtual void setHardwareTrigger(bool bOn);
+	virtual void setTriggerActive(bool bActiveHigh){}
 	virtual bool captureImage(cv::Mat &imageMat);
 
 	virtual void softwareTrigger();

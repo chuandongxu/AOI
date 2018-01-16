@@ -49,6 +49,11 @@ bool MotionModule::IsPowerError()
 	return m_ctrl.IsPowerError();
 }
 
+bool MotionModule::setDOs(QVector<int>& nPorts, int iState)
+{
+	return m_ctrl.setDOs(nPorts, iState);
+}
+
 bool MotionModule::setDO(int nPort, int iState)
 {
 	return m_ctrl.setDO(nPort, iState);
@@ -64,9 +69,9 @@ bool MotionModule::getDI(int nPort, int &iState)
 	return m_ctrl.getDI(nPort, iState);
 }
 
-bool MotionModule::triggerCapturing(TRIGGER emTrig, bool bWaitDone)
+bool MotionModule::triggerCapturing(TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig)
 {
-	return m_ctrl.triggerCapturing(emTrig, bWaitDone);
+	return m_ctrl.triggerCapturing(emTrig, bWaitDone, bClearSetupConfig);
 }
 
 bool MotionModule::enable(int AxisID)

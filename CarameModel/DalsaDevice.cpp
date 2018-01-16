@@ -180,8 +180,9 @@ void DalsaCameraDevice::openCamera()
 		m_camera = new Camera_t(m_hv_AcqHandle);
 		m_camera->Open();
 
-		int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
-		m_camera->UserSetSelector.SetValue(0 == nCaptureNumMode ? Basler_CLCameraParams::UserSetSelector_UserSet1 : Basler_CLCameraParams::UserSetSelector_UserSet2);
+		//int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
+		//m_camera->UserSetSelector.SetValue(0 == nCaptureNumMode ? Basler_CLCameraParams::UserSetSelector_UserSet1 : Basler_CLCameraParams::UserSetSelector_UserSet2);
+		m_camera->UserSetSelector.SetValue(Basler_CLCameraParams::UserSetSelector_UserSet1);
 		m_camera->UserSetLoad.Execute();
 
 		//m_camera->ExposureTimeAbs.SetValue(3);	
@@ -231,6 +232,23 @@ void DalsaCameraDevice::getExposureTime(double *exposureTime)
 {
 	if (m_bOpen)
 	{		
+		if (m_camera && m_camera->IsOpen())
+		{
+			try
+			{
+				// Only look for cameras supported by Camera_t.
+				CDeviceInfo info;
+				info.SetDeviceClass(Camera_t::DeviceClass());
+
+				*exposureTime = m_camera->ExposureTimeAbs.GetValue();
+			}
+			catch (GenICam::GenericException &e)
+			{
+				// Error handling.
+				qDebug() << "An exception occurred." << endl
+					<< e.GetDescription() << endl;
+			}
+		}
 	}
 	else
 	{
@@ -241,11 +259,24 @@ void DalsaCameraDevice::getExposureTime(double *exposureTime)
 void DalsaCameraDevice::setExposureTime(double exposureTime)
 {
 	if (m_bOpen)
-	{	
-	/*	if (m_camera)
+	{
+		if (m_camera && m_camera->IsOpen())
 		{
-			m_camera->ExposureTimeAbs.SetValue(exposureTime);			
-		}*/
+			try
+			{
+				// Only look for cameras supported by Camera_t.
+				CDeviceInfo info;
+				info.SetDeviceClass(Camera_t::DeviceClass());
+
+				m_camera->ExposureTimeAbs.SetValue(exposureTime);
+			}
+			catch (GenICam::GenericException &e)
+			{
+				// Error handling.
+				qDebug() << "An exception occurred." << endl
+					<< e.GetDescription() << endl;
+			}
+		}
 	}
 }
 
@@ -276,32 +307,28 @@ void DalsaCameraDevice::setHardwareTrigger(bool bOn)
 			}
 		}
 
-		closeDevice();
-
-		QThread::msleep(200);
-
-		openDevice(m_cameraName, m_cameraID, bOn);	
-
-		//m_Xfer->SetParameter(CORACQ_PRM_EXT_TRIGGER_ENABLE, bOn ? TRUE : FALSE);
-
-
-		//bool bSet = m_AcqDevice->SetFeatureValue(CORACQ_PRM_EXT_TRIGGER_ENABLE, bOn ? TRUE : FALSE);
-		//qDebug() << "Dalsa Device Hardware Trigger: " << bSet;
-
-		
-		/*BOOL isSelectAvailable = FALSE;
-		char* featurename = "ChunkEnable";
-		if (m_AcqDevice->GetFeatureInfo(featurename, m_Feature))
+		if (bOn)
 		{
-			SapFeature::AccessMode accessMode;
-			if (m_Feature->GetAccessMode(&accessMode))
-				isSelectAvailable = (accessMode == SapFeature::AccessRW);
+			closeDevice();
+			QThread::msleep(200);
+			openDevice(m_cameraName, m_cameraID, bOn);
 		}
-
-		if (isSelectAvailable)
+		else
 		{
-			m_Feature->
-		}*/
+			m_Acq->SetParameter(CORACQ_PRM_EXT_TRIGGER_ENABLE, bOn ? TRUE : FALSE);
+		}		
+
+		//closeDevice();
+		//QThread::msleep(200);
+		//openDevice(m_cameraName, m_cameraID, bOn);			
+	}
+}
+
+void DalsaCameraDevice::setTriggerActive(bool bActiveHigh)
+{
+	if (m_bOpen)
+	{	
+		m_Acq->SetParameter(CORACQ_PRM_EXT_TRIGGER_DETECTION, bActiveHigh ? CORACQ_VAL_RISING_EDGE : CORACQ_VAL_FALLING_EDGE);		
 	}
 }
 
@@ -383,9 +410,24 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 
 	if (nWaitTime > 0)
 	{
+		bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
+
 		for (int i = 0; i < m_imageMats.size(); i++)
 		{
-			imageMats.push_back(m_imageMats[i]);
+			int nIndex = i;
+			if (bCaptureImageAsMatlab && m_imageMats.size() >= DLP_SEQ_PATTERN_IMG_NUM)
+			{
+				if (5 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 5 Pattern Sequence Special Index
+				{
+					nIndex += 1;
+				}
+				else if (6 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 6 Pattern Sequence Special Index
+				{
+					nIndex -= 1;
+				}
+			}
+
+			imageMats.push_back(m_imageMats[nIndex]);
 		}
 
 		return true;

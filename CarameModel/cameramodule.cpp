@@ -97,6 +97,15 @@ bool CameraModule::endUpCapture()
 	return false;
 }
 
+bool CameraModule::selectCaptureMode(int nCaptureMode)
+{
+	if (m_pMainProcess)
+	{
+		return m_pMainProcess->selectCaptureMode(nCaptureMode);
+	}
+	return false;
+}
+
 const QVector<cv::Mat>& CameraModule::getImageBuffer()
 {
 	return m_pMainProcess->getImageBuffer();
@@ -132,9 +141,9 @@ bool CameraModule::isCaptureImageBufferDone()
 	return m_pMainProcess->isCaptureImageBufferDone();
 }
 
-bool CameraModule::lockCameraCapture(int iStation)
+bool CameraModule::lockCameraCapture()
 {
-	return m_pMainProcess->lockCameraCapture(iStation);
+	return m_pMainProcess->lockCameraCapture();
 }
 
 void CameraModule::unlockCameraCapture()

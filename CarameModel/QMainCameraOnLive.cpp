@@ -61,15 +61,6 @@ void MainCameraOnLive::run()
 			continue;
 		}		
 		
-		if (m_pMainProcess->getStation() == 0)
-		{
-			System->setTrackInfo(QStringLiteral("启动测试..."));
-		}		
-		else
-		{
-			//System->setTrackInfo(QStringLiteral("start grabing by station %1").arg(m_pView->getStation()));
-		}
-
 		if (!m_pCameraTmp->startGrabing(m_pMainProcess->getImageBufferNum()))
 		{
 			System->setTrackInfo("startGrabing error!");
@@ -122,28 +113,12 @@ void MainCameraOnLive::saveImages(QVector<cv::Mat>& images)
 		QString fileDir = capturePath + "/" + dtm.toString("MMddhhmmss") + "/";
 		QDir dir; dir.mkdir(fileDir);
 
-		bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
 		for (int i = 0; i < images.size(); i++)
 		{
 			cv::Mat image = images.at(i);
-			if (bCaptureImageAsMatlab)
-			{
-				int nIndex = i + 1;
-				if (6 == nIndex)
-				{
-					nIndex += 1;
-				}
-				else if (7 == nIndex)
-				{
-					nIndex -= 1;
-				}
-				QString name = QString("%1").arg(nIndex, 2, 10, QChar('0')) + QStringLiteral(".bmp");
-				m_pCameraTmp->saveImage(image, name, fileDir);
-			}
-			else
-			{
-				m_pCameraTmp->saveImage(image);
-			}
+
+			QString name = QString("%1").arg(i+1, 2, 10, QChar('0')) + QStringLiteral(".bmp");
+			m_pCameraTmp->saveImage(image, name, fileDir);			
 		}
 	}
 }

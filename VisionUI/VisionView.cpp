@@ -43,6 +43,169 @@ const int LABEL_IMAGE_HEIGHT = 800;
 /*static*/ const cv::Scalar VisionView::_constGreenScalar  (0,   255, 0   );
 /*static*/ const cv::Scalar VisionView::_constYellowScalar (0,   255, 255 );
 
+CameraOnLive::CameraOnLive(VisionView* pView)
+	:m_pView(pView)
+{
+	m_bQuit = false;
+	m_bRuning = false;
+}
+
+void CameraOnLive::run()
+{
+	m_bRuning = true;
+
+	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	if (!pCam) return;
+
+	IVision* pVision = getModule<IVision>(VISION_MODEL);
+	if (!pVision) return;
+
+	bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
+	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();	
+
+	cv::Mat image;
+	QVector<cv::Mat> imageMats;
+	while (!m_bQuit)
+	{
+		if (bHardwareTrigger)
+		{	
+			imageMats.clear();
+
+			if (!pCam->startCapturing())
+			{
+				System->setTrackInfo(QString("startCapturing error"));			
+				continue;
+			}
+			
+			int nWaitTime = 5* 60 * 100;
+			while (!pCam->isCaptureImageBufferDone() && nWaitTime-- > 0 && !m_bQuit)
+			{
+				QThread::msleep(10);
+			}
+
+			if (nWaitTime <= 0)
+			{
+				System->setTrackInfo(QString("CaptureImageBufferDone error"));				
+				continue;
+			}
+
+			if (m_bQuit) break;		
+		
+			int nCaptureNum = pCam->getImageBufferCaptureNum();		
+			for (int i = 0; i < nCaptureNum; i++)
+			{			
+				cv::Mat matImage = pCam->getImageItemBuffer(i);
+				imageMats.push_back(matImage);				
+			}
+
+			if (imageMats.size() == 1)
+			{
+				showImageToScreen(imageMats[0]);
+			}
+			else if (imageMats.size() > 1)
+			{
+				if (pVision->generateGrayImage(imageMats, image))
+				{
+					showImageToScreen(image);					
+				}
+			}
+		
+			System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));		
+		
+			if (m_bQuit) break;
+		}
+		else if ((pCam->grabCamImage(0, image, true)))
+		{
+			try
+			{
+				if (image.type() == CV_8UC1)
+				{
+					//input image is grayscale
+					cvtColor(image, image, CV_GRAY2RGB);
+
+				}
+
+				drawCross(image);
+				if (m_bQuit)break;
+
+				showImageToScreen(image);
+				if (m_bQuit)break;
+			}
+			catch (...)
+			{
+				break;
+			}
+		}
+
+		QThread::msleep(10);
+		QApplication::processEvents();
+	}
+
+	m_bRuning = false;
+}
+
+void CameraOnLive::setQuitFlag()
+{
+	m_bQuit = true;
+}
+
+void CameraOnLive::showImageToScreen(cv::Mat& image)
+{
+	if (m_pView)
+	{
+		m_pView->displayImage(image);
+	}
+}
+
+void CameraOnLive::drawCross(cv::Mat& image)
+{
+	cv::Point startPt, endPt;
+
+	bool bShowCross = System->getParam("camera_capture_cross_enable").toBool();
+	int nShowCrossWidth = System->getParam("camera_capture_cross_width").toInt();
+
+	if (bShowCross)
+	{
+		int nCrossWidth = nShowCrossWidth;
+
+		startPt.x = 0;
+		startPt.y = image.size().height / 2 - nCrossWidth / 2;
+		endPt.x = image.size().width;
+		endPt.y = image.size().height / 2 - nCrossWidth / 2;
+		cv::line(image, startPt, endPt, cv::Scalar(255, 255, 0), 1, 8);
+
+		startPt.x = 0;
+		startPt.y = image.size().height / 2 + nCrossWidth / 2;
+		endPt.x = image.size().width;
+		endPt.y = image.size().height / 2 + nCrossWidth / 2;
+		cv::line(image, startPt, endPt, cv::Scalar(255, 255, 0), 1, 8);
+
+		startPt.x = image.size().width / 2 - nCrossWidth / 2;
+		startPt.y = 0;
+		endPt.x = image.size().width / 2 - nCrossWidth / 2;
+		endPt.y = image.size().height;
+		cv::line(image, startPt, endPt, cv::Scalar(255, 255, 0), 2, 8);
+
+		startPt.x = image.size().width / 2 + nCrossWidth / 2;
+		startPt.y = 0;
+		endPt.x = image.size().width / 2 + nCrossWidth / 2;
+		endPt.y = image.size().height;
+		cv::line(image, startPt, endPt, cv::Scalar(255, 255, 0), 2, 8);
+	}
+
+	startPt.x = 0;
+	startPt.y = image.size().height / 2;
+	endPt.x = image.size().width;
+	endPt.y = image.size().height / 2;
+	cv::line(image, startPt, endPt, cv::Scalar(255, 0, 0), 2, 8);
+
+	startPt.x = image.size().width / 2;
+	startPt.y = 0;
+	endPt.x = image.size().width / 2;
+	endPt.y = image.size().height;
+	cv::line(image, startPt, endPt, cv::Scalar(255, 0, 0), 2, 8);
+}
+
 VisionView::VisionView(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -74,6 +237,9 @@ VisionView::VisionView(QWidget *parent)
 
 	m_bShow3DInitial = false;
 	m_bMainView3DInitial = false;
+
+	m_pCameraOnLive = NULL;
+	onStopAct->setEnabled(false);
 }
 
 VisionView::~VisionView()
@@ -89,6 +255,8 @@ VisionView::~VisionView()
 		delete m_pMainViewFull3D;
 		m_pMainViewFull3D = NULL;
 	}
+
+	if (m_pCameraOnLive) onClickPushbutton_stopLive();
 }
 
 void VisionView::init()
@@ -152,6 +320,16 @@ void VisionView::createActions()
 	moveAct->setStatusTip(tr("Move screen"));
 	connect(moveAct, SIGNAL(triggered()), this, SLOT(moveScreen()));
 
+	onLiveAct = new QAction(QIcon("image/onLive.png"), QStringLiteral("实时图像"), this);
+	onLiveAct->setShortcuts(QKeySequence::MoveToStartOfDocument);
+	onLiveAct->setStatusTip(tr("Live Video"));
+	connect(onLiveAct, SIGNAL(triggered()), this, SLOT(onClickPushbutton_onLive()));
+
+	onStopAct = new QAction(QIcon("image/onStop.png"), QStringLiteral("停止采集"), this);
+	onStopAct->setShortcuts(QKeySequence::MoveToEndOfDocument);
+	onStopAct->setStatusTip(tr("Stop Video"));
+	connect(onStopAct, SIGNAL(triggered()), this, SLOT(onClickPushbutton_stopLive()));
+
 	show3DAct = new QAction(QIcon("image/cutSurface.png"), QStringLiteral("显示三维数据"), this);
 	show3DAct->setShortcuts(QKeySequence::Underline);
 	show3DAct->setStatusTip(tr("Show 3D"));
@@ -179,6 +357,10 @@ void VisionView::createToolBars()
 	editToolBar->addAction(zoomOutAct);
 	editToolBar->addAction(fullScreenAct);
 	editToolBar->addAction(moveAct);
+
+	videoToolBar = addToolBar(tr("Video"));
+	videoToolBar->addAction(onLiveAct);
+	videoToolBar->addAction(onStopAct);
 
 	detectToolBar = addToolBar(tr("Detect"));
 	detectToolBar->addAction(show3DAct);
@@ -279,6 +461,107 @@ void VisionView::fullScreen()
 void VisionView::moveScreen()
 {
 	setViewState(MODE_VIEW_MOVE);
+}
+
+void VisionView::onClickPushbutton_onLive()
+{
+	QAutoLocker loacker(&m_mutex);
+
+	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	if (!pCam) return;
+
+
+	int nCaptureMode = System->getParam("camera_capture_mode").toInt();
+	if (2 == nCaptureMode)
+	{
+		QMessageBox::warning(this, "", QStringLiteral("手动采集模式不支持实时图像显示"));
+		return;
+	}
+
+	bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
+	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
+	if (!bHardwareTrigger && bCaptureImage)
+	{
+		QMessageBox::warning(this, "", QStringLiteral("实时图像不支持【非硬触发】保存图像，取消保存图像或者启用硬触发模式"));
+		return;
+	}	
+
+	QString capturePath = System->getParam("camera_cap_image_path").toString();
+	if (bHardwareTrigger && bCaptureImage)
+	{
+		QDir dirDefaultPath;
+		dirDefaultPath.setPath(capturePath);
+
+		if (!dirDefaultPath.exists())
+		{			
+			QMessageBox::warning(this, "", QStringLiteral("Default Capturing path is not exit! Please browser to set the path!"));
+			return;
+		}
+	}
+
+	if (pCam->getCameraNum() > 0)
+	{
+		if (!pCam->startUpCapture())
+		{
+			QSystem::closeMessage();
+			QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));
+			return;
+		}
+	}
+	else
+	{
+		QSystem::closeMessage();
+		QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("请检查相机是否连接。"));
+		return;
+	}
+
+	if (!m_pCameraOnLive)
+	{
+		setButtonsEnable(false, true);
+		onLiveAct->setEnabled(false);
+		onStopAct->setEnabled(true);
+		clearImage();
+
+		m_pCameraOnLive = new CameraOnLive(this);
+		m_pCameraOnLive->start();
+	}
+}
+
+void VisionView::onClickPushbutton_stopLive()
+{
+	QAutoLocker loacker(&m_mutex);
+
+	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	if (!pCam) return;
+
+	if (pCam->getCameraNum() > 0)
+	{
+		pCam->endUpCapture();
+	}
+	else
+	{
+		QSystem::closeMessage();
+		QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("请检查相机是否连接。"));
+	}
+
+	if (m_pCameraOnLive)
+	{
+		onLiveAct->setEnabled(true);
+		onStopAct->setEnabled(false);
+
+		m_pCameraOnLive->setQuitFlag();
+		while (m_pCameraOnLive->isRuning())
+		{
+			QThread::msleep(10);
+			QApplication::processEvents();
+		}
+		QThread::msleep(200);
+
+		delete m_pCameraOnLive;
+		m_pCameraOnLive = NULL;
+
+		setButtonsEnable(true, true);
+	}
 }
 
 void VisionView::show3D()
@@ -1255,20 +1538,41 @@ void VisionView::moveImage(double motionX, double motionY)
 		displayImage(m_hoImage);
 }
 
-void VisionView::setButtonsEnable(bool flag)
+void VisionView::setButtonsEnable(bool flag, bool bLiveVideo)
 {
-	openAct->setEnabled(flag);
-	cameraAct->setEnabled(flag);
-	saveAsAct->setEnabled(flag);
-	//zoomInAct->setEnabled(flag);
-	//zoomOutAct->setEnabled(flag);
-	//fullScreenAct->setEnabled(flag);
-	//moveAct->setEnabled(flag);
+	if (bLiveVideo)
+	{
+		openAct->setEnabled(flag);
+		cameraAct->setEnabled(flag);
+		saveAsAct->setEnabled(flag);
+		zoomInAct->setEnabled(flag);
+		zoomOutAct->setEnabled(flag);
+		fullScreenAct->setEnabled(flag);
+		moveAct->setEnabled(flag);
+		show3DAct->setEnabled(flag);
+		//onLiveAct->setEnabled(flag);
+		//onStopAct->setEnabled(flag);
+	}
+	else
+	{
+		openAct->setEnabled(flag);
+		cameraAct->setEnabled(flag);
+		saveAsAct->setEnabled(flag);
+		//zoomInAct->setEnabled(flag);
+		//zoomOutAct->setEnabled(flag);
+		//fullScreenAct->setEnabled(flag);
+		//moveAct->setEnabled(flag);
+		//show3DAct->setEnabled(flag);
+		onLiveAct->setEnabled(flag);
+		//onStopAct->setEnabled(flag);
+	}
 }
 
 bool VisionView::startUpCapture()
 {
-	setButtonsEnable(false);
+	if (m_pCameraOnLive) onClickPushbutton_stopLive();
+
+	setButtonsEnable(false, false);
 	fullImage();
 
 	return true;
@@ -1276,7 +1580,9 @@ bool VisionView::startUpCapture()
 
 bool VisionView::endUpCapture()
 {
-	setButtonsEnable(true);
+	if (m_pCameraOnLive) onClickPushbutton_stopLive();
+
+	setButtonsEnable(true, false);
 
 	return true;
 }
