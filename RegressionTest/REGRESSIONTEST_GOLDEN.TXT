@@ -1,0 +1,16 @@
+
+----------------------------------------------
+TEST DataUtils::isNumber function
+----------------------------------------------
++ is not a number
+- is not a number
+0 is a number
+3 is a number
+9 is a number
+a is not a number
+99a9 is not a number
+9909 is a number
+ is not a number
+-3.14 is a number
++32768 is a number
+-32768 is a number

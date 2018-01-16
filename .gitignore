@@ -1,6 +1,5 @@
 Thumbs.db
 *.obj
-*.exe
 *.pdb
 *.user
 *.aps
@@ -43,3 +42,5 @@ VisionFormatWork/GeneratedFiles
 CurveEditor/GeneratedFiles
 VisionTest/GeneratedFiles
 LightModule/GeneratedFiles
+*.ipch
+RegressionTest/RegressionTest_result.txt

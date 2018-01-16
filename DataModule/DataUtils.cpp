@@ -89,21 +89,21 @@ DataUtils::~DataUtils()
                     strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to X, but data \"" + vecData[index] + "\" is not number.";
                     return -1;
                 }
-                cadData.x = std::atof ( vecData[index].c_str() );
+                cadData.x = ToFloat ( std::atof ( vecData[index].c_str() ) ) ;
                 break;
             case CAD_DATA_COLUMNS::Y:
                 if ( ! isNumber ( vecData[index] ) ) {
                     strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to Y, but data \"" + vecData[index] + "\" is not number.";
                     return -1;
                 }
-                cadData.y = std::atof ( vecData[index].c_str() );
+                cadData.y = ToFloat ( std::atof ( vecData[index].c_str() ) );
                 break;
             case CAD_DATA_COLUMNS::ANGLE:
                 if ( ! isNumber ( vecData[index] ) ) {
                     strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to ANGLE, but data \"" + vecData[index] + "\" is not number.";
                     return -1;
                 }
-                cadData.angle = std::atof ( vecData[index].c_str () );
+                cadData.angle = ToFloat ( std::atof ( vecData[index].c_str () ) );
                 break;
             case CAD_DATA_COLUMNS::TOP_BOTTOM:
                 cadData.isBottom = vecData[index] == "B";
@@ -119,14 +119,14 @@ DataUtils::~DataUtils()
                     strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to WIDTH, but data \"" + vecData[index] + "\" is not number.";
                     return -1;
                 }
-                cadData.width = std::atof ( vecData[index].c_str() );
+                cadData.width = ToFloat ( std::atof ( vecData[index].c_str() ) );
                 break;
             case CAD_DATA_COLUMNS::LENGTH:
                 if ( ! isNumber ( vecData[index] ) ) {
                     strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to LENGTH, but data \"" + vecData[index] + "\" is not number.";
                     return -1;
                 }
-                cadData.length = std::atof ( vecData[index].c_str() );
+                cadData.length = ToFloat ( std::atof ( vecData[index].c_str() ) );
                 break;
             case CAD_DATA_COLUMNS::PLACEMENT:
                 cadData.placement = vecData[index] == "Placement";
@@ -171,8 +171,8 @@ DataUtils::~DataUtils()
         }
         std::string strGroup = vecData[0];
         std::string strType = vecData[1];
-        float fLength = std::atof ( vecData[2].c_str() );
-        float fWidth = std::atof ( vecData[3].c_str() );
+        float fLength = ToFloat ( std::atof ( vecData[2].c_str() ) );
+        float fWidth  = ToFloat ( std::atof ( vecData[3].c_str() ) );
         mapGroupPackageSize[strGroup][strType] = PackageSize{fLength, fWidth};
         ++ nLineNumber;
     }

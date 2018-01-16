@@ -65,6 +65,10 @@ struct PackageSize {
     float Width;
 };
 
+template <typename Tp> inline int   ToInt32(Tp param) { return static_cast<int>(param); }
+template <typename Tp> inline short ToInt16(Tp param) { return static_cast<short>(param); }
+template <typename Tp> inline float ToFloat(Tp param) { return static_cast<float>(param); }
+
 using MapTypePackageSize = std::unordered_map<std::string, PackageSize>;
 using MapGroupPackageSize = std::unordered_map<std::string, MapTypePackageSize>;
 const int PackageSizeDataColumnCount = 4;
