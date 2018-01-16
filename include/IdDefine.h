@@ -1,9 +1,9 @@
-#ifndef _ID_DEFINE_H_
+ï»¿#ifndef _ID_DEFINE_H_
 #define _ID_DEFINE_H_
 
 #include "workflowDefine.h"
 
-//¶¨ÒåÄ£¿éID
+//å®šä¹‰æ¨¡å—ID
 #define UI_MODEL  1001
 #define CTRL_MODEL 1003
 #define MOTION_MODEL 1004
@@ -18,25 +18,25 @@
 
 #define AXIS_MOTOR_NUM		8
 
-//¶¨ÒåÖáID
+//å®šä¹‰è½´ID
 #define AXIS_MOTOR_X       1
 #define AXIS_MOTOR_Y       2
 #define AXIS_MOTOR_Z       3
 
-/* ************* ¶¨ÒåAI ********************************* */
+/* ************* å®šä¹‰AI ********************************* */
 //#define CHECK_AI_1     0
 //#define CHECK_AI_2     1
 //#define CHECK_AI_3     2
 
-/* ************* ¶¨ÒåI/O ********************************* */
-////ÊäÈëÄ£¿é1
+/* ************* å®šä¹‰I/O ********************************* */
+////è¾“å…¥æ¨¡å—1
 #define DI_IM_STOP				  0
 #define DI_RESET				  1
 #define DI_START				  2
 #define DI_STOP					  3
 #define DI_SAFE_DOOR			  4
 
-/////Êä³öÄ£¿é1
+/////è¾“å‡ºæ¨¡å—1
 #define DO_YELLOW_LIGHT            0
 #define DO_GREEN_LIGHT             0
 #define DO_RED_LIGHT               0

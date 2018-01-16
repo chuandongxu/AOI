@@ -1,4 +1,4 @@
-#include "ViewEditor.h"
+ï»¿#include "ViewEditor.h"
 #include <QVBoxLayout>
 #include <QMessageBox>
 #include <QDebug>
@@ -69,7 +69,7 @@ QGLWidget* ViewEditor::getQGLWidget()
 }
 
 void ViewEditor::closeEvent(QCloseEvent *e){
-	//qDebug() << "¹Ø±ÕÊÂ¼þ";
+	//qDebug() << "å…³é—­äº‹ä»¶";
 	e->ignore();
 
 	this->hide();
@@ -94,83 +94,83 @@ void ViewEditor::init()
 
 void ViewEditor::createActions()
 {
-	newAct = new QAction(QIcon("image/newFile.png"), QStringLiteral("ÐÂ½¨"), this);
+	newAct = new QAction(QIcon("image/newFile.png"), QStringLiteral("æ–°å»º"), this);
 	newAct->setShortcuts(QKeySequence::New);
 	newAct->setStatusTip(tr("Create a new file"));
 	connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
-	openAct = new QAction(QIcon("image/openFile.png"), QStringLiteral("´ò¿ª..."), this);
+	openAct = new QAction(QIcon("image/openFile.png"), QStringLiteral("æ‰“å¼€..."), this);
 	openAct->setShortcuts(QKeySequence::Open);
 	openAct->setStatusTip(tr("Open an existing file"));
 	connect(openAct, SIGNAL(triggered()), this, SLOT(openFile()));
 	openAct->setEnabled(false);
 
-	saveAct = new QAction(QIcon("image/saveFile.png"), QStringLiteral("±£´æ"), this);
+	saveAct = new QAction(QIcon("image/saveFile.png"), QStringLiteral("ä¿å­˜"), this);
 	saveAct->setShortcuts(QKeySequence::Save);
 	saveAct->setStatusTip(tr("Save the document to disk"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
 
-	saveAsAct = new QAction(QIcon("image/saveAsFile.png"), QStringLiteral("Áí´æÎª..."), this);
+	saveAsAct = new QAction(QIcon("image/saveAsFile.png"), QStringLiteral("å¦å­˜ä¸º..."), this);
 	saveAsAct->setShortcuts(QKeySequence::SaveAs);
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAsFile()));
 
-	zoomInAct = new QAction(QIcon("image/zoomIn.png"), QStringLiteral("ËõÐ¡"), this);
+	zoomInAct = new QAction(QIcon("image/zoomIn.png"), QStringLiteral("ç¼©å°"), this);
 	zoomInAct->setShortcuts(QKeySequence::ZoomIn);
 	zoomInAct->setStatusTip(tr("Zoom in window"));
 	connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-	zoomOutAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("·Å´ó"), this);
+	zoomOutAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("æ”¾å¤§"), this);
 	zoomOutAct->setShortcuts(QKeySequence::ZoomOut);
 	zoomOutAct->setStatusTip(tr("Zoom out window"));
 	connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
-	moveAct = new QAction(QIcon("image/moveView.png"), QStringLiteral("Æ½ÒÆ"), this);
+	moveAct = new QAction(QIcon("image/moveView.png"), QStringLiteral("å¹³ç§»"), this);
 	moveAct->setShortcuts(QKeySequence::MoveToNextWord);
 	moveAct->setStatusTip(tr("Move window"));
 	connect(moveAct, SIGNAL(triggered()), this, SLOT(moveView()));
 
-	rotateAct = new QAction(QIcon("image/rotateView.png"), QStringLiteral("Ðý×ª"), this);
+	rotateAct = new QAction(QIcon("image/rotateView.png"), QStringLiteral("æ—‹è½¬"), this);
 	rotateAct->setShortcuts(QKeySequence::MoveToNextChar);
 	rotateAct->setStatusTip(tr("Rotate window"));
 	connect(rotateAct, SIGNAL(triggered()), this, SLOT(rotateView()));
 
-	fullScreenAct = new QAction(QIcon("image/fullScreen.png"), QStringLiteral("È«ÆÁ"), this);
+	fullScreenAct = new QAction(QIcon("image/fullScreen.png"), QStringLiteral("å…¨å±"), this);
 	fullScreenAct->setShortcuts(QKeySequence::FullScreen);
 	fullScreenAct->setStatusTip(tr("Full screen"));
 	connect(fullScreenAct, SIGNAL(triggered()), this, SLOT(fullScreen()));
 
-	frontViewAct = new QAction(QIcon("image/frontView.png"), QStringLiteral("Ç°ÊÓÍ¼"), this);
+	frontViewAct = new QAction(QIcon("image/frontView.png"), QStringLiteral("å‰è§†å›¾"), this);
 	frontViewAct->setShortcuts(QKeySequence::SelectNextChar);
 	frontViewAct->setStatusTip(tr("Front View"));
 	connect(frontViewAct, SIGNAL(triggered()), this, SLOT(frontView()));
 
-	topViewAct = new QAction(QIcon("image/topView.png"), QStringLiteral("¸©ÊÓÍ¼"), this);
+	topViewAct = new QAction(QIcon("image/topView.png"), QStringLiteral("ä¿¯è§†å›¾"), this);
 	topViewAct->setShortcuts(QKeySequence::SelectPreviousChar);
 	topViewAct->setStatusTip(tr("Top View"));
 	connect(topViewAct, SIGNAL(triggered()), this, SLOT(topView()));
 
-	sideViewAct = new QAction(QIcon("image/sideView.png"), QStringLiteral("ÓÒÊÓÍ¼"), this);
+	sideViewAct = new QAction(QIcon("image/sideView.png"), QStringLiteral("å³è§†å›¾"), this);
 	sideViewAct->setShortcuts(QKeySequence::SelectNextWord);
 	sideViewAct->setStatusTip(tr("Side View"));
 	connect(sideViewAct, SIGNAL(triggered()), this, SLOT(sideView()));
 
-	showPointCloudAct = new QAction(QIcon("image/showCloud.png"), QStringLiteral("ÏÔÊ¾µãÔÆ"), this);
+	showPointCloudAct = new QAction(QIcon("image/showCloud.png"), QStringLiteral("æ˜¾ç¤ºç‚¹äº‘"), this);
 	showPointCloudAct->setShortcuts(QKeySequence::SelectPreviousWord);
 	showPointCloudAct->setStatusTip(tr("Point Cloud"));
 	connect(showPointCloudAct, SIGNAL(triggered()), this, SLOT(showPointCloud()));
 
-	showMeshTriAct = new QAction(QIcon("image/showMesh.png"), QStringLiteral("ÇúÃæÏÔÊ¾"), this);
+	showMeshTriAct = new QAction(QIcon("image/showMesh.png"), QStringLiteral("æ›²é¢æ˜¾ç¤º"), this);
 	showMeshTriAct->setShortcuts(QKeySequence::SelectNextLine);
 	showMeshTriAct->setStatusTip(tr("Mesh Trigger"));
 	connect(showMeshTriAct, SIGNAL(triggered()), this, SLOT(showMeshTri()));
 
-	meshSurfaceCutAct = new QAction(QIcon("image/cutSurface.png"), QStringLiteral("ÆÊÏßÏÔÊ¾"), this);
+	meshSurfaceCutAct = new QAction(QIcon("image/cutSurface.png"), QStringLiteral("å‰–çº¿æ˜¾ç¤º"), this);
 	meshSurfaceCutAct->setShortcuts(QKeySequence::SelectPreviousLine);
 	meshSurfaceCutAct->setStatusTip(tr("Surface Cutting"));
 	connect(meshSurfaceCutAct, SIGNAL(triggered()), this, SLOT(surfaceCut()));
 
-	meshSurfaceTextureAct = new QAction(QIcon("image/textureMesh.png"), QStringLiteral("ÌùÍ¼ÏÔÊ¾"), this);
+	meshSurfaceTextureAct = new QAction(QIcon("image/textureMesh.png"), QStringLiteral("è´´å›¾æ˜¾ç¤º"), this);
 	meshSurfaceTextureAct->setShortcuts(QKeySequence::SelectNextPage);
 	meshSurfaceTextureAct->setStatusTip(tr("Surface Texture"));
 	connect(meshSurfaceTextureAct, SIGNAL(triggered()), this, SLOT(surfaceTexture()));
@@ -183,7 +183,7 @@ void ViewEditor::createActions()
 	aboutSystemAct->setStatusTip(tr("Show the System About box"));
 	connect(aboutSystemAct, SIGNAL(triggered()), this, SLOT(aboutSystem()));
 
-	viewSettingAct = new QAction(QIcon("image/rectangle2.png"), QStringLiteral("²ÎÊýÉèÖÃ"), this);
+	viewSettingAct = new QAction(QIcon("image/rectangle2.png"), QStringLiteral("å‚æ•°è®¾ç½®"), this);
 	viewSettingAct->setShortcuts(QKeySequence::SelectEndOfDocument);
 	viewSettingAct->setStatusTip(tr("Show the parameters setting dialog"));
 	connect(viewSettingAct, SIGNAL(triggered()), this, SLOT(viewSetting()));
@@ -194,7 +194,7 @@ void ViewEditor::createMenus()
 {
 	ui.mainToolBar->setVisible(false);
 
-	fileMenu = menuBar()->addMenu(QStringLiteral("ÎÄ¼þ"));
+	fileMenu = menuBar()->addMenu(QStringLiteral("æ–‡ä»¶"));
 	//! [implicit tr context]
 	fileMenu->addAction(newAct);
 	fileMenu->addAction(openAct);
@@ -202,7 +202,7 @@ void ViewEditor::createMenus()
 	fileMenu->addAction(saveAsAct);
 	fileMenu->addSeparator();
 
-	editMenu = menuBar()->addMenu(QStringLiteral("ÊÓÍ¼"));
+	editMenu = menuBar()->addMenu(QStringLiteral("è§†å›¾"));
 	editMenu->addAction(zoomInAct);
 	editMenu->addAction(zoomOutAct);
 	editMenu->addAction(moveAct);
@@ -213,7 +213,7 @@ void ViewEditor::createMenus()
 	editMenu->addAction(topViewAct);
 	editMenu->addAction(sideViewAct);
 
-	settingMenu = menuBar()->addMenu(QStringLiteral("ÉèÖÃ"));
+	settingMenu = menuBar()->addMenu(QStringLiteral("è®¾ç½®"));
 	settingMenu->addAction(viewSettingAct);
 
 	menuBar()->addSeparator();
