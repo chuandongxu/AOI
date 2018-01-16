@@ -59,6 +59,21 @@ MotionIO::MotionIO(MotionControl* pCtrl, QWidget *parent)
 
 	connect(ui.pushButton_onCombTriggerOn, SIGNAL(clicked()), SLOT(onCombTriggerOn()));
 	connect(ui.pushButton_onCombTriggerOff, SIGNAL(clicked()), SLOT(onCombTriggerOff()));
+
+	//QVector<int> nPorts;	
+	//nPorts.push_back(DO_LIGHT1_ENABLE);
+	//nPorts.push_back(DO_LIGHT2_ENABLE);	
+	//m_pCtrl->setDOs(nPorts, 1);
+	//QThread::msleep(1000);
+	//m_pCtrl->setDOs(nPorts, 0);
+
+	m_pCtrl->setDO(DO_LIGHT1_ENABLE, 1);
+	m_pCtrl->setDO(DO_LIGHT2_ENABLE, 0);
+	QThread::msleep(500);
+	m_pCtrl->setDO(DO_LIGHT1_ENABLE, 0);
+	m_pCtrl->setDO(DO_LIGHT2_ENABLE, 1);
+	QThread::msleep(500);
+	m_pCtrl->setDO(DO_LIGHT2_ENABLE, 0);
 }
 
 MotionIO::~MotionIO()
@@ -114,8 +129,8 @@ void MotionIO::initDO()
 	m_doIO[11] = DO_LIGHT2_CH2;
 	m_doIO[12] = DO_LIGHT2_CH3;
 	m_doIO[13] = DO_LIGHT2_CH4;
-	m_doIO[14] = 0;
-	m_doIO[15] = 0;
+	m_doIO[14] = DO_LIGHT1_ENABLE;
+	m_doIO[15] = DO_LIGHT2_ENABLE;
 }
 
 void MotionIO::updataDI()

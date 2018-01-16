@@ -168,7 +168,7 @@ bool QCheckerRunable::captureImages()
 
 	int iStation = getStationID();
 	
-	if (!pCam->lockCameraCapture(iStation))
+	if (!pCam->lockCameraCapture())
 	{
 		return false;
 	}
@@ -204,26 +204,10 @@ bool QCheckerRunable::captureImages()
 		return false;
 	}
 
-	bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
 	int nCaptureNum = pCam->getImageBufferCaptureNum();
 	for (int i = 0; i < nCaptureNum; i++)
 	{
-		int nIndex = i;
-
-		if (bCaptureImageAsMatlab)
-		{
-			if (5 == nIndex)
-			{
-				nIndex += 1;
-			}
-			else if (6 == nIndex)
-			{
-				nIndex -= 1;
-			}
-		}
-
-		cv::Mat matImage = pCam->getImageItemBuffer(nIndex);	
-
+		cv::Mat matImage = pCam->getImageItemBuffer(i);
 		m_imageMats.push_back(matImage.clone());
 	}
 
@@ -465,40 +449,21 @@ bool QMainRunable::captureAllImages(QVector<cv::Mat>& imageMats)
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return false;
 
-	imageMats.clear();
-
-	int nWaitTime = 5 * 100;
-	while (!pCam->isCameraCaptureAvaiable() && nWaitTime-- > 0 && !isExit())
-	{
-		QThread::msleep(10);
-	}
-	if (nWaitTime <= 0) return false;
-
-	int iStation = 0;
-
-	if (!pCam->lockCameraCapture(iStation))
-	{
-		return false;
-	}
+	imageMats.clear();	
 
 	if (!pCam->startCapturing())
 	{
-		System->setTrackInfo(QString("startCapturing error,station %1").arg(iStation));
-		pCam->unlockCameraCapture();
+		System->setTrackInfo(QString("startCapturing error"));	
 		return false;
 	}
-
-	//System->setTrackInfo(QString("Trigger Station:%1").arg(iStation));
 	
 	if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true))
 	{
-		System->setTrackInfo(QString("triggerCapturing error,station %1").arg(iStation));
-		pCam->unlockCameraCapture();
+		System->setTrackInfo(QString("triggerCapturing error"));	
 		return false;
 	}	
 
-	//double dtime_start = double(clock());
-	nWaitTime = 10 * 100;
+	int nWaitTime = 10 * 100;
 	while (!pCam->isCaptureImageBufferDone() && nWaitTime-- > 0 && !isExit())
 	{
 		QThread::msleep(10);
@@ -506,41 +471,19 @@ bool QMainRunable::captureAllImages(QVector<cv::Mat>& imageMats)
 
 	if (nWaitTime <= 0)
 	{
-		System->setTrackInfo(QString("CaptureImageBufferDone error,station %1").arg(iStation));
-		pCam->unlockCameraCapture();
+		System->setTrackInfo(QString("CaptureImageBufferDone error"));		
 		return false;
 	}
-	//double dtime_movePos = double(clock());
-	//System->setTrackInfo(QStringLiteral("Waiting Capturing Done: %1 ms").arg(dtime_movePos - dtime_start), true);
 
-	bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
 	int nCaptureNum = pCam->getImageBufferCaptureNum();
-	int nPatternSeqNum = pCam->getImageBufferNum();
 	for (int i = 0; i < nCaptureNum; i++)
 	{
-		int nIndex = i;
-
-		if (bCaptureImageAsMatlab)
-		{
-			if (5 == nIndex%nPatternSeqNum)
-			{
-				nIndex += 1;
-			}
-			else if (6 == nIndex%nPatternSeqNum)
-			{
-				nIndex -= 1;
-			}
-		}
-
-		cv::Mat matImage = pCam->getImageItemBuffer(nIndex);
-
-		imageMats.push_back(matImage);
-		//imageMats.push_back(matImage.clone());
+		cv::Mat matImage = pCam->getImageItemBuffer(i);
+		imageMats.push_back(matImage);		
 	}
 
 	if (nCaptureNum != pCam->getImageBufferNum())
-	{
-		pCam->unlockCameraCapture();
+	{	
 		System->setTrackInfo(QString("System captureImages error, Image Num: %1").arg(nCaptureNum));
 
 		bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
@@ -562,9 +505,7 @@ bool QMainRunable::captureAllImages(QVector<cv::Mat>& imageMats)
 
 		return false;
 	}
-	System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));
-
-	pCam->unlockCameraCapture();
+	System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));	
 
 	return true;
 }
@@ -1204,6 +1145,8 @@ void QFlowCtrl::start()
 
 	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在启动中..."), 0);
 	QApplication::processEvents();
+
+	System->setParam("camera_capture_num_mode", 0);// all capturing images
 
 	if (pCam->getCameraNum() > 0)
 	{

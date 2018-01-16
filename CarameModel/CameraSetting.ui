@@ -40,8 +40,8 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>351</width>
-       <height>411</height>
+       <width>371</width>
+       <height>451</height>
       </rect>
      </property>
      <property name="title">
@@ -50,7 +50,7 @@
      <widget class="QCheckBox" name="checkBox">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>130</x>
         <y>60</y>
         <width>121</width>
         <height>16</height>
@@ -64,7 +64,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>170</y>
+        <y>200</y>
         <width>171</width>
         <height>20</height>
        </rect>
@@ -74,7 +74,7 @@
       <property name="geometry">
        <rect>
         <x>190</x>
-        <y>170</y>
+        <y>200</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -87,7 +87,7 @@
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>170</y>
+        <y>200</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -100,7 +100,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>140</y>
+        <y>170</y>
         <width>121</width>
         <height>16</height>
        </rect>
@@ -109,24 +109,11 @@
        <string>记录图像数据</string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="checkBox_3">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>60</y>
-        <width>131</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>硬触发实时显示</string>
-      </property>
-     </widget>
      <widget class="QCheckBox" name="checkBox_4">
       <property name="geometry">
        <rect>
         <x>150</x>
-        <y>140</y>
+        <y>170</y>
         <width>131</width>
         <height>16</height>
        </rect>
@@ -139,8 +126,8 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>120</y>
-        <width>311</width>
+        <y>150</y>
+        <width>341</width>
         <height>16</height>
        </rect>
       </property>
@@ -151,9 +138,9 @@
      <widget class="QComboBox" name="comboBox_captureMode">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>130</x>
         <y>28</y>
-        <width>131</width>
+        <width>211</width>
         <height>22</height>
        </rect>
       </property>
@@ -175,7 +162,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>360</y>
+        <y>250</y>
         <width>121</width>
         <height>16</height>
        </rect>
@@ -187,9 +174,9 @@
      <widget class="QLineEdit" name="lineEdit_crossGapWidth">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>360</y>
-        <width>71</width>
+        <x>130</x>
+        <y>250</y>
+        <width>100</width>
         <height>20</height>
        </rect>
       </property>
@@ -198,8 +185,8 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>200</y>
-        <width>311</width>
+        <y>230</y>
+        <width>341</width>
         <height>16</height>
        </rect>
       </property>
@@ -211,8 +198,8 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>220</y>
-        <width>341</width>
+        <y>310</y>
+        <width>351</width>
         <height>131</height>
        </rect>
       </property>
@@ -321,9 +308,9 @@
      <widget class="QComboBox" name="comboBox_captureNumMode">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>130</x>
         <y>90</y>
-        <width>131</width>
+        <width>211</width>
         <height>22</height>
        </rect>
       </property>
@@ -341,13 +328,75 @@
        <string>采集图像数目：</string>
       </property>
      </widget>
+     <widget class="QLineEdit" name="lineEdit_exposureTime">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>120</y>
+        <width>100</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_saveImageNum">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>120</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>保存</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>120</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>图像曝光时间：</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>250</y>
+        <width>41</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>pixel</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_16">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>120</y>
+        <width>21</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>us</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>440</y>
-       <width>351</width>
+       <y>480</y>
+       <width>371</width>
        <height>291</height>
       </rect>
      </property>
@@ -470,6 +519,135 @@
         <string>记录所有日志</string>
        </property>
       </widget>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab">
+    <attribute name="title">
+     <string>采集操作</string>
+    </attribute>
+    <widget class="QGroupBox" name="groupBox_5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>371</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>DLP图像采集</string>
+     </property>
+     <widget class="QComboBox" name="comboBox_selectDLP">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>66</y>
+        <width>120</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>70</y>
+        <width>72</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>选择DLP</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_captureDLP">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>65</y>
+        <width>100</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>采集图像</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_startSetupDLP">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>150</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>运行DLP</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_endSetupDLP">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>30</y>
+        <width>150</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>停止DLP</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_6">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>130</y>
+       <width>370</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>灯盘图像采集</string>
+     </property>
+     <widget class="QComboBox" name="comboBox_selectLight">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>30</y>
+        <width>120</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_21">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>34</y>
+        <width>72</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>选择灯光</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_captureLight">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>30</y>
+        <width>100</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>采集图像</string>
+      </property>
      </widget>
     </widget>
    </widget>

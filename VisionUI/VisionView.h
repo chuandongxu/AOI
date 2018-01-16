@@ -7,8 +7,32 @@
 #include <QAction>
 #include <QDockWidget>
 #include <QMutex>
+#include <QThread>
 
 #include "opencv/cv.h"
+
+class VisionView;
+class CameraOnLive :public QThread
+{
+	Q_OBJECT
+
+public:
+	CameraOnLive(VisionView* pView);
+	~CameraOnLive(){};
+
+public:
+	void setQuitFlag();
+	bool isRuning(){ return m_bRuning; };
+private:
+	void run();
+
+	void drawCross(cv::Mat& image);
+	void showImageToScreen(cv::Mat& image);
+private:
+	VisionView*		m_pView;	
+	bool          m_bQuit;
+	bool          m_bRuning;
+};
 
 class QDetectObj;
 class DViewUtility;
@@ -48,6 +72,9 @@ private slots:
 	void fullScreen();
 	void moveScreen();
 
+	void onClickPushbutton_onLive();
+	void onClickPushbutton_stopLive();
+
 	void show3D();
 	void showSelectROI3D();
 
@@ -63,6 +90,7 @@ private:
 
 	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
+	QToolBar *videoToolBar;
 	QToolBar *detectToolBar;
 	QAction *openAct;
 	QAction *cameraAct;
@@ -71,6 +99,9 @@ private:
 	QAction *zoomOutAct;
 	QAction *fullScreenAct;
 	QAction *moveAct;
+
+	QAction *onLiveAct;
+	QAction *onStopAct;
 
 	QAction *show3DAct;
 	QAction *selectROI;
@@ -104,7 +135,7 @@ private:
 	void zoomImage(double scale);
 	void moveImage(double motionX, double motionY);
 
-	void setButtonsEnable(bool flag);
+	void setButtonsEnable(bool flag, bool bLiveVideo);
 
 public:
 	bool startUpCapture();
@@ -129,6 +160,8 @@ private:
 
 private:
 	Ui::VisionView ui;
+	QMutex m_mutex;
+	CameraOnLive * m_pCameraOnLive;
 
 	cv::Mat	m_hoImage;
 	cv::Mat	m_dispImage;

@@ -8,6 +8,7 @@
 #include "../Common/SystemData.h"
 #include "../include/IdDefine.h"
 #include "../include/VisionUI.h"
+#include "../include/IMotion.h"
 #include "../Common/eos.h"
 #include <QMessageBox>
 #include <QtMath>
@@ -1234,7 +1235,8 @@ void VisionDetectRunView::on3DCali()
 		return;
 	}
 
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("标定Base面...请耐心等待..."), 0);
+	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
+	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("标定DLP%1的Base面...请耐心等待...").arg(nDLPIndex + 1), 0);
 	QApplication::processEvents();
 
 	bool b3DCaliGaussionFilter = ui.checkBox_3DCaliGaussionFilter->isChecked();
@@ -1274,7 +1276,7 @@ void VisionDetectRunView::on3DCali()
 		//m_matBaseSurfaces[nStation] = stCalc3DBaseRpy.matBaseSurface;
 
 		//QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("标定成功"));
-		System->setTrackInfo(QStringLiteral("标定Base成功"));
+		System->setTrackInfo(QStringLiteral("标定DLP%1的Base成功").arg(nDLPIndex + 1));
 	}
 	else
 	{
@@ -1369,7 +1371,8 @@ void VisionDetectRunView::on3DDetectCali()
 		return;
 	}
 
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("标定") + QString::number(nCaliTypeIndex + 1, 'g', 2) + QStringLiteral("面...请耐心等待..."), 0);
+	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
+	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("标定DLP%1的").arg(nDLPIndex+1) + QString::number(nCaliTypeIndex + 1, 'g', 2) + QStringLiteral("面...请耐心等待..."), 0);
 	QApplication::processEvents();
 
 	bool b3DDetectCaliUseThinPattern = ui.checkBox_3DCaliUseThinPattern->isChecked();
@@ -1484,7 +1487,7 @@ void VisionDetectRunView::on3DDetectCali()
 		}
 
 		//QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("标定成功"));
-		System->setTrackInfo(QStringLiteral("标定") + QString::number(nCaliTypeIndex + 1, 'g', 2) + QStringLiteral("面成功"));
+		System->setTrackInfo(QStringLiteral("标定DLP%1的").arg(nDLPIndex + 1) + QString::number(nCaliTypeIndex + 1, 'g', 2) + QStringLiteral("面成功"));
 	}
 	else
 	{
@@ -1577,8 +1580,8 @@ void VisionDetectRunView::on3DDetectCaliNeg()
 		return;
 	}
 
-
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("标定H5面...请耐心等待..."), 0);
+	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
+	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("标定DLP%1的H5面...请耐心等待...").arg(nDLPIndex + 1), 0);
 	QApplication::processEvents();
 
 	bool b3DDetectCaliUseThinPattern = ui.checkBox_3DCaliUseThinPattern->isChecked();
@@ -1640,7 +1643,7 @@ void VisionDetectRunView::on3DDetectCaliNeg()
 		cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
 		getVisionUI()->displayImage(matHeightResultImg);
 
-		System->setTrackInfo(QStringLiteral("标定H5面成功"));
+		System->setTrackInfo(QStringLiteral("标定DLP%1的H5面成功").arg(nDLPIndex + 1));
 	}
 	else
 	{
@@ -1655,7 +1658,8 @@ void VisionDetectRunView::on3DDetectCaliComb()
 	QString path = QApplication::applicationDirPath();
 	path += "/3D/config/";
 
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("导入标定结果...请耐心等待..."), 0);
+	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
+	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("导入DLP%1的标定结果...请耐心等待...").arg(nDLPIndex + 1), 0);
 	QApplication::processEvents();
 
 	Vision::PR_INTEGRATE_3D_CALIB_CMD stCmd;
@@ -1699,14 +1703,12 @@ void VisionDetectRunView::on3DDetectCaliComb()
 
 	QSystem::closeMessage();
 
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("合成标定结果...请耐心等待..."), 0);
+	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("合成DLP%1的标定结果...请耐心等待...").arg(nDLPIndex + 1), 0);
 	QApplication::processEvents();
 
 	Vision::VisionStatus retStatus = PR_Integrate3DCalib(&stCmd, &stRpy);
 	if (retStatus == Vision::VisionStatus::OK)
 	{
-		int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-
 		if (USER_LEVEL_TECH <= m_nLevel)
 		{
 			int i = 1;
@@ -1741,8 +1743,7 @@ void VisionDetectRunView::on3DDetectCaliComb()
 		cv::write(fsCalibResultData, "Order3CurveSurface", stRpy.matOrder3CurveSurface);
 		fsCalibResultData.release();
 
-		System->setTrackInfo(QStringLiteral("合成标定成功"));
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("合成DLP%1标定成功").arg(nDLPIndex + 1));
+		System->setTrackInfo(QStringLiteral("合成DLP%1标定成功").arg(nDLPIndex + 1));
 	}
 	else
 	{
@@ -2285,12 +2286,10 @@ void VisionDetectRunView::stopCaliGuide()
 
 void VisionDetectRunView::guideDisplayImages()
 {
-	m_guideImgMats.clear();
-	if (guideReadImages(0, m_guideImgMats))
-	{
-		cv::Mat matGray;
-		m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
-		getVisionUI()->setImage(matGray);
+	cv::Mat matImg;
+	if (guideReadImage(matImg))
+	{		
+		getVisionUI()->setImage(matImg);
 	}
 }
 
@@ -2326,50 +2325,35 @@ bool VisionDetectRunView::stopCameraCaptureing()
 	return false;
 }
 
-bool VisionDetectRunView::guideReadImages(int nDLP, QVector<cv::Mat>& matImgs)
+bool VisionDetectRunView::guideReadImages(QVector<cv::Mat>& matImgs)
 {
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
 
-	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
-	if (!pDlp) return false;
+	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
+	if (!pMotion) return false;
 
-	int nWaitTime = 5 * 100;
-	while (!pCam->isCameraCaptureAvaiable() && nWaitTime-- > 0)
+	matImgs.clear();
+
+	if (!pCam->selectCaptureMode(0))// all images
 	{
-		QThread::msleep(10);
-	}
-	if (nWaitTime <= 0) return false;
-
-	int iStation = nDLP + 1;
-
-	if (!pCam->lockCameraCapture(iStation))
-	{
+		System->setTrackInfo(QString("startCapturing error"));
 		return false;
 	}
 
 	if (!pCam->startCapturing())
 	{
-		System->setTrackInfo(QString("startCapturing error,station %1").arg(iStation));
-		pCam->unlockCameraCapture();
+		System->setTrackInfo(QString("startCapturing error"));
 		return false;
 	}
 
-	System->setTrackInfo(QString("Trigger Station:%1").arg(iStation));
-
-	int nCaptureMode = System->getParam("camera_capture_mode").toInt();
-	bool isImageFloder = (2 == nCaptureMode);
-	if (!isImageFloder)
+	if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true))
 	{
-		if (!pDlp->isConnected(iStation - 1) || !pDlp->trigger(iStation - 1))
-		{
-			System->setTrackInfo(QString("DLP not connection error,station %1").arg(iStation));
-			pCam->unlockCameraCapture();
-			return false;
-		}
+		System->setTrackInfo(QString("triggerCapturing error"));		
+		return false;
 	}
-
-	nWaitTime = 5 * 100;
+	
+	int nWaitTime = 10 * 100;
 	while (!pCam->isCaptureImageBufferDone() && nWaitTime-- > 0)
 	{
 		QThread::msleep(10);
@@ -2377,47 +2361,75 @@ bool VisionDetectRunView::guideReadImages(int nDLP, QVector<cv::Mat>& matImgs)
 
 	if (nWaitTime <= 0)
 	{
-		System->setTrackInfo(QString("CaptureImageBufferDone error,station %1").arg(iStation));
-		pCam->unlockCameraCapture();
+		System->setTrackInfo(QString("CaptureImageBufferDone error"));		
 		return false;
 	}
 
-	bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
+	int nCaptureNum = pCam->getImageBufferCaptureNum();	
+	for (int i = 0; i < nCaptureNum; i++)
+	{
+		cv::Mat matImage = pCam->getImageItemBuffer(i);
+
+		matImgs.push_back(matImage);		
+	}
+	
+	System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));	
+
+	return true;	
+}
+
+bool VisionDetectRunView::guideReadImage(cv::Mat& matImg)
+{
+	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	if (!pCam) return false;
+
+	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
+	if (!pMotion) return false;
+
+	if (!pCam->selectCaptureMode(2))// 1 image
+	{
+		System->setTrackInfo(QString("startCapturing error"));
+		return false;
+	}
+
+	if (!pCam->startCapturing())
+	{
+		System->setTrackInfo(QString("startCapturing error"));
+		return false;
+	}
+
+	QVector<int> nPorts;
+	
+	nPorts.push_back(DO_LIGHT1_CH2);	
+	nPorts.push_back(DO_LIGHT2_CH1);	
+	nPorts.push_back(DO_CAMERA_TRIGGER2);
+
+	pMotion->setDOs(nPorts, 1);
+	QThread::msleep(10);
+	pMotion->setDOs(nPorts, 0);
+
+	int nWaitTime = 10 * 100;
+	while (!pCam->isCaptureImageBufferDone() && nWaitTime-- > 0)
+	{
+		QThread::msleep(10);
+	}
+
+	if (nWaitTime <= 0)
+	{
+		System->setTrackInfo(QString("CaptureImageBufferDone error"));
+		return false;
+	}
+
 	int nCaptureNum = pCam->getImageBufferCaptureNum();
 	for (int i = 0; i < nCaptureNum; i++)
 	{
-		int nIndex = i;
-
-		if (bCaptureImageAsMatlab && !isImageFloder)
-		{
-			if (5 == nIndex)
-			{
-				nIndex += 1;
-			}
-			else if (6 == nIndex)
-			{
-				nIndex -= 1;
-			}
-		}
-
-		cv::Mat matImage = pCam->getImageItemBuffer(nIndex);
-
-		matImgs.push_back(matImage);
+		cv::Mat matImage = pCam->getImageItemBuffer(i);
+		matImg = matImage;
 	}
 
-	if (nCaptureNum < pCam->getImageBufferNum())
-	{
-		pCam->unlockCameraCapture();
-		System->setTrackInfo(QString("System captureImages error, Image Num: %1").arg(nCaptureNum));
-
-		return false;
-	}
 	System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));
 
-	pCam->unlockCameraCapture();
-
 	return true;
-
 }
 
 void VisionDetectRunView::onCaliGuide()
@@ -2454,25 +2466,11 @@ void VisionDetectRunView::onCaliGuideNext()
 	{
 	case 0:
 	{
-		startCameraCapturing();
-
-		//标定DLP1
-		ui.comboBox_selectDLP->setCurrentIndex(0);
 		ui.toolBox_2->setCurrentIndex(0);
 
-		QString szFileName = ui.lineEdit_3DCaliRstFile->text();
-		QFile file(szFileName);
-		if (!file.exists())
-		{
-			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-				QStringLiteral("标定文件路径不存在，是否重新选择路径？"), QMessageBox::Ok, QMessageBox::Cancel))
-			{
-				on3DCaliRstOpen();
-			}
-		}
-
+		startCameraCapturing();		
 		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP1的Base标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
+			QStringLiteral("请放置DLP的Base标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
@@ -2481,32 +2479,14 @@ void VisionDetectRunView::onCaliGuideNext()
 			}
 
 			m_guideImgMats.clear();
-			if (guideReadImages(0, m_guideImgMats))
-			{
-				cv::Mat matGray;
-				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
-				getVisionUI()->setImage(matGray);
-
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-					QStringLiteral("采集完成，图像是否OK？"), QMessageBox::Ok, QMessageBox::Cancel))
-				{
-					return;
-				}
-
-				on3DCali();
-
-				m_nCaliGuideStep++;
+			if (!guideReadImages(m_guideImgMats))
+			{				
+				return;				
 			}
 		}
-	}
-	break;
-	case 1:
-	{
-		startCameraCapturing();
 
 		//标定DLP1
-		ui.comboBox_selectDLP->setCurrentIndex(1);
-
+		ui.comboBox_selectDLP->setCurrentIndex(0);
 		QString szFileName = ui.lineEdit_3DCaliRstFile->text();
 		QFile file(szFileName);
 		if (!file.exists())
@@ -2517,340 +2497,215 @@ void VisionDetectRunView::onCaliGuideNext()
 				on3DCaliRstOpen();
 			}
 		}
+		on3DCali();
 
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP2的Base标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
-		{
-			if (!stopCameraCaptureing())
-			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (guideReadImages(1, m_guideImgMats))
-			{
-				cv::Mat matGray;
-				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
-				getVisionUI()->setImage(matGray);
-
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-					QStringLiteral("采集完成，图像是否OK？"), QMessageBox::Ok, QMessageBox::Cancel))
-				{
-					return;
-				}
-
-				on3DCali();
-
-				m_nCaliGuideStep++;
-			}
-		}
-	}
-	break;
-	case 2:
-	{
-		startCameraCapturing();
-
-		ui.toolBox_2->setCurrentIndex(1);
-		ui.comboBox_selectDLP->setCurrentIndex(0);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP1的Left Top标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
-		{
-			if (!stopCameraCaptureing())
-			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (guideReadImages(0, m_guideImgMats))
-			{
-				cv::Mat matGray;
-				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
-				getVisionUI()->setImage(matGray);
-
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-					QStringLiteral("采集完成，图像是否OK？"), QMessageBox::Ok, QMessageBox::Cancel))
-				{
-					return;
-				}
-
-				ui.comboBox_selectCaliType->setCurrentIndex(0);
-				//int n3DDetectCaliStepCount = System->getParam("3d_detect_cali_step_count").toInt();
-				//ui.lineEdit_3DDetectCaliStepCount->setText(QString("%1").arg(n3DDetectCaliStepCount));
-				on3DDetectCali();
-
-				m_nCaliGuideStep++;
-			}
-		}
-	}
-	break;
-	case 3:
-	{
-		startCameraCapturing();
-
+		//标定DLP2
 		ui.comboBox_selectDLP->setCurrentIndex(1);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP2的Left Top标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
+		szFileName = ui.lineEdit_3DCaliRstFile->text();
+		file.setFileName(szFileName);
+		if (!file.exists())
 		{
-			if (!stopCameraCaptureing())
+			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+				QStringLiteral("标定文件路径不存在，是否重新选择路径？"), QMessageBox::Ok, QMessageBox::Cancel))
 			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (guideReadImages(1, m_guideImgMats))
-			{
-				cv::Mat matGray;
-				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
-				getVisionUI()->setImage(matGray);
-
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-					QStringLiteral("采集完成，图像是否OK？"), QMessageBox::Ok, QMessageBox::Cancel))
-				{
-					return;
-				}
-
-				ui.comboBox_selectCaliType->setCurrentIndex(0);
-				//int n3DDetectCaliStepCount = System->getParam("3d_detect_cali_step_count").toInt();
-				//ui.lineEdit_3DDetectCaliStepCount->setText(QString("%1").arg(n3DDetectCaliStepCount));
-				on3DDetectCali();
-
-				m_nCaliGuideStep++;
+				on3DCaliRstOpen();
 			}
 		}
-	}
-	break;
-	case 4:
-	{
-		startCameraCapturing();
+		on3DCali();
 
-		ui.comboBox_selectDLP->setCurrentIndex(0);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP1的Right Top标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
+		//标定DLP3
+		ui.comboBox_selectDLP->setCurrentIndex(2);
+		szFileName = ui.lineEdit_3DCaliRstFile->text();
+		file.setFileName(szFileName);
+		if (!file.exists())
 		{
-			if (!stopCameraCaptureing())
+			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+				QStringLiteral("标定文件路径不存在，是否重新选择路径？"), QMessageBox::Ok, QMessageBox::Cancel))
 			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (guideReadImages(0, m_guideImgMats))
-			{
-				cv::Mat matGray;
-				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
-				getVisionUI()->setImage(matGray);
-
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-					QStringLiteral("采集完成，图像是否OK？"), QMessageBox::Ok, QMessageBox::Cancel))
-				{
-					return;
-				}
-
-				ui.comboBox_selectCaliType->setCurrentIndex(1);
-				//int n3DDetectCaliStepCount = System->getParam("3d_detect_cali_step_count").toInt();
-				//ui.lineEdit_3DDetectCaliStepCount->setText(QString("%1").arg(n3DDetectCaliStepCount));
-				on3DDetectCali();
-
-				m_nCaliGuideStep++;
+				on3DCaliRstOpen();
 			}
 		}
-	}
-	break;
-	case 5:
-	{
-		startCameraCapturing();
+		on3DCali();
 
-		ui.comboBox_selectDLP->setCurrentIndex(1);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP2的Right Top标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
+		//标定DLP4
+		ui.comboBox_selectDLP->setCurrentIndex(3);
+		szFileName = ui.lineEdit_3DCaliRstFile->text();
+		file.setFileName(szFileName);
+		if (!file.exists())
 		{
-			if (!stopCameraCaptureing())
+			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+				QStringLiteral("标定文件路径不存在，是否重新选择路径？"), QMessageBox::Ok, QMessageBox::Cancel))
 			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (guideReadImages(1, m_guideImgMats))
-			{
-				cv::Mat matGray;
-				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
-				getVisionUI()->setImage(matGray);
-
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-					QStringLiteral("采集完成，图像是否OK？"), QMessageBox::Ok, QMessageBox::Cancel))
-				{
-					return;
-				}
-
-				ui.comboBox_selectCaliType->setCurrentIndex(1);
-				//int n3DDetectCaliStepCount = System->getParam("3d_detect_cali_step_count").toInt();
-				//ui.lineEdit_3DDetectCaliStepCount->setText(QString("%1").arg(n3DDetectCaliStepCount));
-				on3DDetectCali();
-
-				m_nCaliGuideStep++;
+				on3DCaliRstOpen();
 			}
 		}
-	}
-	break;
-	case 6:
-	{
-		startCameraCapturing();
-
-		ui.comboBox_selectDLP->setCurrentIndex(0);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP1的Nagative标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
-		{
-			if (!stopCameraCaptureing())
-			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (guideReadImages(0, m_guideImgMats))
-			{
-				cv::Mat matGray;
-				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
-				getVisionUI()->setImage(matGray);
-
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-					QStringLiteral("采集完成，图像是否OK？"), QMessageBox::Ok, QMessageBox::Cancel))
-				{
-					return;
-				}
-
-				ui.comboBox_selectCaliType->setCurrentIndex(2);
-				//ui.lineEdit_3DDetectCaliStepCount->setText("3");
-				on3DDetectCali();
-
-				m_nCaliGuideStep++;
-			}
-		}
-	}
-	break;
-	case 7:
-	{
-		startCameraCapturing();
-
-		ui.comboBox_selectDLP->setCurrentIndex(1);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP2的Nagative标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
-		{
-			if (!stopCameraCaptureing())
-			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (guideReadImages(1, m_guideImgMats))
-			{
-				cv::Mat matGray;
-				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
-				getVisionUI()->setImage(matGray);
-
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-					QStringLiteral("采集完成，图像是否OK？"), QMessageBox::Ok, QMessageBox::Cancel))
-				{
-					return;
-				}
-
-				ui.comboBox_selectCaliType->setCurrentIndex(2);
-				//ui.lineEdit_3DDetectCaliStepCount->setText("3");
-				on3DDetectCali();
-
-				m_nCaliGuideStep++;
-			}
-		}
-	}
-	break;
-	case 8:
-	{
-		startCameraCapturing();
-
-		ui.comboBox_selectDLP->setCurrentIndex(0);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP1的H=5mm标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
-		{
-			if (!stopCameraCaptureing())
-			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (guideReadImages(0, m_guideImgMats))
-			{
-				cv::Mat matGray;
-				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
-				getVisionUI()->setImage(matGray);
-
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-					QStringLiteral("采集完成，图像是否OK？"), QMessageBox::Ok, QMessageBox::Cancel))
-				{
-					return;
-				}
-
-				//int n3DDetectCaliStepCount = System->getParam("3d_detect_cali_step_count").toInt();
-				//ui.lineEdit_3DDetectCaliStepCount->setText(QString("%1").arg(n3DDetectCaliStepCount));
-				on3DDetectCaliNeg();
-
-				m_nCaliGuideStep++;
-			}
-		}
-	}
-	break;
-	case 9:
-	{
-		startCameraCapturing();
-
-		ui.comboBox_selectDLP->setCurrentIndex(1);
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP2的H=5mm标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
-		{
-			if (!stopCameraCaptureing())
-			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (guideReadImages(1, m_guideImgMats))
-			{
-				cv::Mat matGray;
-				m_pCtrl->generateGrayImage(m_guideImgMats, matGray);
-				getVisionUI()->setImage(matGray);
-
-				if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-					QStringLiteral("采集完成，图像是否OK？"), QMessageBox::Ok, QMessageBox::Cancel))
-				{
-					return;
-				}
-
-				//int n3DDetectCaliStepCount = System->getParam("3d_detect_cali_step_count").toInt();
-				//ui.lineEdit_3DDetectCaliStepCount->setText(QString("%1").arg(n3DDetectCaliStepCount));
-				on3DDetectCaliNeg();
-
-				m_nCaliGuideStep++;
-			}
-		}
-	}
-	break;
-	case 10:
-	{
-		ui.comboBox_selectDLP->setCurrentIndex(0);
-		on3DDetectCaliComb();
+		on3DCali();
 
 		m_nCaliGuideStep++;
 	}
 	break;
-	case 11:
+	case 1:
 	{
+		ui.toolBox_2->setCurrentIndex(1);
+
+		startCameraCapturing();		
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+			QStringLiteral("请放置DLP的Left Top标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
+		{
+			if (!stopCameraCaptureing())
+			{
+				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
+				return;
+			}
+
+			m_guideImgMats.clear();
+			if (!guideReadImages(m_guideImgMats))
+			{				
+				return;
+			}
+		}
+
+		ui.comboBox_selectCaliType->setCurrentIndex(0);
+
+		ui.comboBox_selectDLP->setCurrentIndex(0);
+		on3DDetectCali();
+
 		ui.comboBox_selectDLP->setCurrentIndex(1);
+		on3DDetectCali();
+
+		ui.comboBox_selectDLP->setCurrentIndex(2);
+		on3DDetectCali();
+
+		ui.comboBox_selectDLP->setCurrentIndex(3);
+		on3DDetectCali();
+
+		m_nCaliGuideStep++;
+	}
+	break;
+	case 2:
+	{
+		ui.toolBox_2->setCurrentIndex(1);
+
+		startCameraCapturing();
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+			QStringLiteral("请放置DLP的Right Top标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
+		{
+			if (!stopCameraCaptureing())
+			{
+				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
+				return;
+			}
+
+			m_guideImgMats.clear();
+			if (!guideReadImages(m_guideImgMats))
+			{
+				return;
+			}
+		}
+
+		ui.comboBox_selectCaliType->setCurrentIndex(1);
+
+		ui.comboBox_selectDLP->setCurrentIndex(0);
+		on3DDetectCali();
+
+		ui.comboBox_selectDLP->setCurrentIndex(1);
+		on3DDetectCali();
+
+		ui.comboBox_selectDLP->setCurrentIndex(2);
+		on3DDetectCali();
+
+		ui.comboBox_selectDLP->setCurrentIndex(3);
+		on3DDetectCali();
+
+		m_nCaliGuideStep++;
+	}
+	break;
+	case 3:
+	{
+		ui.toolBox_2->setCurrentIndex(1);
+
+		startCameraCapturing();
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+			QStringLiteral("请放置DLP1Nagative标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
+		{
+			if (!stopCameraCaptureing())
+			{
+				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
+				return;
+			}
+
+			m_guideImgMats.clear();
+			if (!guideReadImages(m_guideImgMats))
+			{
+				return;
+			}
+		}
+
+		ui.comboBox_selectCaliType->setCurrentIndex(2);
+
+		ui.comboBox_selectDLP->setCurrentIndex(0);
+		on3DDetectCali();
+
+		ui.comboBox_selectDLP->setCurrentIndex(1);
+		on3DDetectCali();
+
+		ui.comboBox_selectDLP->setCurrentIndex(2);
+		on3DDetectCali();
+
+		ui.comboBox_selectDLP->setCurrentIndex(3);
+		on3DDetectCali();
+
+		m_nCaliGuideStep++;
+	}
+	break;	
+	case 4:
+	{
+		ui.toolBox_2->setCurrentIndex(1);
+
+		startCameraCapturing();
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+			QStringLiteral("请放置DLP的H=5mm标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
+		{
+			if (!stopCameraCaptureing())
+			{
+				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
+				return;
+			}
+
+			m_guideImgMats.clear();
+			if (!guideReadImages(m_guideImgMats))
+			{
+				return;
+			}
+		}
+
+		ui.comboBox_selectDLP->setCurrentIndex(0);
+		on3DDetectCaliNeg();
+
+		ui.comboBox_selectDLP->setCurrentIndex(1);
+		on3DDetectCaliNeg();
+
+		ui.comboBox_selectDLP->setCurrentIndex(2);
+		on3DDetectCaliNeg();
+
+		ui.comboBox_selectDLP->setCurrentIndex(3);
+		on3DDetectCaliNeg();
+
+		m_nCaliGuideStep++;
+	}
+	break;	
+	case 5:
+	{
+		ui.comboBox_selectDLP->setCurrentIndex(0);
+		on3DDetectCaliComb();
+
+		ui.comboBox_selectDLP->setCurrentIndex(1);
+		on3DDetectCaliComb();
+
+		ui.comboBox_selectDLP->setCurrentIndex(2);
+		on3DDetectCaliComb();
+
+		ui.comboBox_selectDLP->setCurrentIndex(3);
 		on3DDetectCaliComb();
 
 		m_nCaliGuideStep++;
@@ -2858,7 +2713,7 @@ void VisionDetectRunView::onCaliGuideNext()
 	break;
 	default:
 	{
-		ui.toolBox_2->setCurrentIndex(3);
+		ui.toolBox_2->setCurrentIndex(2);
 		stopCaliGuide();
 
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("自动标定向导完成！"));
@@ -3561,11 +3416,15 @@ bool VisionDetectRunView::convertToGrayImage(QString& szFilePath, cv::Mat &matGr
 
 bool VisionDetectRunView::readImages(QString& szFilePath, AOI::Vision::VectorOfMat& matImgs)
 {
+	const int IMAGE_COUNT = 12;
+
 	if (m_bGuideCali)
 	{
+		int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
+
 		for (int i = 0; i < m_guideImgMats.size(); i++)
 		{
-			matImgs.push_back(m_guideImgMats.at(i));
+			matImgs.push_back(m_guideImgMats.at(i + nDLPIndex * IMAGE_COUNT));
 		}
 		return true;
 	}
@@ -3577,9 +3436,7 @@ bool VisionDetectRunView::readImages(QString& szFilePath, AOI::Vision::VectorOfM
 		return false;
 	}
 	dir.setFilter(QDir::Files | QDir::NoSymLinks);
-	QFileInfoList list = dir.entryInfoList();
-
-	const int IMAGE_COUNT = 12;
+	QFileInfoList list = dir.entryInfoList();	
 
 	int file_count = list.count();
 	if (file_count < IMAGE_COUNT)

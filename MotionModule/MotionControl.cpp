@@ -251,7 +251,7 @@ bool MotionControl::getDI(int nPort, int &iState)
 }
 
 // 3D Functions:
-bool MotionControl::triggerCapturing(IMotion::TRIGGER emTrig, bool bWaitDone)
+bool MotionControl::triggerCapturing(IMotion::TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig)
 {
 	// 指令返回值
 	short rtn = 0;
@@ -266,6 +266,8 @@ bool MotionControl::triggerCapturing(IMotion::TRIGGER emTrig, bool bWaitDone)
 		return false;
 	}
 
+	if (bClearSetupConfig) m_bSetupTriggerConfig = false;
+
 	if (!m_bSetupTriggerConfig)
 	{
 		m_bSetupTriggerConfig = true;
@@ -277,32 +279,33 @@ bool MotionControl::triggerCapturing(IMotion::TRIGGER emTrig, bool bWaitDone)
 		{
 		case IMotion::TRIGGER_ALL:
 		{
+			int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
 			int nDlpNumIndex = System->getParam("motion_trigger_dlp_num_index").toInt();
 			if (0 == nDlpNumIndex)
 			{
-				setupTrigger(IMotion::TRIGGER_DLP1);
-				setupTrigger(IMotion::TRIGGER_DLP2);
+				setupTrigger(IMotion::TRIGGER_DLP1, nDlpNum);
+				setupTrigger(IMotion::TRIGGER_DLP2, nDlpNum);
 			}
 			else if (1 == nDlpNumIndex)
 			{
-				setupTrigger(IMotion::TRIGGER_DLP1);
-				setupTrigger(IMotion::TRIGGER_DLP2);
-				setupTrigger(IMotion::TRIGGER_DLP3);
-				setupTrigger(IMotion::TRIGGER_DLP4);
+				setupTrigger(IMotion::TRIGGER_DLP1, nDlpNum);
+				setupTrigger(IMotion::TRIGGER_DLP2, nDlpNum);
+				setupTrigger(IMotion::TRIGGER_DLP3, nDlpNum);
+				setupTrigger(IMotion::TRIGGER_DLP4, nDlpNum);
 			}
 		}
 		break;
 		case IMotion::TRIGGER_DLP1:
-			setupTrigger(IMotion::TRIGGER_DLP1);
+			setupTrigger(IMotion::TRIGGER_DLP1, 1);		
 			break;
 		case IMotion::TRIGGER_DLP2:
-			setupTrigger(IMotion::TRIGGER_DLP2);
+			setupTrigger(IMotion::TRIGGER_DLP2, 1);
 			break;
 		case IMotion::TRIGGER_DLP3:
-			setupTrigger(IMotion::TRIGGER_DLP3);
+			setupTrigger(IMotion::TRIGGER_DLP3, 1);
 			break;
 		case IMotion::TRIGGER_DLP4:
-			setupTrigger(IMotion::TRIGGER_DLP4);
+			setupTrigger(IMotion::TRIGGER_DLP4, 1);
 			break;
 		default:
 			break;
@@ -329,7 +332,7 @@ bool MotionControl::triggerCapturing(IMotion::TRIGGER emTrig, bool bWaitDone)
 	return true;
 }
 
-void MotionControl::setupTrigger(IMotion::TRIGGER emTrig)
+void MotionControl::setupTrigger(IMotion::TRIGGER emTrig, int nGroupNum)
 {
 	// 指令返回值
 	short rtn = 0;
@@ -361,14 +364,13 @@ void MotionControl::setupTrigger(IMotion::TRIGGER emTrig)
 		break;
 	default:
 		break;
-	}
-	int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-	strMDoPulseCfg.groupNo = nDlpNum;// 2, 4
+	}	
+	strMDoPulseCfg.groupNo = nGroupNum;
 
 	double dPatternExposure = System->getParam("motion_trigger_pattern_exposure").toDouble();
 	double dPatternPeriod = System->getParam("motion_trigger_pattern_period").toDouble();
 	int nPatternNum = System->getParam("motion_trigger_pattern_num").toInt();
-	for (int i = 0; i < nDlpNum; i++)
+	for (int i = 0; i < nGroupNum; i++)
 	{
 		strMDoPulseCfg.firstLevel[i] = 1;  //该group首先出现的电平状态,0:低电平;1:高电平
 		strMDoPulseCfg.highLevelTime[i] = dPatternExposure;  //高电平持续时间[ms]

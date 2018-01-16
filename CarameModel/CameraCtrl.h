@@ -18,16 +18,7 @@ public:
 
 	int  getCameraCount();
 	CameraDevice * getCamera( int n);	
-
-	void setCrossEnable(bool bEnable);
-	bool isCrossEnable();
-
-	void setCrossGap(int nGapWidth);
-	int getCrossGap();
-
 private:
 	CameraDeviceList	m_CameraList; 
-	bool m_bCrossGap;
-	int m_nCrossWidth;
 };
 

@@ -56,4 +56,6 @@
 #define DO_LIGHT2_CH2              12
 #define DO_LIGHT2_CH3              13
 #define DO_LIGHT2_CH4              14
+#define DO_LIGHT1_ENABLE           15
+#define DO_LIGHT2_ENABLE           16
 #endif

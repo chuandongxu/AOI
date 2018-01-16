@@ -18,7 +18,6 @@ public:
 protected slots:
 	void onStateChangeHWTrig(int iState);
 	void onStateChangeCapture(int iState);
-	void onStateChangeHWTrigCon(int iState);
 	void onStateChangeCaptureAsMatlab(int iState);
 	void onStateChangeCrossEnable(int iState);
 
@@ -32,6 +31,7 @@ protected slots:
 
 	void onCaptureModeIndexChanged(int iIndex);
 	void onCaptureNumModeIndexChanged(int iIndex);
+	void onSaveImgNum();
 	void onSelCapturePath();
 	void onSaveCapturePath();
 	void onSelImgDLP1Path();
@@ -39,6 +39,11 @@ protected slots:
 	void onSelImgDLP2Path();
 	void onSaveImgDLP2Path();
 	void onCalibration();
+
+	void onStartSetupDLP();
+	void onEndSetupDLP();
+	void onCaptureDLP();
+	void onCaptureLight();
 
 private:
 	double convertToPixel(double umValue);
