@@ -127,7 +127,6 @@ void ImportCADWidget::on_btnImportCAD_clicked() {
     }
 
     std::map<int, Engine::DeviceVector> mapVecDevice;
-    QVector<cv::RotatedRect> vecDeviceWindows;
     double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     double dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     dResolutionX = 10.;
@@ -159,13 +158,6 @@ void ImportCADWidget::on_btnImportCAD_clicked() {
         device.type = cadData.group;
         device.angle = cadData.angle;
         mapVecDevice[device.boardId].push_back ( device );
-        
-        auto x = device.x / dResolutionX;
-        auto y = device.y / dResolutionY;
-        auto width  = device.width  / dResolutionX;
-        auto height = device.height / dResolutionY;
-        cv::RotatedRect deviceWindow ( cv::Point2f(x, y), cv::Size2f(width, height), device.angle );
-        vecDeviceWindows.push_back ( deviceWindow );
     }
 
     if ( QFile::exists ( DEFAULT_PROJECT.c_str() ) ) {
@@ -188,9 +180,6 @@ void ImportCADWidget::on_btnImportCAD_clicked() {
         errorMessage = "Failed to create default project, error message " + errorMessage;
         QMessageBox::critical(nullptr, QStringLiteral("Import CAD"), errorMessage.c_str(), QStringLiteral("Quit"));
     }
-
-    //IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-    //pUI->setDeviceWindows ( vecDeviceWindows );
 
     QMessageBox::information ( nullptr, QStringLiteral("Import CAD"), QStringLiteral("Import CAD Success"), QStringLiteral("Quit") );
 }

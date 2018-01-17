@@ -44,3 +44,4 @@ VisionTest/GeneratedFiles
 LightModule/GeneratedFiles
 *.ipch
 RegressionTest/RegressionTest_result.txt
+RegressionTest/data/PackageSize.csv

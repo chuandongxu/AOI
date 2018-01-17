@@ -73,7 +73,8 @@ DataUtils::~DataUtils()
     while ( std::getline ( fs, strLine, chChangeLine ) ) {
         auto vecData = splitString ( strLine, '\t' );
         if ( vecData.size() != vecColumns.size() ) {
-            strErrorMsg = "Line " + std::to_string ( nLineNumber) + " data columns is not following the input data columns.";
+            strErrorMsg = "Line " + std::to_string ( nLineNumber) + " data columns count " + std::to_string ( vecData.size() ) 
+                + " is not following the input data columns " + std::to_string ( vecColumns.size() ) + ".";
             return -1;
         }
         CadData cadData;
@@ -183,7 +184,7 @@ DataUtils::~DataUtils()
     auto posStart = strInput.find_first_of(DigitNumber, nStartPos);
     auto posEnd = strInput.find_first_not_of(DigitNumber, posStart);
     if (posEnd > posStart) {
-        strOutput = strInput.substr(posStart, posEnd - posStart);
+        strOutput = strInput.substr ( posStart, posEnd - posStart );
         return 0;
     }
     strOutput.assign("");
@@ -195,23 +196,115 @@ DataUtils::~DataUtils()
         return -1;
 
     if ( strInputGroup == "R" || strInputGroup == "C" ) {
-        strOutputType = "RC";
-        return findDigitString ( strPackageType, strOutputType );
+        strOutputPackage = "RC";
+        auto result = findDigitString ( strPackageType, strOutputType );
+        if ( result == 0 && '0' == strOutputType[0] )
+            strOutputType = strOutputType.substr(1);    //Remove 0 in the beginning
+        return result;
     }
 
     //D for Diode.
     if ( strInputGroup == "D" ) {
         auto posStartNumber = strPackageType.find_first_of ( DigitNumber );
-        const std::string strLocalType = strPackageType.substr( posStartNumber );
-        if ( strLocalType == "D" ) {
-            strOutputType = "RC";
-            return findDigitString ( strPackageType, strOutputType );
+        const std::string strLocalType = strPackageType.substr ( 0, posStartNumber );
+        if ( "D" == strLocalType ) {
+            strOutputPackage = strLocalType;
+            auto result = findDigitString ( strPackageType, strOutputType );
+            if ( result == 0 && '0' == strOutputType[0] )
+                strOutputType = strOutputType.substr(1);    //Remove 0 in the beginning
+            return result;
         } 
     }
 
-    std::string strHead = strPackageType.substr(3);
-    if ( strHead == "SOT" )
-        return findDigitString ( strPackageType, strOutputType, 3 );
+    std::string strHead;
 
+    //The head type length is 2.
+    strHead = strPackageType.substr(0, 2);
+    if( "YC" == strHead ||
+        "TQ" == strHead ||
+        "VQ" == strHead ||
+        "TO" == strHead ||
+        "FG" == strHead ||
+        "FF" == strHead )
+    {
+        strOutputPackage = strHead;
+        return findDigitString ( strPackageType, strOutputType, 2 );
+    }else
+    if ( "DO" == strHead ) {
+        strOutputPackage = strHead;
+        auto posStart = strPackageType.find_first_of(DigitNumber, 3);
+        strOutputType = strPackageType.substr ( posStart, strPackageType.length() - posStart );
+        return 0;
+    }
+
+    //The head type length is 3.
+    strHead = strPackageType.substr(0, 3);
+    if( "SOT" == strHead ||
+        "SOD" == strHead ||
+        "SOL" == strHead ||
+        "QFP" == strHead ||
+        "QFN" == strHead ||
+        "BGA" == strHead ||
+        "DIP" == strHead
+        )
+    {
+        strOutputPackage = strHead;
+        return findDigitString ( strPackageType, strOutputType, 3 );
+    }else
+    if ( "LED" == strHead ) {
+        strOutputPackage = strHead;
+        auto result = findDigitString(strPackageType, strOutputType);
+        if (result == 0 && '0' == strOutputType[0])
+            strOutputType = strOutputType.substr(1);    //Remove 0 in the beginning
+        return result;
+    }
+
+    //The head type length is 4.
+    strHead = strPackageType.substr(0, 4);
+    if( "SOIC" == strHead ||
+        "MSOP" == strHead ||
+        "SSOP" == strHead ||
+        "LQFP" == strHead ||
+        "TQFP" == strHead ||
+        "VQFP" == strHead ||
+        "MQFP" == strHead ||
+        "PBGA" == strHead ||
+        "FBGA" == strHead ||
+        "PLCC" == strHead ||
+        "TSOP" == strHead )
+    {
+        strOutputPackage = strHead;
+        return findDigitString ( strPackageType, strOutputType, 4 );
+    }
+    else
+    if ( "HEAD" == strHead ) {
+        strOutputPackage = strHead;
+        strOutputType = strPackageType.substr ( 5, strPackageType.length() - 5 );
+        return 0;
+    }
+
+    if ( strPackageType.size() < 5 )
+        return -1;
+
+    //The head type length is 5.
+    strHead = strPackageType.substr(0, 5);
+    if( "TSSOP" == strHead )
+    {
+        strOutputPackage = strHead;
+        return findDigitString ( strPackageType, strOutputType, 5 );
+    }else
+    if ( "D-PAK" == strHead ) {
+        strOutputPackage = strHead;
+        strOutputType = strPackageType.substr ( 6, strPackageType.length() - 6 );
+        return 0;
+    }
+
+    if ( strPackageType.size() < 6 )
+        return -1;
+    strHead = strPackageType.substr(0, 6);
+    if ( "PCIBUS" == strHead ) {
+        strOutputPackage = strHead;
+        return findDigitString ( strPackageType, strOutputType, 5 );
+    }
     return -1;
 }
