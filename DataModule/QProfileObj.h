@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <QObject>
 #include <QVector>
@@ -6,10 +6,10 @@
 
 #include "opencv/cv.h"
 
-const QString g_szMeasureName[] = { QStringLiteral("ÏßÓëÏßµÄ¼Ğ½Ç"), QStringLiteral("ÏßÓëÏßµÄ¾àÀë"), QStringLiteral("µãµ½ÏßµÄ¾àÀë"),
-									QStringLiteral("µãµ½µãµÄ¾àÀë"), QStringLiteral("µãµÄ¸ß¶È"), QStringLiteral("Ô²µ½Ô²µÄ¾àÀë"),
-									QStringLiteral("Ô²µ½Ö±ÏßµÄ¾àÀë"), QStringLiteral("Ô²µ½µãµÄ¾àÀë"), QStringLiteral("Ô²»¡°ë¾¶"),
-									QStringLiteral("ÇøÓòÃæ»ı"), QStringLiteral("ÇúÏß³¤¶È"), QStringLiteral("Î´ÖªÀàĞÍ") };
+const QString g_szMeasureName[] = { QStringLiteral("çº¿ä¸çº¿çš„å¤¹è§’"), QStringLiteral("çº¿ä¸çº¿çš„è·ç¦»"), QStringLiteral("ç‚¹åˆ°çº¿çš„è·ç¦»"),
+									QStringLiteral("ç‚¹åˆ°ç‚¹çš„è·ç¦»"), QStringLiteral("ç‚¹çš„é«˜åº¦"), QStringLiteral("åœ†åˆ°åœ†çš„è·ç¦»"),
+									QStringLiteral("åœ†åˆ°ç›´çº¿çš„è·ç¦»"), QStringLiteral("åœ†åˆ°ç‚¹çš„è·ç¦»"), QStringLiteral("åœ†å¼§åŠå¾„"),
+									QStringLiteral("åŒºåŸŸé¢ç§¯"), QStringLiteral("æ›²çº¿é•¿åº¦"), QStringLiteral("æœªçŸ¥ç±»å‹") };
 
 enum MeasureType
 {
@@ -352,8 +352,8 @@ public:
 	QProfileObj(int nID, QString name, QObject *parent = NULL);
 	~QProfileObj();
 
-	QProfileObj(const QProfileObj &other);//¸´ÖÆ¹¹Ôìº¯Êı 
-	QProfileObj & operator = (const QProfileObj &other);//¸³Öµ·û 
+	QProfileObj(const QProfileObj &other);//å¤åˆ¶æ„é€ å‡½æ•° 
+	QProfileObj & operator = (const QProfileObj &other);//èµ‹å€¼ç¬¦ 
 
 private:
 	void deepCopy(const QProfileObj &other);

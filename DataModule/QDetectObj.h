@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <QObject>
 #include <QMultiMap>
 #include <QVector>
@@ -13,8 +13,8 @@ public:
 	~QBoardObj();
 
 
-	QBoardObj(const QBoardObj &other);//¸´ÖÆ¹¹Ôìº¯Êı 
-	QBoardObj & operator = (const QBoardObj &other);//¸³Öµ·û 
+	QBoardObj(const QBoardObj &other);//å¤åˆ¶æ„é€ å‡½æ•° 
+	QBoardObj & operator = (const QBoardObj &other);//èµ‹å€¼ç¬¦ 
 
 public:
 	QString getName(){ return m_objName; }
@@ -47,8 +47,8 @@ public:
 	QDetectObj(int nID, QString name, QObject *parent = NULL);
 	~QDetectObj();
 
-	QDetectObj(const QDetectObj &other);//¸´ÖÆ¹¹Ôìº¯Êı 
-	QDetectObj & operator = (const QDetectObj &other);//¸³Öµ·û 
+	QDetectObj(const QDetectObj &other);//å¤åˆ¶æ„é€ å‡½æ•° 
+	QDetectObj & operator = (const QDetectObj &other);//èµ‹å€¼ç¬¦ 
 
 public:
 	QString getName(){ return m_objName; }

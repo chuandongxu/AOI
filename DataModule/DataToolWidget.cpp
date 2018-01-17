@@ -1,4 +1,4 @@
-#include "DataToolWidget.h"
+ï»¿#include "DataToolWidget.h"
 
 #include <QGridLayout>
 #include <QLabel>
@@ -20,7 +20,7 @@ QPropertyWidget::QPropertyWidget(QWidget *parent)
 	enumManager = new QtEnumPropertyManager(this);
 	groupManager = new QtGroupPropertyManager(this);
 
-	QtProperty *item0 = groupManager->addProperty(QStringLiteral("»ù±¾ÊôÐÔ"));
+	QtProperty *item0 = groupManager->addProperty(QStringLiteral("åŸºæœ¬å±žæ€§"));
 
 	QtProperty *item1 = stringManager->addProperty("objectName");
 	item0->addSubProperty(item1);

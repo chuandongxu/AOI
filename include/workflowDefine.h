@@ -1,43 +1,43 @@
-#ifndef _WORK_FLOW_DEFINE_H_
+﻿#ifndef _WORK_FLOW_DEFINE_H_
 #define _WORK_FLOW_DEFINE_H_
 
 /*
-//ȫ����Ϣ���壬����Ϣ���ڵײ��⵽�豸������ֹͣ����λ�Ȱ�ť��
-//����ʱ����淢��EOS��Ϣ�ļ�ֵ
+//全局消息定义，此消息用于底层检测到设备启动，停止，复位等按钮有
+//动作时向界面发送EOS消息的键值
 #define NOTIFY_USER_BTN   "user-btn"
 
-//ȫ���û��¼���ť����,���ڵײ�ģ��ͽ���ģ��ʹ��EOS����ʱ������,
-//��NOTIFY_USER_BTN���ʹ��
+//全局用户事件按钮定义,用于底层模块和界面模块使用EOS交互时的数据,
+//和NOTIFY_USER_BTN配合使用
 #define BTN_USER_START  "UserStartBtn"
 #define BTN_USER_STOP   "UserStopBtn"
 #define BTN_USER_RESET  "UserRestBtn"
-#define BTN_SELF_SOURCE  "UserSelfSourceBtn"       //*��ȫ����
-#define BTN_USER_EMSTOP  "UserEmStopBtn"           //*��ͣ��ť
+#define BTN_SELF_SOURCE  "UserSelfSourceBtn"       //*安全开关
+#define BTN_USER_EMSTOP  "UserEmStopBtn"           //*急停按钮
 
 */
 //*****************************************************************************************
-//                ����״̬��ض���
+//                离线状态相关定义
 //*****************************************************************************************
-//���ߵ���������ť��ֵ
+//离线调试启动按钮键值
 #define OUT_LINE_RUN     "OutLineStart"
-//���ߵ���ֹͣ��ť��ֵ
+//离线调试停止按钮键值
 #define OUT_LINE_STOP    "OutLineStop"
-//���ߵ��Ը�λ��ť��ֵ
+//离线调试复位按钮键值
 #define OUT_LINE_REST    "OutLineReset"
-//���ߵ��Լ�ͣ��ť��ֵ
+//离线调试急停按钮键值
 #define OUT_LINE_EMSTOP  "OutLineEmStop"
-//���ߵ��԰�ȫ�ſ���
+//离线调试安全门开关
 #define OUT_LINE_SAFE	 "OutLineSafe"
 
 //*********************************************************************************************
-//����ϵͳ�����ٶ�
+//定义系统运行速度
 #define RUN_FULL_SPEED  4
 #define RUN_HIG_SPEED   3
 #define RUN_MID_SPEED   2
 #define RUN_LOW_SPEED   1
 
-//�������ñ�־��ֵ�������ֵ��������
-//ϵͳ�����б������ܼ��������������Ϣ�ġ�
+//定义启用标志键值，这个键值是用来在
+//系统参数中保存气密检测器启用配置信息的。
 #define CHECK_STA_ENABLE1 "checkStaEnable1"
 #define CHECK_STA_ENABLE2 "checkStaEnable2"
 #define CHECK_STA_ENABLE3 "checkStaEnable3"
@@ -47,7 +47,7 @@
 #define CHECK_STA_ENABLE  "checkStaEnable%0"
 
 //*********************************************************************************************
-//�����״̬֪ͨ��ֵ���¼�����������ģ��֪ͨ����ģ��ײ�״̬���������½���
+//检测器状态通知键值和事件，工艺流程模块通知界面模块底层状态，进而更新界面
 #define EVENT_CHECK_STATE "eventCheckState"
 #define STATION_STATE_WAIT_START          100
 #define STATION_STATE_CAPTURING           101
