@@ -30,6 +30,7 @@
 const double MIL_TO_UM	=							( 25.4 );
 const double UM_TO_MIL	=							( 1 / MIL_TO_UM );
 const std::string DEFAULT_PROJECT =                 "./data/DefaultProject.aoi";
+const std::string PROJECT_EXT =                           ".aoi";
 
 enum VISION_VIEW_MODE {
     MODE_VIEW_NONE              = 1,
