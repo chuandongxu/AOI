@@ -2347,7 +2347,7 @@ bool VisionDetectRunView::guideReadImages(QVector<cv::Mat>& matImgs)
 		return false;
 	}
 
-	if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true))
+	if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP, true))
 	{
 		System->setTrackInfo(QString("triggerCapturing error"));		
 		return false;
@@ -2374,6 +2374,12 @@ bool VisionDetectRunView::guideReadImages(QVector<cv::Mat>& matImgs)
 	}
 	
 	System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));	
+
+	if (nCaptureNum != pCam->getImageBufferNum())
+	{
+		System->setTrackInfo(QString("System captureImages Image Num error: %1").arg(nCaptureNum));
+		return false;
+	}
 
 	return true;	
 }
@@ -3422,7 +3428,7 @@ bool VisionDetectRunView::readImages(QString& szFilePath, AOI::Vision::VectorOfM
 	{
 		int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
 
-		for (int i = 0; i < m_guideImgMats.size(); i++)
+		for (int i = 0; i < IMAGE_COUNT; i++)
 		{
 			matImgs.push_back(m_guideImgMats.at(i + nDLPIndex * IMAGE_COUNT));
 		}

@@ -73,14 +73,11 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 	ui.groupBox_imgDLP->setEnabled(2 == nCaptureMode);
 
 	ls.clear();
-	ls << QStringLiteral("全部图像(12帧×DLP Num)采集") << QStringLiteral("标准图像(12帧)采集") << QStringLiteral("单帧采集") << QStringLiteral("灯光图像(6帧)采集");
+	ls << QStringLiteral("全部图像(DLP + Light)采集") << QStringLiteral("全部图像(12帧×DLP Num)采集") << QStringLiteral("标准图像(12帧)采集") << QStringLiteral("单帧采集") << QStringLiteral("灯光图像(6帧)采集");
 	ui.comboBox_captureNumMode->addItems(ls);
 	int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
-	ui.comboBox_captureNumMode->setCurrentIndex(nCaptureNumMode);
-	int nExposureTime = System->getParam(QString("camera_capture_exposure_time_%1").arg(nCaptureNumMode)).toInt();
-	ui.lineEdit_exposureTime->setText(QString("%1").arg(nExposureTime));
+	ui.comboBox_captureNumMode->setCurrentIndex(nCaptureNumMode);	
 	connect(ui.comboBox_captureNumMode, SIGNAL(currentIndexChanged(int)), SLOT(onCaptureNumModeIndexChanged(int)));
-	connect(ui.pushButton_saveImageNum, SIGNAL(clicked()), SLOT(onSaveImgNum()));
 
 	connect(ui.checkBox, SIGNAL(stateChanged(int)), SLOT(onStateChangeHWTrig(int)));
 	connect(ui.checkBox_2, SIGNAL(stateChanged(int)), SLOT(onStateChangeCapture(int)));
@@ -145,10 +142,10 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 
 	//采集操作
 	ls.clear();
-	ls << QStringLiteral("全部DLP采集") << QStringLiteral("第1个DLP") << QStringLiteral("第2个DLP") << QStringLiteral("第3个DLP") << QStringLiteral("第4个DLP");
+	ls << QStringLiteral("全部采集") << QStringLiteral("全部DLP采集") << QStringLiteral("第1个DLP") << QStringLiteral("第2个DLP") << QStringLiteral("第3个DLP") << QStringLiteral("第4个DLP");
 	ui.comboBox_selectDLP->addItems(ls);
 	ls.clear();
-	ls << QStringLiteral("第一圈红") << QStringLiteral("第一圈白") << QStringLiteral("第二圈绿") << QStringLiteral("第三圈蓝") << QStringLiteral("第四圈白") << QStringLiteral("第四圈蓝");
+	ls << QStringLiteral("全部灯光") << QStringLiteral("第一圈红") << QStringLiteral("第一圈白") << QStringLiteral("第二圈绿") << QStringLiteral("第三圈蓝") << QStringLiteral("第四圈白") << QStringLiteral("第四圈蓝");
 	ui.comboBox_selectLight->addItems(ls);
 	connect(ui.pushButton_startSetupDLP, SIGNAL(clicked()), SLOT(onStartSetupDLP()));
 	connect(ui.pushButton_endSetupDLP, SIGNAL(clicked()), SLOT(onEndSetupDLP()));
@@ -385,20 +382,7 @@ void CameraSetting::onCaptureModeIndexChanged(int iIndex)
 void CameraSetting::onCaptureNumModeIndexChanged(int iIndex)
 {
 	int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
-	//System->setParam("camera_capture_num_mode", nCaptureNumMode);
-	//QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("重启软件，相机采集模式才可以应用！"));
-
-	int nExposureTime = System->getParam(QString("camera_capture_exposure_time_%1").arg(nCaptureNumMode)).toInt();
-	ui.lineEdit_exposureTime->setText(QString("%1").arg(nExposureTime));
-}
-
-void CameraSetting::onSaveImgNum()
-{
-	int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
-	System->setParam("camera_capture_num_mode", nCaptureNumMode);
-
-	int nExposureTime = ui.lineEdit_exposureTime->text().toInt();
-	System->setParam(QString("camera_capture_exposure_time_%1").arg(nCaptureNumMode), nExposureTime);
+	System->setParam("camera_capture_num_mode", nCaptureNumMode);	
 }
 
 void CameraSetting::onSelCapturePath()
@@ -610,8 +594,8 @@ void CameraSetting::onCaptureDLP()
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return;
 
-	int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
-	if (0 != nCaptureNumMode && 1 != nCaptureNumMode)
+	int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
+	if (nCaptureNumMode >= 3)
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择DLP模式"));
 		return;
@@ -623,28 +607,34 @@ void CameraSetting::onCaptureDLP()
 	case 0:
 		if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true, true))
 		{
-			System->setTrackInfo(QString("triggerCapturing error!"));	
+			System->setTrackInfo(QString("triggerCapturing error!"));
 		}
 		break;
 	case 1:
+		if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP, true, true))
+		{
+			System->setTrackInfo(QString("triggerCapturing error!"));	
+		}
+		break;
+	case 2:
 		if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP1, true, true))
 		{
 			System->setTrackInfo(QString("triggerCapturing error!"));
 		}
 		break;
-	case 2:
+	case 3:
 		if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP2, true, true))
 		{
 			System->setTrackInfo(QString("triggerCapturing error!"));
 		}
 		break;
-	case 3:
+	case 4:
 		if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP3, true, true))
 		{
 			System->setTrackInfo(QString("triggerCapturing error!"));
 		}
 		break;
-	case 4:
+	case 5:
 		if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP4, true, true))
 		{
 			System->setTrackInfo(QString("triggerCapturing error!"));
@@ -661,45 +651,62 @@ void CameraSetting::onCaptureLight()
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return;
 
-	int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
-	if (2 != nCaptureNumMode)
+	int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
+	if (nCaptureNumMode < 3)
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择灯光模式"));
 		return;
 	}
 
-	QVector<int> nPorts;
 	int nSelectLight = ui.comboBox_selectLight->currentIndex();
-	switch (nSelectLight)
+	if (3 == nCaptureNumMode && 0 == nSelectLight)
 	{
-	case 0:
-		nPorts.push_back(DO_LIGHT1_CH1);
-		break;
-	case 1:
-		nPorts.push_back(DO_LIGHT1_CH2);
-		break;
-	case 2:
-		nPorts.push_back(DO_LIGHT1_CH3);
-		break;
-	case 3:
-		nPorts.push_back(DO_LIGHT1_CH4);
-		break;
-	case 4:
-		nPorts.push_back(DO_LIGHT2_CH1);
-		break;
-	case 5:
-		nPorts.push_back(DO_LIGHT2_CH2);
-		break;
-	default:
-		break;
+		if (!pMotion->triggerCapturing(IMotion::TRIGGER_LIGHT, true, true))
+		{
+			System->setTrackInfo(QString("triggerCapturing error!"));
+		}
 	}
-	nPorts.push_back(DO_CAMERA_TRIGGER2);
+	else
+	{
+		QVector<int> nPorts;	
+		switch (nSelectLight)
+		{
+		case 0:
+			nPorts.push_back(DO_LIGHT1_CH1);
+			nPorts.push_back(DO_LIGHT1_CH2);
+			nPorts.push_back(DO_LIGHT1_CH3);
+			nPorts.push_back(DO_LIGHT1_CH4);
+			nPorts.push_back(DO_LIGHT2_CH1);
+			nPorts.push_back(DO_LIGHT2_CH2);
+			break;
+		case 1:
+			nPorts.push_back(DO_LIGHT1_CH1);
+			break;
+		case 2:
+			nPorts.push_back(DO_LIGHT1_CH2);
+			break;
+		case 3:
+			nPorts.push_back(DO_LIGHT1_CH3);
+			break;
+		case 4:
+			nPorts.push_back(DO_LIGHT1_CH4);
+			break;
+		case 5:
+			nPorts.push_back(DO_LIGHT2_CH1);
+			break;
+		case 6:
+			nPorts.push_back(DO_LIGHT2_CH2);
+			break;
+		default:
+			break;
+		}
+		nPorts.push_back(DO_CAMERA_TRIGGER2);
 
-	pMotion->setDOs(nPorts, 1);
-	//pMotion->setDO(DO_CAMERA_TRIGGER2, 0);
-	QThread::msleep(10);
-	pMotion->setDOs(nPorts, 0);
-	//pMotion->setDO(DO_CAMERA_TRIGGER2, 1);
+		pMotion->setDOs(nPorts, 1);
+		QThread::msleep(10);
+		pMotion->setDOs(nPorts, 0);
+	}
+
 }
 
 double CameraSetting::convertToPixel(double umValue)

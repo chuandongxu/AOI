@@ -7,7 +7,6 @@
 #include "../include/IMotion.h"
 #include "../include/IdDefine.h"
 
-
 struct QMtrVelocityProfile
 {
 	QMtrVelocityProfile()
@@ -96,7 +95,6 @@ struct QMtrMovePoint
 	int _ID;
 	double _posn;
 };
-
 
 class MotionControl : public QObject
 {
@@ -190,7 +188,7 @@ private:
 
 private:
 	void commandhandler(char *command, short error);
-	void setupTrigger(IMotion::TRIGGER emTrig, int nGroupNum);
+	void setupTrigger(IMotion::TRIGGER emTrig);
 
 public:
 	void clearMotorParams();

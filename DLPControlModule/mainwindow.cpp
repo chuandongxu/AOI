@@ -1906,7 +1906,7 @@ void MainWindow::ApplyDefaultSolution()
 	QString path = QApplication::applicationDirPath();
 	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
 	bool bMotionCardTrigger = (1 == nDlpMode);
-	QString fileName = path + System->getParam(bMotionCardTrigger ? QString("dlp_default_solution_file_path_motion") : QString("dlp_default_solution_file_path") + QString("_%1").arg(m_nDLPIndex + 1)).toString();
+	QString fileName = path + System->getParam((bMotionCardTrigger ? QString("dlp_default_solution_file_path_motion") : QString("dlp_default_solution_file_path")) + QString("_%1").arg(m_nDLPIndex + 1)).toString();
 
 	if (fileName.isEmpty() || !fileName.contains(".ini"))
 		return;
@@ -2423,7 +2423,7 @@ void MainWindow::on_pushButton_SaveSolution_clicked()
 
 		int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
 		bool bMotionCardTrigger = (1 == nDlpMode);
-		System->setParam(bMotionCardTrigger ? QString("dlp_default_solution_file_path_motion") : QString("dlp_default_solution_file_path") + QString("_%1").arg(m_nDLPIndex + 1), szSavePath);
+		System->setParam((bMotionCardTrigger ? QString("dlp_default_solution_file_path_motion") : QString("dlp_default_solution_file_path")) + QString("_%1").arg(m_nDLPIndex + 1), szSavePath);
 	}
 
     QFile iniFile(fileName);

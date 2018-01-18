@@ -67,13 +67,13 @@ MotionIO::MotionIO(MotionControl* pCtrl, QWidget *parent)
 	//QThread::msleep(1000);
 	//m_pCtrl->setDOs(nPorts, 0);
 
-	m_pCtrl->setDO(DO_LIGHT1_ENABLE, 1);
-	m_pCtrl->setDO(DO_LIGHT2_ENABLE, 0);
-	QThread::msleep(500);
-	m_pCtrl->setDO(DO_LIGHT1_ENABLE, 0);
-	m_pCtrl->setDO(DO_LIGHT2_ENABLE, 1);
-	QThread::msleep(500);
-	m_pCtrl->setDO(DO_LIGHT2_ENABLE, 0);
+	//m_pCtrl->setDO(DO_LIGHT1_ENABLE, 1);
+	//m_pCtrl->setDO(DO_LIGHT2_ENABLE, 1);
+	//QThread::msleep(500);
+	//m_pCtrl->setDO(DO_LIGHT1_ENABLE, 0);
+	//m_pCtrl->setDO(DO_LIGHT2_ENABLE, 0);
+	//QThread::msleep(500);
+	//m_pCtrl->setDO(DO_LIGHT2_ENABLE, 0);
 }
 
 MotionIO::~MotionIO()

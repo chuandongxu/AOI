@@ -26,10 +26,12 @@ public:
 	enum TRIGGER
 	{
 		TRIGGER_ALL,
+		TRIGGER_DLP,
 		TRIGGER_DLP1,
 		TRIGGER_DLP2,
 		TRIGGER_DLP3,
 		TRIGGER_DLP4,
+		TRIGGER_LIGHT
 	};
 public:
 	// General Functions:
