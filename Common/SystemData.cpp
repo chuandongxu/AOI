@@ -696,6 +696,56 @@ bool QSystem::getUserPwd(const QString user, QString &pwd, int &level)
 	return false;
 }
 
+bool QSystem::checkUserPwd(const QString& user, const QString& pwd)
+{
+	if (!checkRuntimeAuthRight())
+	{
+		setTrackInfo(QStringLiteral("系统没有授权！"));
+		return false;
+	}
+	
+	QString targPwd;
+	int level;
+	if (getUserPwd(user, targPwd, level))
+	{
+		if (level > USER_LEVEL_OPT)
+		{
+			QDateTime dtm = QDateTime::currentDateTime();
+			QString dateTM = dtm.toString("yyyyMM");
+			QByteArray pwdArr;
+			if (USER_LEVEL_MANAGER == level)
+			{
+				targPwd = "admin";
+			}
+			else if (USER_LEVEL_TECH == level)
+			{
+				targPwd = "tech";
+			}
+			pwdArr.append(targPwd);
+			pwdArr.append(dateTM);
+			QString pwdHash = QCryptographicHash::hash(pwdArr, QCryptographicHash::Md5).toBase64().data();
+			QString pwdCacl = pwdHash.left(6);
+			if (pwd == pwdCacl)
+			{
+				setUser(user, level);				
+				return true;
+			}
+		}
+		else
+		{
+			QByteArray pwdArr;
+			pwdArr.append(pwd);
+			QString pwdHash = QCryptographicHash::hash(pwdArr, QCryptographicHash::Md5).toBase64().data();
+			if (pwdHash == targPwd)
+			{
+				setUser(user, level);				
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
 
 void QSystem::enableRecord(bool s)
 {
