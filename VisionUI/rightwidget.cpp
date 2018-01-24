@@ -46,6 +46,7 @@ QRightWidget::QRightWidget(QWidget *parent)
 	{
 		ui.stackedWidget->addWidget(pVision->getDetectView());
 		ui.stackedWidget->addWidget(pVision->getCellEditorView());
+		ui.stackedWidget->addWidget(pVision->getCaliView());
 	}
 
     IData * pData = getModule<IData>(DATA_MODEL);	
@@ -112,9 +113,12 @@ void QRightWidget::onUIState(const QVariantList &data)
 	case RUN_UI_STATE_TOOLS:
 		ui.stackedWidget->setCurrentIndex(2);
 		break;
-    case RUN_UI_STATE_DATA:
-        ui.stackedWidget->setCurrentIndex(3);
+	case RUN_UI_STATE_CALI:
+		ui.stackedWidget->setCurrentIndex(3);
 		break;
+    case RUN_UI_STATE_DATA:
+        ui.stackedWidget->setCurrentIndex(4);
+		break;	
 	default:
 		break;
 	}

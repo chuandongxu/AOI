@@ -719,7 +719,7 @@ bool QSystem::checkUserPwd(const QString& user, const QString& pwd)
 			}
 			else if (USER_LEVEL_TECH == level)
 			{
-				targPwd = "tech";
+				targPwd = "root";
 			}
 			pwdArr.append(targPwd);
 			pwdArr.append(dateTM);

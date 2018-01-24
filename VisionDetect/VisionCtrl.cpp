@@ -103,11 +103,11 @@ bool VisionCtrl::loadCmdData(int nStation)
 	{
 		bool b3DDetectCaliUseThinPattern = System->getParam("3d_detect_cali_thin_pattern").toBool();
 		bool b3DDetectGaussionFilter = System->getParam("3d_detect_gaussion_filter").toBool();
-		bool b3DDetectReverseSeq = System->getParam("3d_detect_reverse_seq").toBool();
+		//bool b3DDetectReverseSeq = System->getParam("3d_detect_reverse_seq").toBool();
 		double d3DDetectMinIntDiff = System->getParam("3d_detect_min_intensity_diff").toDouble();
 		double d3DDetectPhaseShift = System->getParam("3d_detect_phase_shift").toDouble();
 		m_stCalcHeightCmds[nStation - 1].bEnableGaussianFilter = b3DDetectGaussionFilter;
-		m_stCalcHeightCmds[nStation - 1].bReverseSeq = b3DDetectReverseSeq;
+		//m_stCalcHeightCmds[nStation - 1].bReverseSeq = b3DDetectReverseSeq;
 		m_stCalcHeightCmds[nStation - 1].fMinAmplitude = d3DDetectMinIntDiff;
 		m_stCalcHeightCmds[nStation - 1].bUseThinnestPattern = b3DDetectCaliUseThinPattern;
 		m_stCalcHeightCmds[nStation - 1].fPhaseShift = d3DDetectPhaseShift;
@@ -129,6 +129,8 @@ bool VisionCtrl::loadCmdData(int nStation)
 		cv::read(fileNode, m_stCalcHeightCmds[nStation - 1].matBaseWrappedBeta, cv::Mat());
 		fileNode = fs["BaseWrappedGamma"];
 		cv::read(fileNode, m_stCalcHeightCmds[nStation - 1].matBaseWrappedGamma, cv::Mat());
+		fileNode = fs["ReverseSeq"];
+		cv::read(fileNode, m_stCalcHeightCmds[nStation - 1].bReverseSeq, 0);
 		fs.release();
 
 		//if (m_matBaseSurfaces[nStation-1].empty())
@@ -177,11 +179,11 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
 
 		bool b3DDetectCaliUseThinPattern = System->getParam("3d_detect_cali_thin_pattern").toBool();
 		bool b3DDetectGaussionFilter = System->getParam("3d_detect_gaussion_filter").toBool();
-		bool b3DDetectReverseSeq = System->getParam("3d_detect_reverse_seq").toBool();
+		//bool b3DDetectReverseSeq = System->getParam("3d_detect_reverse_seq").toBool();
 		double d3DDetectMinIntDiff = System->getParam("3d_detect_min_intensity_diff").toDouble();	
 		double d3DDetectPhaseShift = System->getParam("3d_detect_phase_shift").toDouble();
 		m_stCalcHeightCmds[nStation - 1].bEnableGaussianFilter = b3DDetectGaussionFilter;
-		m_stCalcHeightCmds[nStation - 1].bReverseSeq = b3DDetectReverseSeq;
+		//m_stCalcHeightCmds[nStation - 1].bReverseSeq = b3DDetectReverseSeq;
 		m_stCalcHeightCmds[nStation - 1].fMinAmplitude = d3DDetectMinIntDiff;
 		m_stCalcHeightCmds[nStation - 1].bUseThinnestPattern = b3DDetectCaliUseThinPattern;
 		m_stCalcHeightCmds[nStation - 1].fPhaseShift = d3DDetectPhaseShift;
@@ -203,6 +205,8 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
 		cv::read(fileNode, m_stCalcHeightCmds[nStation - 1].matBaseWrappedBeta, cv::Mat());
 		fileNode = fs["BaseWrappedGamma"];
 		cv::read(fileNode, m_stCalcHeightCmds[nStation - 1].matBaseWrappedGamma, cv::Mat());
+		fileNode = fs["ReverseSeq"];
+		cv::read(fileNode, m_stCalcHeightCmds[nStation - 1].bReverseSeq, 0);
 		fs.release();
 
 		//if (m_matBaseSurfaces[nStation-1].empty())

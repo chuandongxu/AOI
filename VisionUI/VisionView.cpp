@@ -648,7 +648,11 @@ void VisionView::setImage(cv::Mat& matImage, bool bDisplay)
 	m_hoImage = matImage.clone();
 	m_imageWidth = m_hoImage.size().width;
 	m_imageHeight = m_hoImage.size().height;
-	if (bDisplay) displayImage(m_hoImage);
+	if (bDisplay)
+	{
+		zoomImage(0.25);		
+		displayImage(m_hoImage);
+	}
 }
 
 cv::Mat VisionView::getImage()
@@ -1169,7 +1173,14 @@ void VisionView::displayImage(cv::Mat& image)
     cv::Mat matDisplay;
     _drawDeviceWindows( m_dispImage );
     _cutImageForDisplay ( m_dispImage, matDisplay );
-    cv::cvtColor ( matDisplay, matDisplay, CV_BGR2RGB );
+	if (matDisplay.type() == CV_8UC3)
+	{
+		cvtColor(matDisplay, matDisplay, CV_BGR2RGB);
+	}
+	else if (matDisplay.type() == CV_8UC1)
+	{
+		cvtColor(matDisplay, matDisplay, CV_GRAY2RGB);
+	}
     QImage imagePixmap = QImage((uchar*)matDisplay.data, matDisplay.cols, matDisplay.rows, ToInt(matDisplay.step), QImage::Format_RGB888);
 	ui.label_Img->setPixmap(QPixmap::fromImage(imagePixmap));
 }
@@ -1506,7 +1517,7 @@ void VisionView::zoomImage(double scale)
     if ( m_dScale >= _constMaxZoomScale && scale > 1. )
         return;
 
-    if ( m_dScale < _constMinZoomScale && scale < 1. )
+    if ( m_dScale <= _constMinZoomScale && scale < 1. )
         return;
 
 	m_dScale *= scale;

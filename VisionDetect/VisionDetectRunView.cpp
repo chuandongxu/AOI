@@ -3,7 +3,6 @@
 #include <QFileDialog>
 
 #include "visiondetect_global.h"
-#include "QCameraRunnable.h"
 
 #include "../Common/SystemData.h"
 #include "../include/IdDefine.h"
@@ -17,11 +16,7 @@
 #include <QThreadPool>
 #include <QDateTime>
 
-#include "../CurveEditor/IGraphicEditor.h"
-#include "QResultDisplay.h"
-#include "QColorImageDisplay.h"
 #include "QDlpMTFRsltDisplay.h"
-#include "QCaliGuideDialog.h"
 
 #include "../Common/ModuleMgr.h"
 #include "../include/ICamera.h"
@@ -32,6 +27,10 @@
 #include "../lib/VisionLibrary/include/VisionAPI.h"
 #define ToInt(value)                (static_cast<int>(value))
 #define ToFloat(param)      (static_cast<float>(param))
+
+#include "opencv2/opencv.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace AOI;
 
@@ -45,14 +44,7 @@ VisionDetectRunView::VisionDetectRunView(VisionCtrl* pCtrl, QWidget *parent)
 	QEos::Attach(EVENT_OBJ_STATE, this, SLOT(onObjEvent(const QVariantList &)));
 
 	initUI();
-	initLimits();
-
-	m_pGraphicsEditor = new IGraphicEditor();
-	m_pGraphicsEditor->setViewPos(0, 0);
-	m_pGraphicsEditor->setScale(16, 50);
-
-	m_pResultDisplay = new QResultDisplay();
-	m_pColorDisplay = new QColorImageDisplay();
+	initLimits();	
 
 	m_nImageRow = 0;
 	m_nImageCol = 0;
@@ -69,13 +61,6 @@ VisionDetectRunView::VisionDetectRunView(VisionCtrl* pCtrl, QWidget *parent)
 	}
 
 	loadMTFData();
-
-	ui.pushButton_CalibGuide->setEnabled(true);
-	ui.pushButton_CalibGuideNext->setEnabled(false);
-	ui.pushButton_CalibGuidePrevious->setEnabled(false);
-	m_nCaliGuideStep = 0;
-	m_bGuideCali = false;
-	m_pCameraRunnable = NULL;
 
 #ifdef SMART_DETECT_APP
 	ui.tabWidget->removeTab(0);
@@ -114,24 +99,6 @@ VisionDetectRunView::~VisionDetectRunView()
 	{
 		delete m_TmpMatchScene;
 		m_TmpMatchScene = NULL;
-	}
-
-	if (m_pGraphicsEditor)
-	{
-		delete m_pGraphicsEditor;
-		m_pGraphicsEditor = NULL;
-	}
-
-	if (m_pResultDisplay)
-	{
-		delete m_pResultDisplay;
-		m_pResultDisplay = NULL;
-	}
-
-	if (m_pColorDisplay)
-	{
-		delete m_pColorDisplay;
-		m_pColorDisplay = NULL;
 	}
 
 	if (m_TmpMatchMTFScene1)
@@ -264,8 +231,9 @@ void VisionDetectRunView::initUI()
 	connect(ui.pushButton_DetectGrayScaleOpen, SIGNAL(clicked()), SLOT(onDetectGrayScaleOpen()));
 	connect(ui.pushButton_SaveDetectGrayScaleParams, SIGNAL(clicked()), SLOT(onSaveDetectGrayScaleParams()));
 	connect(ui.pushButton_DetectGrayScale, SIGNAL(clicked()), SLOT(onDetectGrayScale()));
+	
 
-	//3D检测标定
+	//3D检测测量
 	connect(ui.comboBox_selectDLP, SIGNAL(currentIndexChanged(int)), SLOT(onDLPIndexChanged(int)));
 	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
 	for (int i = 0; i < nStationNum; i++)
@@ -273,49 +241,6 @@ void VisionDetectRunView::initUI()
 		ui.comboBox_selectDLP->addItem(QString("%1").arg(QStringLiteral("DLP%1").arg(i + 1)));
 	}
 	ui.comboBox_selectDLP->setCurrentIndex(0);
-
-	connect(ui.comboBox_selectCaliType, SIGNAL(currentIndexChanged(int)), SLOT(onSelectCaliTypeChanged(int)));
-	ls.clear();
-	ls << QStringLiteral("H = Left Top") << QStringLiteral("H = Right Bottom") << QStringLiteral("H = Negative");
-	ui.comboBox_selectCaliType->addItems(ls);
-	ui.comboBox_selectCaliType->setCurrentIndex(0);
-
-	bool b3DCaliGaussionFilter = System->getParam("3d_cali_gaussion_filter").toBool();
-	bool b3DCaliReverseSeq = System->getParam("3d_cali_reverse_seq").toBool();
-	QString sz3DCaliRstFile = System->getParam(QString("3d_cali_rst_filename_%1").arg(1)).toString();
-	ui.checkBox_3DCaliGaussionFilter->setChecked(b3DCaliGaussionFilter);
-	ui.checkBox_3DCaliReverseSeq->setChecked(b3DCaliReverseSeq);
-	QString path = QApplication::applicationDirPath();
-	QDir dir(path);
-	ui.lineEdit_3DCaliRstFile->setText(QString("%1").arg(dir.absolutePath() + sz3DCaliRstFile));
-	connect(ui.pushButton_3DCaliOpen, SIGNAL(clicked()), SLOT(on3DCaliOpen()));
-	connect(ui.pushButton_3DCaliRstOpen, SIGNAL(clicked()), SLOT(on3DCaliRstOpen()));
-	connect(ui.pushButton_3DCali, SIGNAL(clicked()), SLOT(on3DCali()));
-	connect(ui.pushButton_Save3DDetectCaliParams, SIGNAL(clicked()), SLOT(onSave3DDetectCaliParams()));
-	connect(ui.pushButton_Save3DDetectCaliHeightParams, SIGNAL(clicked()), SLOT(onSave3DDetectCaliHeightParams()));
-
-	//3D检测测量
-	bool b3DDetectCaliUseThinPattern = System->getParam("3d_detect_cali_thin_pattern").toBool();
-	bool b3DDetectCaliGaussionFilter = System->getParam("3d_detect_cali_gaussion_filter").toBool();
-	bool b3DDetectCaliReverseSeq = System->getParam("3d_detect_cali_reverse_seq").toBool();
-	bool b3DDetectCaliReverseHeight = System->getParam("3d_detect_cali_reverse_height").toBool();
-	ui.checkBox_3DCaliUseThinPattern->setChecked(b3DDetectCaliUseThinPattern);
-	ui.checkBox_3DDetectCaliGaussionFilter->setChecked(b3DDetectCaliGaussionFilter);
-	ui.checkBox_3DDetectCaliReverseSeq->setChecked(b3DDetectCaliReverseSeq);
-	ui.checkBox_3DDetectCaliReverseHeight->setChecked(b3DDetectCaliReverseHeight);
-	double d3DDetectCaliMinIntDiff = System->getParam("3d_detect_cali_min_intensity_diff").toDouble();
-	ui.lineEdit_3DDetectCaliMinIntDiff->setText(QString("%1").arg(d3DDetectCaliMinIntDiff));
-	int n3DDetectCaliStepCount = System->getParam("3d_detect_cali_step_count").toInt();
-	int n3DDetectCaliStepNegCount = System->getParam("3d_detect_cali_step_neg_count").toInt();
-	double d3DDetectCaliStepHeight = System->getParam("3d_detect_cali_step_height").toDouble();
-	ui.lineEdit_3DDetectCaliStepCount->setText(QString("%1").arg(n3DDetectCaliStepCount));
-	ui.lineEdit_3DDetectCaliStepNegCount->setText(QString("%1").arg(n3DDetectCaliStepNegCount));
-	ui.lineEdit_3DDetectCaliStepHeight->setText(QString("%1").arg(d3DDetectCaliStepHeight));
-	connect(ui.pushButton_3DDetectCaliOpen, SIGNAL(clicked()), SLOT(on3DDetectCaliOpen()));
-	connect(ui.pushButton_3DDetectCali, SIGNAL(clicked()), SLOT(on3DDetectCali()));
-	connect(ui.pushButton_3DDetectCaliNegOpen, SIGNAL(clicked()), SLOT(on3DDetectCaliNegOpen()));
-	connect(ui.pushButton_3DDetectCaliNeg, SIGNAL(clicked()), SLOT(on3DDetectCaliNeg()));
-	connect(ui.pushButton_3DDetectCaliComb, SIGNAL(clicked()), SLOT(on3DDetectCaliComb()));
 
 	bool b3DDetectGaussionFilter = System->getParam("3d_detect_gaussion_filter").toBool();
 	bool b3DDetectReverseSeq = System->getParam("3d_detect_reverse_seq").toBool();
@@ -330,21 +255,16 @@ void VisionDetectRunView::initUI()
 	connect(ui.doubleSpinBox_phaseShift, SIGNAL(valueChanged(double)), SLOT(onPhaseShiftValueChanged(double)));
 
 	connect(ui.pushButton_3DDetectOpen, SIGNAL(clicked()), SLOT(on3DDetectOpen()));
-	connect(ui.pushButton_3DDetect, SIGNAL(clicked()), SLOT(on3DDetect()));
-	connect(ui.pushButton_3DDetectShow, SIGNAL(clicked()), SLOT(on3DDetectShow()));
+	connect(ui.pushButton_3DDetect, SIGNAL(clicked()), SLOT(on3DDetect()));	
 	connect(ui.pushButton_Save3DDetectParams, SIGNAL(clicked()), SLOT(onSave3DDetectParams()));
+
 	double d3DDetectHeightDiffThd = System->getParam("3d_detect_height_diff_threshold").toDouble();
 	ui.lineEdit_3DDetectHeightDiffThreshold->setText(QString("%1").arg(d3DDetectHeightDiffThd));
 	double d3DDetectHeightNoiseThd = System->getParam("3d_detect_height_noise_threshold").toDouble();
 	ui.lineEdit_3DDetectHeightNoiseThreshold->setText(QString("%1").arg(d3DDetectHeightNoiseThd));
 	connect(ui.pushButton_3DDetectMerge, SIGNAL(clicked()), SLOT(on3DDetectMerge()));
-	connect(ui.pushButton_3DHeightDetect, SIGNAL(clicked()), SLOT(on3DHeightDetect()));
 
-
-	connect(ui.pushButton_3DHeightCellObjEdit, SIGNAL(clicked()), SLOT(on3DHeightCellObjEdit()));
-	connect(ui.pushButton_3DProfileEdit, SIGNAL(clicked()), SLOT(on3DProfileEdit()));
-
-
+	
 	//3D 检测数据处理
 	int nDataBaseMin = System->getParam("3d_detect_data_base_min").toInt();
 	int nDataBaseMax = System->getParam("3d_detect_data_base_max").toInt();
@@ -354,13 +274,12 @@ void VisionDetectRunView::initUI()
 	ui.lineEdit_DataBaseMax->setText(QString("%1").arg(nDataBaseMax));
 	ui.lineEdit_DataDetectMin->setText(QString("%1").arg(nDataDetectMin));
 	ui.lineEdit_DataDetectMax->setText(QString("%1").arg(nDataDetectMax));
-
 	connect(ui.pushButton_SaveDataParams, SIGNAL(clicked()), SLOT(onSaveDataParams()));
+	connect(ui.pushButton_3DHeightDetect, SIGNAL(clicked()), SLOT(on3DHeightDetect()));
 
-	connect(ui.pushButton_CalibGuide, SIGNAL(clicked()), SLOT(onCaliGuide()));
-	connect(ui.pushButton_CalibGuideNext, SIGNAL(clicked()), SLOT(onCaliGuideNext()));
-	connect(ui.pushButton_CalibGuidePrevious, SIGNAL(clicked()), SLOT(onCaliGuidePrevious()));
-
+	connect(ui.pushButton_3DHeightCellObjEdit, SIGNAL(clicked()), SLOT(on3DHeightCellObjEdit()));
+	connect(ui.pushButton_3DProfileEdit, SIGNAL(clicked()), SLOT(on3DProfileEdit()));
+	
 
 	// MTF 检测
 	connect(ui.pushButton_editMTFLoc1, SIGNAL(clicked()), SLOT(onEditMTFLoc1()));
@@ -453,11 +372,6 @@ void VisionDetectRunView::initLimits()
 	ui.lineEdit_dlpPDPatternSizeY->setValidator(inputIntRangePos);
 	ui.lineEdit_dlpPDGaussianSize->setValidator(inputIntRangePos);
 	ui.lineEdit_dlpPDGaussianSigma->setValidator(inputDoubleRangeAll);
-
-	ui.lineEdit_3DDetectCaliMinIntDiff->setValidator(inputDoubleRangeAll);
-	ui.lineEdit_3DDetectCaliStepCount->setValidator(inputIntRangePos);
-	ui.lineEdit_3DDetectCaliStepNegCount->setValidator(inputIntRangePos);
-	ui.lineEdit_3DDetectCaliStepHeight->setValidator(inputDoubleRangePos);
 
 	ui.lineEdit_3DDetectMinIntDiff->setValidator(inputDoubleRangeAll);
 	ui.lineEdit_3DDetectHeightDiffThreshold->setValidator(inputDoubleRangeAll);
@@ -679,7 +593,7 @@ void VisionDetectRunView::onTmpMatchSelectROI()
 
 	if (!strFileName.isEmpty() && QFile(strFileName).exists())
 	{
-		m_tmpMatchImg = imread(strFileName.toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_COLOR);
+		m_tmpMatchImg = cv::imread(strFileName.toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_COLOR);
 
 		bool bClearAll = false;
 		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
@@ -1147,661 +1061,10 @@ void VisionDetectRunView::onDetectGrayScale()
 	}
 }
 
-void VisionDetectRunView::on3DCaliOpen()
-{
-	QString path = QApplication::applicationDirPath();
-	path += "/capture/";
-
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("打开图片文件夹"), path);
-
-	if (!filePath.isEmpty())
-	{
-		cv::Mat matGray;
-		if (convertToGrayImage(filePath, matGray))
-		{
-			getVisionUI()->setImage(matGray);
-
-			ui.lineEdit_3DCaliFile->setText(QString("%1").arg(filePath + "/"));
-		}
-		else
-		{
-			ui.lineEdit_3DCaliFile->setText("");
-		}
-
-		//std::string strImageFile = QString("%1").arg(filePath + "/" + "01.bmp").toStdString();
-		//cv::Mat mat = cv::imread(strImageFile, cv::IMREAD_GRAYSCALE);
-		//m_pView->setImage(mat);
-	}
-	else
-	{
-		ui.lineEdit_3DCaliFile->setText("");
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请选择文件夹"));
-	}
-}
-
-void VisionDetectRunView::on3DCaliRstOpen()
-{
-	QString path = QApplication::applicationDirPath();
-	path += "/3D/config/";
-
-	QString picFilter = "Config(*.yml)";
-	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("打开文件"), path, picFilter);
-
-	QDir dir(path);
-	if (!strFileName.isEmpty() && strFileName.indexOf(dir.absolutePath()) >= 0)
-	{
-		ui.lineEdit_3DCaliRstFile->setText(QString("%1").arg(strFileName));
-	}
-	else
-	{
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请在子目录下设置路径"));
-	}
-}
-
-void VisionDetectRunView::on3DCali()
-{
-	QString sz3DCaliFile = ui.lineEdit_3DCaliFile->text();
-	if (sz3DCaliFile.isEmpty() && !m_bGuideCali)
-	{
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
-		return;
-	}
-
-	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
-	if (sz3DCaliRstFile.isEmpty())
-	{
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择校准输出文件"));
-		return;
-	}
-
-	const int IMAGE_COUNT = 12;
-
-	std::string strFolder = sz3DCaliFile.toStdString();
-
-	Vision::PR_CALIB_3D_BASE_CMD stCmd;
-	Vision::PR_CALIB_3D_BASE_RPY stRpy;
-	//for (int i = 1; i <= IMAGE_COUNT; ++i) 
-	//{
-	//	char chArrFileName[100];
-	//	_snprintf(chArrFileName, sizeof(chArrFileName), "%02d.bmp", i);
-	//	std::string strImageFile = strFolder + chArrFileName;
-	//	cv::Mat mat = cv::imread(strImageFile, cv::IMREAD_GRAYSCALE);
-	//	stCmd.vecInputImgs.push_back(mat);
-	//}
-
-	if (!readImages(sz3DCaliFile, stCmd.vecInputImgs))
-	{
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("读取文件错误"));
-		return;
-	}
-
-	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("标定DLP%1的Base面...请耐心等待...").arg(nDLPIndex + 1), 0);
-	QApplication::processEvents();
-
-	bool b3DCaliGaussionFilter = ui.checkBox_3DCaliGaussionFilter->isChecked();
-	bool b3DCaliReverseSeq = ui.checkBox_3DCaliReverseSeq->isChecked();
-	stCmd.bEnableGaussianFilter = b3DCaliGaussionFilter;
-	stCmd.bReverseSeq = b3DCaliReverseSeq;
-	stCmd.fRemoveHarmonicWaveK = 0.f;
-	//stCmd.szMeasureWinSize = cv::Size(20, 20);
-
-	Vision::VisionStatus retStatus = PR_Calib3DBase(&stCmd, &stRpy);
-	if (retStatus == Vision::VisionStatus::OK)
-	{
-		std::string strResultMatPath = sz3DCaliRstFile.toStdString();
-		cv::FileStorage fs(strResultMatPath, cv::FileStorage::WRITE);
-		if (!fs.isOpened())
-		{
-			System->setTrackInfo(QStringLiteral("配置文件路径不正确！"));
-			QSystem::closeMessage();
-			return;
-		}
-
-		write(fs, "K1", stRpy.matThickToThinK);
-		write(fs, "K2", stRpy.matThickToThinnestK);
-		write(fs, "BaseWrappedAlpha", stRpy.matBaseWrappedAlpha);
-		write(fs, "BaseWrappedBeta", stRpy.matBaseWrappedBeta);
-		write(fs, "BaseWrappedGamma", stRpy.matBaseWrappedGamma);
-		fs.release();
-
-		//Vision::PR_CALC_3D_BASE_CMD stCalc3DBaseCmd;
-		//Vision::PR_CALC_3D_BASE_RPY stCalc3DBaseRpy;
-		//stCalc3DBaseCmd.matBaseSurfaceParam = stRpy.matBaseSurfaceParam;
-		//PR_Calc3DBase(&stCalc3DBaseCmd, &stCalc3DBaseRpy);
-		//if (Vision::VisionStatus::OK != stCalc3DBaseRpy.enStatus) {
-		//	System->setTrackInfo(QString("PR_Calc3DBase fail. Status = ").arg(ToInt32(stCalc3DBaseRpy.enStatus)));			
-		//}
-		//int nStation = ui.comboBox_selectDLP->currentIndex();
-		//m_matBaseSurfaces[nStation] = stCalc3DBaseRpy.matBaseSurface;
-
-		//QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("标定成功"));
-		System->setTrackInfo(QStringLiteral("标定DLP%1的Base成功").arg(nDLPIndex + 1));
-	}
-	else
-	{
-		getVisionUI()->addImageText(QString("Error at 3D Calibration, error code = %1").arg((int)retStatus));
-		System->setTrackInfo(QString("Error at 3D Calibration, error code = %1").arg((int)retStatus));
-	}
-
-	QSystem::closeMessage();
-	//std::cout << "PR_Calib3DBase status " << ToInt32(stRpy.enStatus) << std::endl;	
-}
-
-void VisionDetectRunView::onSelectCaliTypeChanged(int iState)
-{
-	int nCaliTypeIndex = ui.comboBox_selectCaliType->currentIndex();
-}
-
-void VisionDetectRunView::on3DDetectCaliOpen()
-{
-	QString path = QApplication::applicationDirPath();
-	path += "/capture/";
-
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("打开图片文件夹"), path);
-
-	if (!filePath.isEmpty())
-	{
-		cv::Mat matGray;
-		if (convertToGrayImage(filePath, matGray))
-		{
-			getVisionUI()->setImage(matGray);
-
-			ui.lineEdit_3DDetectCaliFile->setText(QString("%1").arg(filePath + "/"));
-		}
-		else
-		{
-			ui.lineEdit_3DDetectCaliFile->setText("");
-		}
-
-		//ui.lineEdit_3DDetectCaliFile->setText(QString("%1").arg(filePath + "/"));
-
-		//std::string strImageFile = QString("%1").arg(filePath + "/" + "01.bmp").toStdString();
-		//cv::Mat mat = cv::imread(strImageFile, cv::IMREAD_GRAYSCALE);
-		//m_pView->setImage(mat);
-	}
-	else
-	{
-		ui.lineEdit_3DDetectCaliFile->setText("");
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请选择文件夹"));
-	}
-}
-
-void VisionDetectRunView::on3DDetectCali()
-{
-	QString sz3DDetectCaliFile = ui.lineEdit_3DDetectCaliFile->text();
-	if (sz3DDetectCaliFile.isEmpty() && !m_bGuideCali)
-	{
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
-		return;
-	}
-
-	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
-	if (sz3DCaliRstFile.isEmpty())
-	{
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择校准输出文件"));
-		return;
-	}
-
-	//if (m_matBaseSurface.empty())
-	//{
-	//	QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先校准Base平面"));
-	//	return;
-	//}
-
-	int nCaliTypeIndex = ui.comboBox_selectCaliType->currentIndex();
-
-	const int IMAGE_COUNT = 12;
-	std::string strFolder = sz3DDetectCaliFile.toStdString();
-
-	Vision::PR_CALIB_3D_HEIGHT_CMD stCmd;
-	Vision::PR_CALIB_3D_HEIGHT_RPY stRpy;
-	//for (int i = 1; i <= IMAGE_COUNT; ++i) {
-	//	char chArrFileName[100];
-	//	_snprintf(chArrFileName, sizeof(chArrFileName), "%02d.bmp", i);
-	//	std::string strImageFile = strFolder + chArrFileName;
-	//	cv::Mat mat = cv::imread(strImageFile, cv::IMREAD_GRAYSCALE);
-	//	m_nImageRow = mat.rows;
-	//	m_nImageCol = mat.cols;
-	//	stCmd.vecInputImgs.push_back(mat);
-	//}
-	if (!readImages(sz3DDetectCaliFile, stCmd.vecInputImgs))
-	{
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("读取文件错误"));
-		return;
-	}
-
-	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("标定DLP%1的").arg(nDLPIndex+1) + QString::number(nCaliTypeIndex + 1, 'g', 2) + QStringLiteral("面...请耐心等待..."), 0);
-	QApplication::processEvents();
-
-	bool b3DDetectCaliUseThinPattern = ui.checkBox_3DCaliUseThinPattern->isChecked();
-	bool b3DDetectCaliGaussionFilter = ui.checkBox_3DDetectCaliGaussionFilter->isChecked();
-	bool b3DDetectCaliReverseSeq = ui.checkBox_3DDetectCaliReverseSeq->isChecked();
-	bool b3DDetectCaliReverseHeight = ui.checkBox_3DDetectCaliReverseHeight->isChecked();
-	double d3DDetectCaliMinIntDiff = ui.lineEdit_3DDetectCaliMinIntDiff->text().toDouble();
-	int n3DDetectCaliStepCount = ui.lineEdit_3DDetectCaliStepCount->text().toInt();
-	int n3DDetectCaliStepNegCount = ui.lineEdit_3DDetectCaliStepNegCount->text().toInt();
-	double d3DDetectCaliStepHeight = ui.lineEdit_3DDetectCaliStepHeight->text().toDouble();
-
-	stCmd.bEnableGaussianFilter = b3DDetectCaliGaussionFilter;
-	stCmd.bReverseSeq = b3DDetectCaliReverseSeq;
-	stCmd.bReverseHeight = (nCaliTypeIndex == 2 ? true : false);
-	stCmd.bUseThinnestPattern = b3DDetectCaliUseThinPattern;
-
-	stCmd.fMinAmplitude = d3DDetectCaliMinIntDiff;
-	stCmd.nBlockStepCount = (nCaliTypeIndex == 2 ? n3DDetectCaliStepNegCount : n3DDetectCaliStepCount);
-	stCmd.fBlockStepHeight = d3DDetectCaliStepHeight;
-	stCmd.nResultImgGridRow = 10;
-	stCmd.nResultImgGridCol = 10;
-	stCmd.nRemoveBetaJumpSpanX = 0;
-	stCmd.nRemoveBetaJumpSpanY = 0;
-	stCmd.nRemoveGammaJumpSpanX = 0;
-	stCmd.nRemoveGammaJumpSpanY = 0;
-
-	stCmd.fRemoveHarmonicWaveK = 0;
-	stCmd.szMeasureWinSize = cv::Size(40, 40);
-
-	cv::Mat matBaseSurfaceParam;
-
-	std::string strResultMatPath = sz3DCaliRstFile.toStdString();
-	cv::FileStorage fs(strResultMatPath, cv::FileStorage::READ);
-	cv::FileNode fileNode = fs["K1"];
-	cv::read(fileNode, stCmd.matThickToThinK, cv::Mat());
-	fileNode = fs["K2"];
-	cv::read(fileNode, stCmd.matThickToThinnestK, cv::Mat());
-	fileNode = fs["BaseWrappedAlpha"];
-	cv::read(fileNode, stCmd.matBaseWrappedAlpha, cv::Mat());
-	fileNode = fs["BaseWrappedBeta"];
-	cv::read(fileNode, stCmd.matBaseWrappedBeta, cv::Mat());
-	fileNode = fs["BaseWrappedGamma"];
-	cv::read(fileNode, stCmd.matBaseWrappedGamma, cv::Mat());
-	fs.release();
-
-	//int nStation = ui.comboBox_selectDLP->currentIndex();
-	//if (m_matBaseSurfaces[nStation].empty())
-	//{
-	//	Vision::PR_CALC_3D_BASE_CMD stCalc3DBaseCmd;
-	//	Vision::PR_CALC_3D_BASE_RPY stCalc3DBaseRpy;
-	//	stCalc3DBaseCmd.matBaseSurfaceParam = matBaseSurfaceParam;
-	//	PR_Calc3DBase(&stCalc3DBaseCmd, &stCalc3DBaseRpy);
-	//	if (Vision::VisionStatus::OK != stCalc3DBaseRpy.enStatus) {
-	//		System->setTrackInfo(QString("PR_Calc3DBase fail. Status = ").arg(ToInt32(stCalc3DBaseRpy.enStatus)));
-	//	}
-	//	m_matBaseSurfaces[nStation] = stCalc3DBaseRpy.matBaseSurface;
-	//}
-	//stCmd.matBaseSurface = m_matBaseSurfaces[nStation];
-
-
-
-	Vision::VisionStatus retStatus = PR_Calib3DHeight(&stCmd, &stRpy);
-	//std::cout << "PR_Calc3DHeight status " << ToInt32(stRpy.enStatus) << std::endl;
-	if (retStatus == Vision::VisionStatus::OK)
-	{
-		QString path = QApplication::applicationDirPath();
-		path += "/3D/config/";
-
-		cv::FileStorage fs1(strResultMatPath, cv::FileStorage::APPEND);
-		if (!fs1.isOpened())
-		{
-			System->setTrackInfo(QStringLiteral("配置文件路径不正确！"));
-			QSystem::closeMessage();
-			return;
-		}
-		cv::write(fs1, "PhaseToHeightK", stRpy.matPhaseToHeightK);
-		fs1.release();
-
-		std::string strCalibDataFile((path + QString("%1_").arg(ui.comboBox_selectDLP->currentIndex() + 1) + QString::number(nCaliTypeIndex + 1, 'g', 2) + QString(".yml")).toStdString());
-		cv::FileStorage fsCalibData(strCalibDataFile, cv::FileStorage::WRITE);
-		if (!fsCalibData.isOpened())
-		{
-			System->setTrackInfo(QStringLiteral("配置文件路径不正确！"));
-			QSystem::closeMessage();
-			return;
-		}
-		cv::write(fsCalibData, "Phase", stRpy.matPhase);
-		cv::write(fsCalibData, "DivideStepIndex", stRpy.matDivideStepIndex);
-		fsCalibData.release();
-
-		getVisionUI()->displayImage(stRpy.matResultImg);
-
-		if (USER_LEVEL_TECH <= m_nLevel)
-		{
-			m_pResultDisplay->setupPlot1Data(stRpy.vecVecStepPhase, stRpy.vecStepPhaseSlope);
-			m_pResultDisplay->setupPlot2Data(stRpy.vecVecStepPhase, stRpy.vecVecStepPhaseDiff);
-			m_pResultDisplay->show();
-
-
-			//QString path = QApplication::applicationDirPath();
-			//path += "/capture/";
-			//cv::imwrite(path.toStdString() + "matDivideStepResultImg.bmp", stRpy.matDivideStepResultImg);
-			//cv::Mat mat = cv::imread(path.toStdString() + "matDivideStepResultImg.bmp", cv::IMREAD_COLOR);
-			m_pColorDisplay->setImage(stRpy.matDivideStepResultImg);
-			m_pColorDisplay->show();
-
-			int nWidth = 0, nHeight = 0;
-			m_pColorDisplay->getSize(nWidth, nHeight);
-
-			QRect rectRstDisplay = m_pResultDisplay->geometry();
-			m_pColorDisplay->setGeometry(rectRstDisplay.left() - nWidth, rectRstDisplay.top(), nWidth, nHeight);
-		}
-
-		//QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("标定成功"));
-		System->setTrackInfo(QStringLiteral("标定DLP%1的").arg(nDLPIndex + 1) + QString::number(nCaliTypeIndex + 1, 'g', 2) + QStringLiteral("面成功"));
-	}
-	else
-	{
-		QString path = QApplication::applicationDirPath();
-		path += "/3D/config/";
-
-		std::string strResultMatPath = path.toStdString();
-
-		cv::Mat matPhaseResultImg = drawHeightGrid(stRpy.matPhase, 10, 10);
-		cv::imwrite(strResultMatPath + "PR_Calib3DHeight_PhaseGridImg_01.png", matPhaseResultImg);
-
-		getVisionUI()->addImageText(QString("Error at 3D Calibration Height, error code = %1").arg((int)retStatus));
-		System->setTrackInfo(QString("Error at 3D Calibration Height, error code = %1").arg((int)retStatus));
-	}
-
-	QSystem::closeMessage();
-}
-
-void VisionDetectRunView::on3DDetectCaliNegOpen()
-{
-	QString path = QApplication::applicationDirPath();
-	path += "/capture/";
-
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("打开图片文件夹"), path);
-
-	if (!filePath.isEmpty())
-	{
-		cv::Mat matGray;
-		if (convertToGrayImage(filePath, matGray))
-		{
-			getVisionUI()->setImage(matGray);
-
-			ui.lineEdit_3DDetectCaliNegFile->setText(QString("%1").arg(filePath + "/"));
-		}
-		else
-		{
-			ui.lineEdit_3DDetectCaliNegFile->setText("");
-		}
-
-		//ui.lineEdit_3DDetectCaliNegFile->setText(QString("%1").arg(filePath + "/"));
-
-		//std::string strImageFile = QString("%1").arg(filePath + "/" + "01.bmp").toStdString();
-		//cv::Mat mat = cv::imread(strImageFile, cv::IMREAD_GRAYSCALE);
-		//m_pView->setImage(mat);
-	}
-	else
-	{
-		ui.lineEdit_3DDetectCaliNegFile->setText("");
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请选择文件夹"));
-	}
-}
-
-void VisionDetectRunView::on3DDetectCaliNeg()
-{
-	QString sz3DDetectCaliFile = ui.lineEdit_3DDetectCaliNegFile->text();
-	if (sz3DDetectCaliFile.isEmpty() && !m_bGuideCali)
-	{
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择图片"));
-		return;
-	}
-
-	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
-	if (sz3DCaliRstFile.isEmpty())
-	{
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择校准输出文件"));
-		return;
-	}
-
-	//if (m_matBaseSurface.empty())
-	//{
-	//	QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先校准Base平面"));
-	//	return;
-	//}
-
-	const int IMAGE_COUNT = 12;
-	std::string strFolder = sz3DDetectCaliFile.toStdString();
-	Vision::PR_CALC_3D_HEIGHT_CMD stCmd;
-	Vision::PR_CALC_3D_HEIGHT_RPY stRpy;
-	//for (int i = 1; i <= IMAGE_COUNT; ++i)
-	//{
-	//	char chArrFileName[100];
-	//	_snprintf(chArrFileName, sizeof(chArrFileName), "%02d.bmp", i);
-	//	std::string strImageFile = strFolder + chArrFileName;
-	//	cv::Mat mat = cv::imread(strImageFile, cv::IMREAD_GRAYSCALE);
-	//	stCmd.vecInputImgs.push_back(mat);
-	//}
-	if (!readImages(sz3DDetectCaliFile, stCmd.vecInputImgs))
-	{
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("读取文件错误"));
-		return;
-	}
-
-	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("标定DLP%1的H5面...请耐心等待...").arg(nDLPIndex + 1), 0);
-	QApplication::processEvents();
-
-	bool b3DDetectCaliUseThinPattern = ui.checkBox_3DCaliUseThinPattern->isChecked();
-	bool b3DDetectGaussionFilter = ui.checkBox_3DDetectGaussionFilter->isChecked();
-	bool b3DDetectReverseSeq = ui.checkBox_3DDetectReverseSeq->isChecked();
-	double d3DDetectMinIntDiff = ui.lineEdit_3DDetectMinIntDiff->text().toDouble();
-	stCmd.bEnableGaussianFilter = b3DDetectGaussionFilter;
-	stCmd.bReverseSeq = b3DDetectReverseSeq;
-	stCmd.fMinAmplitude = d3DDetectMinIntDiff;
-	stCmd.bUseThinnestPattern = b3DDetectCaliUseThinPattern;
-
-	cv::Mat matBaseSurfaceParam;
-
-	std::string strResultMatPath = sz3DCaliRstFile.toStdString();
-	cv::FileStorage fs(strResultMatPath, cv::FileStorage::READ);
-	cv::FileNode fileNode = fs["K1"];
-	cv::read(fileNode, stCmd.matThickToThinK, cv::Mat());
-	fileNode = fs["K2"];
-	cv::read(fileNode, stCmd.matThickToThinnestK, cv::Mat());
-	fileNode = fs["BaseWrappedAlpha"];
-	cv::read(fileNode, stCmd.matBaseWrappedAlpha, cv::Mat());
-	fileNode = fs["BaseWrappedBeta"];
-	cv::read(fileNode, stCmd.matBaseWrappedBeta, cv::Mat());
-	fileNode = fs["BaseWrappedGamma"];
-	cv::read(fileNode, stCmd.matBaseWrappedGamma, cv::Mat());
-	fs.release();
-
-	//int nStation = ui.comboBox_selectDLP->currentIndex();
-	//if (m_matBaseSurfaces[nStation].empty())
-	//{
-	//	Vision::PR_CALC_3D_BASE_CMD stCalc3DBaseCmd;
-	//	Vision::PR_CALC_3D_BASE_RPY stCalc3DBaseRpy;
-	//	stCalc3DBaseCmd.matBaseSurfaceParam = matBaseSurfaceParam;
-	//	PR_Calc3DBase(&stCalc3DBaseCmd, &stCalc3DBaseRpy);
-	//	if (Vision::VisionStatus::OK != stCalc3DBaseRpy.enStatus) {
-	//		System->setTrackInfo(QString("PR_Calc3DBase fail. Status = ").arg(ToInt32(stCalc3DBaseRpy.enStatus)));
-	//	}
-	//	m_matBaseSurfaces[nStation] = stCalc3DBaseRpy.matBaseSurface;
-	//}
-	//stCmd.matBaseSurface = m_matBaseSurfaces[nStation];	
-
-	Vision::VisionStatus retStatus = PR_Calc3DHeight(&stCmd, &stRpy);
-	if (retStatus == Vision::VisionStatus::OK)
-	{
-		QString path = QApplication::applicationDirPath();
-		path += "/3D/config/";
-
-		std::string strCalibDataFile((path + QString("%1_").arg(ui.comboBox_selectDLP->currentIndex() + 1) + QString("H5.yml")).toStdString());
-		cv::FileStorage fsCalibData(strCalibDataFile, cv::FileStorage::WRITE);
-		if (!fsCalibData.isOpened())
-		{
-			System->setTrackInfo(QStringLiteral("配置文件路径不正确！"));
-			QSystem::closeMessage();
-			return;
-		}
-		cv::write(fsCalibData, "Phase", stRpy.matPhase);
-		fsCalibData.release();
-
-		cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
-		getVisionUI()->displayImage(matHeightResultImg);
-
-		System->setTrackInfo(QStringLiteral("标定DLP%1的H5面成功").arg(nDLPIndex + 1));
-	}
-	else
-	{
-		getVisionUI()->addImageText(QString("Error at 3D Height Calculation, error code = %1").arg((int)retStatus));
-	}
-
-	QSystem::closeMessage();
-}
-
-void VisionDetectRunView::on3DDetectCaliComb()
-{
-	QString path = QApplication::applicationDirPath();
-	path += "/3D/config/";
-
-	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("导入DLP%1的标定结果...请耐心等待...").arg(nDLPIndex + 1), 0);
-	QApplication::processEvents();
-
-	Vision::PR_INTEGRATE_3D_CALIB_CMD stCmd;
-	Vision::PR_INTEGRATE_3D_CALIB_RPY stRpy;
-	for (int i = 1; i <= 3; ++i)
-	{
-		std::string strCalibDataFile((path + QString("%1_").arg(ui.comboBox_selectDLP->currentIndex() + 1) + QString::number(i, 'g', 2) + QString(".yml")).toStdString());
-		cv::FileStorage fsCalibData(strCalibDataFile, cv::FileStorage::READ);
-		if (!fsCalibData.isOpened())
-		{
-			System->setTrackInfo(QStringLiteral("配置文件路径不正确！"));
-			QSystem::closeMessage();
-			return;
-		}
-
-		Vision::PR_INTEGRATE_3D_CALIB_CMD::SINGLE_CALIB_DATA stCalibData;
-		cv::FileNode fileNode = fsCalibData["Phase"];
-		cv::read(fileNode, stCalibData.matPhase, cv::Mat());
-
-		fileNode = fsCalibData["DivideStepIndex"];
-		cv::read(fileNode, stCalibData.matDivideStepIndex, cv::Mat());
-		fsCalibData.release();
-
-		stCmd.vecCalibData.push_back(stCalibData);
-	}
-
-	std::string strCalibDataFile((path + QString("%1_").arg(ui.comboBox_selectDLP->currentIndex() + 1) + QString("H5.yml")).toStdString());
-	cv::FileStorage fsCalibData(strCalibDataFile, cv::FileStorage::READ);
-	if (!fsCalibData.isOpened())
-	{
-		System->setTrackInfo(QStringLiteral("配置文件路径不正确！"));
-		QSystem::closeMessage();
-		return;
-	}
-	cv::FileNode fileNode = fsCalibData["Phase"];
-	cv::read(fileNode, stCmd.matTopSurfacePhase, cv::Mat());
-	fsCalibData.release();
-
-	cv::medianBlur(stCmd.matTopSurfacePhase, stCmd.matTopSurfacePhase, 5);
-	stCmd.fTopSurfaceHeight = 5;
-
-	QSystem::closeMessage();
-
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("合成DLP%1的标定结果...请耐心等待...").arg(nDLPIndex + 1), 0);
-	QApplication::processEvents();
-
-	Vision::VisionStatus retStatus = PR_Integrate3DCalib(&stCmd, &stRpy);
-	if (retStatus == Vision::VisionStatus::OK)
-	{
-		if (USER_LEVEL_TECH <= m_nLevel)
-		{
-			int i = 1;
-			for (const auto &matResultImg : stRpy.vecMatResultImg) {
-				char chArrFileName[100];
-				_snprintf(chArrFileName, sizeof(chArrFileName), "ResultImg_DLP%02d_%02d.png", nDLPIndex + 1, i);
-				std::string strDataFile = path.toStdString() + chArrFileName;
-				cv::imwrite(strDataFile, matResultImg);
-
-				QString nameEncrypt = path + QString("ResultImg_DLP%1_%2").arg(nDLPIndex + 1).arg(i) + ".ent";
-				AOI::Crypt::EncryptFileNfg(strDataFile, nameEncrypt.toStdString());
-				QFile::remove(QString(strDataFile.c_str()));
-
-				++i;
-			}
-
-			if (i > 1) getVisionUI()->displayImage(stRpy.vecMatResultImg[0]);
-		}
-
-
-		QString fileName = QString("IntegrateCalibResult") + QString::number(nDLPIndex + 1, 'g', 2) + QString(".yml");
-
-		std::string strCalibResultFile(path.toStdString() + fileName.toStdString());
-		cv::FileStorage fsCalibResultData(strCalibResultFile, cv::FileStorage::WRITE);
-		if (!fsCalibResultData.isOpened())
-		{
-			qDebug() << "Failed to open file: " << strCalibResultFile.c_str();
-			QSystem::closeMessage();
-			return;
-		}
-		cv::write(fsCalibResultData, "IntegratedK", stRpy.matIntegratedK);
-		cv::write(fsCalibResultData, "Order3CurveSurface", stRpy.matOrder3CurveSurface);
-		fsCalibResultData.release();
-
-		System->setTrackInfo(QStringLiteral("合成DLP%1标定成功").arg(nDLPIndex + 1));
-	}
-	else
-	{
-		getVisionUI()->addImageText(QString("Error at 3D PR_Integrate3DCalib Height, error code = %1").arg((int)retStatus));
-		System->setTrackInfo(QString("Error at 3D PR_Integrate3DCalib Height, error code = %1").arg((int)retStatus));
-	}
-
-	QSystem::closeMessage();
-}
-
-
 void VisionDetectRunView::onDLPIndexChanged(int iState)
 {
 	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
 	System->setParam("dlp_image_capture_index", nDLPIndex);
-
-	QString sz3DCaliRstFile = System->getParam(QString("3d_cali_rst_filename_%1").arg(nDLPIndex + 1)).toString();
-	QString path = QApplication::applicationDirPath();
-	QDir dir(path);
-	ui.lineEdit_3DCaliRstFile->setText(QString("%1").arg(dir.absolutePath() + sz3DCaliRstFile));
-}
-
-void VisionDetectRunView::onSave3DDetectCaliParams()
-{
-	bool b3DCaliGaussionFilter = ui.checkBox_3DCaliGaussionFilter->isChecked();
-	bool b3DCaliReverseSeq = ui.checkBox_3DCaliReverseSeq->isChecked();
-	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
-	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-
-	System->setParam("3d_cali_gaussion_filter", b3DCaliGaussionFilter);
-	System->setParam("3d_cali_reverse_seq", b3DCaliReverseSeq);
-
-	QString path = QApplication::applicationDirPath();
-	QDir dir(path);
-	//QString szSavePath = sz3DCaliRstFile.right(sz3DCaliRstFile.size() - sz3DCaliRstFile.indexOf("/3D/config/"));
-	QString szSavePath = sz3DCaliRstFile.remove(dir.absolutePath());
-	System->setParam(QString("3d_cali_rst_filename_%1").arg(nDLPIndex + 1), szSavePath);
-}
-
-void VisionDetectRunView::onSave3DDetectCaliHeightParams()
-{
-	bool b3DDetectCaliUseThinPattern = ui.checkBox_3DCaliUseThinPattern->isChecked();
-	bool b3DDetectCaliGaussionFilter = ui.checkBox_3DDetectCaliGaussionFilter->isChecked();
-	bool b3DDetectCaliReverseSeq = ui.checkBox_3DDetectCaliReverseSeq->isChecked();
-	bool b3DDetectCaliReverseHeight = ui.checkBox_3DDetectCaliReverseHeight->isChecked();
-	double d3DDetectCaliMinIntDiff = ui.lineEdit_3DDetectCaliMinIntDiff->text().toDouble();
-	int n3DDetectCaliStepCount = ui.lineEdit_3DDetectCaliStepCount->text().toInt();
-	int n3DDetectCaliStepNegCount = ui.lineEdit_3DDetectCaliStepNegCount->text().toInt();
-	double d3DDetectCaliStepHeight = ui.lineEdit_3DDetectCaliStepHeight->text().toDouble();
-
-	System->setParam("3d_detect_cali_thin_pattern", b3DDetectCaliUseThinPattern);
-	System->setParam("3d_detect_cali_gaussion_filter", b3DDetectCaliGaussionFilter);
-	System->setParam("3d_detect_cali_reverse_seq", b3DDetectCaliReverseSeq);
-	System->setParam("3d_detect_cali_reverse_height", b3DDetectCaliReverseHeight);
-	System->setParam("3d_detect_cali_min_intensity_diff", d3DDetectCaliMinIntDiff);
-	System->setParam("3d_detect_cali_step_count", n3DDetectCaliStepCount);
-	System->setParam("3d_detect_cali_step_neg_count", n3DDetectCaliStepNegCount);
-	System->setParam("3d_detect_cali_step_height", d3DDetectCaliStepHeight);
 }
 
 void VisionDetectRunView::on3DDetectOpen()
@@ -1824,12 +1087,6 @@ void VisionDetectRunView::on3DDetectOpen()
 		{
 			ui.lineEdit_3DDetectFile->setText("");
 		}
-
-		//ui.lineEdit_3DDetectFile->setText(QString("%1").arg(filePath + "/"));
-
-		//std::string strImageFile = QString("%1").arg(filePath + "/" + "01.bmp").toStdString();
-		//cv::Mat mat = cv::imread(strImageFile, cv::IMREAD_GRAYSCALE);
-		//m_pView->setImage(mat);
 	}
 	else
 	{
@@ -1838,10 +1095,6 @@ void VisionDetectRunView::on3DDetectOpen()
 	}
 }
 
-void VisionDetectRunView::onPhaseShiftValueChanged(double dValue)
-{
-	updatePhaseShift(dValue);
-}
 
 void VisionDetectRunView::on3DDetect()
 {
@@ -1852,7 +1105,12 @@ void VisionDetectRunView::on3DDetect()
 		return;
 	}
 
-	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
+	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
+	QString sz3DCaliRstFile = System->getParam(QString("3d_cali_rst_filename_%1").arg(nDLPIndex + 1)).toString();
+	QString path = QApplication::applicationDirPath();
+	QDir dir(path);
+	sz3DCaliRstFile = dir.absolutePath() + sz3DCaliRstFile;
+
 	if (sz3DCaliRstFile.isEmpty())
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择校准输出文件"));
@@ -1863,14 +1121,6 @@ void VisionDetectRunView::on3DDetect()
 	std::string strFolder = sz3DDetectFile.toStdString();
 	Vision::PR_CALC_3D_HEIGHT_CMD stCmd;
 	Vision::PR_CALC_3D_HEIGHT_RPY stRpy;
-	//for (int i = 1; i <= IMAGE_COUNT; ++i)
-	//{
-	//	char chArrFileName[100];
-	//	_snprintf(chArrFileName, sizeof(chArrFileName), "%02d.bmp", i);
-	//	std::string strImageFile = strFolder + chArrFileName;
-	//	cv::Mat mat = cv::imread(strImageFile, cv::IMREAD_GRAYSCALE);
-	//	stCmd.vecInputImgs.push_back(mat);
-	//}
 	if (!readImages(sz3DDetectFile, stCmd.vecInputImgs))
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("读取文件错误"));
@@ -1904,24 +1154,9 @@ void VisionDetectRunView::on3DDetect()
 	cv::read(fileNode, stCmd.matBaseWrappedGamma, cv::Mat());
 	fs.release();
 
-	//int nStation = ui.comboBox_selectDLP->currentIndex();
-	//if (m_matBaseSurfaces[nStation].empty())
-	//{
-	//	Vision::PR_CALC_3D_BASE_CMD stCalc3DBaseCmd;
-	//	Vision::PR_CALC_3D_BASE_RPY stCalc3DBaseRpy;
-	//	stCalc3DBaseCmd.matBaseSurfaceParam = matBaseSurfaceParam;
-	//	PR_Calc3DBase(&stCalc3DBaseCmd, &stCalc3DBaseRpy);
-	//	if (Vision::VisionStatus::OK != stCalc3DBaseRpy.enStatus) {
-	//		System->setTrackInfo(QString("PR_Calc3DBase fail. Status = ").arg(ToInt32(stCalc3DBaseRpy.enStatus)));
-	//	}
-	//	m_matBaseSurfaces[nStation] = stCalc3DBaseRpy.matBaseSurface;
-	//}
-	//stCmd.matBaseSurface = m_matBaseSurfaces[nStation];
-
-	QString path = QApplication::applicationDirPath();
+	path = QApplication::applicationDirPath();
 	path += "/3D/config/";
 
-	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
 	QString fileName = QString("IntegrateCalibResult") + QString::number(nDLPIndex + 1, 'g', 2) + QString(".yml");
 
 	std::string strIntegratedCalibResultPath = path.toStdString() + fileName.toStdString();
@@ -1945,14 +1180,7 @@ void VisionDetectRunView::on3DDetect()
 		int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
 
 		m_3DMatHeights[nDLPIndex] = stRpy.matHeight;
-		//cv::patchNaNs(m_3DMatHeights[nDLPIndex], 0);
-
-		//cv::Mat matHeightResultImg = drawHeightGrid(stRpy.matHeight, 9, 9);
-		//cv::imwrite("./data/HeightGridImg.png", matHeightResultImg);
-		//cv::Mat matPhaseResultImg = drawHeightGrid(stRpy.matPhase, 9, 9);
-		//cv::imwrite("./data/PhaseGridImg.png", matPhaseResultImg);
-
-		//cv::Mat matHeightResultImg = drawHeightGrid2(stRpy.matHeight, 9, 9)/*drawHeightGray(stRpy.matHeight)*/;
+	
 		cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
 		getVisionUI()->displayImage(matHeightResultImg);
 
@@ -1987,6 +1215,11 @@ void VisionDetectRunView::on3DDetect()
 	}
 }
 
+void VisionDetectRunView::onPhaseShiftValueChanged(double dValue)
+{
+	updatePhaseShift(dValue);
+}
+
 void VisionDetectRunView::on3DDetectMerge()
 {
 	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
@@ -1999,35 +1232,88 @@ void VisionDetectRunView::on3DDetectMerge()
 		}
 	}
 
-	Vision::PR_MERGE_3D_HEIGHT_CMD stCmd;
-	Vision::PR_MERGE_3D_HEIGHT_RPY stRpy;
-
-	for (int i = 0; i < nStationNum; i++)
+	if (2 == nStationNum) // two DLPs
 	{
-		stCmd.vecMatHeight.push_back(m_3DMatHeights[i]);
+		Vision::PR_MERGE_3D_HEIGHT_CMD stCmd;
+		Vision::PR_MERGE_3D_HEIGHT_RPY stRpy;
+
+		for (int i = 0; i < nStationNum; i++)
+		{
+			stCmd.vecMatHeight.push_back(m_3DMatHeights[i]);
+		}
+		double d3DDetectHeightDiffThd = ui.lineEdit_3DDetectHeightDiffThreshold->text().toDouble();
+		stCmd.fHeightDiffThreshold = d3DDetectHeightDiffThd;
+		double d3DDetectHeightNoiseThd = ui.lineEdit_3DDetectHeightNoiseThreshold->text().toDouble();
+		stCmd.fRemoveLowerNoiseRatio = d3DDetectHeightNoiseThd;
+
+		QDateTime dateTM = QDateTime::currentDateTime();
+		Vision::VisionStatus retStatus = PR_Merge3DHeight(&stCmd, &stRpy);
+		System->setTrackInfo(QString("PR_Merge3DHeight time %1 ms").arg(dateTM.msecsTo(QDateTime::currentDateTime())));
+
+		QString path = QApplication::applicationDirPath();
+		path += "/Vision/";
+		Vision::PR_DumpTimeLog(path.toStdString() + "timelog.log");
+
+		if (retStatus == Vision::VisionStatus::OK)
+		{
+			m_3DMatHeightMerge = stRpy.matHeight;
+
+			//cv::patchNaNs(m_3DMatHeightMerge, 0);
+
+			cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
+			getVisionUI()->displayImage(matHeightResultImg);
+
+
+			IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+			if (pUI)
+			{
+				pUI->setHeightData(m_3DMatHeightMerge);
+			}
+		}
+		else
+		{
+			getVisionUI()->addImageText(QString("Error at 3D Height Calculation, error code = %1").arg((int)retStatus));
+		}
 	}
-	double d3DDetectHeightDiffThd = ui.lineEdit_3DDetectHeightDiffThreshold->text().toDouble();
-	stCmd.fHeightDiffThreshold = d3DDetectHeightDiffThd;
-	double d3DDetectHeightNoiseThd = ui.lineEdit_3DDetectHeightNoiseThreshold->text().toDouble();
-	stCmd.fRemoveLowerNoiseRatio = d3DDetectHeightNoiseThd;
-
-	QDateTime dateTM = QDateTime::currentDateTime();
-	Vision::VisionStatus retStatus = PR_Merge3DHeight(&stCmd, &stRpy);
-	System->setTrackInfo(QString("PR_Merge3DHeight time %1 ms").arg(dateTM.msecsTo(QDateTime::currentDateTime())));
-
-	QString path = QApplication::applicationDirPath();
-	path += "/Vision/";
-	Vision::PR_DumpTimeLog(path.toStdString() + "timelog.log");
-
-	if (retStatus == Vision::VisionStatus::OK)
+	else // 4 DLPs
 	{
-		m_3DMatHeightMerge = stRpy.matHeight;
+		cv::Mat matHeightMerges[2];
+		for (int j = 0; j < 2; j++)
+		{
+			Vision::PR_MERGE_3D_HEIGHT_CMD stCmd;
+			Vision::PR_MERGE_3D_HEIGHT_RPY stRpy;
 
+			stCmd.vecMatHeight.push_back(m_3DMatHeights[j + 0]);
+			stCmd.vecMatHeight.push_back(m_3DMatHeights[j + 2]);
+
+			double d3DDetectHeightDiffThd = ui.lineEdit_3DDetectHeightDiffThreshold->text().toDouble();
+			stCmd.fHeightDiffThreshold = d3DDetectHeightDiffThd;
+			double d3DDetectHeightNoiseThd = ui.lineEdit_3DDetectHeightNoiseThreshold->text().toDouble();
+			stCmd.fRemoveLowerNoiseRatio = d3DDetectHeightNoiseThd;
+
+			QDateTime dateTM = QDateTime::currentDateTime();
+			Vision::VisionStatus retStatus = PR_Merge3DHeight(&stCmd, &stRpy);
+			System->setTrackInfo(QString("PR_Merge3DHeight time %1 ms").arg(dateTM.msecsTo(QDateTime::currentDateTime())));
+
+			QString path = QApplication::applicationDirPath();
+			path += "/Vision/";
+			Vision::PR_DumpTimeLog(path.toStdString() + "timelog.log");
+
+			if (retStatus == Vision::VisionStatus::OK)
+			{
+				matHeightMerges[j] = stRpy.matHeight;
+
+				cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
+				getVisionUI()->displayImage(matHeightResultImg);
+			}
+			else
+			{
+				getVisionUI()->addImageText(QString("Error at 3D Height Calculation, error code = %1").arg((int)retStatus));
+			}
+		}
+
+		m_3DMatHeightMerge = (matHeightMerges[0] + matHeightMerges[1])/2;
 		//cv::patchNaNs(m_3DMatHeightMerge, 0);
-
-		cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
-		getVisionUI()->displayImage(matHeightResultImg);
-
 
 		IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
 		if (pUI)
@@ -2035,74 +1321,71 @@ void VisionDetectRunView::on3DDetectMerge()
 			pUI->setHeightData(m_3DMatHeightMerge);
 		}
 	}
-	else
-	{
-		getVisionUI()->addImageText(QString("Error at 3D Height Calculation, error code = %1").arg((int)retStatus));
-	}
+		
 }
 
-void VisionDetectRunView::on3DDetectShow()
-{
-	if (m_3DMatHeightMerge.empty())
-	{
-		int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-
-		if (!m_3DMatHeights[nDLPIndex].empty())
-		{
-			//auto vecMatNewPhase = matToVector<float>(m_3DMatHeight);
-			int nSizeY = m_3DMatHeights[nDLPIndex].rows;
-			int nSizeX = m_3DMatHeights[nDLPIndex].cols;
-
-			int nDataNum = nSizeX * nSizeY;
-
-			double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-
-			cv::Mat mat3DHeight = m_3DMatHeights[nDLPIndex].clone();
-			cv::patchNaNs(mat3DHeight, 0);
-
-			QVector<double> xValues, yValues, zValues;
-			for (int i = 0; i < nDataNum; i++)
-			{
-				int col = i%nSizeY + 1;
-				int row = i / nSizeY + 1;
-
-				xValues.push_back(col - nSizeY / 2);
-				yValues.push_back(row - nSizeX / 2);
-
-				zValues.push_back(mat3DHeight.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
-			}
-
-			getVisionUI()->show3DView();
-			getVisionUI()->load3DViewData(nSizeY, nSizeX, xValues, yValues, zValues);
-			getVisionUI()->show3DView();
-		}
-	}
-	else
-	{
-		int nSizeY = m_3DMatHeightMerge.rows;
-		int nSizeX = m_3DMatHeightMerge.cols;
-
-		int nDataNum = nSizeX * nSizeY;
-
-		double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-
-		QVector<double> xValues, yValues, zValues;
-		for (int i = 0; i < nDataNum; i++)
-		{
-			int col = i%nSizeY + 1;
-			int row = i / nSizeY + 1;
-
-			xValues.push_back(col - nSizeY / 2);
-			yValues.push_back(row - nSizeX / 2);
-
-			zValues.push_back(m_3DMatHeightMerge.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
-		}
-
-		getVisionUI()->show3DView();
-		getVisionUI()->load3DViewData(nSizeY, nSizeX, xValues, yValues, zValues);
-		getVisionUI()->show3DView();
-	}
-}
+//void VisionDetectRunView::on3DDetectShow()
+//{
+//	if (m_3DMatHeightMerge.empty())
+//	{
+//		int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
+//
+//		if (!m_3DMatHeights[nDLPIndex].empty())
+//		{
+//			//auto vecMatNewPhase = matToVector<float>(m_3DMatHeight);
+//			int nSizeY = m_3DMatHeights[nDLPIndex].rows;
+//			int nSizeX = m_3DMatHeights[nDLPIndex].cols;
+//
+//			int nDataNum = nSizeX * nSizeY;
+//
+//			double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+//
+//			cv::Mat mat3DHeight = m_3DMatHeights[nDLPIndex].clone();
+//			cv::patchNaNs(mat3DHeight, 0);
+//
+//			QVector<double> xValues, yValues, zValues;
+//			for (int i = 0; i < nDataNum; i++)
+//			{
+//				int col = i%nSizeY + 1;
+//				int row = i / nSizeY + 1;
+//
+//				xValues.push_back(col - nSizeY / 2);
+//				yValues.push_back(row - nSizeX / 2);
+//
+//				zValues.push_back(mat3DHeight.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
+//			}
+//
+//			getVisionUI()->show3DView();
+//			getVisionUI()->load3DViewData(nSizeY, nSizeX, xValues, yValues, zValues);
+//			getVisionUI()->show3DView();
+//		}
+//	}
+//	else
+//	{
+//		int nSizeY = m_3DMatHeightMerge.rows;
+//		int nSizeX = m_3DMatHeightMerge.cols;
+//
+//		int nDataNum = nSizeX * nSizeY;
+//
+//		double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+//
+//		QVector<double> xValues, yValues, zValues;
+//		for (int i = 0; i < nDataNum; i++)
+//		{
+//			int col = i%nSizeY + 1;
+//			int row = i / nSizeY + 1;
+//
+//			xValues.push_back(col - nSizeY / 2);
+//			yValues.push_back(row - nSizeX / 2);
+//
+//			zValues.push_back(m_3DMatHeightMerge.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
+//		}
+//
+//		getVisionUI()->show3DView();
+//		getVisionUI()->load3DViewData(nSizeY, nSizeX, xValues, yValues, zValues);
+//		getVisionUI()->show3DView();
+//	}
+//}
 
 void VisionDetectRunView::onSave3DDetectParams()
 {
@@ -2119,11 +1402,6 @@ void VisionDetectRunView::onSave3DDetectParams()
 	System->setParam("3d_detect_height_diff_threshold", d3DDetectHeightDiffThd);
 	System->setParam("3d_detect_height_noise_threshold", d3DDetectHeightNoiseThd);
 	System->setParam("3d_detect_phase_shift", d3DDetectPhaseShift);
-}
-
-void VisionDetectRunView::on3DHeightCellObjEdit()
-{
-	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_TOOLS);
 }
 
 void VisionDetectRunView::on3DHeightDetect()
@@ -2143,602 +1421,14 @@ void VisionDetectRunView::onSaveDataParams()
 	System->setParam("3d_detect_data_detect_max", nDataDetectMax);
 }
 
+void VisionDetectRunView::on3DHeightCellObjEdit()
+{
+	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_TOOLS);
+}
+
 void VisionDetectRunView::on3DProfileEdit()
 {
 	m_pVLProflieEditor->show();
-}
-
-bool VisionDetectRunView::startCaliGuide()
-{
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return false;
-
-	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
-	if (!pDlp) return false;
-
-	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-	if (!pUI) return false;
-
-	if (m_nCaliGuideStep <= 0)
-	{
-		if (pCam->getCameraNum() > 0)
-		{
-			if (!pCam->startUpCapture() || !pUI->startUpCapture())
-			{
-				QSystem::closeMessage();
-				QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));
-				return false;
-			}
-		}
-		else
-		{
-			QSystem::closeMessage();
-			QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("请检查相机是否连接。"));
-			return false;
-		}
-
-		int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-		for (int i = 0; i < nStationNum; i++)
-		{
-			if (pDlp->isConnected(i))
-			{
-				if (!pDlp->startUpCapture(i))
-				{
-					QSystem::closeMessage();
-					QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("DLP启动失败！"));
-					return false;
-				}
-			}
-			else
-			{
-				QSystem::closeMessage();
-				System->setTrackInfo(QString(QStringLiteral("DLP%0启动失败, 请检查硬件连接！")).arg(i + 1));
-			}
-		}
-	}
-
-	ui.toolBox_2->setEnabled(false);
-	ui.comboBox_selectDLP->setEnabled(false);
-	ui.pushButton_CalibGuideNext->setEnabled(true);
-	ui.pushButton_CalibGuidePrevious->setEnabled(true);
-	ui.pushButton_CalibGuide->setText(QStringLiteral("取消标定"));
-	m_bGuideCali = true;
-	m_nCaliGuideStep = 0;
-
-	m_pCameraRunnable = new QCameraRunnable(this);
-	QThreadPool::globalInstance()->start(m_pCameraRunnable, QThread::NormalPriority);
-
-	bool bStationStarted = true;
-	int nWaitTime = 30 * 5;
-	do
-	{
-		bStationStarted = true;
-		if (m_pCameraRunnable && !m_pCameraRunnable->isRunning())
-		{
-			bStationStarted = false;
-		}
-		QThread::msleep(200);
-	} while (!bStationStarted && nWaitTime-- > 0);
-
-	return true;
-}
-
-void VisionDetectRunView::stopCaliGuide()
-{
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return;
-
-	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
-	if (!pDlp) return;
-
-	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-	if (!pUI) return;
-
-	if (m_pCameraRunnable)
-	{
-		m_pCameraRunnable->quit();
-	}
-
-	bool bStationEnded = false;
-	int nWaitTime = 30 * 5;
-	do
-	{
-		bStationEnded = false;
-		if (m_pCameraRunnable && !m_pCameraRunnable->isRunning())
-		{
-			bStationEnded = true;
-		}
-		QThread::msleep(200);
-	} while (!bStationEnded && nWaitTime-- > 0);
-
-	//if (QThreadPool::globalInstance()->activeThreadCount())
-	QThreadPool::globalInstance()->waitForDone();
-	//delete m_pCameraRunnable;
-	//m_pCameraRunnable = NULL;
-
-	if (pCam->getCameraNum() > 0)
-	{
-		pCam->endUpCapture();
-	}
-	pUI->endUpCapture();
-
-	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-	for (int i = 0; i < nStationNum; i++)
-	{
-		if (pDlp->isConnected(i))
-		{
-			if (!pDlp->endUpCapture(i)) continue;
-		}
-	}
-
-	QSystem::closeMessage();
-
-	ui.toolBox_2->setEnabled(true);
-	ui.comboBox_selectDLP->setEnabled(true);
-	ui.pushButton_CalibGuideNext->setEnabled(false);
-	ui.pushButton_CalibGuidePrevious->setEnabled(false);
-	ui.pushButton_CalibGuide->setText(QStringLiteral("标定向导"));
-
-	m_nCaliGuideStep = 0;
-	m_bGuideCali = false;
-	m_guideImgMats.clear();
-}
-
-void VisionDetectRunView::guideDisplayImages()
-{
-	cv::Mat matImg;
-	if (guideReadImage(matImg))
-	{		
-		getVisionUI()->setImage(matImg);
-	}
-}
-
-void VisionDetectRunView::startCameraCapturing()
-{
-	if (m_pCameraRunnable) m_pCameraRunnable->startCapture();
-}
-
-bool VisionDetectRunView::stopCameraCaptureing()
-{
-	if (m_pCameraRunnable)
-	{
-		m_pCameraRunnable->stopCapture();
-
-		bool bCaptureEnded = false;
-		int nWaitTime = 30 * 5;
-		do
-		{
-			bCaptureEnded = true;
-			if (m_pCameraRunnable->isCapturing())
-			{
-				bCaptureEnded = false;
-			}
-			QThread::msleep(200);
-		} while (!bCaptureEnded && nWaitTime-- > 0);
-
-		if (bCaptureEnded)
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool VisionDetectRunView::guideReadImages(QVector<cv::Mat>& matImgs)
-{
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return false;
-
-	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
-	if (!pMotion) return false;
-
-	matImgs.clear();
-
-	if (!pCam->selectCaptureMode(0))// all images
-	{
-		System->setTrackInfo(QString("startCapturing error"));
-		return false;
-	}
-
-	if (!pCam->startCapturing())
-	{
-		System->setTrackInfo(QString("startCapturing error"));
-		return false;
-	}
-
-	if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP, true))
-	{
-		System->setTrackInfo(QString("triggerCapturing error"));		
-		return false;
-	}
-	
-	int nWaitTime = 10 * 100;
-	while (!pCam->isCaptureImageBufferDone() && nWaitTime-- > 0)
-	{
-		QThread::msleep(10);
-	}
-
-	if (nWaitTime <= 0)
-	{
-		System->setTrackInfo(QString("CaptureImageBufferDone error"));		
-		return false;
-	}
-
-	int nCaptureNum = pCam->getImageBufferCaptureNum();	
-	for (int i = 0; i < nCaptureNum; i++)
-	{
-		cv::Mat matImage = pCam->getImageItemBuffer(i);
-
-		matImgs.push_back(matImage);		
-	}
-	
-	System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));	
-
-	if (nCaptureNum != pCam->getImageBufferNum())
-	{
-		System->setTrackInfo(QString("System captureImages Image Num error: %1").arg(nCaptureNum));
-		return false;
-	}
-
-	return true;	
-}
-
-bool VisionDetectRunView::guideReadImage(cv::Mat& matImg)
-{
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return false;
-
-	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
-	if (!pMotion) return false;
-
-	if (!pCam->selectCaptureMode(2))// 1 image
-	{
-		System->setTrackInfo(QString("startCapturing error"));
-		return false;
-	}
-
-	if (!pCam->startCapturing())
-	{
-		System->setTrackInfo(QString("startCapturing error"));
-		return false;
-	}
-
-	QVector<int> nPorts;
-	
-	nPorts.push_back(DO_LIGHT1_CH2);	
-	nPorts.push_back(DO_LIGHT2_CH1);	
-	nPorts.push_back(DO_CAMERA_TRIGGER2);
-
-	pMotion->setDOs(nPorts, 1);
-	QThread::msleep(10);
-	pMotion->setDOs(nPorts, 0);
-
-	int nWaitTime = 10 * 100;
-	while (!pCam->isCaptureImageBufferDone() && nWaitTime-- > 0)
-	{
-		QThread::msleep(10);
-	}
-
-	if (nWaitTime <= 0)
-	{
-		System->setTrackInfo(QString("CaptureImageBufferDone error"));
-		return false;
-	}
-
-	int nCaptureNum = pCam->getImageBufferCaptureNum();
-	for (int i = 0; i < nCaptureNum; i++)
-	{
-		cv::Mat matImage = pCam->getImageItemBuffer(i);
-		matImg = matImage;
-	}
-
-	System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));
-
-	return true;
-}
-
-void VisionDetectRunView::onCaliGuide()
-{
-	if (m_bGuideCali)
-	{
-		stopCaliGuide();
-	}
-	else
-	{
-		System->setParam("camera_hw_tri_enable", true);
-
-		QCaliGuideDialog dlg;
-		if (QDialog::Rejected == dlg.exec())
-		{
-			return;
-		}
-
-		if (!startCaliGuide())
-		{
-			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("启动标定失败！"));
-		}
-		else
-		{
-			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("开始标定..."));
-		}
-
-	}
-}
-
-void VisionDetectRunView::onCaliGuideNext()
-{
-	switch (m_nCaliGuideStep)
-	{
-	case 0:
-	{
-		ui.toolBox_2->setCurrentIndex(0);
-
-		startCameraCapturing();		
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP的Base标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
-		{
-			if (!stopCameraCaptureing())
-			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (!guideReadImages(m_guideImgMats))
-			{				
-				return;				
-			}
-		}
-
-		//标定DLP1
-		ui.comboBox_selectDLP->setCurrentIndex(0);
-		QString szFileName = ui.lineEdit_3DCaliRstFile->text();
-		QFile file(szFileName);
-		if (!file.exists())
-		{
-			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-				QStringLiteral("标定文件路径不存在，是否重新选择路径？"), QMessageBox::Ok, QMessageBox::Cancel))
-			{
-				on3DCaliRstOpen();
-			}
-		}
-		on3DCali();
-
-		//标定DLP2
-		ui.comboBox_selectDLP->setCurrentIndex(1);
-		szFileName = ui.lineEdit_3DCaliRstFile->text();
-		file.setFileName(szFileName);
-		if (!file.exists())
-		{
-			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-				QStringLiteral("标定文件路径不存在，是否重新选择路径？"), QMessageBox::Ok, QMessageBox::Cancel))
-			{
-				on3DCaliRstOpen();
-			}
-		}
-		on3DCali();
-
-		//标定DLP3
-		ui.comboBox_selectDLP->setCurrentIndex(2);
-		szFileName = ui.lineEdit_3DCaliRstFile->text();
-		file.setFileName(szFileName);
-		if (!file.exists())
-		{
-			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-				QStringLiteral("标定文件路径不存在，是否重新选择路径？"), QMessageBox::Ok, QMessageBox::Cancel))
-			{
-				on3DCaliRstOpen();
-			}
-		}
-		on3DCali();
-
-		//标定DLP4
-		ui.comboBox_selectDLP->setCurrentIndex(3);
-		szFileName = ui.lineEdit_3DCaliRstFile->text();
-		file.setFileName(szFileName);
-		if (!file.exists())
-		{
-			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-				QStringLiteral("标定文件路径不存在，是否重新选择路径？"), QMessageBox::Ok, QMessageBox::Cancel))
-			{
-				on3DCaliRstOpen();
-			}
-		}
-		on3DCali();
-
-		m_nCaliGuideStep++;
-	}
-	break;
-	case 1:
-	{
-		ui.toolBox_2->setCurrentIndex(1);
-
-		startCameraCapturing();		
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP的Left Top标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
-		{
-			if (!stopCameraCaptureing())
-			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (!guideReadImages(m_guideImgMats))
-			{				
-				return;
-			}
-		}
-
-		ui.comboBox_selectCaliType->setCurrentIndex(0);
-
-		ui.comboBox_selectDLP->setCurrentIndex(0);
-		on3DDetectCali();
-
-		ui.comboBox_selectDLP->setCurrentIndex(1);
-		on3DDetectCali();
-
-		ui.comboBox_selectDLP->setCurrentIndex(2);
-		on3DDetectCali();
-
-		ui.comboBox_selectDLP->setCurrentIndex(3);
-		on3DDetectCali();
-
-		m_nCaliGuideStep++;
-	}
-	break;
-	case 2:
-	{
-		ui.toolBox_2->setCurrentIndex(1);
-
-		startCameraCapturing();
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP的Right Top标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
-		{
-			if (!stopCameraCaptureing())
-			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (!guideReadImages(m_guideImgMats))
-			{
-				return;
-			}
-		}
-
-		ui.comboBox_selectCaliType->setCurrentIndex(1);
-
-		ui.comboBox_selectDLP->setCurrentIndex(0);
-		on3DDetectCali();
-
-		ui.comboBox_selectDLP->setCurrentIndex(1);
-		on3DDetectCali();
-
-		ui.comboBox_selectDLP->setCurrentIndex(2);
-		on3DDetectCali();
-
-		ui.comboBox_selectDLP->setCurrentIndex(3);
-		on3DDetectCali();
-
-		m_nCaliGuideStep++;
-	}
-	break;
-	case 3:
-	{
-		ui.toolBox_2->setCurrentIndex(1);
-
-		startCameraCapturing();
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP1Nagative标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
-		{
-			if (!stopCameraCaptureing())
-			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (!guideReadImages(m_guideImgMats))
-			{
-				return;
-			}
-		}
-
-		ui.comboBox_selectCaliType->setCurrentIndex(2);
-
-		ui.comboBox_selectDLP->setCurrentIndex(0);
-		on3DDetectCali();
-
-		ui.comboBox_selectDLP->setCurrentIndex(1);
-		on3DDetectCali();
-
-		ui.comboBox_selectDLP->setCurrentIndex(2);
-		on3DDetectCali();
-
-		ui.comboBox_selectDLP->setCurrentIndex(3);
-		on3DDetectCali();
-
-		m_nCaliGuideStep++;
-	}
-	break;	
-	case 4:
-	{
-		ui.toolBox_2->setCurrentIndex(1);
-
-		startCameraCapturing();
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-			QStringLiteral("请放置DLP的H=5mm标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
-		{
-			if (!stopCameraCaptureing())
-			{
-				QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法停止实时图像，请重新采集！"));
-				return;
-			}
-
-			m_guideImgMats.clear();
-			if (!guideReadImages(m_guideImgMats))
-			{
-				return;
-			}
-		}
-
-		ui.comboBox_selectDLP->setCurrentIndex(0);
-		on3DDetectCaliNeg();
-
-		ui.comboBox_selectDLP->setCurrentIndex(1);
-		on3DDetectCaliNeg();
-
-		ui.comboBox_selectDLP->setCurrentIndex(2);
-		on3DDetectCaliNeg();
-
-		ui.comboBox_selectDLP->setCurrentIndex(3);
-		on3DDetectCaliNeg();
-
-		m_nCaliGuideStep++;
-	}
-	break;	
-	case 5:
-	{
-		ui.comboBox_selectDLP->setCurrentIndex(0);
-		on3DDetectCaliComb();
-
-		ui.comboBox_selectDLP->setCurrentIndex(1);
-		on3DDetectCaliComb();
-
-		ui.comboBox_selectDLP->setCurrentIndex(2);
-		on3DDetectCaliComb();
-
-		ui.comboBox_selectDLP->setCurrentIndex(3);
-		on3DDetectCaliComb();
-
-		m_nCaliGuideStep++;
-	}
-	break;
-	default:
-	{
-		ui.toolBox_2->setCurrentIndex(2);
-		stopCaliGuide();
-
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("自动标定向导完成！"));
-	}
-	break;
-	}
-}
-
-void VisionDetectRunView::onCaliGuidePrevious()
-{
-	if (m_nCaliGuideStep > 0)
-	{
-		m_nCaliGuideStep -= 1;
-		onCaliGuideNext();
-	}
-	else
-	{
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法继续上一步标定，请下一步操作或者取消标定！"));
-	}
 }
 
 void VisionDetectRunView::onEditMTFLoc1()
@@ -3423,17 +2113,6 @@ bool VisionDetectRunView::convertToGrayImage(QString& szFilePath, cv::Mat &matGr
 bool VisionDetectRunView::readImages(QString& szFilePath, AOI::Vision::VectorOfMat& matImgs)
 {
 	const int IMAGE_COUNT = 12;
-
-	if (m_bGuideCali)
-	{
-		int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-
-		for (int i = 0; i < IMAGE_COUNT; i++)
-		{
-			matImgs.push_back(m_guideImgMats.at(i + nDLPIndex * IMAGE_COUNT));
-		}
-		return true;
-	}
 
 	//判断路径是否存在
 	QDir dir(szFilePath);

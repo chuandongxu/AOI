@@ -106,10 +106,10 @@ public:
 
 public:
 	enum AxisEnum
-	{
-		MTR_AXIS_X=0,
+	{		
+		MTR_AXIS_Z = 0,
 		MTR_AXIS_Y,
-		MTR_AXIS_Z
+		MTR_AXIS_X
 	};
 
 public:
@@ -142,6 +142,7 @@ public:
 	bool IsEMStopError(int AxisID);
 	bool IsLimit(int AxisID);
 
+	bool homeAll(bool bSyn);
 	bool home(int AxisID, bool bSyn);
 	bool homeLimit(int AxisID, bool bSyn);
 	bool move(int AxisID, int nProfile, double dDist, bool bSyn);
@@ -151,6 +152,8 @@ public:
 	bool moveToPos(int nPointTable, bool bSyn);
 
 	bool move(int AxisID, double dVec, double acc, double dec, int smooth, double dPos, bool bSyn);
+
+	bool waitDone();
 
 	bool isHomed(int AxisID);
 	bool isMoveDone(int AxisID);

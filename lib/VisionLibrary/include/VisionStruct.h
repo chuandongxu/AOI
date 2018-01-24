@@ -243,8 +243,8 @@ struct PR_SRCH_FIDUCIAL_MARK_CMD {
     cv::Mat                 matInputImg;
     cv::Rect                rectSrchWindow;
     PR_FIDUCIAL_MARK_TYPE   enType;
-    float                   fSize;
-    float                   fMargin;
+    float                   fSize;          //The white part size of the fiducial mark.
+    float                   fMargin;        //The dark part width outside of the fiducial mark.
 };
 
 struct PR_SRCH_FIDUCIAL_MARK_RPY {
@@ -306,7 +306,7 @@ struct PR_FIT_LINE_BY_POINT_RPY {
     PR_Line2f               stLine;
 };
 
-// Detect line is find the lines in the image.
+// Find the lines in the image.
 // The cv::RotatedRect, the angle is the direction of width. Facing right is 0. Clock-Wise is positive, Anti-Clock_Wise is negtive.
 // The angle unit is degree.
 //                |   /
@@ -320,11 +320,17 @@ struct PR_FIT_LINE_BY_POINT_RPY {
 //            /   |   \
 //           /120 |    \
 
-struct PR_CALIPER_CMD {
-    PR_CALIPER_CMD() :
-        enAlgorithm         ( PR_CALIPER_ALGORITHM::PROJECTION ),
+struct PR_FIND_LINE_CMD {
+    PR_FIND_LINE_CMD() :
+        enAlgorithm         ( PR_FIND_LINE_ALGORITHM::CALIPER ),
+        bFindPair           (false),
         nCaliperCount       (20),
         fCaliperWidth       (30.f),
+        nDiffFilterHalfW    (2),
+        fDiffFilterSigma    (1.f),
+        nEdgeThreshold      (50),
+        enSelectEdge        (PR_CALIPER_SELECT_EDGE::MAX_EDGE),
+        fRmStrayPointRatio  (0.2f),
         bCheckLinerity      (false),
         fPointMaxOffset     (0.f),
         fMinLinerity        (0.f),
@@ -334,10 +340,16 @@ struct PR_CALIPER_CMD {
     cv::Mat                 matInputImg;
     cv::Mat                 matMask;
     cv::RotatedRect         rectRotatedROI;
-    PR_CALIPER_ALGORITHM    enAlgorithm;
+    PR_FIND_LINE_ALGORITHM  enAlgorithm;
+    bool                    bFindPair;          //Used only when find line algorithm is caliper, if it is true, then will find a pair of lines.
     PR_CALIPER_DIR          enDetectDir;        //The explaination can be find in definition of PR_CALIPER_DIR.
-    Int32                   nCaliperCount;      //How many caliper will be used to find line. It is used when the PR_CALIPER_ALGORITHM is SECTION_AVG_GAUSSIAN_DIFF.
-    float                   fCaliperWidth;      //The width of caliper. . It is used when the PR_CALIPER_ALGORITHM is SECTION_AVG_GAUSSIAN_DIFF.
+    Int32                   nCaliperCount;      //How many calipers will be used to find line. It is used when the PR_FIND_LINE_ALGORITHM is CALIPER.
+    float                   fCaliperWidth;      //The width of caliper. It is used when the PR_FIND_LINE_ALGORITHM is CALIPER.
+    int                     nDiffFilterHalfW;   //The half width of gaussian diff filter. Details is in caliper tool document.
+    float                   fDiffFilterSigma;   //The Sigma of gaussian diff filter. Sigma is the standard deviation.
+    int                     nEdgeThreshold;     //The gray scale difference threshold of the edge. Over this threshold consider as an edge candidate.
+    PR_CALIPER_SELECT_EDGE  enSelectEdge;       //Used only when find line algorithm is caliper.
+    float                   fRmStrayPointRatio; //The ratio to remove the stray point(Fit for one time, then remove the points with largest error and fit again).
     bool                    bCheckLinerity;
     float                   fPointMaxOffset;
     float                   fMinLinerity;
@@ -346,12 +358,15 @@ struct PR_CALIPER_CMD {
     float                   fAngleDiffTolerance;
 };
 
-struct PR_CALIPER_RPY {
+struct PR_FIND_LINE_RPY {
     VisionStatus            enStatus;    
     bool                    bReversedFit;   //If it is true, then the result is x = fSlope * y + fIntercept. Otherwise the line is y = fSlope * x + fIntercept.
     float                   fSlope;
     float                   fIntercept;
     PR_Line2f               stLine;
+    float                   fIntercept2;    //When the find pair is enabled, it will return the second line intercept.
+    PR_Line2f               stLine2;        //When the find pair is enabled, it will return the second line.
+    float                   fDistance;      //When the find pair is enabled, it will return the distance of two lines.
     bool                    bLinerityCheckPass;
     float                   fLinerity;
     bool                    bAngleCheckPass;
@@ -458,30 +473,42 @@ struct PR_FIT_CIRCLE_BY_POINT_RPY {
     float                   fRadius;
 };
 
-//Use caliper method to find the circle.
+//Use caliper method to find the circle. Caliper introduction https://drive.google.com/open?id=16hrbMJ6gwkz2ErD12aIYPw5oAkq9y045
 struct PR_FIND_CIRCLE_CMD {
     PR_FIND_CIRCLE_CMD() :
-        fStartSrchAngle(0.f),
-        fEndSrchAngle(0.f),
-        nCaliperCount(20),
-        fCaliperWidth(30.f) {}
+        bFindCirclePair     (false),
+        fStartSrchAngle     (0.f),
+        fEndSrchAngle       (0.f),
+        nCaliperCount       (20),
+        fCaliperWidth       (30.f),
+        nDiffFilterHalfW    (2),
+        fDiffFilterSigma    (1.f),
+        nEdgeThreshold      (50),
+        enSelectEdge        (PR_CALIPER_SELECT_EDGE::MAX_EDGE),
+        fRmStrayPointRatio (0.2f) {}
     cv::Mat                 matInputImg;
-    PR_OBJECT_ATTRIBUTE     enObjAttribute;
+    cv::Mat                 matMask;
+    PR_OBJECT_ATTRIBUTE     enInnerAttribute;   //The inner circle attribute, is it darker or brighter than outside.
     cv::Point2f             ptExpectedCircleCtr;
+    bool                    bFindCirclePair;    //Find two circles with the same center at the same time.
     float                   fMinSrchRadius;
     float                   fMaxSrchRadius;
     float                   fStartSrchAngle;    //Start search angle, unit is degree, clockwise is positive, anticlockwise is negative.
     float                   fEndSrchAngle;      //End search angle, unit is degree, clockwise is positive, anticlockwise is negative.
-    Int32                   nCaliperCount;      //How many caliper will be used to detect circle.
+    Int32                   nCaliperCount;      //How many calipers will be used to detect circle.
     float                   fCaliperWidth;      //The width of caliper.
-    PR_RM_FIT_NOISE_METHOD  enRmNoiseMethod;
-    float                   fErrTol;
+    int                     nDiffFilterHalfW;   //The half width of gaussian diff filter. Details is in caliper tool document.
+    float                   fDiffFilterSigma;   //The Sigma of gaussian diff filter. Sigma is the standard deviation.
+    int                     nEdgeThreshold;     //The gray scale difference threshold of the edge. Over this threshold consider as an edge candidate.
+    PR_CALIPER_SELECT_EDGE  enSelectEdge;
+    float                   fRmStrayPointRatio; //The ratio to remove the stray point(Fit for one time, then remove the points with largest error and fit again).
 };
 
 struct PR_FIND_CIRCLE_RPY {
     VisionStatus            enStatus;
     cv::Point2f             ptCircleCtr;
     float                   fRadius;
+    float                   fRadius2;
     cv::Mat                 matResultImg;
 };
 
@@ -968,15 +995,15 @@ struct PR_GRID_AVG_GRAY_SCALE_RPY {
 };
 
 struct PR_CALIB_3D_BASE_CMD {
-    PR_CALIB_3D_BASE_CMD() : bEnableGaussianFilter(true), bReverseSeq(true), fRemoveHarmonicWaveK(0.f) {}
+    PR_CALIB_3D_BASE_CMD() : bEnableGaussianFilter(true), fRemoveHarmonicWaveK(0.f) {}
     VectorOfMat             vecInputImgs;           //Totally 12 images, including 4 thick, 4 thin, 4 extreme thin.
-    bool                    bEnableGaussianFilter;
-    bool                    bReverseSeq;            //Change the image sequence.
+    bool                    bEnableGaussianFilter;    
     float                   fRemoveHarmonicWaveK;   //The factor to remove the harmonic wave in the thick stripe. If it is 0, then this procedure will be skipped.
 };
 
 struct PR_CALIB_3D_BASE_RPY {
     VisionStatus            enStatus;
+    bool                    bReverseSeq;            //Change the image sequence.
     cv::Mat                 matThickToThinK;        //The factor between thick stripe and thin stripe.
     cv::Mat                 matThickToThinnestK;    //The factor between thick stripe and thinnest stripe.
     cv::Mat                 matBaseWrappedAlpha;    //The wrapped thick stripe phase.
@@ -1071,6 +1098,27 @@ struct PR_INTEGRATE_3D_CALIB_CMD {
 };
 
 struct PR_INTEGRATE_3D_CALIB_RPY {
+    VisionStatus            enStatus;
+    cv::Mat                 matIntegratedK;         //The 12 parameters to calculate height. They are K1~K10 and P1, P2. H = (Phase + P1*Phase^2 + P2*Phase^3) ./ (K(1)*x1.^3 + K(2)*y1.^3 + K(3)*x1.^2.*y1 + K(4)*x1.*y1.^2 + K(5)*x1.^2 + K(6)*y1.^2 + K(7)*x1.*y1 + K(8)*x1 + K(9)*y1 + K(10))
+    cv::Mat                 matOrder3CurveSurface;  //The regression 3 order curve surface to convert phase to height. It is calculated by K(1)*x1.^3 + K(2)*y1.^3 + K(3)*x1.^2.*y1 + K(4)*x1.*y1.^2 + K(5)*x1.^2 + K(6)*y1.^2 + K(7)*x1.*y1 + K(8)*x1 + K(9)*y1 + K(10)
+    VectorOfMat             vecMatResultImg;
+};
+
+using PairHeightPhase = std::pair<float, cv::Mat>;
+using VectorPairHeightPhase = std::vector<PairHeightPhase>;
+
+struct PR_MOTOR_CALIB_3D_CMD {
+    PR_MOTOR_CALIB_3D_CMD() :
+        nResultImgGridRow(10),
+        nResultImgGridCol(10),
+        szMeasureWinSize(40, 40) {}
+    VectorPairHeightPhase   vecPairHeightPhase;
+    Int32                   nResultImgGridRow;
+    Int32                   nResultImgGridCol;
+    cv::Size                szMeasureWinSize;       //The window size in the center of grid to measure the height.
+};
+
+struct PR_MOTOR_CALIB_3D_RPY {
     VisionStatus            enStatus;
     cv::Mat                 matIntegratedK;         //The 12 parameters to calculate height. They are K1~K10 and P1, P2. H = (Phase + P1*Phase^2 + P2*Phase^3) ./ (K(1)*x1.^3 + K(2)*y1.^3 + K(3)*x1.^2.*y1 + K(4)*x1.*y1.^2 + K(5)*x1.^2 + K(6)*y1.^2 + K(7)*x1.*y1 + K(8)*x1 + K(9)*y1 + K(10))
     cv::Mat                 matOrder3CurveSurface;  //The regression 3 order curve surface to convert phase to height. It is calculated by K(1)*x1.^3 + K(2)*y1.^3 + K(3)*x1.^2.*y1 + K(4)*x1.*y1.^2 + K(5)*x1.^2 + K(6)*y1.^2 + K(7)*x1.*y1 + K(8)*x1 + K(9)*y1 + K(10)
@@ -1210,6 +1258,21 @@ struct PR_CALC_PD_RPY {
     VectorOfFloat           vecDistortionRight;
     VectorOfFloat           vecDistortionTop;
     VectorOfFloat           vecDistortionBottom;
+};
+
+struct PR_COMBINE_IMG_CMD {
+    VectorOfMat             vecInputImages;
+    int                     nCountOfImgPerFrame;    //The count of images in one frame.
+    int                     nCountOfFrameX;
+    int                     nCountOfFrameY;
+    int                     nOverlapX;
+    int                     nOverlapY;
+    int                     nCountOfImgPerRow;
+};
+
+struct PR_COMBINE_IMG_RPY {
+    VisionStatus            enStatus;
+    VectorOfMat             vecResultImages;
 };
 
 }

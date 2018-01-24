@@ -68,10 +68,10 @@ MotionControl::~MotionControl()
 
 void MotionControl::loadConfig()
 {
-	m_mapMtrID.clear();
-	m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, AXIS_MOTOR_X);
-	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, AXIS_MOTOR_Y);
-	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Z, AXIS_MOTOR_Z);	
+	m_mapMtrID.clear();	
+	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Z, AXIS_MOTOR_Z);
+	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, AXIS_MOTOR_Y);	
+	//m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, AXIS_MOTOR_X);
 }
 
 bool MotionControl::init()
@@ -637,6 +637,21 @@ bool MotionControl::IsLimit(int AxisID)
 	return bFlagPosLimit || bFlagNegLimit;
 }
 
+bool MotionControl::homeAll(bool bSyn)
+{
+	int nMtrNum = getMotorAxisNum();
+	for (int i = 0; i < nMtrNum; i++)
+	{
+		if (!homeLimit(getMotorAxisID(i), false))
+		{
+			return false;
+		}
+	}
+
+	if (bSyn) return waitDone();
+	return true;
+}
+
 bool MotionControl::home(int AxisID, bool bSyn)
 {
 	short sRtn = 0; // 指令返回值变量
@@ -1166,6 +1181,40 @@ bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int sm
 		}
 	}
 	
+
+	return true;
+}
+
+bool MotionControl::waitDone()
+{
+	int nTimeOut = 30 * 100;// 30 seconds
+	int nMtrNum = getMotorAxisNum();
+	do
+	{
+		bool bAllMotorDone = true;
+		for (int i = 0; i < nMtrNum; i++)
+		{
+			if (!isMoveDone(getMotorAxisID(i)))
+			{
+				bAllMotorDone = false;
+				break;
+			}
+		}
+
+		if (bAllMotorDone)
+		{
+			break;
+		}
+
+		QThread::msleep(10);
+
+	} while (nTimeOut-- > 0);
+
+	if (nTimeOut <= 0)
+	{
+		System->setTrackInfo(QStringLiteral("电机运动TimeOut！"));
+		return false;
+	}
 
 	return true;
 }
