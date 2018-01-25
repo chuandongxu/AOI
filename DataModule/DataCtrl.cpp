@@ -291,6 +291,7 @@ bool DataCtrl::createProject(QString& szFilePath)
         System->setTrackInfo(QString("Error at CreateProject, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
         return false;
     }
+    System->setTrackInfo(QString("Success to create project ") + szFilePath );
     return true;
 }
 
@@ -306,6 +307,7 @@ bool DataCtrl::openProject(QString& szFilePath)
         System->setTrackInfo(QString("Error at OpenProject, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
         return false;
     }
+    System->setTrackInfo(QString("Success to open project ") + szFilePath );
     return true;
 }
 

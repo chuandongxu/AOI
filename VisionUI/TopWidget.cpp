@@ -146,7 +146,7 @@ void QTopWidget::onNewProject()
 {
     QFileDialog dialog(this);
     dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
     dialog.setNameFilter(tr("Project Files (*.aoi)"));
     dialog.setViewMode(QFileDialog::Detail);
     QStringList fileNames;

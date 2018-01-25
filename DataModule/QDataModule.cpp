@@ -15,7 +15,7 @@ QDataModule::QDataModule(int id, const QString &name)
 }
 
 QDataModule::~QDataModule()
-{		
+{
 }
 
 void QDataModule::addSettingWiddget(QTabWidget * tabWidget)

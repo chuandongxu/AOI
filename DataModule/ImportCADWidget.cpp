@@ -126,15 +126,13 @@ void ImportCADWidget::on_btnImportCAD_clicked() {
         }
     }
 
+    CAD_DATA_UNIT enDataUnit = static_cast<CAD_DATA_UNIT> ( ui.cbSizeUnit->currentIndex() );
+
     std::map<int, Engine::DeviceVector> mapVecDevice;
-    double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-    double dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    dResolutionX = 10.;
-    dResolutionY = 10.;
     for ( auto &cadData : vecCadData ) {
         if ( ! bCadWithWidthLength ) {
             std::string strOutputPackage, strOutputType;
-            PackageSize packageSize;
+            PackageSize packageSize(5.f, 5.f);
             if ( DataUtils::decodePackageAndType ( cadData.type, cadData.group, strOutputPackage, strOutputType ) == 0 ) {
                 if ( mapGroupPackageSize.find(strOutputPackage) != mapGroupPackageSize.end() ) {
                     auto mapTypePackageSize = mapGroupPackageSize[strOutputPackage];
@@ -143,43 +141,55 @@ void ImportCADWidget::on_btnImportCAD_clicked() {
                     }
                 }
             }
+            cadData.width  = packageSize.width  * MM_TO_UM;
+            cadData.length = packageSize.length * MM_TO_UM;
         }
+
         Engine::Device device;
 
         device.name = cadData.name;
         device.boardId = cadData.boardNo;
-        device.x = cadData.x;
-        device.y = cadData.y;
-        device.width = cadData.width;
-        device.height = cadData.length;
+        if ( bCadWithWidthLength ) {
+            device.width =  DataUtils::toUm ( cadData.width,  enDataUnit );
+            device.height = DataUtils::toUm ( cadData.length, enDataUnit );
+        }else {
+            device.width = cadData.width;
+            device.height = cadData.length;
+        }
+
+        device.x = DataUtils::toUm ( cadData.x, enDataUnit );
+        device.y = DataUtils::toUm ( cadData.y, enDataUnit );
+        
         device.isBottom = cadData.isBottom;
         device.pinCount = cadData.pinCount;
         device.group = cadData.group;
-        device.type = cadData.group;
+        device.type = cadData.type;
         device.angle = cadData.angle;
         mapVecDevice[device.boardId].push_back ( device );
     }
 
-    if ( QFile::exists ( DEFAULT_PROJECT.c_str() ) ) {
-        QFile::remove ( DEFAULT_PROJECT.c_str() );
-    }
-
-    QString user;
-    int level;
-    System->getUser( user, level );
-    auto result = Engine::CreateProject ( DEFAULT_PROJECT, user.toStdString() );
-    if ( Engine::OK == result ) {
-        for ( auto iter = mapVecDevice.begin(); iter != mapVecDevice.end(); ++ iter ) {
-            Engine::Board board;
-            Engine::CreateBoard ( board );
-            Engine::CreateDevice ( iter->first, iter->second );
+    String errorType, errorMessage;
+    int boardIndex = 1;
+    for (auto iter = mapVecDevice.begin(); iter != mapVecDevice.end(); ++iter) {
+        Engine::Board board;
+        board.name = std::to_string ( boardIndex );
+        board.abbr = std::to_string ( boardIndex );
+        auto nResult = Engine::CreateBoard(board);
+        if ( nResult != Engine::OK ) {
+            Engine::GetErrorDetail(errorType, errorMessage);
+            errorMessage = "Failed to create board, error message " + errorMessage;
+            QMessageBox::critical(nullptr, QStringLiteral("Import CAD"), errorMessage.c_str(), QStringLiteral("Quit"));
+            return;
         }
-    }else {
-        String errorType, errorMessage;
-        Engine::GetErrorDetail ( errorType, errorMessage );
-        errorMessage = "Failed to create default project, error message " + errorMessage;
-        QMessageBox::critical(nullptr, QStringLiteral("Import CAD"), errorMessage.c_str(), QStringLiteral("Quit"));
-    }
 
+        nResult = Engine::CreateDevice ( board.Id, iter->second );
+        if ( nResult != Engine::OK ) {
+            Engine::GetErrorDetail(errorType, errorMessage);
+            errorMessage = "Failed to create devices, error message " + errorMessage;
+            QMessageBox::critical(nullptr, QStringLiteral("Import CAD"), errorMessage.c_str(), QStringLiteral("Quit"));
+            return;
+        }
+        ++ boardIndex;
+    }
     QMessageBox::information ( nullptr, QStringLiteral("Import CAD"), QStringLiteral("Import CAD Success"), QStringLiteral("Quit") );
 }

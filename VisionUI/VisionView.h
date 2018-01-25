@@ -48,7 +48,7 @@ public:
 
 public:
     void setViewState(VISION_VIEW_MODE state);
-	void setImage(cv::Mat& matImage, bool bDisplay);
+	void setImage(const cv::Mat& matImage, bool bDisplay);
 	cv::Mat getImage();
 	void clearImage();
 	void addImageText(QString szText);

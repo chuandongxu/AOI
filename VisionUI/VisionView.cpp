@@ -643,12 +643,13 @@ void VisionView::showSelectROI3D()
 	setViewState(MODE_VIEW_SELECT);
 }
 
-void VisionView::setImage(cv::Mat& matImage, bool bDisplay)
+void VisionView::setImage(const cv::Mat& matImage, bool bDisplay)
 {
 	m_hoImage = matImage.clone();
 	m_imageWidth = m_hoImage.size().width;
 	m_imageHeight = m_hoImage.size().height;
-	if (bDisplay) displayImage(m_hoImage);
+	if (bDisplay)
+        repaintAll();
 }
 
 cv::Mat VisionView::getImage()
@@ -1160,18 +1161,18 @@ void VisionView::setViewState(VISION_VIEW_MODE state)
 
 void VisionView::displayImage(cv::Mat& image)
 {
-    if ( image.empty() )
+    if (image.empty())
         return;
 
-	m_dispImage = image;
+    m_dispImage = image;
     _calcMoveRange();
 
     cv::Mat matDisplay;
-    _drawDeviceWindows( m_dispImage );
-    _cutImageForDisplay ( m_dispImage, matDisplay );
-    cv::cvtColor ( matDisplay, matDisplay, CV_BGR2RGB );
+    _drawDeviceWindows(m_dispImage);
+    _cutImageForDisplay(m_dispImage, matDisplay);
+    cv::cvtColor(matDisplay, matDisplay, CV_BGR2RGB);
     QImage imagePixmap = QImage((uchar*)matDisplay.data, matDisplay.cols, matDisplay.rows, ToInt(matDisplay.step), QImage::Format_RGB888);
-	ui.label_Img->setPixmap(QPixmap::fromImage(imagePixmap));
+    ui.label_Img->setPixmap(QPixmap::fromImage(imagePixmap));
 }
 
 void VisionView::load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues)
@@ -1322,7 +1323,7 @@ void VisionView::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::Rota
 double VisionView::convertToImgX(double dMouseValue, bool bLen)
 {
 	QRect rect = ui.label_Img->geometry();
-	double fScaleW = m_windowWidth*1.0 / m_imageWidth;
+	double fScaleW = m_windowWidth*1.0  / m_imageWidth;
 	double fScaleH = m_windowHeight*1.0 / m_imageHeight;
 
 	double scaleOffset = m_windowWidth*(m_dScale - 1.0) / 2;
@@ -1495,10 +1496,7 @@ void VisionView::fullImage()
 	m_dMovedX = 0.0;
 	m_dMovedY = 0.0;
 
-	if (!m_dispImage.empty())
-		displayImage(m_dispImage);
-	else
-		displayImage(m_hoImage);
+	repaintAll();
 }
 
 void VisionView::zoomImage(double scale)
@@ -1510,11 +1508,7 @@ void VisionView::zoomImage(double scale)
         return;
 
 	m_dScale *= scale;
-
-	if (!m_dispImage.empty())
-		displayImage(m_dispImage);
-	else
-		displayImage(m_hoImage);
+	repaintAll();
 }
 
 void VisionView::moveImage(double motionX, double motionY)
@@ -1532,10 +1526,7 @@ void VisionView::moveImage(double motionX, double motionY)
     else if ( m_dMovedY < -_szMoveRange.height )
         m_dMovedY = - _szMoveRange.height;
 
-	if (!m_dispImage.empty())
-		displayImage(m_dispImage);
-	else
-		displayImage(m_hoImage);
+    repaintAll();
 }
 
 void VisionView::setButtonsEnable(bool flag, bool bLiveVideo)

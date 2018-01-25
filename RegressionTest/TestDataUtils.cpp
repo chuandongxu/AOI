@@ -1,5 +1,30 @@
 #include "../DataModule/DataUtils.h"
 #include <iostream>
+#include <iomanip>
+
+template<class T>
+void printfMat ( const cv::Mat &mat, int nPrecision = 1)
+{
+    std::cout << std::fixed << std::setprecision ( nPrecision );
+    for ( short row = 0; row < mat.rows; ++ row )
+    {
+        for ( short col = 0; col < mat.cols; ++ col )
+        {
+            std::cout << mat.at<T>(row, col) << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+template<typename _Tp>
+static inline cv::Point2f warpPoint(const cv::Mat &matWarp, const cv::Point2f &ptInput) {
+    cv::Mat matPoint = cv::Mat::zeros(3, 1, matWarp.type());
+    matPoint.at<_Tp>(0, 0) = ptInput.x;
+    matPoint.at<_Tp>(1, 0) = ptInput.y;
+    matPoint.at<_Tp>(2, 0) = 1.f;
+    cv::Mat matResultImg = matWarp * matPoint;
+    return cv::Point_<_Tp>(ToFloat(matResultImg.at<_Tp>(0, 0)), ToFloat(matResultImg.at<_Tp>(1, 0)));
+}
 
 void TestIsNumber()
 {
@@ -158,7 +183,7 @@ void TestParseCAD_1()
                     auto mapTypePackageSize = mapGroupPackageSize[strOutputPackage];
                     if ( mapTypePackageSize.find(strOutputType) != mapTypePackageSize.end() ) {
                         packageSize = mapTypePackageSize[strOutputType];
-                        _snprintf_s ( chArray, sizeof ( chArray ), "(%.2f, %.2f)", packageSize.Width, packageSize.Length );
+                        _snprintf_s ( chArray, sizeof ( chArray ), "(%.2f, %.2f)", packageSize.width, packageSize.length );
                         std::cout << " Device \"" << cadData.name << "\" type \"" << cadData.type << "\" " << " package size " << chArray << std::endl;
                     }else {
                         std::cout << "Cannot find device type \"" << cadData.type << "\" size in package" << std::endl;
@@ -173,9 +198,149 @@ void TestParseCAD_1()
     }
 }
 
+void TestGetFrameFromCombinedImageSub(
+    int nBigImgWidth,
+    int nBigImgHeight,
+    int nFrameImgWidth,
+    int nFrameImgHeight,
+    int nOverlapX,
+    int nOverlapY,
+    int nSelectPtX,
+    int nSelectPtY)
+{
+    int nFrameX, nFrameY, nPtInFrameX, nPtInFrameY;
+    DataUtils::getFrameFromCombinedImage (
+        nBigImgWidth,
+        nBigImgHeight,
+        nFrameImgWidth,
+        nFrameImgHeight,
+        nOverlapX,
+        nOverlapY,
+        nSelectPtX,
+        nSelectPtY,
+        nFrameX,
+        nFrameY,
+        nPtInFrameX,
+        nPtInFrameY);
+    std::cout << "Input: " << std::endl;
+    std::cout << "nBigImgWidth " << nBigImgWidth << ", nBigImgHeight " << nBigImgHeight << ", nFrameImgWidth " << nFrameImgWidth << ", nFrameImgHeight " << nFrameImgHeight << std::endl;
+    std::cout << "nOverlapX " << nOverlapX << ", nOverlapY " << nOverlapY << ", nSelectPtX " << nSelectPtX << ", nSelectPtY " << nSelectPtY << std::endl;
+    std::cout << "Result: " << std::endl;
+    std::cout << "nFrameX " << nFrameX << ", nFrameY " << nFrameY << ", nPtInFrameX " << nPtInFrameX << ", nPtInFrameY " << nPtInFrameY << std::endl;
+
+    int nCombinedImgPtX, nCombinedImgPtY;
+    DataUtils::getCombinedImagePosFromFramePos (
+        nBigImgWidth,
+        nBigImgHeight,
+        nFrameImgWidth,
+        nFrameImgHeight,
+        nOverlapX,
+        nOverlapY,
+        nFrameX,
+        nFrameY,
+        nPtInFrameX,
+        nPtInFrameY,
+        nCombinedImgPtX,
+        nCombinedImgPtY
+        );
+    std::cout << "nCombinedImgPtX " << nCombinedImgPtX << ", nCombinedImgPtY " << nCombinedImgPtY << std::endl;
+}
+
+void TestGetFrameFromCombinedImage()
+{
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST getFrameFromCombinedImage case 1";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+    {
+        int nBigImgWidth    = 17421 * 2;
+        int nBigImgHeight   = 12368 * 2;
+        int nFrameImgWidth  = 2032;
+        int nFrameImgHeight = 2032;
+        int nOverlapX       = 102;
+        int nOverlapY       = 140;
+        int nSelectPtX      = 820 * 2;
+        int nSelectPtY      = 10613 * 2;
+        TestGetFrameFromCombinedImageSub ( nBigImgWidth,
+            nBigImgHeight,
+            nFrameImgWidth,
+            nFrameImgHeight,
+            nOverlapX,
+            nOverlapY,
+            nSelectPtX,
+            nSelectPtY);
+    }
+
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST getFrameFromCombinedImage case 2";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+    {
+        int nBigImgWidth    = 17421 * 2;
+        int nBigImgHeight   = 12368 * 2;
+        int nFrameImgWidth  = 2032;
+        int nFrameImgHeight = 2032;
+        int nOverlapX       = 102;
+        int nOverlapY       = 140;
+        int nSelectPtX      = 16631 * 2;
+        int nSelectPtY      = 11949 * 2;
+        TestGetFrameFromCombinedImageSub ( nBigImgWidth,
+            nBigImgHeight,
+            nFrameImgWidth,
+            nFrameImgHeight,
+            nOverlapX,
+            nOverlapY,
+            nSelectPtX,
+            nSelectPtY);
+    }
+}
+
+void TestAlignWithTwoPoints() {
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST alignWithTwoPoints case 1";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+    float fRotationInRadian, Tx, Ty, fScale;
+    {
+        cv::Point2f ptCadPos1(100, 100);
+        cv::Point2f ptCadPos2(200, 200);
+        cv::Point2f ptTargetPos1(105, 105);
+        cv::Point2f ptTargetPos2(195, 195);
+        cv::Mat matTransform;
+        DataUtils::alignWithTwoPoints ( ptCadPos1, ptCadPos2, ptTargetPos1, ptTargetPos2, fRotationInRadian, Tx, Ty, fScale );
+        std::cout << "RotationInRadian " << fRotationInRadian << ", Tx " << Tx << ", Ty " << Ty << ", Scale " << fScale << std::endl;
+    }
+
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST alignWithTwoPoints case 1";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+    {
+        cv::Point2f ptCadPos1(100, 100);
+        cv::Point2f ptCadPos2(200, 200);
+        cv::Point2f ptTargetPos1(115, 100);
+        cv::Point2f ptTargetPos2(195, 200);
+        cv::Mat matTransform;
+        DataUtils::alignWithTwoPoints ( ptCadPos1, ptCadPos2, ptTargetPos1, ptTargetPos2, fRotationInRadian, Tx, Ty, fScale );
+        //printfMat<float> ( matTransform, 2 );
+        std::cout << "RotationInRadian " << fRotationInRadian << ", Tx " << Tx << ", Ty " << Ty << ", Scale " << fScale << std::endl;
+
+        cv::Point2f ptCtr( ptCadPos1.x / 2.f + ptCadPos2.x / 2.f,  ptCadPos1.y / 2.f + ptCadPos2.y / 2.f );
+        double fDegree = fRotationInRadian * 180. / CV_PI;
+        auto matRotation = cv::getRotationMatrix2D ( ptCtr, fDegree, fScale );
+        matRotation.at<double>(0, 2) += Tx;
+        matRotation.at<double>(1, 2) += Ty;
+        auto ptWrapResult1 = warpPoint<double> ( matRotation, ptCadPos1 );
+        auto ptWrapResult2 = warpPoint<double> ( matRotation, ptCadPos2 );
+        std::cout << "WrapResult1 " << ptWrapResult1 << ", WrapResult2 " << ptWrapResult2 << std::endl;
+    }
+}
+
 void TestDataUtils()
 {
     TestIsNumber();
     TestParseCad();
     TestParseCAD_1();
+    TestGetFrameFromCombinedImage();
+    TestAlignWithTwoPoints();
 }

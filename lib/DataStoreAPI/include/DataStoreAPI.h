@@ -23,6 +23,7 @@ API_CALL(void) GetErrorDetail(String &errorType, String &errorMessage);
 API_CALL(int)  CreateProject(const std::string &strProjFile, String const &userName = String());
 API_CALL(int)  OpenProject(const std::string &strProjFile, String const &userName = String());
 API_CALL(int)  CreateAlignment(Alignment &alignment);
+API_CALL(int)  UpdateAlignment(const Alignment &alignment);
 API_CALL(int)  GetAllAlignments(AlignmentVector &vecAlignment);
 API_CALL(int)  DeleteAlignment(Int64 alignmentId);
 API_CALL(int)  CreateBoard(Board &board);

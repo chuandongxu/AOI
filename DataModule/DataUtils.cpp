@@ -2,6 +2,8 @@
 #include <fstream>
 #include <sstream>
 #include <cctype>
+#include <math.h>
+#include "../include/constants.h"
 
 DataUtils::DataUtils()
 {
@@ -33,6 +35,31 @@ DataUtils::~DataUtils()
     }
 
     return bWithDigit;
+}
+
+/*static*/ float DataUtils::toUm(float fInput, CAD_DATA_UNIT enDataUnit) {
+    float fResult = 0;
+    switch (enDataUnit)
+    {
+    case UM:
+        fResult = fInput;
+        break;
+    case MM:
+        fResult = fInput * MM_TO_UM;
+        break;
+    case CM:
+        fResult = fInput * CM_TO_UM;
+        break;
+    case MIL:
+        fResult = fInput * MIL_TO_UM;
+        break;
+    case INCH:
+        fResult = fInput * INCH_TO_UM;
+        break;
+    default:
+        break;
+    }
+    return fResult;
 }
 
 /*static*/ std::vector<std::string> DataUtils::splitString ( const std::string &s, char delim )
@@ -172,9 +199,9 @@ DataUtils::~DataUtils()
         }
         std::string strGroup = vecData[0];
         std::string strType = vecData[1];
-        float fLength = ToFloat ( std::atof ( vecData[2].c_str() ) );
-        float fWidth  = ToFloat ( std::atof ( vecData[3].c_str() ) );
-        mapGroupPackageSize[strGroup][strType] = PackageSize{fLength, fWidth};
+        float fWidth  = ToFloat ( std::atof ( vecData[2].c_str() ) );
+        float fLength = ToFloat ( std::atof ( vecData[3].c_str() ) );
+        mapGroupPackageSize[strGroup][strType] = PackageSize{fWidth, fLength};
         ++ nLineNumber;
     }
     return 0;
@@ -307,4 +334,74 @@ DataUtils::~DataUtils()
         return findDigitString ( strPackageType, strOutputType, 5 );
     }
     return -1;
+}
+
+/*static*/ int DataUtils::getFrameFromCombinedImage(
+    int nBigImgWidth,
+    int nBigImgHeight,
+    int nFrameImgWidth,
+    int nFrameImgHeight,
+    int nOverlapX,
+    int nOverlapY,
+    int nSelectPtX,
+    int nSelectPtY,
+    int &nFrameX,
+    int &nFrameY,
+    int &nPtInFrameX,
+    int &nPtInFrameY)
+{
+    //X frame start from right to left.
+    nFrameX = ( nBigImgWidth - nSelectPtX ) / ( nFrameImgWidth - nOverlapX );
+    nFrameY = nSelectPtY / ( nFrameImgHeight - nOverlapY );
+    nPtInFrameX = nFrameImgWidth - ( ( nBigImgWidth - nSelectPtX ) - nFrameX * ( nFrameImgWidth - nOverlapX ) );
+    nPtInFrameY = nSelectPtY - nFrameY *  ( nFrameImgHeight - nOverlapY );
+
+    return 0;
+}
+
+//Frame X sequence is from right to left.
+/*static*/ int DataUtils::getCombinedImagePosFromFramePos(
+        int nBigImgWidth,
+        int nBigImgHeight,
+        int nFrameImgWidth,
+        int nFrameImgHeight,
+        int nOverlapX,
+        int nOverlapY,
+        int nFrameX,
+        int nFrameY,
+        int nPtInFrameX,
+        int nPtInFrameY,
+        int &nCombinedImgPtX,
+        int &nCombinedImgPtY)
+{
+    nCombinedImgPtX = nBigImgWidth - ( nFrameX * ( nFrameImgWidth - nOverlapX ) + ( nFrameImgWidth- nPtInFrameX ) );
+    nCombinedImgPtY = nPtInFrameY + nFrameY *  ( nFrameImgHeight - nOverlapY );
+    return 0;
+}
+
+/*****************************************
+matTransform = [ cos(a) -sina(a) Tx ]
+               [ sin(a)  cos(a)  Ty ]
+******************************************
+/*static*/ int DataUtils::alignWithTwoPoints(
+        cv::Point2f  ptCadPos1,
+        cv::Point2f  ptCadPos2,
+        cv::Point2f  ptTargetPos1,
+        cv::Point2f  ptTargetPos2,
+        float       &fRotationInRadian,
+        float       &Tx,
+        float       &Ty,
+        float       &fScale )
+{
+    float fLengthCad = sqrt ( ( ptCadPos1.x - ptCadPos2.x ) * ( ptCadPos1.x - ptCadPos2.x ) + ( ptCadPos1.y - ptCadPos2.y ) * ( ptCadPos1.y - ptCadPos2.y ) );
+    float fLengthTarget = sqrt ( ( ptTargetPos1.x - ptTargetPos2.x ) * ( ptTargetPos1.x - ptTargetPos2.x ) + ( ptTargetPos1.y - ptTargetPos2.y ) * ( ptTargetPos1.y - ptTargetPos2.y ) );
+    fScale = fLengthTarget / fLengthCad;
+
+    float fAngle1 = atan2 ( ( ptTargetPos1.y - ptTargetPos2.y ), ( ptTargetPos1.x - ptTargetPos2.x ) );
+    float fAngle2 = atan2 ( ( ptCadPos1.y - ptCadPos2.y ), ( ptCadPos1.x - ptCadPos2.x ) );
+    fRotationInRadian = fAngle1 - fAngle2;
+    fRotationInRadian = -fRotationInRadian; //Because coordinate of vision system is reversed with normal coordinate.
+    Tx = ( ptTargetPos1.x + ptTargetPos2.x ) / 2.f - ( ptCadPos1.x + ptCadPos2.x ) / 2.f;
+    Ty = ( ptTargetPos1.y + ptTargetPos2.y ) / 2.f - ( ptCadPos1.y + ptCadPos2.y ) / 2.f;
+    return 0;
 }
