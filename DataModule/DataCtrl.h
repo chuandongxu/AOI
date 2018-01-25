@@ -30,6 +30,9 @@ public:
 	void deleteObj(int nIndex, DataTypeEnum emDataType);
 	void clearObjs(DataTypeEnum emDataType);
 
+    bool createProject(QString& szFilePath);
+    bool openProject(QString& szFilePath);
+
 	bool saveDataBase(QString& szFilePath, DataTypeEnum emDataType);
 	bool loadDataBase(QString& szFilePath, DataTypeEnum emDataType);
 	void clearDataBase();

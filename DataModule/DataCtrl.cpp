@@ -279,6 +279,37 @@ void DataCtrl::clearObjs(DataTypeEnum emDataType)
 	getCellType(emDataType).clear();
 }
 
+bool DataCtrl::createProject(QString& szFilePath)
+{
+    QString user;
+    int level;
+    System->getUser(user, level);
+    auto nResult = Engine::CreateProject ( szFilePath.toStdString(), user.toStdString() );
+    if (nResult != Engine::OK) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        System->setTrackInfo(QString("Error at CreateProject, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+        return false;
+    }
+    System->setTrackInfo(QString("Success to create project ") + szFilePath );
+    return true;
+}
+
+bool DataCtrl::openProject(QString& szFilePath)
+{
+    QString user;
+    int level;
+    System->getUser(user, level);
+    auto nResult = Engine::OpenProject ( szFilePath.toStdString(), user.toStdString() );
+    if (nResult != Engine::OK) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        System->setTrackInfo(QString("Error at OpenProject, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+        return false;
+    }
+    System->setTrackInfo(QString("Success to open project ") + szFilePath );
+    return true;
+}
 
 bool DataCtrl::saveDataBase(QString& szFilePath, DataTypeEnum emDataType)
 {

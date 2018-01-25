@@ -105,7 +105,7 @@ public:
 	QList<int> getDBRelationDetect();
 	int getDBRelationDetect(int baseIndex);
 	void addDBRelation(int detectIndex, int baseIndex);
-	void removeDBRelation(int detectIndex, int baseIndex);	
+	void removeDBRelation(int detectIndex, int baseIndex);
 	void removeDBRelation(int detectIndex);
 	void clearDBRelation();
 

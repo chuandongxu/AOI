@@ -13,15 +13,32 @@ namespace Engine
 const Int32 OK              = 0;
 
 struct Alignment {
+    Alignment() :
+        Id              (0),
+        isFM            (0),
+        fmShape         (0),
+        isFMDark        (0),
+        recordID        (0),
+        algorithm       (0),
+        tmplPosX        (0.f),
+        tmplPosY        (0.f),
+        tmplWidth       (0.f),
+        tmplHeight      (0.f),
+        srchWinWidth    (0.f),
+        srchWinHeight   (0.f),
+        vecLight        (0) {}
     Int64               Id;
+    BOOL                isFM;
+    Int32               fmShape;
+    BOOL                isFMDark;
     Int32               recordID;
     Int32               algorithm;
-    double              tmplPosX;
-    double              tmplPosY;
-    double              tmplWidth;
-    double              tmplHeight;
-    double              srchWinWidth;
-    double              srchWinHeight;
+    float               tmplPosX;
+    float               tmplPosY;
+    float               tmplWidth;
+    float               tmplHeight;
+    float               srchWinWidth;
+    float               srchWinHeight;
     std::vector<Int32>  vecLight;
 };
 using AlignmentVector = std::vector<Alignment>;
@@ -42,18 +59,20 @@ using BoardVector = std::vector<Board>;
 
 struct Device {
     Device() :
-        Id(1),
-        boardId(1),
-        name(""),
-        schematicName(""),
-        x(0.f),
-        y(0.f),
-        angle(0.f),
-        isBottom(false),
-        type(""),
-        group(""),
-        isPlaced(true),
-        pinCount(0) {}
+        Id              (0),
+        boardId         (1),
+        name            (""),
+        schematicName   (""),
+        x               (0.f),
+        y               (0.f),
+        width           (1.f),
+        height          (1.f),
+        angle           (0.f),
+        isBottom        (false),
+        type            (""),
+        group           (""),
+        isPlaced        (true),
+        pinCount        (0) {}
     Int64               Id;
     Int64               boardId;
     String              name;
@@ -83,15 +102,15 @@ struct Window {
         INSP_HOLE,
     };
     Window() :
-        Id(0),
-        name("Default window"),
-        x(0),
-        y(0),
-        width(0),
-        height(0),
-        angle(0),
-        usage(Usage::UNDEFINED),
-        recordID(-1) {}
+        Id          (0),
+        name        ("Default window"),
+        x           (0),
+        y           (0),
+        width       (0),
+        height      (0),
+        angle       (0),
+        usage       (Usage::UNDEFINED),
+        recordID    (-1) {}
     Int64               Id;
     String              name;
     float               x;

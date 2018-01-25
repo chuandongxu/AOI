@@ -21,6 +21,8 @@ signals:
     void closeBtnclick();
 
 public slots:
+    void onNewProject();
+    void onOpenProject();
 	void onAutoRun();
 	void onSystem();
 	void onHardware();
@@ -41,6 +43,8 @@ private:
     QPushButton * m_exitBtn;
 	int m_nTimerId;
 
+    QPushButton *m_toolBtnNewProject;
+    QPushButton  m_toolBtnOpenProject;
 	QPushButton* m_toolBtnAutoRun;
 	QPushButton* m_toolBtnSys;
 	QPushButton* m_toolBtnHw;
