@@ -924,24 +924,20 @@ typedef struct TPvtPrm
 } TPvtPrm;
 
 
-#define MAX_MULTI_DO_GROUP               2
+#define MAX_WAVE_SERIALS                 5
+#define LMT_DO_NO                       10
 
-//每个DO对应一个结构体，如果DO想参与multi group pulse输出，
-typedef struct MultiDOPulseCfg
+//A serial is called combine of pulses for single serial
+typedef struct
 {
-	short  doType;
-	short  doIndex;
-	short  groupNo;
-	//long   u32Cntr; //samples counter
-	long   groupMaxCount[MAX_MULTI_DO_GROUP];
-
-	short firstLevel[MAX_MULTI_DO_GROUP];     //该group首先出现的电平状态,0:低电平;1:高电平
-	double highLevelTime[MAX_MULTI_DO_GROUP]; //高电平持续时间[ms]
-	double lowLevelTime[MAX_MULTI_DO_GROUP];  //低电平持续时间[ms]
-	long  pulseNum[MAX_MULTI_DO_GROUP];       //该group输出脉冲的个数,取值范围:非负数,当为0时,表示无限输出脉冲,直到遇到关闭指令
-	short pulseEnable[MAX_MULTI_DO_GROUP];
-	short intervaltime[MAX_MULTI_DO_GROUP]; //两个group之间的delay时间[ms]
-} TMultiDOPulseCfg;
+	short  DoChnJoinNo;         //参与该小串信号输出的DO数量
+	short  DoChnMap[LMT_DO_NO]; //参与该小串信号输出的DO通道, DO通道排序从1开始，即通道1对应端子板DO0
+	short  DoOutCfg[LMT_DO_NO]; //配置该小串DO每个通道对于每个方波是否输出
+	short  firstLevel;     //当前小串信号首先出现的电平状态,0:低电平;1:高电平                 
+	double highLevelTime;  //方波高电平持续时间[ms]，方波的描述为高电平时间和低电平时间，gts lib根据DSP周期250us，对高低电平时间进行向上取整      
+	double lowLevelTime;   //方波低电平持续时间[ms]     
+	short  pulseNum;               
+} TMPGenPara;
 
 
 //Jia Songtao Gantry Function
@@ -986,14 +982,19 @@ GT_API GT_GetPosVelEncRatio(short control, double *posVelEncRatio);
 GT_API GT_SetAxisInputShapeVerI(short axis, short enable, short freq, double z);
 GT_API GT_GetOCDBFs(short *psVal);
 
-//Config single channel info, have to call multi times to set all channels data
-GT_API GT_CfgGpoMultiDOPulse(TMultiDOPulseCfg *pMDoPulseCfg);
-GT_API GT_TrigGpoMultiDOPulse(void);
-GT_API GT_StopGpoMultiDOPulse(void);
-GT_API GT_ResetGpoMultiDOPulse(void);
-GT_API GT_GetGpoMultiDOPulseSts(short doIndex, short *pSts);
-
 GT_API GT_ResetDIETCounter(void);
 GT_API GT_StartDIETCounter(void);
 GT_API GT_GetDIETCounter(int index, long *pDIETCntr);
 GT_API GT_GetDIDOFreq(short *pFs);
+
+//Config single channel info, have to call multi times to set all channels data
+GT_API GT_PreLoadPulseWaveGenParm(short totalSerial, TMPGenPara (&MPGenPara)[MAX_WAVE_SERIALS]);
+GT_API GT_ConfirmPreLoadPulseWaveGenParm(void);
+GT_API GT_ResetPulseWaveGenParm(void);
+GT_API GT_TrigPulseWaveGen(void);
+GT_API GT_StopPulseWaveGen(void);
+GT_API GT_ResetPulseWaveGen(void);
+GT_API GT_GetPulseWaveGenStatus(short *pStatus);
+
+
+

@@ -874,8 +874,8 @@ void QFlowCtrl::home()
 {	
 	if(m_isStart)
 	{
-		//QSystem::showMessage(QStringLiteral("提示"),QStringLiteral("设备正在运行中，请先停止在回零"));
-		//QApplication::processEvents();
+		QSystem::showMessage(QStringLiteral("提示"),QStringLiteral("设备正在运行中，请先停止在回零"));
+		QApplication::processEvents();
 
 		this->stop();
 		return ;
@@ -886,6 +886,7 @@ void QFlowCtrl::home()
 		m_homeIng = true;
 		QEos::Notify(EVENT_GOHOMEING_STATE, GOHOMEING_STATE_OK);
 
+		//急停判断
 		IMotion * p = getModule<IMotion>(MOTION_MODEL);
 		if (p)
 		{
@@ -899,14 +900,13 @@ void QFlowCtrl::home()
 		}
 		else
 		{
-			System->setTrackInfo(QStringLiteral("系统暂无控制系统，无法回零。"));
-			//System->setTrackInfo(QStringLiteral("无法回零，运动控制系统异常。"));
+			System->setTrackInfo(QStringLiteral("系统暂无控制系统，无法回零。"));			
 		}
 
 		QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在回零中..."), 0);
 		QApplication::processEvents();
 
-		if (true)
+		if (p->homeAll(true))
 		{
 			m_isHome = true;
 			QEos::Notify(EVENT_GOHOME_STATE, GOHOME_STATE_OK);
@@ -921,10 +921,10 @@ void QFlowCtrl::home()
 		}
 	}
 
-	if (m_isHome)
-	{
-		this->start();
-	}	
+	//if (m_isHome)
+	//{
+		//this->start();
+	//}	
 }
 
 void QFlowCtrl::timerEvent(QTimerEvent * event)

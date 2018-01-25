@@ -109,6 +109,11 @@ bool MotionModule::IsLimit(int AxisID)
 	return m_ctrl.IsLimit(AxisID);
 }
 
+bool MotionModule::homeAll(bool bSyn)
+{
+	return m_ctrl.homeAll(bSyn);
+}
+
 bool MotionModule::home(int AxisID, bool bSyn)
 {
 	return m_ctrl.homeLimit(AxisID, bSyn);
@@ -132,6 +137,11 @@ bool MotionModule::movePos(int nPointTable, bool bSyn)
 bool MotionModule::moveToPos(int nPointTable, bool bSyn)
 {
 	return m_ctrl.moveToPos(nPointTable, bSyn);
+}
+
+bool MotionModule::waitDone()
+{
+	return m_ctrl.waitDone();
 }
 
 bool MotionModule::isHomed(int AxisID)

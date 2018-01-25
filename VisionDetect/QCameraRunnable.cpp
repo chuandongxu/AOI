@@ -1,14 +1,14 @@
 ﻿#include "QCameraRunnable.h"
 #include "../Common/SystemData.h"
 
-#include "VisionDetectRunView.h"
+#include "SysCalibrationView.h"
 
 #include <time.h>
 #include <qthread.h>
 #include <qthreadpool.h>
 
-QCameraRunnable::QCameraRunnable(VisionDetectRunView* pSetting)
-	: m_pSetting(pSetting), QRunnable()
+QCameraRunnable::QCameraRunnable(SysCalibrationView* pCaliView)
+	: m_pCaliView(pCaliView), QRunnable()
 {
 	m_exit = false;
 	m_bRunning = false;
@@ -87,9 +87,9 @@ bool QCameraRunnable::waitStartBtn()
 
 bool QCameraRunnable::captureImages()
 {
-	if (m_pSetting)
+	if (m_pCaliView)
 	{
-		m_pSetting->guideDisplayImages();
+		m_pCaliView->guideDisplayImages();
 	}
 	
 	return true;

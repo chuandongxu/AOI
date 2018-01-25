@@ -11,6 +11,7 @@ class IVision
 public:
 	virtual QWidget* getDetectView() = 0;
 	virtual QWidget* getCellEditorView() = 0;
+	virtual QWidget* getCaliView() = 0;
 
 public:
 	virtual bool loadCmdData(int nStation) = 0;

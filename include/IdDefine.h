@@ -19,9 +19,9 @@
 #define AXIS_MOTOR_NUM		8
 
 //定义轴ID
-#define AXIS_MOTOR_X       1
+#define AXIS_MOTOR_Z       1
 #define AXIS_MOTOR_Y       2
-#define AXIS_MOTOR_Z       3
+#define AXIS_MOTOR_X       3
 
 /* ************* 定义AI ********************************* */
 //#define CHECK_AI_1     0

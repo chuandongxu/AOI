@@ -11,11 +11,7 @@
 using VectorOfFloat = std::vector < float > ;
 using VectorOfVectorOfFloat = std::vector < VectorOfFloat > ;
 
-class IGraphicEditor;
-class QResultDisplay;
-class QColorImageDisplay;
 class QDlpMTFRsltDisplay;
-class QCameraRunnable;
 class IVisionUI;
 class VisionDetectRunView : public QWidget
 {
@@ -64,36 +60,19 @@ private slots:
 	void onSaveDetectGrayScaleParams();
 	void onDetectGrayScale();
 
-	// 3D Calibration
-	void onDLPIndexChanged(int iState);
-	void on3DCaliOpen();
-	void on3DCaliRstOpen();
-	void on3DCali();
-	void onSave3DDetectCaliParams();
-
-	void onSelectCaliTypeChanged(int iState);
-	void on3DDetectCaliOpen();
-	void on3DDetectCali();
-	void on3DDetectCaliNegOpen();
-	void on3DDetectCaliNeg();
-	void on3DDetectCaliComb();
-	void onSave3DDetectCaliHeightParams();
+	// 3D Calculation
+	void onDLPIndexChanged(int iState);	
 
 	void on3DDetectOpen();
 	void on3DDetect();
 	void onPhaseShiftValueChanged(double dValue);
 	void on3DDetectMerge();
-	void on3DDetectShow();
 	void onSave3DDetectParams();
 	void on3DHeightDetect();
 	void onSaveDataParams();
 	void on3DHeightCellObjEdit();
 
 	void on3DProfileEdit();
-
-	void onCaliGuide();
-	void onCaliGuideNext();
-	void onCaliGuidePrevious();
 
 	// MTF calculation	
 	void onEditMTFLoc1();
@@ -137,24 +116,6 @@ private:
 
 	void updatePhaseShift(double dValue);
 
-public:
-	void guideDisplayImages();
-
-private:
-	bool startCaliGuide();
-	void stopCaliGuide();
-	bool guideReadImages(QVector<cv::Mat>& matImgs);
-	bool guideReadImage(cv::Mat& matImg);
-
-	void startCameraCapturing();
-	bool stopCameraCaptureing();
-
-
-	bool m_bGuideCali;
-	int m_nCaliGuideStep;
-	QVector<cv::Mat> m_guideImgMats;
-	QCameraRunnable* m_pCameraRunnable;
-
 private:
 	Ui::VisionDetectRunView ui;
 	int m_nLevel;
@@ -179,9 +140,6 @@ private:
 	int m_nImageCol;
 	cv::Mat m_3DMatHeightMerge;
 	QVector<cv::Mat> m_3DMatHeights;
-	IGraphicEditor *m_pGraphicsEditor;
-	QResultDisplay *m_pResultDisplay;
-	QColorImageDisplay* m_pColorDisplay;
 
 	QGraphicsScene * m_TmpMatchMTFScene1;
 	QGraphicsScene * m_TmpMatchMTFScene2;

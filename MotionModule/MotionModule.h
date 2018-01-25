@@ -40,12 +40,15 @@ public:
 	virtual bool IsEMStopError(int AxisID);
 	virtual bool IsLimit(int AxisID);
 
+	virtual bool homeAll(bool bSyn);
 	virtual bool home(int AxisID, bool bSyn);
 	virtual bool move(int AxisID, int nProfile, double dDist, bool bSyn);
 	virtual bool moveTo(int AxisID, int nProfile, double dPos, bool bSyn);
 
 	virtual bool movePos(int nPointTable, bool bSyn);
 	virtual bool moveToPos(int nPointTable, bool bSyn);
+
+	virtual bool waitDone();
 
 	virtual bool isHomed(int AxisID);
 	virtual bool isMoveDone(int AxisID);

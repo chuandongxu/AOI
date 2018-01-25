@@ -2,11 +2,13 @@
 #include "../common/SystemData.h"
 #include "VisionDetectSetting.h"
 #include "VisionDetectRunView.h"
+#include "SysCalibrationView.h"
 
 VisionDetect::VisionDetect(int id, const QString &name)
 	:QModuleBase(id, name)
 {
 	m_pDetectView = new VisionDetectRunView(&m_ctrl);
+	m_pCaliView = new SysCalibrationView(&m_ctrl);
 }
 
 VisionDetect::~VisionDetect()
@@ -38,6 +40,11 @@ QWidget* VisionDetect::getDetectView()
 QWidget* VisionDetect::getCellEditorView()
 {
 	return m_pDetectView->getCellEditorView();
+}
+
+QWidget* VisionDetect::getCaliView()
+{
+	return m_pCaliView;
 }
 
 bool VisionDetect::loadCmdData(int nStation)

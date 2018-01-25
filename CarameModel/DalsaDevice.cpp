@@ -179,13 +179,9 @@ void DalsaCameraDevice::openCamera()
 	{
 		m_camera = new Camera_t(m_hv_AcqHandle);
 		m_camera->Open();
-
-		//int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
-		//m_camera->UserSetSelector.SetValue(0 == nCaptureNumMode ? Basler_CLCameraParams::UserSetSelector_UserSet1 : Basler_CLCameraParams::UserSetSelector_UserSet2);
+	
 		m_camera->UserSetSelector.SetValue(Basler_CLCameraParams::UserSetSelector_UserSet1);
-		m_camera->UserSetLoad.Execute();
-
-		//m_camera->ExposureTimeAbs.SetValue(3);	
+		m_camera->UserSetLoad.Execute();	
 	}
 	catch (GenICam::GenericException &e)
 	{
@@ -298,6 +294,15 @@ void DalsaCameraDevice::setHardwareTrigger(bool bOn)
 				//camera.AcquisitionMode.SetValue(AcquisitionMode_SingleFrame);
 				//m_camera->TriggerSource.SetValue(Basler_CLCameraParams::TriggerSource_CC1);
 				//m_camera->TriggerActivation.SetIntValue(Basler_CLCameraParams::TriggerActivation_RisingEdge);
+				if (bOn)
+				{
+					m_camera->ExposureMode.SetValue(Basler_CLCameraParams::ExposureMode_TriggerWidth);
+				}
+				else
+				{
+					m_camera->ExposureMode.SetValue(Basler_CLCameraParams::ExposureMode_Timed);
+					setExposureTime(10000);
+				}
 			}
 			catch (GenICam::GenericException &e)
 			{
@@ -411,20 +416,24 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 	if (nWaitTime > 0)
 	{
 		bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
+		int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
 
 		for (int i = 0; i < m_imageMats.size(); i++)
 		{
 			int nIndex = i;
 			if (bCaptureImageAsMatlab && m_imageMats.size() >= DLP_SEQ_PATTERN_IMG_NUM)
 			{
-				if (5 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 5 Pattern Sequence Special Index
+				if (m_imageMats.size() <= DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
 				{
-					nIndex += 1;
-				}
-				else if (6 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 6 Pattern Sequence Special Index
-				{
-					nIndex -= 1;
-				}
+					if (5 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 5 Pattern Sequence Special Index
+					{
+						nIndex += 1;
+					}
+					else if (6 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 6 Pattern Sequence Special Index
+					{
+						nIndex -= 1;
+					}
+				}			
 			}
 
 			imageMats.push_back(m_imageMats[nIndex]);

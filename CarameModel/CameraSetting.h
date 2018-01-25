@@ -31,7 +31,6 @@ protected slots:
 
 	void onCaptureModeIndexChanged(int iIndex);
 	void onCaptureNumModeIndexChanged(int iIndex);
-	void onSaveImgNum();
 	void onSelCapturePath();
 	void onSaveCapturePath();
 	void onSelImgDLP1Path();

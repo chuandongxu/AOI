@@ -49,8 +49,9 @@ QBottonWidget::QBottonWidget(QWidget *parent)
 
 	QHeaderView * header = ui.treeView->header();
 	header->resizeSection(0,50);
-	header->resizeSection(1,130);
-	header->setStretchLastSection(true);
+	//header->resizeSection(1,130);
+	header->setSectionResizeMode(QHeaderView::ResizeToContents);
+	header->setStretchLastSection(false);
 
 	IFlowCtrl * p = getModule<IFlowCtrl>(CTRL_MODEL);
 	if(!p)return;
