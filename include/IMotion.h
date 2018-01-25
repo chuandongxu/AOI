@@ -26,10 +26,12 @@ public:
 	enum TRIGGER
 	{
 		TRIGGER_ALL,
+		TRIGGER_DLP,
 		TRIGGER_DLP1,
 		TRIGGER_DLP2,
 		TRIGGER_DLP3,
 		TRIGGER_DLP4,
+		TRIGGER_LIGHT
 	};
 public:
 	// General Functions:
@@ -57,12 +59,15 @@ public:
 	virtual bool IsEMStopError(int AxisID) = 0;
 	virtual bool IsLimit(int AxisID) = 0;
 
+	virtual bool homeAll(bool bSyn) = 0;
 	virtual bool home(int AxisID, bool bSyn) = 0;
 	virtual bool move(int AxisID, int nProfile, double dDist, bool bSyn) = 0;
 	virtual bool moveTo(int AxisID, int nProfile, double dPos, bool bSyn) = 0;
 
 	virtual bool movePos(int nPointTable, bool bSyn) = 0;
 	virtual bool moveToPos(int nPointTable, bool bSyn) = 0;
+
+	virtual bool waitDone() = 0;
 
 	virtual bool isHomed(int AxisID) = 0;
 	virtual bool isMoveDone(int AxisID) = 0;

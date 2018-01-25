@@ -187,7 +187,7 @@ void QTopWidget::onAutoRun()
 
 void QTopWidget::onSystem()
 {
-
+	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_CALI);
 }
 
 void QTopWidget::onHardware()

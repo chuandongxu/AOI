@@ -146,7 +146,8 @@ public:
 	void setUser(const QString & user,int level);
 	void getUser(QString & user,int &level);
 	int getUserLevel();
-	bool getUserPwd(const QString user,QString &pwd,int &level);
+	bool getUserPwd(const QString user, QString &pwd, int &level);
+	bool checkUserPwd(const QString& user, const QString& pwd);
 
 	void enableRecord(bool s);
 	bool isEnableRecord();

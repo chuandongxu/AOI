@@ -7,6 +7,7 @@
 #include "VisionCtrl.h"
 
 class VisionDetectRunView;
+class SysCalibrationView;
 class  VisionDetect : public QModuleBase, public IVision
 {
 public:
@@ -18,6 +19,7 @@ public:
 public:
 	virtual QWidget* getDetectView();
 	virtual QWidget* getCellEditorView();
+	virtual QWidget* getCaliView();
 
 public:
 	virtual bool loadCmdData(int nStation);
@@ -41,4 +43,5 @@ public:
 private:
 	VisionCtrl m_ctrl;
 	VisionDetectRunView* m_pDetectView;
+	SysCalibrationView* m_pCaliView;
 };
