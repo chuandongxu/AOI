@@ -21,4 +21,6 @@ private:
     Ui::FiducialMarkWidget ui;
     QVector<cv::RotatedRect> m_vecFMCadWindow;
     QVector<cv::RotatedRect> m_vecFMImageWindow;
+    float m_fCadOffsetX = 0.f;
+    float m_fCadOffsetY = 0.f;
 };

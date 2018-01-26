@@ -22,7 +22,7 @@ public:
 	void setTitle(const QString & str,const QString &ver);
 
 	virtual QWidget* getVisionView();
-	virtual void setImage(cv::Mat& matImage, bool bDisplay);
+	virtual void setImage(const cv::Mat& matImage, bool bDisplay);
 	virtual void setHeightData(cv::Mat& matHeight);
 	virtual bool startUpCapture();
 	virtual bool endUpCapture();

@@ -13,7 +13,7 @@ QDataModule::QDataModule(int id, const QString &name)
 }
 
 QDataModule::~QDataModule()
-{		
+{
 }
 
 void QDataModule::addSettingWiddget(QTabWidget * tabWidget)
@@ -86,6 +86,16 @@ void QDataModule::deleteObj(int nIndex, DataTypeEnum emDataType)
 void QDataModule::clearObjs(DataTypeEnum emDataType)
 {
 	m_ctrl.clearObjs(emDataType);
+}
+
+bool QDataModule::createProject(QString& szFilePath)
+{
+    return m_ctrl.createProject ( szFilePath );
+}
+
+bool QDataModule::openProject(QString& szFilePath)
+{
+    return m_ctrl.openProject ( szFilePath );
 }
 
 bool QDataModule::saveDataBase(QString& szFilePath, DataTypeEnum emDataType)

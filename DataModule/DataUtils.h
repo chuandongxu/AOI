@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include "VisionAPI.h"
 
 enum CAD_DATA_COLUMNS {
     BEGIN,
@@ -18,6 +19,14 @@ enum CAD_DATA_COLUMNS {
     BOARD_NO,
     PIN_COUNT,
     END
+};
+
+enum CAD_DATA_UNIT {
+    UM,
+    MM,
+    CM,
+    MIL,
+    INCH
 };
 
 static const std::string CAD_DATA_COLUMN_NAMES[] {
@@ -38,6 +47,10 @@ static const std::string CAD_DATA_COLUMN_NAMES[] {
 static_assert ( sizeof(CAD_DATA_COLUMN_NAMES) /sizeof(std::string) == CAD_DATA_COLUMNS::END, "Column count not match with names" );
 
 struct CadData {
+    CadData() :
+        name(""),
+        boardNo(0),
+        pinCount(0) {}
     std::string     name;
     float           x;
     float           y;
@@ -55,15 +68,19 @@ using VectorOfCadData = std::vector<CadData>;
 
 struct PackageSize {
     PackageSize() :
-        Length(5),
-        Width(5) {}
-    PackageSize(float Length, float Width) :
-        Length(Length),
-        Width(Width) {}
+        length(5),
+        width(5) {}
+    PackageSize(float Width, float Length ) :
+        length(Length),
+        width(Width) {}
 
-    float Length;
-    float Width;
+    float length;
+    float width;
 };
+
+template <typename Tp> inline int   ToInt32(Tp param) { return static_cast<int>(param); }
+template <typename Tp> inline short ToInt16(Tp param) { return static_cast<short>(param); }
+template <typename Tp> inline float ToFloat(Tp param) { return static_cast<float>(param); }
 
 using MapTypePackageSize = std::unordered_map<std::string, PackageSize>;
 using MapGroupPackageSize = std::unordered_map<std::string, MapTypePackageSize>;
@@ -76,10 +93,49 @@ class DataUtils
     ~DataUtils();
 public:
     static bool isNumber(std::string const& n);
+    static float toUm(float fInput, CAD_DATA_UNIT enDataUnit);
     static std::vector<std::string> splitString ( const std::string &s, char delim );
     static int parseCAD(const std::string &strFilePath, const std::vector<CAD_DATA_COLUMNS> &vecColumns, VectorOfCadData &vecCadData, std::string &strErrorMsg);
     static int readPackageSize(const std::string &strFilePath, MapGroupPackageSize &mapGroupPackageSize, std::string &strErrorMsg);
     static int findDigitString(const std::string &strInput, std::string &strOutput, int nStartPos = 0 );
     static int decodePackageAndType(const std::string &strPackageType, const std::string &strInputGroup, std::string &strOutputPackage, std::string &strOutputType);
+    static int getFrameFromCombinedImage(
+        int nBigImgWidth,
+        int nBigImgHeight,
+        int nFrameImgWidth,
+        int nFrameImgHeight,
+        int nOverlapX,
+        int nOverlapY,
+        int nSelectPtX,
+        int nSelectPtY,
+        int &nFrameX,
+        int &nFrameY,
+        int &nPtInFrameX,
+        int &nPtInFrameY);
+
+    static int getCombinedImagePosFromFramePos(
+        int nBigImgWidth,
+        int nBigImgHeight,
+        int nFrameImgWidth,
+        int nFrameImgHeight,
+        int nOverlapX,
+        int nOverlapY,
+        int nFrameX,
+        int nFrameY,
+        int nPtInFrameX,
+        int nPtInFrameY,
+        int &nCombinedImgPtX,
+        int &nCombinedImgPtY);
+
+    static int alignWithTwoPoints(
+        cv::Point2f  ptCadPos1,
+        cv::Point2f  ptCadPos2,
+        cv::Point2f  ptTargetPos1,
+        cv::Point2f   ptTargetPos2,
+        float       &fRotationInRadian,
+        float       &Tx,
+        float       &Ty,
+        float       &fScale
+        );
 };
 

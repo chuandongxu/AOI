@@ -30,6 +30,9 @@ public:
 	virtual void deleteObj(int nIndex, DataTypeEnum emDataType = EM_DATA_TYPE_OBJ) = 0;
 	virtual void clearObjs(DataTypeEnum emDataType = EM_DATA_TYPE_OBJ) = 0;
 
+    virtual bool createProject(QString& szFilePath) = 0;
+    virtual bool openProject(QString& szFilePath) = 0;
+
 	virtual bool saveDataBase(QString& szFilePath = QString(""), DataTypeEnum emDataType = EM_DATA_TYPE_OBJ) = 0;
 	virtual bool loadDataBase(QString& szFilePath = QString(""), DataTypeEnum emDataType = EM_DATA_TYPE_OBJ) = 0;
 

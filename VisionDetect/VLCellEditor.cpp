@@ -83,7 +83,7 @@ QVLCellEditor::QVLCellEditor(DataTypeEnum emType, QWidget *parent)
 	initValue();
 
 	//loadMapData();
-	loadDataBase();
+	//loadDataBase();
 
 	setMouseTracking(true);
 	ui.checkBox_showNumber->setChecked(true);

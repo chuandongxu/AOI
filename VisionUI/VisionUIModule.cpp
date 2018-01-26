@@ -68,7 +68,7 @@ QWidget* QVisionUIModule::getVisionView()
 	return m_pVisionView;
 }
 
-void QVisionUIModule::setImage(cv::Mat& matImage, bool bDisplay)
+void QVisionUIModule::setImage(const cv::Mat& matImage, bool bDisplay)
 {
 	if (m_pVisionView)
 	{

@@ -2,6 +2,8 @@
 #include <fstream>
 #include <sstream>
 #include <cctype>
+#include <math.h>
+#include "../include/constants.h"
 
 DataUtils::DataUtils()
 {
@@ -33,6 +35,31 @@ DataUtils::~DataUtils()
     }
 
     return bWithDigit;
+}
+
+/*static*/ float DataUtils::toUm(float fInput, CAD_DATA_UNIT enDataUnit) {
+    float fResult = 0;
+    switch (enDataUnit)
+    {
+    case UM:
+        fResult = fInput;
+        break;
+    case MM:
+        fResult = fInput * MM_TO_UM;
+        break;
+    case CM:
+        fResult = fInput * CM_TO_UM;
+        break;
+    case MIL:
+        fResult = fInput * MIL_TO_UM;
+        break;
+    case INCH:
+        fResult = fInput * INCH_TO_UM;
+        break;
+    default:
+        break;
+    }
+    return fResult;
 }
 
 /*static*/ std::vector<std::string> DataUtils::splitString ( const std::string &s, char delim )
@@ -73,7 +100,8 @@ DataUtils::~DataUtils()
     while ( std::getline ( fs, strLine, chChangeLine ) ) {
         auto vecData = splitString ( strLine, '\t' );
         if ( vecData.size() != vecColumns.size() ) {
-            strErrorMsg = "Line " + std::to_string ( nLineNumber) + " data columns is not following the input data columns.";
+            strErrorMsg = "Line " + std::to_string ( nLineNumber) + " data columns count " + std::to_string ( vecData.size() ) 
+                + " is not following the input data columns " + std::to_string ( vecColumns.size() ) + ".";
             return -1;
         }
         CadData cadData;
@@ -89,21 +117,21 @@ DataUtils::~DataUtils()
                     strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to X, but data \"" + vecData[index] + "\" is not number.";
                     return -1;
                 }
-                cadData.x = std::atof ( vecData[index].c_str() );
+                cadData.x = ToFloat ( std::atof ( vecData[index].c_str() ) ) ;
                 break;
             case CAD_DATA_COLUMNS::Y:
                 if ( ! isNumber ( vecData[index] ) ) {
                     strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to Y, but data \"" + vecData[index] + "\" is not number.";
                     return -1;
                 }
-                cadData.y = std::atof ( vecData[index].c_str() );
+                cadData.y = ToFloat ( std::atof ( vecData[index].c_str() ) );
                 break;
             case CAD_DATA_COLUMNS::ANGLE:
                 if ( ! isNumber ( vecData[index] ) ) {
                     strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to ANGLE, but data \"" + vecData[index] + "\" is not number.";
                     return -1;
                 }
-                cadData.angle = std::atof ( vecData[index].c_str () );
+                cadData.angle = ToFloat ( std::atof ( vecData[index].c_str () ) );
                 break;
             case CAD_DATA_COLUMNS::TOP_BOTTOM:
                 cadData.isBottom = vecData[index] == "B";
@@ -119,14 +147,14 @@ DataUtils::~DataUtils()
                     strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to WIDTH, but data \"" + vecData[index] + "\" is not number.";
                     return -1;
                 }
-                cadData.width = std::atof ( vecData[index].c_str() );
+                cadData.width = ToFloat ( std::atof ( vecData[index].c_str() ) );
                 break;
             case CAD_DATA_COLUMNS::LENGTH:
                 if ( ! isNumber ( vecData[index] ) ) {
                     strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to LENGTH, but data \"" + vecData[index] + "\" is not number.";
                     return -1;
                 }
-                cadData.length = std::atof ( vecData[index].c_str() );
+                cadData.length = ToFloat ( std::atof ( vecData[index].c_str() ) );
                 break;
             case CAD_DATA_COLUMNS::PLACEMENT:
                 cadData.placement = vecData[index] == "Placement";
@@ -171,9 +199,9 @@ DataUtils::~DataUtils()
         }
         std::string strGroup = vecData[0];
         std::string strType = vecData[1];
-        float fLength = std::atof ( vecData[2].c_str() );
-        float fWidth = std::atof ( vecData[3].c_str() );
-        mapGroupPackageSize[strGroup][strType] = PackageSize{fLength, fWidth};
+        float fWidth  = ToFloat ( std::atof ( vecData[2].c_str() ) );
+        float fLength = ToFloat ( std::atof ( vecData[3].c_str() ) );
+        mapGroupPackageSize[strGroup][strType] = PackageSize{fWidth, fLength};
         ++ nLineNumber;
     }
     return 0;
@@ -183,7 +211,7 @@ DataUtils::~DataUtils()
     auto posStart = strInput.find_first_of(DigitNumber, nStartPos);
     auto posEnd = strInput.find_first_not_of(DigitNumber, posStart);
     if (posEnd > posStart) {
-        strOutput = strInput.substr(posStart, posEnd - posStart);
+        strOutput = strInput.substr ( posStart, posEnd - posStart );
         return 0;
     }
     strOutput.assign("");
@@ -195,23 +223,185 @@ DataUtils::~DataUtils()
         return -1;
 
     if ( strInputGroup == "R" || strInputGroup == "C" ) {
-        strOutputType = "RC";
-        return findDigitString ( strPackageType, strOutputType );
+        strOutputPackage = "RC";
+        auto result = findDigitString ( strPackageType, strOutputType );
+        if ( result == 0 && '0' == strOutputType[0] )
+            strOutputType = strOutputType.substr(1);    //Remove 0 in the beginning
+        return result;
     }
 
     //D for Diode.
     if ( strInputGroup == "D" ) {
         auto posStartNumber = strPackageType.find_first_of ( DigitNumber );
-        const std::string strLocalType = strPackageType.substr( posStartNumber );
-        if ( strLocalType == "D" ) {
-            strOutputType = "RC";
-            return findDigitString ( strPackageType, strOutputType );
+        const std::string strLocalType = strPackageType.substr ( 0, posStartNumber );
+        if ( "D" == strLocalType ) {
+            strOutputPackage = strLocalType;
+            auto result = findDigitString ( strPackageType, strOutputType );
+            if ( result == 0 && '0' == strOutputType[0] )
+                strOutputType = strOutputType.substr(1);    //Remove 0 in the beginning
+            return result;
         } 
     }
 
-    std::string strHead = strPackageType.substr(3);
-    if ( strHead == "SOT" )
-        return findDigitString ( strPackageType, strOutputType, 3 );
+    std::string strHead;
 
+    //The head type length is 2.
+    strHead = strPackageType.substr(0, 2);
+    if( "YC" == strHead ||
+        "TQ" == strHead ||
+        "VQ" == strHead ||
+        "TO" == strHead ||
+        "FG" == strHead ||
+        "FF" == strHead )
+    {
+        strOutputPackage = strHead;
+        return findDigitString ( strPackageType, strOutputType, 2 );
+    }else
+    if ( "DO" == strHead ) {
+        strOutputPackage = strHead;
+        auto posStart = strPackageType.find_first_of(DigitNumber, 3);
+        strOutputType = strPackageType.substr ( posStart, strPackageType.length() - posStart );
+        return 0;
+    }
+
+    //The head type length is 3.
+    strHead = strPackageType.substr(0, 3);
+    if( "SOT" == strHead ||
+        "SOD" == strHead ||
+        "SOL" == strHead ||
+        "QFP" == strHead ||
+        "QFN" == strHead ||
+        "BGA" == strHead ||
+        "DIP" == strHead
+        )
+    {
+        strOutputPackage = strHead;
+        return findDigitString ( strPackageType, strOutputType, 3 );
+    }else
+    if ( "LED" == strHead ) {
+        strOutputPackage = strHead;
+        auto result = findDigitString(strPackageType, strOutputType);
+        if (result == 0 && '0' == strOutputType[0])
+            strOutputType = strOutputType.substr(1);    //Remove 0 in the beginning
+        return result;
+    }
+
+    //The head type length is 4.
+    strHead = strPackageType.substr(0, 4);
+    if( "SOIC" == strHead ||
+        "MSOP" == strHead ||
+        "SSOP" == strHead ||
+        "LQFP" == strHead ||
+        "TQFP" == strHead ||
+        "VQFP" == strHead ||
+        "MQFP" == strHead ||
+        "PBGA" == strHead ||
+        "FBGA" == strHead ||
+        "PLCC" == strHead ||
+        "TSOP" == strHead )
+    {
+        strOutputPackage = strHead;
+        return findDigitString ( strPackageType, strOutputType, 4 );
+    }
+    else
+    if ( "HEAD" == strHead ) {
+        strOutputPackage = strHead;
+        strOutputType = strPackageType.substr ( 5, strPackageType.length() - 5 );
+        return 0;
+    }
+
+    if ( strPackageType.size() < 5 )
+        return -1;
+
+    //The head type length is 5.
+    strHead = strPackageType.substr(0, 5);
+    if( "TSSOP" == strHead )
+    {
+        strOutputPackage = strHead;
+        return findDigitString ( strPackageType, strOutputType, 5 );
+    }else
+    if ( "D-PAK" == strHead ) {
+        strOutputPackage = strHead;
+        strOutputType = strPackageType.substr ( 6, strPackageType.length() - 6 );
+        return 0;
+    }
+
+    if ( strPackageType.size() < 6 )
+        return -1;
+    strHead = strPackageType.substr(0, 6);
+    if ( "PCIBUS" == strHead ) {
+        strOutputPackage = strHead;
+        return findDigitString ( strPackageType, strOutputType, 5 );
+    }
     return -1;
+}
+
+/*static*/ int DataUtils::getFrameFromCombinedImage(
+    int nBigImgWidth,
+    int nBigImgHeight,
+    int nFrameImgWidth,
+    int nFrameImgHeight,
+    int nOverlapX,
+    int nOverlapY,
+    int nSelectPtX,
+    int nSelectPtY,
+    int &nFrameX,
+    int &nFrameY,
+    int &nPtInFrameX,
+    int &nPtInFrameY)
+{
+    //X frame start from right to left.
+    nFrameX = ( nBigImgWidth - nSelectPtX ) / ( nFrameImgWidth - nOverlapX );
+    nFrameY = nSelectPtY / ( nFrameImgHeight - nOverlapY );
+    nPtInFrameX = nFrameImgWidth - ( ( nBigImgWidth - nSelectPtX ) - nFrameX * ( nFrameImgWidth - nOverlapX ) );
+    nPtInFrameY = nSelectPtY - nFrameY *  ( nFrameImgHeight - nOverlapY );
+
+    return 0;
+}
+
+//Frame X sequence is from right to left.
+/*static*/ int DataUtils::getCombinedImagePosFromFramePos(
+        int nBigImgWidth,
+        int nBigImgHeight,
+        int nFrameImgWidth,
+        int nFrameImgHeight,
+        int nOverlapX,
+        int nOverlapY,
+        int nFrameX,
+        int nFrameY,
+        int nPtInFrameX,
+        int nPtInFrameY,
+        int &nCombinedImgPtX,
+        int &nCombinedImgPtY)
+{
+    nCombinedImgPtX = nBigImgWidth - ( nFrameX * ( nFrameImgWidth - nOverlapX ) + ( nFrameImgWidth- nPtInFrameX ) );
+    nCombinedImgPtY = nPtInFrameY + nFrameY *  ( nFrameImgHeight - nOverlapY );
+    return 0;
+}
+
+/*****************************************
+matTransform = [ cos(a) -sina(a) Tx ]
+               [ sin(a)  cos(a)  Ty ]
+******************************************
+/*static*/ int DataUtils::alignWithTwoPoints(
+        cv::Point2f  ptCadPos1,
+        cv::Point2f  ptCadPos2,
+        cv::Point2f  ptTargetPos1,
+        cv::Point2f  ptTargetPos2,
+        float       &fRotationInRadian,
+        float       &Tx,
+        float       &Ty,
+        float       &fScale )
+{
+    float fLengthCad = sqrt ( ( ptCadPos1.x - ptCadPos2.x ) * ( ptCadPos1.x - ptCadPos2.x ) + ( ptCadPos1.y - ptCadPos2.y ) * ( ptCadPos1.y - ptCadPos2.y ) );
+    float fLengthTarget = sqrt ( ( ptTargetPos1.x - ptTargetPos2.x ) * ( ptTargetPos1.x - ptTargetPos2.x ) + ( ptTargetPos1.y - ptTargetPos2.y ) * ( ptTargetPos1.y - ptTargetPos2.y ) );
+    fScale = fLengthTarget / fLengthCad;
+
+    float fAngle1 = atan2 ( ( ptTargetPos1.y - ptTargetPos2.y ), ( ptTargetPos1.x - ptTargetPos2.x ) );
+    float fAngle2 = atan2 ( ( ptCadPos1.y - ptCadPos2.y ), ( ptCadPos1.x - ptCadPos2.x ) );
+    fRotationInRadian = fAngle1 - fAngle2;
+    fRotationInRadian = -fRotationInRadian; //Because coordinate of vision system is reversed with normal coordinate.
+    Tx = ( ptTargetPos1.x + ptTargetPos2.x ) / 2.f - ( ptCadPos1.x + ptCadPos2.x ) / 2.f;
+    Ty = ( ptTargetPos1.y + ptTargetPos2.y ) / 2.f - ( ptCadPos1.y + ptCadPos2.y ) / 2.f;
+    return 0;
 }

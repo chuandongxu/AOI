@@ -21,7 +21,7 @@ public:
 
 	virtual QWidget* getVisionView() = 0; // Display on the main UI
 
-	virtual void setImage(cv::Mat& matImage, bool bDisplay = true) = 0;
+	virtual void setImage(const cv::Mat& matImage, bool bDisplay = true) = 0;
 	virtual cv::Mat getImage() = 0;
 	virtual void clearImage() = 0;
 	virtual void addImageText(QString szText) = 0;

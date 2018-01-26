@@ -1,11 +1,15 @@
 ﻿#include "TopWidget.h"
-#include <qsettings.h>
-#include <qapplication.h>
-#include <qbytearray.h>
+#include <QSettings>
+#include <QApplication>
+#include <QByteArray>
+#include <QFileDialog>
+#include <QPainter>
 #include "../common/SystemData.h"
 #include "../Common/eos.h"
 #include "../include/IdDefine.h"
-#include <QPainter>
+#include "../include/IData.h"
+#include "../Common/ModuleMgr.h"
+#include "../include/constants.h"
 
 #define HIDE_DEBUG_TOOL_BTN  0
 
@@ -50,7 +54,23 @@ QTopWidget::QTopWidget(QWidget *parent) :
 	m_titleLayout->addStretch(0);
     m_titleLayout->addWidget(m_exitBtn,0,Qt::AlignRight|Qt::AlignTop);
 
+    const QSize szBtn(50, 50);
 	QString stytleStr = "background-color: rgb(32, 105, 138);color:white;";
+    m_toolBtnNewProject = new QPushButton();
+    QIcon iconNewProject("./image/NewProject_32x32.png");
+    m_toolBtnNewProject->setIcon(iconNewProject);
+    m_toolBtnNewProject->setFixedSize(szBtn);
+    m_toolBtnNewProject->setIconSize(szBtn);
+    m_toolBtnNewProject->setToolTip(QStringLiteral("New Project"));
+    //m_toolBtnNewProject->setStyleSheet(stytleStr);
+
+    m_toolBtnOpenProject.setFixedSize(szBtn);
+    QIcon iconOpenProject("./image/OpenProject_32x32.png");
+    m_toolBtnOpenProject.setIcon(iconOpenProject);
+    m_toolBtnOpenProject.setFixedSize(szBtn);
+    m_toolBtnOpenProject.setIconSize(szBtn);
+    m_toolBtnOpenProject.setToolTip(QStringLiteral("Open Project"));
+
 	m_toolBtnAutoRun = new QPushButton();
 	m_toolBtnAutoRun->setFixedSize(100, 25);
 	m_toolBtnAutoRun->setText(QStringLiteral("开始运行"));
@@ -77,6 +97,8 @@ QTopWidget::QTopWidget(QWidget *parent) :
 	m_toolBtnData->setStyleSheet(stytleStr);
 
 	m_toolLayout->addSpacing(1000);
+    m_toolLayout->addWidget(m_toolBtnNewProject, 0, Qt::AlignLeft | Qt::AlignBottom);
+    m_toolLayout->addWidget(&m_toolBtnOpenProject, 0, Qt::AlignLeft | Qt::AlignBottom);
 	m_toolLayout->addWidget(m_toolBtnAutoRun, 0, Qt::AlignLeft | Qt::AlignBottom);
 	m_toolLayout->addWidget(m_toolBtnSys, 0, Qt::AlignLeft | Qt::AlignBottom);
 	m_toolLayout->addWidget(m_toolBtnHw, 0, Qt::AlignLeft | Qt::AlignBottom);
@@ -85,19 +107,20 @@ QTopWidget::QTopWidget(QWidget *parent) :
 	m_toolLayout->addWidget(m_toolBtnData, 0, Qt::AlignLeft | Qt::AlignBottom);
 
 	m_mainLayout->addLayout(m_toolLayout);
-	m_mainLayout->addLayout(m_titleLayout);	
+	m_mainLayout->addLayout(m_titleLayout);
     this->setLayout(m_mainLayout);
 	
 	m_nTimerId = this->startTimer(100);
     connect(m_exitBtn,SIGNAL(clicked()),this,SIGNAL(closeBtnclick()));
 	
+    connect(m_toolBtnNewProject, SIGNAL(clicked()), this, SLOT(onNewProject()));
+    connect(&m_toolBtnOpenProject, SIGNAL(clicked()), this, SLOT(onOpenProject()));
 	connect(m_toolBtnAutoRun, SIGNAL(clicked()), this, SLOT(onAutoRun()));
 	connect(m_toolBtnSys, SIGNAL(clicked()), this, SLOT(onSystem()));
 	connect(m_toolBtnHw, SIGNAL(clicked()), this, SLOT(onHardware()));
 	connect(m_toolBtnTools, SIGNAL(clicked()), this, SLOT(onTools()));
 	connect(m_toolBtnSetting, SIGNAL(clicked()), this, SLOT(onSetting()));
-	connect(m_toolBtnData, SIGNAL(clicked()), this, SLOT(onData()));
-	
+	connect(m_toolBtnData, SIGNAL(clicked()), this, SLOT(onData()));	
 }
 
 void QTopWidget::paintEvent(QPaintEvent *event)
@@ -107,9 +130,7 @@ void QTopWidget::paintEvent(QPaintEvent *event)
 	QPainter painter(this);
 	style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
 	QWidget::paintEvent(event);
-
 }
-
 
 QString QTopWidget::getTitle()
 {
@@ -119,6 +140,44 @@ QString QTopWidget::getTitle()
 void QTopWidget::setTitle(const QString &title)
 {
 	m_titleLabel->setText(title);
+}
+
+void QTopWidget::onNewProject()
+{
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setNameFilter(tr("Project Files (*.aoi)"));
+    dialog.setViewMode(QFileDialog::Detail);
+    QStringList fileNames;
+    if (dialog.exec())  {
+        fileNames = dialog.selectedFiles();
+    }else
+        return;
+
+    IData* pData = getModule<IData>(DATA_MODEL);
+    auto strFilePath = fileNames[0];
+    if ( ! strFilePath.endsWith ( PROJECT_EXT.c_str(), Qt::CaseInsensitive) ) {
+        strFilePath += PROJECT_EXT.c_str();
+    }
+    pData->createProject ( strFilePath );
+}
+
+void QTopWidget::onOpenProject()
+{
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+    dialog.setNameFilter(tr("Project Files (*.aoi)"));
+    dialog.setViewMode(QFileDialog::Detail);
+    QStringList fileNames;
+    if (dialog.exec())  {
+        fileNames = dialog.selectedFiles();
+    }else
+        return;
+
+    IData* pData = getModule<IData>(DATA_MODEL);
+    pData->openProject(fileNames[0]);
 }
 
 void QTopWidget::onAutoRun()
