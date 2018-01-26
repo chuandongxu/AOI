@@ -192,6 +192,7 @@ public:
 public:
 	void userGoHome();
 	void userImStop();
+	void userStart();
 	void userStop();
 	void userPause();
 	void userReset();
@@ -206,8 +207,9 @@ public:
 
 signals:
 	void errorInfo(const QString &data,const QString &msg,unsigned int level);
-	void goHome();
+	void goHome();	
 	void imStop();
+	void start();
 	void stop();
 	void pause();
 	void reset();

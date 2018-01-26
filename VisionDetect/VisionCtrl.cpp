@@ -495,26 +495,87 @@ bool VisionCtrl::calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>&
 
 bool VisionCtrl::merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight)
 {
-	Vision::PR_MERGE_3D_HEIGHT_CMD stCmd;
-	Vision::PR_MERGE_3D_HEIGHT_RPY stRpy;
-
-	for (int i = 0; i < matHeights.size(); i++)
+	if (2 == matHeights.size())
 	{
-		stCmd.vecMatHeight.push_back(matHeights[i]);
-	}
-	double d3DDetectHeightDiffThd = System->getParam("3d_detect_height_diff_threshold").toDouble();
-	stCmd.fHeightDiffThreshold = d3DDetectHeightDiffThd;
-	double d3DDetectHeightNoiseThd = System->getParam("3d_detect_height_noise_threshold").toDouble();
-	stCmd.fRemoveLowerNoiseRatio = d3DDetectHeightNoiseThd;
+		Vision::PR_MERGE_3D_HEIGHT_CMD stCmd;
+		Vision::PR_MERGE_3D_HEIGHT_RPY stRpy;
 
-	Vision::VisionStatus retStatus = PR_Merge3DHeight(&stCmd, &stRpy);
+		for (int i = 0; i < matHeights.size(); i++)
+		{
+			stCmd.vecMatHeight.push_back(matHeights[i]);
+		}
+		double d3DDetectHeightDiffThd = System->getParam("3d_detect_height_diff_threshold").toDouble();
+		stCmd.fHeightDiffThreshold = d3DDetectHeightDiffThd;
+		double d3DDetectHeightNoiseThd = System->getParam("3d_detect_height_noise_threshold").toDouble();
+		stCmd.fRemoveLowerNoiseRatio = d3DDetectHeightNoiseThd;
+
+		Vision::VisionStatus retStatus = PR_Merge3DHeight(&stCmd, &stRpy);
+		if (retStatus == Vision::VisionStatus::OK)
+		{
+			matHeight = stRpy.matHeight;
+		}
+		else
+		{
+			System->setTrackInfo(QString("Error at PR_Merge3DHeight, error code = %1").arg((int)retStatus));
+		}
+	}
+	else // 4 DLPs
+	{
+		cv::Mat matHeightMerges[2];
+		for (int j = 0; j < 2; j++)
+		{
+			Vision::PR_MERGE_3D_HEIGHT_CMD stCmd;
+			Vision::PR_MERGE_3D_HEIGHT_RPY stRpy;
+
+			stCmd.vecMatHeight.push_back(matHeights[j + 0]);
+			stCmd.vecMatHeight.push_back(matHeights[j + 2]);
+
+			double d3DDetectHeightDiffThd = System->getParam("3d_detect_height_diff_threshold").toDouble();
+			stCmd.fHeightDiffThreshold = d3DDetectHeightDiffThd;
+			double d3DDetectHeightNoiseThd = System->getParam("3d_detect_height_noise_threshold").toDouble();
+			stCmd.fRemoveLowerNoiseRatio = d3DDetectHeightNoiseThd;
+
+			Vision::VisionStatus retStatus = PR_Merge3DHeight(&stCmd, &stRpy);
+			if (retStatus == Vision::VisionStatus::OK)
+			{
+				matHeightMerges[j] = stRpy.matHeight;
+			}
+			else
+			{
+				System->setTrackInfo(QString("Error at PR_Merge3DHeight, error code = %1").arg((int)retStatus));
+			}
+		}
+
+		matHeight = (matHeightMerges[0] + matHeightMerges[1]) / 2;
+	}
+
+	return true;
+}
+
+bool VisionCtrl::mergeImage(QVector<cv::Mat>& matImages, cv::Mat& matImage)
+{
+	Vision::PR_COMBINE_IMG_CMD stCmd;
+	Vision::PR_COMBINE_IMG_RPY stRpy;
+
+	for (int i = matImages.size() - 1; i >= 0; i--)
+	{
+		stCmd.vecInputImages.push_back(matImages[i]);
+	}
+	stCmd.nCountOfImgPerFrame = 1;
+	stCmd.nCountOfFrameX = 4;
+	stCmd.nCountOfFrameY = 1;
+	stCmd.nOverlapX = 277;
+	stCmd.nOverlapY = 0;
+	stCmd.nCountOfImgPerRow = 4;
+
+	Vision::VisionStatus retStatus = PR_CombineImg(&stCmd, &stRpy);
 	if (retStatus == Vision::VisionStatus::OK)
 	{
-		matHeight = stRpy.matHeight;
+		matImage = stRpy.vecResultImages[0];
 	}
 	else
 	{
-		System->setTrackInfo(QString("Error at PR_Merge3DHeight, error code = %1").arg((int)retStatus));		
+		System->setTrackInfo(QString("Error at PR_Merge3DHeight, error code = %1").arg((int)retStatus));
 	}
 
 	return true;

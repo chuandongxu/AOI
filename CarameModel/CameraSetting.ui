@@ -64,7 +64,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>180</y>
+        <y>230</y>
         <width>171</width>
         <height>20</height>
        </rect>
@@ -74,7 +74,7 @@
       <property name="geometry">
        <rect>
         <x>190</x>
-        <y>180</y>
+        <y>230</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -87,7 +87,7 @@
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>180</y>
+        <y>230</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -100,13 +100,13 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>150</y>
+        <y>200</y>
         <width>121</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>记录图像数据</string>
+       <string>记录所有图像</string>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkBox_4">
@@ -126,7 +126,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>130</y>
+        <y>123</y>
         <width>341</width>
         <height>16</height>
        </rect>
@@ -162,7 +162,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>240</y>
+        <y>280</y>
         <width>121</width>
         <height>16</height>
        </rect>
@@ -175,7 +175,7 @@
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>240</y>
+        <y>280</y>
         <width>100</width>
         <height>20</height>
        </rect>
@@ -185,7 +185,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>220</y>
+        <y>260</y>
         <width>341</width>
         <height>16</height>
        </rect>
@@ -332,13 +332,39 @@
       <property name="geometry">
        <rect>
         <x>240</x>
-        <y>240</y>
+        <y>280</y>
         <width>41</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
        <string>pixel</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>150</y>
+        <width>121</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>记录灯光图像</string>
+      </property>
+     </widget>
+     <widget class="Line" name="line_6">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>180</y>
+        <width>341</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </widget>

@@ -150,7 +150,7 @@ bool QMainProcess::startUpCapture()
 		int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
 		selectCaptureMode(nCaptureNumMode);	
 
-		System->setParam("camera_cap_image_sw_enable", true);
+		//System->setParam("camera_cap_image_sw_enable", true);
 
 		m_pCameraOnLive = new MainCameraOnLive(this, m_pCameraCtrl->getCamera(0));
 		m_pCameraOnLive->start();

@@ -15,7 +15,7 @@ class QProfileObj;
 class IData
 {
 public:
-	virtual QWidget* getToolWidget(bool bDataTool = true) = 0;
+	virtual QWidget* getStatisticsWidget() = 0;
 	virtual QWidget* getDataEditor() = 0;
     virtual QWidget* getDataWidget() = 0;
 

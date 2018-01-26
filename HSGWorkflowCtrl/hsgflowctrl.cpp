@@ -345,15 +345,35 @@ int QCheckerRunable::getStationID()
 //
 //
 //******************************************************************************
+#define MTR_READY_POS			0
+#define MTR_MOVETO_POS1			1
+#define MTR_MOVETO_POS2			2
+#define MTR_MOVETO_POS3			5
+#define MTR_MOVETO_POS4			6
 
 QMainRunable::QMainRunable(QCheckerParamMap * paramMap, QCheckerParamDataList* paramData)
 	:m_paramMap(paramMap), m_paramData(paramData), m_exit(false), m_normal("evAiValue.xml")
 {
+
+	m_positionMap.insert(0, MTR_MOVETO_POS1);
+	m_positionMap.insert(1, MTR_MOVETO_POS2);
+	m_positionMap.insert(2, MTR_MOVETO_POS3);
+	m_positionMap.insert(3, MTR_MOVETO_POS4);
 }
 
 QMainRunable::~QMainRunable()
 {
 
+}
+
+int QMainRunable::getPositionNum()
+{
+	return m_positionMap.size();
+}
+
+int QMainRunable::getPositionID(int nIndex)
+{
+	return m_positionMap.value(nIndex);
 }
 
 void QMainRunable::quit()
@@ -366,20 +386,69 @@ void QMainRunable::imgStop()
 {
 }
 
+bool QMainRunable::preRunning()
+{
+	if (!moveToReadyPos())
+	{
+		System->setTrackInfo(QString(QStringLiteral("系统运动Ready位置错误！")));
+		return false;
+	}
+
+	m_3DMatHeights.clear();
+	m_matImages.clear();
+	m_matGrayImgs.clear();
+
+	for (int i = 0; i < getPositionNum(); i++)
+	{
+		m_3DMatHeights.push_back(cv::Mat());
+		m_matImages.push_back(cv::Mat());
+		m_matGrayImgs.push_back(cv::Mat());
+	}
+
+	return true;
+}
+
 void QMainRunable::run()
 {
-	System->setTrackInfo(QString(QStringLiteral("主流程启动成功!")));
+	if (!preRunning()) return;
 
+	System->setTrackInfo(QString(QStringLiteral("主流程启动成功!")));	
+
+	double dtime_start = 0, dtime_movePos = 0;
 	while (!isExit())
 	{
 		if (!waitStartBtn())continue;
 		if (isExit())break;
+		
+		QString szImagePath = generateImagePath();
+		bool bCaptureError = false;
+		for (int i = 0; i < getPositionNum(); i++)
+		{
+			if (!moveToCapturePos(i))
+			{
+				bCaptureError = true; 
+				break;
+			}
+			if (isExit())break;
 
-		double dtime_start = double(clock());
-		if (!captureImages())continue;
+			dtime_start = double(clock());
+			if (!captureImages(i, szImagePath)) 
+			{
+				bCaptureError = true;
+				break;
+			}
+			if (isExit())break;
+			dtime_movePos = double(clock());
+			System->setTrackInfo(QStringLiteral("Board%1:采集图像并生成3D数据: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
+		}
+		if (bCaptureError) continue;
 		if (isExit())break;
-		double dtime_movePos = double(clock());
-		System->setTrackInfo(QStringLiteral("Board%1:采集图像并生成3D数据: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
+
+		dtime_start = double(clock());
+		if (!mergeImages())continue;
+		if (isExit())break;
+		dtime_movePos = double(clock());
+		System->setTrackInfo(QStringLiteral("Board%1:合成数据: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
 
 		dtime_start = double(clock());
 		if (!matchPosition())continue;
@@ -433,6 +502,32 @@ bool QMainRunable::waitStartBtn()
 	}
 
 	return false;
+}
+
+bool QMainRunable::moveToReadyPos()
+{
+	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
+	if (!pMotion) return false;
+
+	if (!pMotion->moveToPosGroup(MTR_READY_POS, true))
+	{
+		System->setTrackInfo(QString("move to position error"));
+		return false;
+	}
+	return true;
+}
+
+bool QMainRunable::moveToCapturePos(int nIndex)
+{
+	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
+	if (!pMotion) return false;
+
+	if (!pMotion->moveToPosGroup(getPositionID(nIndex), true))
+	{
+		System->setTrackInfo(QString("move to position error"));
+		return false;
+	}
+	return true;
 }
 
 bool QMainRunable::captureAllImages(QVector<cv::Mat>& imageMats)
@@ -510,7 +605,7 @@ bool QMainRunable::captureAllImages(QVector<cv::Mat>& imageMats)
 	return true;
 }
 
-bool QMainRunable::captureImages()
+bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 {
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
@@ -539,15 +634,15 @@ bool QMainRunable::captureImages()
 		}
 	}
 
+	QVector<cv::Mat> imageMats;
+	int nPatternNum = System->getParam("motion_trigger_pattern_num").toInt();
 	if (bMotionCardTrigger)
 	{
-		double dtime_start = double(clock());
-		QVector<cv::Mat> imageMats;
+		double dtime_start = double(clock());		
 		if (!captureAllImages(imageMats)) return false;
 		double dtime_movePos = double(clock());
 		System->setTrackInfo(QStringLiteral("Board%1:采集图像数据: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
-
-		int nPatternNum = System->getParam("motion_trigger_pattern_num").toInt();
+		
 		for (int i = 0; i < nStationNum; i++)
 		{
 			(*m_paramData)[i]._srcImageMats.clear();
@@ -562,6 +657,12 @@ bool QMainRunable::captureImages()
 	{
 		(*m_paramData)[i]._bCapturedDone = false;
 		(*m_paramData)[i]._bStartCapturing = true;
+	}
+
+	bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
+	if (bCaptureLightImage)
+	{
+		saveImages(szImagePath, nIndex, imageMats.mid(nStationNum*nPatternNum));
 	}
 
 	int nWaitTime = 30 * 100;
@@ -600,13 +701,30 @@ bool QMainRunable::captureImages()
 		nCapturedNum += 1;
 	}
 	matGray /= nCapturedNum;
+	m_matGrayImgs[nIndex] = matGray;
 
-	m_matImage = matGray;
+	pUI->setImage(matGray, true);
 
-
-	pUI->setImage(m_matImage, false);
 	QEos::Notify(EVENT_RESULT_DISPLAY, 0, STATION_RESULT_IMAGE_DISPLAY);
 
+	QVector<cv::Mat> lightImages = imageMats.mid(nStationNum*nPatternNum);
+	cv::Mat outputPseudocolor(matGray.size(), CV_8UC3);
+	unsigned char grayValueB, grayValueG, grayValueR;
+	for (int y = 0; y < matGray.rows; y++)
+	{
+		for (int x = 0; x < matGray.cols; x++)
+		{
+			grayValueB = lightImages[4].at<uchar>(y, x);
+			grayValueG = lightImages[3].at<uchar>(y, x);
+			grayValueR = lightImages[2].at<uchar>(y, x);
+
+			Vec3b& pixel = outputPseudocolor.at<Vec3b>(y, x);
+			pixel[0] = abs(grayValueB);
+			pixel[1] = abs(grayValueG);
+			pixel[2] = abs(grayValueR);
+		}
+	}
+	m_matImages[nIndex] = outputPseudocolor;
 
 	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_CALCULATE_3D, 0);
 
@@ -616,56 +734,74 @@ bool QMainRunable::captureImages()
 		matHeights.push_back((*m_paramData)[i]._3DMatHeight);	
 	}
 
-	if (!pVision->merge3DHeight(matHeights, m_3DMatHeight))
+	if (!pVision->merge3DHeight(matHeights, m_3DMatHeights[nIndex]))
 	{		
 		return false;
-	}
-
-	pUI->setHeightData(m_3DMatHeight);
+	}	
 	
+	return true;
+}
+
+bool QMainRunable::mergeImages()
+{
+	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+	if (!pUI) return false;
+
+	IVision* pVision = getModule<IVision>(VISION_MODEL);
+	if (!pVision) return false;
+	
+	pVision->mergeImage(m_matImages, m_matImage);
+	pUI->setImage(m_matImage, true);
+
+	for (int i = 0; i < getPositionNum(); i++)
+	{
+
+	}
+	pUI->setHeightData(m_3DMatHeight);
+
 	return true;
 }
 
 bool QMainRunable::matchPosition()
 {
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return false;
+	//ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	//if (!pCam) return false;
 
-	IVision* pVision = getModule<IVision>(VISION_MODEL);
-	if (!pVision) return false;
+	//IVision* pVision = getModule<IVision>(VISION_MODEL);
+	//if (!pVision) return false;
 
-	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_MATCH_POSITION, 0);
+	//QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_MATCH_POSITION, 0);
 
-	clearTestObjs();
+	//clearTestObjs();
 
-	cv::Mat matDisplay = m_matImage.clone();
+	//cv::Mat matDisplay = m_matImage.clone();
 
-	if (!m_matImage.empty())
-	{
-		if (!pVision->matchPosition(matDisplay, m_objTests)) return false;
-	}
+	//if (!m_matImage.empty())
+	//{
+	//	if (!pVision->matchPosition(matDisplay, m_objTests)) return false;
+	//}
 
-	//pCam->setImage(matDisplay);
+	////pCam->setImage(matDisplay);
 
 	return true;
 }
 
 bool QMainRunable::calculateDetectHeight()
 {
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return false;
+	//ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	//if (!pCam) return false;
 
-	IVision* pVision = getModule<IVision>(VISION_MODEL);
-	if (!pVision) return false;
+	//IVision* pVision = getModule<IVision>(VISION_MODEL);
+	//if (!pVision) return false;
 
-	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_CALCULATE_HEIGHT, 0);
+	//QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_CALCULATE_HEIGHT, 0);
 
-	if (pVision->calculateDetectHeight(m_3DMatHeight, m_objTests))
-	{
-		return true;
-	}
+	//if (pVision->calculateDetectHeight(m_3DMatHeight, m_objTests))
+	//{
+	//	return true;
+	//}
 
-	return false;
+	return true;
 }
 
 bool QMainRunable::waitCheckDone()
@@ -676,8 +812,6 @@ bool QMainRunable::waitCheckDone()
 	IData * pData = getModule<IData>(DATA_MODEL);
 	if (pData)
 	{
-		displayAllObjs();
-
 		pData->decrementCycleTests();
 	}
 
@@ -687,64 +821,6 @@ bool QMainRunable::waitCheckDone()
 bool QMainRunable::isExit()
 {
 	return m_exit;
-}
-
-void QMainRunable::clearTestObjs()
-{
-	for (int i = 0; i < m_objTests.size(); i++)
-	{
-		delete m_objTests[i];
-	}
-	m_objTests.clear();
-}
-
-void QMainRunable::displayAllObjs()
-{
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return;
-
-	cv::Mat matDisplay = m_matImage.clone();
-
-	if (matDisplay.type() == CV_8UC1)
-	{
-		//input image is grayscale
-		cvtColor(matDisplay, matDisplay, CV_GRAY2RGB);
-
-	}
-
-	if (!matDisplay.empty())
-	{
-		for (int i = 0; i < m_objTests.size(); i++)
-		{
-			QDetectObj* pObj = m_objTests[i];
-			if (pObj)
-			{
-				cv::RotatedRect rtFrame = pObj->getFrame();
-				cv::rectangle(matDisplay, rtFrame.boundingRect(), Scalar(0, 255, 0), 2);
-
-				if (pObj->isTested())
-				{
-					for (int j = 0; j < pObj->getHeightDetectNum(); j++)
-					{
-						cv::RotatedRect rtDetect = pObj->getHeightDetect(j);
-						cv::rectangle(matDisplay, rtDetect.boundingRect(), Scalar(255, 0, 0), 2);
-
-						Point ptPos = Point(rtDetect.center.x, rtDetect.center.y);
-						addImageText(matDisplay, ptPos, QString::number(pObj->getHeightValue(j), 'f', 3) /*+ QStringLiteral("°")*/);
-
-						QEos::Notify(EVENT_RESULT_DISPLAY, 0, STATION_RESULT_DISPLAY, i, j, pObj->getHeightValue(j));
-					}
-				}
-			}
-		}
-	}
-
-	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-	if (pUI)
-	{
-		pUI->setImage(matDisplay, false);
-	}
-	QEos::Notify(EVENT_RESULT_DISPLAY, 0, STATION_RESULT_IMAGE_DISPLAY);
 }
 
 void QMainRunable::addImageText(cv::Mat image, Point ptPos, QString szText)
@@ -818,6 +894,29 @@ bool QMainRunable::getLightIO(int &okLight, int &ngLight)
 	return false;
 }
 
+QString QMainRunable::generateImagePath()
+{
+	QString capturePath = System->getParam("camera_cap_image_path").toString();
+
+	QDateTime dtm = QDateTime::currentDateTime();
+	QString fileDir = capturePath + "/image/" + dtm.toString("MMddhhmmss") + "/";
+	QDir dir; dir.mkdir(fileDir);
+
+	return fileDir;
+}
+
+void QMainRunable::saveImages(QString& szImagePath, int nIndex, QVector<cv::Mat>& imageMats)
+{
+	for (int i = 0; i < imageMats.size(); i++)
+	{
+		QString strSave = szImagePath + QString("I") + QString::number(nIndex + 1, 'g', 2) + QString("_") +
+			QString::number(i + 1, 'g', 2) + QString(".bmp");
+
+		IplImage frameImg = IplImage(imageMats[i]);
+		cvSaveImage(strSave.toStdString().c_str(), &frameImg);
+	}	
+}
+
 //*****************************************************************************
 //
 //
@@ -836,6 +935,8 @@ QFlowCtrl::QFlowCtrl(QObject *parent)
 
 	QSystem * p = QSystem::instance();
 	bool s = connect(p,SIGNAL(goHome()),this,SLOT(home()));
+	s = connect(p, SIGNAL(start()), this, SLOT(startAutoRun()));
+	s = connect(p, SIGNAL(stop()), this, SLOT(stopAutoRun()));
 
 	m_dateTime = QDateTime::currentDateTime();
 
@@ -877,7 +978,7 @@ void QFlowCtrl::home()
 		QSystem::showMessage(QStringLiteral("提示"),QStringLiteral("设备正在运行中，请先停止在回零"));
 		QApplication::processEvents();
 
-		this->stop();
+		//this->stop();
 		return ;
 	}
 
@@ -925,6 +1026,16 @@ void QFlowCtrl::home()
 	//{
 		//this->start();
 	//}	
+}
+
+void QFlowCtrl::startAutoRun()
+{
+	start();
+}
+
+void QFlowCtrl::stopAutoRun()
+{
+	if (m_isStart) stop();
 }
 
 void QFlowCtrl::timerEvent(QTimerEvent * event)
@@ -1297,16 +1408,17 @@ void QFlowCtrl::initStationParam()
 	m_stationDatas.append(Q3DStructData());
 
 	paramMap = new QCheckerParamMap;
-	paramMap->insert(PARAM_STATION_ID, 2);
-	/*paramMap->insert(PARAM_STATION_START_IO, DI_START_STATION1);
-	paramMap->insert(PARAM_STATION_IN_AXIS,AXIS_CHECK1_IN);
-	paramMap->insert(PARAM_STATION_TOP_AXIS, AXIS_CHECK1_TOP);
-	paramMap->insert(PARAM_STATION_CHECK_POS, 1);
-	paramMap->insert(PARAM_STATION_BACK_POS, 0);
-	paramMap->insert(PARAM_STATION_CHECK_TYPE, CHECK_TYPE_ATEQ);
-	paramMap->insert(PARAM_STATION_OK_LIGHT, DO_CHECK_OK1);
-	paramMap->insert(PARAM_STATION_NG_LIGHT, DO_CHECK_NG1);
-	paramMap->insert(PARAM_STATION_AI, CHECK_AI_1);*/
+	paramMap->insert(PARAM_STATION_ID, 2);	
+	m_stationParams.append(paramMap);
+	m_stationDatas.append(Q3DStructData());
+
+	paramMap = new QCheckerParamMap;
+	paramMap->insert(PARAM_STATION_ID, 3);
+	m_stationParams.append(paramMap);
+	m_stationDatas.append(Q3DStructData());
+
+	paramMap = new QCheckerParamMap;
+	paramMap->insert(PARAM_STATION_ID, 4);
 	m_stationParams.append(paramMap);
 	m_stationDatas.append(Q3DStructData());
 

@@ -139,6 +139,16 @@ bool MotionModule::moveToPos(int nPointTable, bool bSyn)
 	return m_ctrl.moveToPos(nPointTable, bSyn);
 }
 
+bool MotionModule::movePosGroup(int nPtGroup, bool bSyn)
+{
+	return m_ctrl.movePosGroup(nPtGroup, bSyn);
+}
+
+bool MotionModule::moveToPosGroup(int nPtGroup, bool bSyn)
+{
+	return m_ctrl.movePosGroup(nPtGroup, bSyn);
+}
+
 bool MotionModule::waitDone()
 {
 	return m_ctrl.waitDone();

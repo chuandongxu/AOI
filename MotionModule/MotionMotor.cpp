@@ -126,6 +126,16 @@ void MotionMotor::initUI()
 	{
 		ui.comboBox_pt_mtr->addItem(QString("%1").arg(m_pCtrl->getMotorAxisID(i)));
 	}
+
+	ui.tableView_ptList->setModel(&m_movePointModel);
+	ui.tableView_ptGroupList->setModel(&m_movePtGroupModel);
+	connect(ui.comboBox_ptGroup, SIGNAL(currentIndexChanged(int)), SLOT(onPointGroupIndexChanged(int)));
+	connect(ui.pushButton_ptGroupAdd, SIGNAL(clicked()), SLOT(onAddPointGroup()));
+	connect(ui.pushButton_ptGroupDel, SIGNAL(clicked()), SLOT(onDelPointGroup()));
+	connect(ui.pushButton_ptGroupSave, SIGNAL(clicked()), SLOT(onPointGroupSave()));
+
+	connect(ui.pushButton_ptGroupAddPt, SIGNAL(clicked()), SLOT(onAddPointGroupPt()));
+	connect(ui.pushButton_ptGroupDelPt, SIGNAL(clicked()), SLOT(onDelPointGroupPt()));
 }
 
 void MotionMotor::loadConfig()
@@ -133,6 +143,7 @@ void MotionMotor::loadConfig()
 	loadMotorConfig();
 	loadMtrProfConfig();
 	loadMtrPointConfig();
+	loadMtrPointGroupConfig();
 }
 
 void MotionMotor::updateUI()
@@ -140,6 +151,7 @@ void MotionMotor::updateUI()
 	updateMotorUI();
 	updateMtrProfData();
 	updateMtrPointData();
+	updateMtrPointGroupData();
 }
 
 //void MotionMotor::saveConfig()
@@ -631,6 +643,120 @@ void MotionMotor::saveMtrPointConfig()
 	fs.release();
 }
 
+void MotionMotor::loadMtrPointGroupConfig()
+{
+	m_pCtrl->clearMotorPointGroups();
+
+	QString path = QApplication::applicationDirPath();
+	path += "/data/";
+	std::string  szMotorFile = QString(path + "motorPointGroupData.yml").toStdString();
+
+	cv::FileStorage fs(szMotorFile, cv::FileStorage::READ);
+
+	if (!fs.isOpened())
+	{
+		return;
+	}
+
+	int dataNum = 0;
+	cv::FileNode fileNode = fs[QString("point_num").toStdString()];
+	cv::read(fileNode, dataNum, 0);
+
+	int nIncID = 0;
+	fileNode = fs[QString("inc_ID").toStdString()];
+	cv::read(fileNode, nIncID, 0);
+	m_pCtrl->setMotorPointGroupID(nIncID);
+
+	for (int i = 0; i < dataNum; i++)
+	{
+		QMtrMovePointGroup mtrParam;
+
+		fileNode = fs[QString("ID_%1").arg(i).toStdString()];
+		cv::read(fileNode, mtrParam._ID, 0);
+
+		fileNode = fs[QString("name_%1").arg(i).toStdString()];
+		cv::String name;
+		cv::read(fileNode, name, "");
+		mtrParam._name = name.c_str();
+
+		fileNode = fs[QString("points_%1").arg(i).toStdString()];
+		cv::read<int>(fileNode, mtrParam._movePointIDs, std::vector<int>());
+
+		m_pCtrl->addMotorPointGroup(mtrParam);
+	}
+
+	fs.release();
+}
+
+void MotionMotor::updateMtrPointGroupData()
+{
+	ui.comboBox_ptGroup->clear();
+
+	QStringList ls;
+	for (int i = 0; i < m_pCtrl->getMotorPointGroupNum(); i++)
+	{
+		QMtrMovePointGroup mtrPoint = m_pCtrl->getMotorPointGroupByIndex(i);
+
+		ls << QStringLiteral("%1_%2").arg(mtrPoint._ID).arg(mtrPoint._name);
+	}	
+	ui.comboBox_ptGroup->addItems(ls);		
+}
+
+void MotionMotor::updateMtrPointGroupListData(int nIndex)
+{
+	m_movePtGroupModel.clear();
+
+	QStringList ls;
+	ls << QStringLiteral("ID");
+	m_movePtGroupModel.setHorizontalHeaderLabels(ls);
+
+	QMtrMovePointGroup mtrPoint = m_pCtrl->getMotorPointGroupByIndex(nIndex);
+	for (int i = 0; i < mtrPoint._movePointIDs.size(); i++)
+	{
+		int nr = m_movePtGroupModel.rowCount();
+		m_movePtGroupModel.insertRow(nr);
+
+		m_movePtGroupModel.setData(m_movePtGroupModel.index(nr, 0), mtrPoint._movePointIDs[i]);
+	}
+}
+
+void MotionMotor::saveMtrPointGroupConfig()
+{
+	//for (int i = 0; i < m_pCtrl->getMotorPointGroupNum(); i++)
+	//{
+	//	QMtrMovePointGroup mtrPoint = m_pCtrl->getMotorPointGroupByIndex(i);
+
+	//	mtrPoint._name = m_movePointModel.data(m_movePointModel.index(i, 0)).toString();
+	//	mtrPoint._AxisID = m_movePointModel.data(m_movePointModel.index(i, 2)).toInt();
+	//	mtrPoint._ProfID = m_movePointModel.data(m_movePointModel.index(i, 3)).toInt();
+	//	mtrPoint._posn = m_movePointModel.data(m_movePointModel.index(i, 4)).toDouble();
+
+	//	m_pCtrl->updateMotorPointGroup(mtrPoint._ID, mtrPoint);
+	//}
+
+	QString path = QApplication::applicationDirPath();
+	path += "/data/";
+
+	std::string szMotorParamFile = QString(path + "motorPointGroupData.yml").toStdString();
+	cv::FileStorage fs(szMotorParamFile, cv::FileStorage::WRITE);
+	if (!fs.isOpened())
+		return;
+
+	write(fs, QString("inc_ID").toStdString(), m_pCtrl->incrementMotorPointGroupID());
+	write(fs, QString("point_num").toStdString(), m_pCtrl->getMotorPointGroupNum());
+
+	for (int i = 0; i < m_pCtrl->getMotorPointGroupNum(); i++)
+	{
+		QMtrMovePointGroup mtrPoint = m_pCtrl->getMotorPointGroupByIndex(i);
+
+		write(fs, QString("ID_%1").arg(i).toStdString(), mtrPoint._ID);
+		write(fs, QString("name_%1").arg(i).toStdString(), mtrPoint._name.toStdString());
+		write(fs, QString("points_%1").arg(i).toStdString(), mtrPoint._movePointIDs);
+	}
+
+	fs.release();
+}
+
 void MotionMotor::updataStatus()
 {
 	for (int i = 0; i < AXIS_MOTOR_NUM; i++)
@@ -987,3 +1113,88 @@ void MotionMotor::onPointSave()
 	saveMtrPointConfig();
 }
 
+void MotionMotor::onPointGroupIndexChanged(int iState)
+{
+	int nIndex = ui.comboBox_ptGroup->currentIndex();
+
+	if (nIndex > -1)
+	{
+		updateMtrPointGroupListData(nIndex);
+	}	
+}
+
+void MotionMotor::onAddPointGroup()
+{
+	QMtrMovePointGroup mtrParam;
+
+	mtrParam._name = ui.lineEdit_ptGroupName->text();
+	mtrParam._ID = m_pCtrl->incrementMotorPointGroupID();
+
+	m_pCtrl->addMotorPointGroup(mtrParam);	
+
+	updateMtrPointGroupData();
+	ui.comboBox_ptGroup->setCurrentIndex(0);
+}
+
+void MotionMotor::onDelPointGroup()
+{
+	int nIndex = ui.comboBox_ptGroup->currentIndex();
+	if (nIndex > -1)
+	{
+		QMtrMovePointGroup mtrParam = m_pCtrl->getMotorPointGroupByIndex(nIndex);
+		m_pCtrl->removeMotorPointGroup(mtrParam._ID);
+
+		updateMtrPointGroupData();
+		ui.comboBox_ptGroup->setCurrentIndex(0);
+	}	
+}
+
+void MotionMotor::onPointGroupSave()
+{
+	saveMtrPointGroupConfig();
+}
+
+void MotionMotor::onAddPointGroupPt()
+{
+	int nIndex = ui.comboBox_ptGroup->currentIndex();
+	if (nIndex > -1)
+	{
+		QMtrMovePointGroup mtrPointGroup = m_pCtrl->getMotorPointGroupByIndex(nIndex);
+
+		QItemSelectionModel *selections = ui.tableView_ptList->selectionModel();
+		QModelIndexList selected = selections->selectedIndexes();
+		foreach(QModelIndex index, selected)
+		{
+			QMtrMovePoint mtrPoint = m_pCtrl->getMotorPointByIndex(index.row());
+			mtrPointGroup._movePointIDs.push_back(mtrPoint._ID);
+		}
+
+		std::sort(mtrPointGroup._movePointIDs.begin(), mtrPointGroup._movePointIDs.end());
+		std::vector<int>::iterator pos;
+		pos = std::unique(mtrPointGroup._movePointIDs.begin(), mtrPointGroup._movePointIDs.end());
+		mtrPointGroup._movePointIDs.erase(pos, mtrPointGroup._movePointIDs.end());
+
+		m_pCtrl->updateMotorPointGroup(mtrPointGroup._ID, mtrPointGroup);
+
+		updateMtrPointGroupListData(nIndex);
+	}
+}
+
+void MotionMotor::onDelPointGroupPt()
+{
+	int nIndex = ui.comboBox_ptGroup->currentIndex();	
+	if (nIndex > -1)
+	{
+		QMtrMovePointGroup mtrPointGroup = m_pCtrl->getMotorPointGroupByIndex(nIndex);
+
+		QItemSelectionModel *selections = ui.tableView_ptGroupList->selectionModel();
+		QModelIndexList selected = selections->selectedIndexes();
+		for (QModelIndexList::iterator i = selected.end(); i != selected.begin();)
+		{
+			mtrPointGroup._movePointIDs.erase(mtrPointGroup._movePointIDs.begin() + (--i)->row());
+		}
+
+		m_pCtrl->updateMotorPointGroup(mtrPointGroup._ID, mtrPointGroup);
+		updateMtrPointGroupListData(nIndex);
+	}
+}
