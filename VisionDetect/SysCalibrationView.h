@@ -40,11 +40,14 @@ private slots:
 	void onCaliGuideSkip();
 	void onCaliGuidePrevious();
 
+	void onDecryptImages();
+
 private:
 	double convertToPixel(double umValue);
 	double convertToUm(double pixel);
 
 	bool convertToGrayImage(QString& szFilePath, cv::Mat &matGray);
+	bool decrptImages(QString& szFilePath);
 	bool readImages(QString& szFilePath, AOI::Vision::VectorOfMat& matImgs);
 
 	cv::Mat drawHeightGrid(const cv::Mat &matHeight, int nGridRow, int nGridCol);

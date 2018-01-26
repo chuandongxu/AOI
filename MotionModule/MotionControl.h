@@ -52,7 +52,7 @@ struct QMotorParam
 	{
 		_res = 1.0;
 		_name = "";
-		_ID = 0;
+		_ID = -1;
 	}
 
 	double _res;
@@ -66,7 +66,7 @@ struct QMtrMoveProfile
 	QMtrMoveProfile()
 	{
 		_name = "";
-		_ID = 0;
+		_ID = -1;
 		_smooth = 0;
 	}
 
@@ -84,7 +84,7 @@ struct QMtrMovePoint
 		_ProfID = 0;
 
 		_name = "";
-		_ID = 0;
+		_ID = -1;
 		_posn = 0;
 	}
 
@@ -94,6 +94,19 @@ struct QMtrMovePoint
 	QString _name;
 	int _ID;
 	double _posn;
+};
+
+struct QMtrMovePointGroup
+{
+	QMtrMovePointGroup()
+	{
+		_name = "";
+		_ID = -1;		
+	}
+
+	std::vector<int> _movePointIDs;
+	QString _name;
+	int _ID;
 };
 
 class MotionControl : public QObject
@@ -150,6 +163,9 @@ public:
 
 	bool movePos(int nPointTable, bool bSyn);
 	bool moveToPos(int nPointTable, bool bSyn);
+
+	bool movePosGroup(int nPtGroup, bool bSyn);
+	bool moveToPosGroup(int nPtGroup, bool bSyn);
 
 	bool move(int AxisID, double dVec, double acc, double dec, int smooth, double dPos, bool bSyn);
 
@@ -221,10 +237,22 @@ public:
 	int incrementMotorPointID();
 	void setMotorPointID(int nID);
 
+	void clearMotorPointGroups();
+	void addMotorPointGroup(QMtrMovePointGroup& mtrMovePointGroup);
+	void updateMotorPointGroup(int nID, QMtrMovePointGroup& mtrMovePointGroup);
+	int getMotorPointGroupNum();
+	QMtrMovePointGroup& getMotorPointGroup(int nID);
+	QMtrMovePointGroup& getMotorPointGroupByIndex(int nIndex);
+	void removeMotorPointGroup(int nID);
+	int incrementMotorPointGroupID();
+	void setMotorPointGroupID(int nID);
+
 private:
 	QVector<QMotorParam> m_mtrParams;
 	QVector<QMtrMoveProfile> m_mtrMoveProfs;
 	int m_nMoveProfID;
 	QVector<QMtrMovePoint> m_mtrMovePoints;
 	int m_nMovePointID;
+	QVector<QMtrMovePointGroup> m_mtrMovePointGroups;
+	int m_nMovePointGroupID;
 };

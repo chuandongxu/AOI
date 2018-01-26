@@ -18,6 +18,7 @@ public:
 protected slots:
 	void onStateChangeHWTrig(int iState);
 	void onStateChangeCapture(int iState);
+	void onStateChangeCaptureLight(int iState);
 	void onStateChangeCaptureAsMatlab(int iState);
 	void onStateChangeCrossEnable(int iState);
 

@@ -55,6 +55,11 @@ private:
 	void updateMtrPointData();
 	void saveMtrPointConfig();
 
+	void loadMtrPointGroupConfig();
+	void updateMtrPointGroupData();
+	void updateMtrPointGroupListData(int nIndex);
+	void saveMtrPointGroupConfig();
+
 public:
 	void updataStatus();
 
@@ -81,6 +86,14 @@ private slots:
 	void onPointMove();
 	void onPointSave();
 
+	void onPointGroupIndexChanged(int nIndex);
+	void onAddPointGroup();
+	void onDelPointGroup();	
+	void onPointGroupSave();
+
+	void onAddPointGroupPt();
+	void onDelPointGroupPt();
+
 private:
 	void getAxisSelected(bool* axisIDs, int axisNum);
 
@@ -90,4 +103,5 @@ private:
 	MotionMotorOnLive *m_pThreadOnLive;
 	QStandardItemModel m_moveProfModel;
 	QStandardItemModel m_movePointModel;
+	QStandardItemModel m_movePtGroupModel;
 };

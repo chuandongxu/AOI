@@ -123,7 +123,7 @@ void QTopWidget::setTitle(const QString &title)
 
 void QTopWidget::onAutoRun()
 {
-
+	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_AUTORUN);
 }
 
 void QTopWidget::onSystem()

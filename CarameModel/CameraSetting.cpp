@@ -61,6 +61,9 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
 	ui.checkBox_2->setChecked(bCaptureImage);
 
+	bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
+	ui.checkBox_3->setChecked(bCaptureLightImage);
+
 	bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
 	ui.checkBox_4->setChecked(bCaptureImageAsMatlab);	
 	
@@ -81,6 +84,7 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 
 	connect(ui.checkBox, SIGNAL(stateChanged(int)), SLOT(onStateChangeHWTrig(int)));
 	connect(ui.checkBox_2, SIGNAL(stateChanged(int)), SLOT(onStateChangeCapture(int)));
+	connect(ui.checkBox_3, SIGNAL(stateChanged(int)), SLOT(onStateChangeCaptureLight(int)));
 	connect(ui.checkBox_4, SIGNAL(stateChanged(int)), SLOT(onStateChangeCaptureAsMatlab(int)));	
 
 	bool bShowCross = System->getParam("camera_capture_cross_enable").toBool();
@@ -251,6 +255,14 @@ void CameraSetting::onStateChangeCapture(int iState)
 	if (Qt::Checked == iState)data = 1;
 
 	System->setParam("camera_cap_image_enable", (bool)data);
+}
+
+void CameraSetting::onStateChangeCaptureLight(int iState)
+{
+	int data = 0;
+	if (Qt::Checked == iState)data = 1;
+
+	System->setParam("camera_cap_image_light", (bool)data);
 }
 
 void CameraSetting::onStateChangeCaptureAsMatlab(int iState)

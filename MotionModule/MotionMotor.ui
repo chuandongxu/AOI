@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -2080,6 +2080,181 @@
     <zorder>lineEdit_pt_zPosn</zorder>
     <zorder>pushButton_pt_save</zorder>
     <zorder>pushButton_pt_moveTo</zorder>
+   </widget>
+   <widget class="QWidget" name="tab_4">
+    <attribute name="title">
+     <string>分组【定义】</string>
+    </attribute>
+    <widget class="QTableView" name="tableView_ptList">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>350</width>
+       <height>421</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTableView" name="tableView_ptGroupList">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>150</y>
+       <width>350</width>
+       <height>421</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_ptGroupAddPt">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>290</y>
+       <width>81</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>》》</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_ptGroupDelPt">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>400</y>
+       <width>81</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>《《</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_10">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>810</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>分组操作</string>
+     </property>
+     <widget class="QLabel" name="label_52">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>28</y>
+        <width>81</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>选择分组：</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboBox_ptGroup">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>28</y>
+        <width>121</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_ptGroupDel">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>63</y>
+        <width>81</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>删除分组</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_ptGroupAdd">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>63</y>
+        <width>81</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>增加分组</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_53">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>65</y>
+        <width>81</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>分组名称：</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_ptGroupName">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>65</y>
+        <width>121</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QLabel" name="label_54">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>130</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>点位表：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_55">
+     <property name="geometry">
+      <rect>
+       <x>480</x>
+       <y>130</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>分组点位：</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_ptGroupSave">
+     <property name="geometry">
+      <rect>
+       <x>670</x>
+       <y>580</y>
+       <width>150</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>保存点位表</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QPushButton" name="pushButton_onLive">

@@ -32,6 +32,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#define MTR_READY_POS			0
+
 using namespace AOI;
 
 SysCalibrationView::SysCalibrationView(VisionCtrl* pCtrl, QWidget *parent)
@@ -116,12 +118,12 @@ void SysCalibrationView::initUI()
 	connect(ui.comboBox_selectCaliType, SIGNAL(currentIndexChanged(int)), SLOT(onSelectCaliTypeChanged(int)));
 	ls.clear();
 	int nStepIndex = 0;
-	for (int i = 4; i >= 1; i--)
+	for (int i = 5; i >= 1; i--)
 	{
 		ls = ls << QStringLiteral("H = -%1 mm").arg(i);
 		m_caliStepMap.insert(nStepIndex++, -i);
 	}
-	for (int i = 1; i <= 8; i++)
+	for (int i = 1; i <= 5; i++)
 	{
 		ls = ls << QStringLiteral("H = %1 mm").arg(i);
 		m_caliStepMap.insert(nStepIndex++, i);
@@ -149,7 +151,9 @@ void SysCalibrationView::initUI()
 	connect(ui.pushButton_CalibGuide, SIGNAL(clicked()), SLOT(onCaliGuide()));
 	connect(ui.pushButton_CalibGuideNext, SIGNAL(clicked()), SLOT(onCaliGuideNext()));
 	connect(ui.pushButton_CalibGuideSkip, SIGNAL(clicked()), SLOT(onCaliGuideSkip()));
-	connect(ui.pushButton_CalibGuidePrevious, SIGNAL(clicked()), SLOT(onCaliGuidePrevious()));	
+	connect(ui.pushButton_CalibGuidePrevious, SIGNAL(clicked()), SLOT(onCaliGuidePrevious()));
+
+	connect(ui.pushButton_DecryptImages, SIGNAL(clicked()), SLOT(onDecryptImages()));
 }
 
 void SysCalibrationView::initLimits()
@@ -481,7 +485,7 @@ void SysCalibrationView::on3DDetectCaliComb()
 		fsCalibData.release();
 		
 		Vision::PairHeightPhase pairHeightPhase;
-		pairHeightPhase.first = m_caliStepMap.value(nStepIndex);	
+		pairHeightPhase.first = -m_caliStepMap.value(nStepIndex);	
 		pairHeightPhase.second = matPhase;
 		stCmd.vecPairHeightPhase.push_back(pairHeightPhase);
 	}
@@ -494,13 +498,12 @@ void SysCalibrationView::on3DDetectCaliComb()
 	Vision::VisionStatus retStatus = Vision::PR_MotorCalib3D(&stCmd, &stRpy);
 	if (retStatus == Vision::VisionStatus::OK)
 	{
-		if (USER_LEVEL_TECH <= m_nLevel)
+		if (USER_LEVEL_MANAGER <= m_nLevel)
 		{
 			int i = 1;
-			for (const auto &matResultImg : stRpy.vecMatResultImg) {
-				char chArrFileName[100];
-				_snprintf(chArrFileName, sizeof(chArrFileName), "ResultImg_DLP%02d_%02d.png", nDLPIndex + 1, i);
-				std::string strDataFile = path.toStdString() + chArrFileName;
+			for (const auto &matResultImg : stRpy.vecMatResultImg) 
+			{				
+				std::string strDataFile = path.toStdString() + QString("ResultImg_DLP%1_%2").arg(nDLPIndex + 1).arg(i).toStdString() + ".bmp";
 				cv::imwrite(strDataFile, matResultImg);
 
 				QString nameEncrypt = path + QString("ResultImg_DLP%1_%2").arg(nDLPIndex + 1).arg(i) + ".ent";
@@ -689,12 +692,12 @@ void SysCalibrationView::guideDisplayImages()
 void SysCalibrationView::startCameraCapturing()
 {
 	if (m_pCameraRunnable) m_pCameraRunnable->startCapture();
-	System->setParam("camera_cap_image_sw_enable", false);
+	//System->setParam("camera_cap_image_sw_enable", false);
 }
 
 bool SysCalibrationView::stopCameraCaptureing()
 {
-	System->setParam("camera_cap_image_sw_enable", true);
+	//System->setParam("camera_cap_image_sw_enable", true);
 
 	if (m_pCameraRunnable)
 	{
@@ -871,19 +874,19 @@ void SysCalibrationView::onCaliGuideNext()
 	{
 	case 0:
 	{
-		ui.toolBox_2->setCurrentIndex(0);
+		if (!pMotion->moveToPosGroup(MTR_READY_POS, true))// Ready Position
+		{
+			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("运动马达错误！"));
+		}
 
-		if (!pMotion->moveToPos(1, true))
-		{
-			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("运动马达错误！"));
-		}
-		if(!pMotion->moveToPos(5, true))
-		{
-			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("运动马达错误！"));
-		}
+		m_nCaliGuideStep++;
+	}
+	break;
+	case 1:
+	{
+		ui.toolBox_2->setCurrentIndex(0);	
 
 		startCameraCapturing();
-
 		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
 			QStringLiteral("请放置DLP的Base标定块，确定开始采集图像？"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
@@ -963,7 +966,7 @@ void SysCalibrationView::onCaliGuideNext()
 		m_nCaliGuideStep++;
 	}
 	break;
-	case 1:
+	case 2:
 	{
 		ui.toolBox_2->setCurrentIndex(1);	
 
@@ -1006,7 +1009,7 @@ void SysCalibrationView::onCaliGuideNext()
 		m_nCaliGuideStep++;
 	}
 	break;	
-	case 2:
+	case 3:
 	{
 		ui.comboBox_selectDLP->setCurrentIndex(0);
 		on3DDetectCaliComb();
@@ -1025,17 +1028,13 @@ void SysCalibrationView::onCaliGuideNext()
 	break;
 	default:
 	{
-		if (!pMotion->moveToPos(1, true))
-		{
-			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("运动马达错误！"));
-		}
-		if (!pMotion->moveToPos(5, true))
-		{
-			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("运动马达错误！"));
-		}
-
 		ui.toolBox_2->setCurrentIndex(2);
 		stopCaliGuide();
+
+		if (!pMotion->moveToPosGroup(MTR_READY_POS, true))// Ready Position
+		{
+			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("运动马达错误！"));
+		}
 
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("自动标定向导完成！"));
 	}
@@ -1066,6 +1065,19 @@ void SysCalibrationView::onCaliGuidePrevious()
 	else
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("无法继续上一步标定，请下一步操作或者取消标定！"));
+	}
+}
+
+void SysCalibrationView::onDecryptImages()
+{
+	QString path = QApplication::applicationDirPath();
+	path += "/capture/";
+
+	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("打开图片文件夹"), path);
+
+	if (!filePath.isEmpty())
+	{
+		decrptImages(filePath);
 	}
 }
 
@@ -1139,6 +1151,43 @@ bool SysCalibrationView::convertToGrayImage(QString& szFilePath, cv::Mat &matGra
 	}
 
 	m_pCtrl->generateGrayImage(imageMats, matGray);
+
+	return true;
+}
+
+bool SysCalibrationView::decrptImages(QString& szFilePath)
+{
+	//判断路径是否存在
+	QDir dir(szFilePath);
+	if (!dir.exists())
+	{
+		return false;
+	}
+	dir.setFilter(QDir::Files | QDir::NoSymLinks);
+	QFileInfoList list = dir.entryInfoList();
+
+	int file_count = list.count();
+	if (file_count <= 0)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < file_count; i++)
+	{
+		QFileInfo file_info = list.at(i);
+		QString suffix = file_info.suffix();
+		if (QString::compare(suffix, QString("ent"), Qt::CaseInsensitive) == 0)
+		{
+			QString absolute_file_path = file_info.absoluteFilePath();
+			QString nameDecrypt = file_info.absolutePath() + "/" + file_info.baseName() + ".bmp";
+			AOI::Crypt::DecryptFileNfg(absolute_file_path.toStdString(), nameDecrypt.toStdString());		
+
+		}		
+		else
+		{
+			return false;
+		}
+	}	
 
 	return true;
 }
