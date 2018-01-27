@@ -49,6 +49,7 @@
       <AdditionalLibraryDirectories>$(QTDIR)\lib;..\bin\debug\;..\lib\qtbrowersproperty\debug\;..\lib\VisionLibrary\x64\Debug;..\lib\DataStoreAPI\x64\Debug;..\lib\Runtime\Debug\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Scriptd.lib;Qt5Sqld.lib;Qt5Widgetsd.lib;Qt5Xmld.lib;common.lib;extension.lib;Qt5PrintSupportd.lib;opencv_calib3d300d.lib;opencv_core300d.lib;opencv_features2d300d.lib;opencv_flann300d.lib;opencv_hal300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_line_descriptor300d.lib;opencv_ml300d.lib;opencv_objdetect300d.lib;opencv_photo300d.lib;opencv_shape300d.lib;opencv_stitching300d.lib;opencv_superres300d.lib;opencv_text300d.lib;opencv_ts300d.lib;opencv_video300d.lib;opencv_videoio300d.lib;opencv_videostab300d.lib;opencv_xfeatures2d300d.lib;VisionLibrary.lib;DataStoreApi.lib;dog_windows_x64_3152741.lib;libdog_cpp_windows_x64_MDd_msc10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <CustomBuildStep>
       <Command>
@@ -72,6 +73,7 @@
       <AdditionalLibraryDirectories>$(QTDIR)\lib;..\bin\release\;..\lib\qtbrowersproperty\release\;..\lib\VisionLibrary\x64\Release;..\lib\DataStoreAPI\x64\Release;..\lib\Runtime\Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Script.lib;Qt5Sql.lib;Qt5Widgets.lib;Qt5Xml.lib;common.lib;extension.lib;Qt5PrintSupport.lib;opencv_calib3d300.lib;opencv_core300.lib;opencv_features2d300.lib;opencv_flann300.lib;opencv_hal300.lib;opencv_highgui300.lib;opencv_imgcodecs300.lib;opencv_imgproc300.lib;opencv_line_descriptor300.lib;opencv_ml300.lib;opencv_objdetect300.lib;opencv_photo300.lib;opencv_shape300.lib;opencv_stitching300.lib;opencv_superres300.lib;opencv_text300.lib;opencv_ts300.lib;opencv_video300.lib;opencv_videoio300.lib;opencv_videostab300.lib;opencv_xfeatures2d300.lib;VisionLibrary.lib;DataStoreApi.lib;dog_windows_x64_3152741.lib;libdog_cpp_windows_x64_MD_msc10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command>copy .\data\PackageSize.csv $(OutDir)\data\PackageSize.csv</Command>

@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>FiducialMarkWidget</string>
   </property>
-  <widget class="QPushButton" name="btnAddFiducialMark">
+  <widget class="QPushButton" name="btnSelectFiducialMark">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Add Fiducial Mark</string>
+    <string>Select Fiducial Mark</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btnConfirmFiducialMark">

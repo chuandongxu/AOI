@@ -14,7 +14,7 @@ public:
     ~FiducialMarkWidget();
 
 private slots:    
-    void on_btnAddFiducialMark_clicked();
+    void on_btnSelectFiducialMark_clicked();
     void on_btnConfirmFiducialMark_clicked();
     void on_btnDoAlignment_clicked();
 private:
