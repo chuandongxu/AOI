@@ -48,6 +48,7 @@ MotionControl::MotionControl(QObject *parent)
 
 	m_nMoveProfID = 0;
 	m_nMovePointID = 0;
+	m_nMovePointGroupID = 0;
 
 	for (int i = 0; i < AXIS_MOTOR_NUM; i++)
 	{
@@ -1122,6 +1123,48 @@ bool MotionControl::moveToPos(int nPointTable, bool bSyn)
 	return move(mtrPt._AxisID, dVec, acc, dec, smooth, mtrPt._posn, bSyn);
 }
 
+bool MotionControl::movePosGroup(int nPtGroup, bool bSyn)
+{
+	QMtrMovePointGroup mtPointGroup = getMotorPointGroup(nPtGroup);
+	if (mtPointGroup._ID > -1)
+	{
+		int nMtrNum = mtPointGroup._movePointIDs.size();
+		for (int i = 0; i < nMtrNum; i++)
+		{
+			if (!moveToPos(mtPointGroup._movePointIDs[i], false))
+			{
+				return false;
+			}
+		}
+
+		if (bSyn) return waitDone();
+		return true;
+	}
+
+	return false;
+}
+
+bool MotionControl::moveToPosGroup(int nPtGroup, bool bSyn)
+{
+	QMtrMovePointGroup mtPointGroup = getMotorPointGroup(nPtGroup);
+	if (mtPointGroup._ID > -1)
+	{
+		int nMtrNum = mtPointGroup._movePointIDs.size();
+		for (int i = 0; i < nMtrNum; i++)
+		{
+			if (!moveToPos(mtPointGroup._movePointIDs[i], false))
+			{
+				return false;
+			}
+		}
+
+		if (bSyn) return waitDone();
+		return true;
+	}
+
+	return false;
+}
+
 bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int smooth, double dPos, bool bSyn)
 {
 	short sRtn = 0; // 指令返回值变量
@@ -1542,4 +1585,73 @@ int MotionControl::incrementMotorPointID()
 void MotionControl::setMotorPointID(int nID)
 {
 	m_nMovePointID = nID;
+}
+
+void MotionControl::clearMotorPointGroups()
+{
+	m_mtrMovePointGroups.clear();
+}
+
+void MotionControl::addMotorPointGroup(QMtrMovePointGroup& mtrMovePointGroup)
+{
+	m_mtrMovePointGroups.push_back(mtrMovePointGroup);
+}
+
+void MotionControl::updateMotorPointGroup(int nID, QMtrMovePointGroup& mtrMovePointGroup)
+{
+	for (int i = 0; i < m_mtrMovePointGroups.size(); i++)
+	{
+		if (m_mtrMovePointGroups[i]._ID == nID)
+		{
+			m_mtrMovePointGroups[i] = mtrMovePointGroup;
+			m_mtrMovePointGroups[i]._ID = nID;
+			break;
+		}
+	}
+}
+
+int MotionControl::getMotorPointGroupNum()
+{
+	return m_mtrMovePointGroups.size();
+}
+
+QMtrMovePointGroup& MotionControl::getMotorPointGroup(int nID)
+{
+	for (int i = 0; i < m_mtrMovePointGroups.size(); i++)
+	{
+		if (m_mtrMovePointGroups[i]._ID == nID)
+		{
+			return m_mtrMovePointGroups[i];
+		}
+	}
+
+	return QMtrMovePointGroup();
+}
+
+QMtrMovePointGroup& MotionControl::getMotorPointGroupByIndex(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= m_mtrMovePointGroups.size()) return QMtrMovePointGroup();
+	return m_mtrMovePointGroups[nIndex];
+}
+
+void MotionControl::removeMotorPointGroup(int nID)
+{
+	for (int i = 0; i < m_mtrMovePointGroups.size(); i++)
+	{
+		if (m_mtrMovePointGroups[i]._ID == nID)
+		{
+			m_mtrMovePointGroups.removeAt(i);
+			break;
+		}
+	}
+}
+
+int MotionControl::incrementMotorPointGroupID()
+{
+	return m_nMovePointGroupID++;
+}
+
+void MotionControl::setMotorPointGroupID(int nID)
+{
+	m_nMovePointGroupID = nID;
 }

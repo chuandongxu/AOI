@@ -15,7 +15,7 @@ public:
 
 	virtual void addSettingWiddget(QTabWidget * tabWidget);    
 
-	virtual QWidget* getToolWidget(bool bDataTool) override;
+	virtual QWidget* getStatisticsWidget() override;
 	virtual QWidget* getDataEditor() override;
     virtual QWidget* getDataWidget() override;
 
@@ -51,7 +51,6 @@ public:
 
 private:
 	DataCtrl m_ctrl;
-	QWidget* m_pDataToolWidget;
 	QWidget* m_pStatisticsWidget;
 	QWidget* m_pDataEditor;
     QWidget* m_pDataWidget;

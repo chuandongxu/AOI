@@ -13,17 +13,6 @@
   <property name="windowTitle">
    <string>QStatisticsWidget</string>
   </property>
-  <widget class="QDockWidget" name="dockWidget_3">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>530</y>
-     <width>360</width>
-     <height>260</height>
-    </rect>
-   </property>
-   <widget class="QWidget" name="dockWidgetContents_3"/>
-  </widget>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
@@ -159,8 +148,34 @@
      <x>20</x>
      <y>290</y>
      <width>361</width>
-     <height>231</height>
+     <height>350</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_startAutoRun">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>660</y>
+     <width>361</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>启动运行测试</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_stopAutoRun">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>720</y>
+     <width>361</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>停止运行测试</string>
    </property>
   </widget>
  </widget>

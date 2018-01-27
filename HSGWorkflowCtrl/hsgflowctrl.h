@@ -46,6 +46,7 @@ public:
 //---------------------------------------------------------------
 typedef QMap<QString, QVariant> QCheckerParamMap;
 typedef QList<Q3DStructData> QCheckerParamDataList;
+typedef QMap<int, int> QCheckerPositionMap;
 
 //-------------------------------------------------------------
 class QDetectObj;
@@ -100,17 +101,26 @@ public:
 
 	void quit();
 	void imgStop();//stop steppers
-protected:
-	void run();
 
+private:
+	int getPositionNum();
+	int getPositionID(int nIndex);
+
+protected:
+	bool preRunning();
+
+	void run();
+	
 	bool waitStartBtn();
-	bool captureImages();
+	bool moveToReadyPos();
+	bool moveToCapturePos(int nIndex);
+	bool captureImages(int nIndex, QString& szImagePath);
+	bool mergeImages();
 	bool matchPosition();
 	bool calculateDetectHeight();
 	bool waitCheckDone();
 
 	bool isExit();
-
 private:
 	bool captureAllImages(QVector<cv::Mat>& imageMats);
 	void setResoultLight(bool isOk);
@@ -118,22 +128,27 @@ private:
 
 	bool getLightIO(int &okLight, int &ngLight);
 
+	QString generateImagePath();
+	void saveImages(QString& szImagePath, int nIndex, QVector<cv::Mat>& imageMats);
+
 private:
-	void clearTestObjs();
-	void displayAllObjs();
 	void addImageText(cv::Mat image, Point ptPos, QString szText);
 
 private:
 	QCheckerParamMap *m_paramMap;
 	QCheckerParamDataList *m_paramData;
+	QCheckerPositionMap m_positionMap;
+
 	bool m_exit;
 	QLineNormal m_normal;
 	QMutex m_mutex;
 	
+	QVector<cv::Mat> m_3DMatHeights;
+	QVector<cv::Mat> m_matImages;
+	QVector<cv::Mat> m_matGrayImgs;
 	cv::Mat m_3DMatHeight;
 	cv::Mat m_matImage;
-
-	QVector<QDetectObj*> m_objTests;
+	cv::Mat m_matGrayImg;	
 };
 	
 
@@ -155,6 +170,8 @@ public:
 
 protected slots:
 	void home();
+	void startAutoRun();
+	void stopAutoRun();
 
 protected:
 	virtual void timerEvent(QTimerEvent * event);

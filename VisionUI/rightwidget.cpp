@@ -16,25 +16,6 @@ QRightWidget::QRightWidget(QWidget *parent)
 
 	this->setFixedWidth(410);
 
-	//IData * pData = getModule<IData>(DATA_MODEL);	
-	//if (pData)
-	//{	
-		//m_widgetEdit = pData->getToolWidget(true);
-		//m_widgetRun = pData->getToolWidget(false);
-		//m_widgetRun->setVisible(false);
-
-		//m_subVLayout = new QHBoxLayout;
-		//m_subVLayout->setContentsMargins(0, 0, 0, 0);
-		//m_subVLayout->addWidget(m_widgetEdit);
-		//m_subVLayout->addWidget(m_widgetRun);
-		////m_subVLayout->setAlignment(Qt::AlignLeft);
-
-		//m_mainLayout = new QVBoxLayout;
-		//m_mainLayout->setContentsMargins(0, 0, 0, 0);
-		//m_mainLayout->addLayout(m_subVLayout);
-		//this->setLayout(m_mainLayout);
-	//}
-
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (pCam)
 	{
@@ -52,8 +33,9 @@ QRightWidget::QRightWidget(QWidget *parent)
     IData * pData = getModule<IData>(DATA_MODEL);	
 	if (pData) {
         ui.stackedWidget->addWidget( pData->getDataWidget() );
+		ui.stackedWidget->addWidget(pData->getStatisticsWidget());
     }
-	ui.stackedWidget->setCurrentIndex(0);
+	ui.stackedWidget->setCurrentIndex(0);	
 
 	QEos::Attach(EVENT_RUN_STATE, this, SLOT(onRunState(const QVariantList &)));
 	QEos::Attach(EVENT_UI_STATE, this, SLOT(onUIState(const QVariantList &)));
@@ -119,6 +101,9 @@ void QRightWidget::onUIState(const QVariantList &data)
     case RUN_UI_STATE_DATA:
         ui.stackedWidget->setCurrentIndex(4);
 		break;	
+	case RUN_UI_STATE_AUTORUN:
+		ui.stackedWidget->setCurrentIndex(5);
+		break;
 	default:
 		break;
 	}

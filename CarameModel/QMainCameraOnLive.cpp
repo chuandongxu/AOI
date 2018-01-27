@@ -105,8 +105,8 @@ void MainCameraOnLive::saveImages(QVector<cv::Mat>& images)
 {
 	//showImageToScreen(buffers.last());
 	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
-	bool bCaptureSWImage = System->getParam("camera_cap_image_sw_enable").toBool();
-	if (bCaptureImage && bCaptureSWImage)
+	//bool bCaptureSWImage = System->getParam("camera_cap_image_sw_enable").toBool();
+	if (bCaptureImage)
 	{
 		QString capturePath = System->getParam("camera_cap_image_path").toString();
 

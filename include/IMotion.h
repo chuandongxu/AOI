@@ -67,6 +67,9 @@ public:
 	virtual bool movePos(int nPointTable, bool bSyn) = 0;
 	virtual bool moveToPos(int nPointTable, bool bSyn) = 0;
 
+	virtual bool movePosGroup(int nPtGroup, bool bSyn) = 0;
+	virtual bool moveToPosGroup(int nPtGroup, bool bSyn) = 0;
+
 	virtual bool waitDone() = 0;
 
 	virtual bool isHomed(int AxisID) = 0;

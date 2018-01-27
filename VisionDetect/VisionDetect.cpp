@@ -112,6 +112,11 @@ bool VisionDetect::merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeigh
 	return m_ctrl.merge3DHeight(matHeights, matHeight);
 }
 
+bool VisionDetect::mergeImage(QVector<cv::Mat>& matImages, cv::Mat& matImage)
+{
+	return m_ctrl.mergeImage(matImages, matImage);
+}
+
 bool VisionDetect::matchAlignment(cv::Mat& matDisplay, QVector<QProfileObj*>& objProfTests)
 {
 	return m_ctrl.matchAlignment(matDisplay, objProfTests);

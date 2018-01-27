@@ -930,6 +930,11 @@ void QSystem::userImStop()
 	emit imStop();
 }
 
+void QSystem::userStart()
+{
+	emit start();
+}
+
 void QSystem::userStop()
 {
 	emit stop();

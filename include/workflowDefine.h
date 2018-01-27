@@ -92,6 +92,7 @@
 #define RUN_UI_STATE_TOOLS				 172
 #define RUN_UI_STATE_DATA                173
 #define RUN_UI_STATE_CALI                174
+#define RUN_UI_STATE_AUTORUN			 175
 
 
 #define EVENT_BARCODE_CHANGE "barCodeChange"
