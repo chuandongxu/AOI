@@ -242,60 +242,73 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
         matTransform.convertTo ( matTransform, CV_32FC1 );
     }
 
-    Engine::DeviceVector vecDevice;
-    auto result = Engine::GetAllDevices ( vecDevice );
+    Engine::BoardVector vecBoard;
+    auto result = Engine::GetAllBoards ( vecBoard );
     if ( Engine::OK != result ) {
-        String errorType, errorMessage;
+        std::string errorType, errorMessage;
         Engine::GetErrorDetail ( errorType, errorMessage );
-        errorMessage = "Failed to get devices from project, error message " + errorMessage;
+        errorMessage = "Failed to get board from project, error message " + errorMessage;
         QMessageBox::critical(nullptr, QStringLiteral("Scan Image"), errorMessage.c_str(), QStringLiteral("Quit"));
         return;
-    }  
-
+    }
     QVector<cv::RotatedRect> vecDeviceWindows;
-    for ( const auto &device : vecDevice ) {
-        if ( device.isBottom )
-            continue;
 
-        auto x = device.x / dResolutionX;
-        auto y = device.y / dResolutionY;
-        if ( bBoardRotated )
-            x = sizeOriginalCombineImage.width  - x;
-        else
-            y = sizeOriginalCombineImage.height - y; //In cad, up is positive, but in image, down is positive.        
+    for ( const auto &board : vecBoard ) {
+        Engine::DeviceVector vecDevice;
+        auto result = Engine::GetBoardDevice ( board.Id, vecDevice );
+        if ( Engine::OK != result ) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail ( errorType, errorMessage );
+            errorMessage = "Failed to get devices from project, error message " + errorMessage;
+            QMessageBox::critical(nullptr, QStringLiteral("Scan Image"), errorMessage.c_str(), QStringLiteral("Quit"));
+            return;
+        }
+
+        for ( const auto &device : vecDevice ) {
+            if ( device.isBottom )
+                continue;
+
+            auto x = ( device.x + board.x ) / dResolutionX;
+            auto y = ( device.y + board.y ) / dResolutionY;
+            if ( bBoardRotated )
+                x = sizeOriginalCombineImage.width  - x;
+            else
+                y = sizeOriginalCombineImage.height - y; //In cad, up is positive, but in image, down is positive.        
         
-        std::vector<float> vecSrcPos;
-        vecSrcPos.push_back ( x );
-        vecSrcPos.push_back ( y );
-        vecSrcPos.push_back ( 1 );
-        cv::Mat matSrcPos ( vecSrcPos );
-        cv::Mat matDestPos = matTransform * matSrcPos;
-        x = matDestPos.at<float>(0) * DataVariablesInstance->getCombinedImgScale();
-        y = matDestPos.at<float>(1) * DataVariablesInstance->getCombinedImgScale();
+            std::vector<float> vecSrcPos;
+            vecSrcPos.push_back ( x );
+            vecSrcPos.push_back ( y );
+            vecSrcPos.push_back ( 1 );
+            cv::Mat matSrcPos ( vecSrcPos );
+            cv::Mat matDestPos = matTransform * matSrcPos;
+            x = matDestPos.at<float>(0) * DataVariablesInstance->getCombinedImgScale();
+            y = matDestPos.at<float>(1) * DataVariablesInstance->getCombinedImgScale();
 
-        auto width  = device.width  / dResolutionX * DataVariablesInstance->getCombinedImgScale();
-        auto height = device.height / dResolutionY * DataVariablesInstance->getCombinedImgScale();
-        cv::RotatedRect deviceWindow ( cv::Point2f(x, y), cv::Size2f(width, height), device.angle );
-        vecDeviceWindows.push_back ( deviceWindow );
+            auto width  = device.width  / dResolutionX * DataVariablesInstance->getCombinedImgScale();
+            auto height = device.height / dResolutionY * DataVariablesInstance->getCombinedImgScale();
+            cv::RotatedRect deviceWindow ( cv::Point2f(x, y), cv::Size2f(width, height), device.angle );
+            vecDeviceWindows.push_back ( deviceWindow );
+        }
     }
     pUI->setDeviceWindows ( vecDeviceWindows );
 
-    //for ( auto &device : vecDevice ) {
-    //    if ( bBoardRotated ) {
-    //        device.x -= m_fCadOffsetX;
-    //        device.y += m_fCadOffsetY;
-    //    }else {
-    //        device.x += m_fCadOffsetX;
-    //        device.y -= m_fCadOffsetY;
-    //    }
+    //Update the offset to board.
+    for ( auto &board : vecBoard ) {
+        if ( bBoardRotated ) {
+            board.x -= m_fCadOffsetX;
+            board.y += m_fCadOffsetY;
+        }else {
+            board.x += m_fCadOffsetX;
+            board.y -= m_fCadOffsetY;
+        }
 
-    //    result = Engine::UpdateDevice ( device );
-    //    if (Engine::OK != result) {
-    //        String errorType, errorMessage;
-    //        Engine::GetErrorDetail(errorType, errorMessage);
-    //        errorMessage = "Failed to update device, error message " + errorMessage;
-    //        QMessageBox::critical(nullptr, QStringLiteral("Scan Image"), errorMessage.c_str(), QStringLiteral("Quit"));
-    //        return;
-    //    }
-    //}
+        result = Engine::UpdateBoard ( board );
+        if (Engine::OK != result) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            errorMessage = "Failed to update board, error message " + errorMessage;
+            QMessageBox::critical(nullptr, QStringLiteral("Scan Image"), errorMessage.c_str(), QStringLiteral("Quit"));
+            return;
+        }
+    }
 }
