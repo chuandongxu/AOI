@@ -160,7 +160,7 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
 
         Engine::Alignment alignment;
         if ( bBoardRotated ) {
-            alignment.tmplPosX =  ( nBigImgWidth - nPosInCombineImageX ) * dResolutionX;
+            alignment.tmplPosX = ( nBigImgWidth - nPosInCombineImageX ) * dResolutionX;
             alignment.tmplPosY = nPosInCombineImageY * dResolutionY;
         }else {
             alignment.tmplPosX = nPosInCombineImageX * dResolutionX;

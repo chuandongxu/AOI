@@ -263,7 +263,6 @@ void QSystem::LoadData()
 		m_params[name] = query3.value(1);
     }
 
-
 	m_product = this->getSysParam("current-product").toString();
 	if(m_product.isEmpty())m_product = "defaultProduct";
 }
