@@ -9,7 +9,7 @@ QLightCtrl::QLightCtrl(QObject *parent)
 	int n = System->getParam(LIGHT_COUNT).toInt();
 	for(int i = 0; i<n; i++)
 	{
-		QString name = QString("light%0").arg(i);
+		QString name = QString("light%0").arg(i+1);
 		m_deviceList.append(new QLightDevice(name,NULL));
 	}
 	
