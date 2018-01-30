@@ -77,15 +77,6 @@
     <ClCompile Include="LineNormal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\DataModule\QDetectObj.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_QDetectObj.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_QDetectObj.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hsgworkflowctrl.h">
@@ -136,9 +127,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="hsgworksetting.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\DataModule\QDetectObj.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

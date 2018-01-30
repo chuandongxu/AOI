@@ -131,9 +131,6 @@ public:
 	void delSysParam(const QString &name);
 	QStringList getSysParamKeys(const QString &condtion);
 
-	void setCurrentProduct(const QString &product);
-	QString getCurrentProduct();
-
 	void addOptLog(const QString &name,const QString &val,const QString &descr);
 
 	QErrorModel * getErrorModel();
@@ -172,22 +169,6 @@ public:
 
 	QString getLangConfig();
 	void setLangConfig(const QString & lang);
-	
-
-	/*
-public:
-	bool getPosition(const QString &key,QPoint1D &pos);
-	bool getPosition(const QString &key,QPoint2D &pos);
-	bool getPosition(const QString &key,QPoint3D &pos);
-	bool getPosition(const QString &key,QPoint4D &pos);
-	bool getPosition(const QString &key,QPoint6D &pos);
-
-	void setPosition(const QString &key,const QPoint1D &pos);
-	void setPosition(const QString &key,const QPoint2D &pos);
-	void setPosition(const QString &key,const QPoint3D &pos);
-	void setPosition(const QString &key,const QPoint4D &pos);
-	void setPosition(const QString &key,const QPoint6D &pos);
-*/
 
 public:
 	void userGoHome();
@@ -234,18 +215,11 @@ private:
 
 	QString m_user;
 	int m_userLevel;
-	/*
-	QMap<QString,QPoint1D> m_position1d;
-	QMap<QString,QPoint2D> m_position2d;
-	QMap<QString,QPoint3D> m_position3d;
-	QMap<QString,QPoint4D> m_position4d;
-	QMap<QString,QPoint6D> m_position6d;
-	*/
+
 	QMap<QString,QVariant> m_params;
+	QMap<QString,QVariant> m_paramUserData;
 	QMap<QString,QVariant> m_data;
 	QMap<QString,void*> m_ptrData;
-	QString m_product;
-	QUserDataArch m_userDataArch;
 	QErrorModel m_errModel;
 
 private:
