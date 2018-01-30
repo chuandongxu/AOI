@@ -29,10 +29,6 @@
 
 using namespace AOI;
 
-//定义系统Vision LOG
-#define VISION_LOG_ALL		2
-#define VISION_LOG_FAIL		1
-
 CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 	: m_pCameraCtrl(pCameraCtrl), QWidget(parent)
 {
@@ -100,49 +96,6 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 	connect(ui.pushButton_imgDLP2Select, SIGNAL(clicked()), SLOT(onSelImgDLP2Path()));
 	connect(ui.pushButton_imgDLP2Save, SIGNAL(clicked()), SLOT(onSaveImgDLP2Path()));
 
-	//Vision System Setting
-	bool bLogAllCase = System->getParam("camera_log_allcase_enable").toBool();
-	ui.checkBox_LogAllCase->setChecked(bLogAllCase);
-
-	int nLogType = System->getParam("vision_log_type").toInt();
-	if (VISION_LOG_ALL == nLogType)
-	{
-		ui.radioButton_logFailCase->setChecked(false);
-		ui.radioButton_logAllCase->setChecked(true);
-	}
-	else if (VISION_LOG_FAIL == nLogType)
-	{
-		ui.radioButton_logFailCase->setChecked(true);
-		ui.radioButton_logAllCase->setChecked(false);
-	}
-	ui.groupBox_LogType->setEnabled(bLogAllCase);
-
-	if (bLogAllCase)
-	{
-		if (VISION_LOG_ALL == nLogType)
-		{
-			Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_ALL_CASE);
-		}
-		else if (VISION_LOG_FAIL == nLogType)
-		{
-			Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_FAIL_CASE);
-		}		
-	}
-	else
-	{
-		Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::DISABLED);
-	}
-
-	bool bAutoClearRecord = System->getParam("vision_record_auto_clear").toBool();
-	ui.checkBox_AutoClearRecord->setChecked(bAutoClearRecord);
-
-	connect(ui.checkBox_LogAllCase, SIGNAL(stateChanged(int)), SLOT(onLogAllCase(int)));
-	connect(ui.radioButton_logFailCase, SIGNAL(toggled(bool)), SLOT(onClickLogFailCase(bool)));
-	connect(ui.radioButton_logAllCase, SIGNAL(toggled(bool)), SLOT(onClickLogAllCase(bool)));
-	connect(ui.pushButton_PRInit, SIGNAL(clicked()), SLOT(onInitPRSystem()));
-	connect(ui.pushButton_PRRelease, SIGNAL(clicked()), SLOT(onUninitPRSystem()));
-	connect(ui.pushButton_PRClearRecord, SIGNAL(clicked()), SLOT(onClearAllRecords()));
-	connect(ui.checkBox_AutoClearRecord, SIGNAL(stateChanged(int)), SLOT(onAutoClearRecord(int)));
 
 	//采集操作
 	ls.clear();
@@ -285,100 +238,7 @@ void CameraSetting::onStateChangeCrossEnable(int iState)
 
 }
 
-void CameraSetting::onLogAllCase(int iState)
-{
-	int data = 0;
-	if (Qt::Checked == iState)data = 1;
 
-	System->setParam("camera_log_allcase_enable", (bool)data);
-	ui.groupBox_LogType->setEnabled((bool)data);
-
-	if ((bool)data)
-	{
-		int nLogType = System->getParam("vision_log_type").toInt();
-		if (VISION_LOG_ALL == nLogType)
-		{
-			Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_ALL_CASE);
-		}
-		else if (VISION_LOG_FAIL == nLogType)
-		{
-			Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_FAIL_CASE);
-		}
-	}
-	else
-	{
-		Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::DISABLED);
-	}
-}
-
-void CameraSetting::onClickLogFailCase(bool s)
-{
-	if (s)
-	{
-		System->setParam("vision_log_type", (int)VISION_LOG_FAIL);
-		Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_FAIL_CASE);
-	}
-}
-
-void CameraSetting::onClickLogAllCase(bool s)
-{
-	if (s)
-	{
-		System->setParam("vision_log_type", (int)VISION_LOG_ALL);
-		Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_ALL_CASE);
-	}
-}
-
-void CameraSetting::onInitPRSystem()
-{
-	Vision::VisionStatus retStatus = Vision::PR_Init();
-	if (retStatus == Vision::VisionStatus::OK)
-	{
-		QMessageBox::information(this, QStringLiteral("信息"), QStringLiteral("初始化成功"));
-	}
-	else
-	{
-		System->setTrackInfo(QString("Error at PR_Init, error code = %1").arg((int)retStatus));
-	}
-}
-
-void CameraSetting::onUninitPRSystem()
-{
-	/*Vision::VisionStatus retStatus = Vision::PR_Init();
-	if (retStatus == Vision::VisionStatus::OK)
-	{
-		QMessageBox::information(this, QStringLiteral("信息"), QStringLiteral("初始化成功"));
-	}
-	else
-	{
-		System->setTrackInfo(QString("Error at PR_Init, error code = %1").arg((int)retStatus));
-	}*/
-}
-
-void CameraSetting::onClearAllRecords()
-{
-	if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
-		QStringLiteral("全部清除 Records ？"), QMessageBox::Ok, QMessageBox::Cancel))
-	{
-		Vision::VisionStatus retStatus = Vision::PR_FreeAllRecord();
-		if (retStatus == Vision::VisionStatus::OK)
-		{
-			QMessageBox::information(this, QStringLiteral("信息"), QStringLiteral("清除Records成功"));
-		}
-		else
-		{
-			System->setTrackInfo(QString("Error at PR_FreeAllRecord, error code = %1").arg((int)retStatus));
-		}
-	}
-}
-
-void CameraSetting::onAutoClearRecord(int iState)
-{
-	int data = 0;
-	if (Qt::Checked == iState)data = 1;
-
-	System->setParam("vision_record_auto_clear", (bool)data);	
-}
 
 void CameraSetting::onCaptureModeIndexChanged(int iIndex)
 {

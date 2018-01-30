@@ -14,6 +14,9 @@ public:
 	QWorkSetting(QFlowCtrl *p, QWidget *parent = 0);
 	~QWorkSetting();
 
+private:
+	void initUI();
+
 protected slots:	
 	void onClickFullSpeed(bool s);
 	void onClickHightSpeed(bool s);
@@ -39,6 +42,18 @@ protected slots:
 
 	void onDlpModeIndexChanged(int index);
 	void onDlpModeSave();
+
+	void onTriggerNumIndexChanged(int iIndex);
+	void onTriggerSave();
+
+	// vision log
+	void onLogAllCase(int iState);
+	void onClickLogFailCase(bool s);
+	void onClickLogAllCase(bool s);
+	void onInitPRSystem();
+	void onUninitPRSystem();
+	void onClearAllRecords();
+	void onAutoClearRecord(int iState);
 
 private:
 	Ui::QWorkSetting ui;

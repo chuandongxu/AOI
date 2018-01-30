@@ -63,6 +63,8 @@ private slots:
 	void show3D();
 	void showSelectROI3D();
 
+	void showLight();
+
 private:
 	void init();
 	void createActions();
@@ -91,6 +93,8 @@ private:
 	QAction *show3DAct;
 	QAction *selectROI;
 
+	QAction *showLightAct;
+
 private:
 	void setButtonsEnable(bool flag);
 	void setLiveButtonEnable(bool flag);
@@ -98,4 +102,6 @@ private:
 private:
 	Ui::VisionView ui;	
 	VisionViewWidget* m_pViewWidget;
+
+	QWidget* m_pLightWidget;
 };

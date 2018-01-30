@@ -19,10 +19,6 @@ public:
 private:
 	void initUI();
 
-private slots:
-	void onTriggerNumIndexChanged(int iIndex);
-	void onTriggerSave();
-
 private:
 	Ui::MotionSetting ui;
 	//QTimer *m_timer;

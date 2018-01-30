@@ -4,6 +4,7 @@
 #include "../Common/SystemData.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
+#include "../include/ILight.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QDebug>
@@ -45,8 +46,14 @@ void VisionView::init()
 	setUnifiedTitleAndToolBarOnMac(true);	
 
 	m_pViewWidget = new VisionViewWidget(this);
-
 	this->setCentralWidget(m_pViewWidget);
+
+	m_pLightWidget = NULL;
+	ILight* pLight = getModule<ILight>(LIGHT_MODEL);
+	if (pLight)
+	{
+		m_pLightWidget = pLight->getLightWidget();
+	}
 }
 
 void VisionView::createActions()
@@ -107,6 +114,11 @@ void VisionView::createActions()
 	connect(selectROI, SIGNAL(triggered()), this, SLOT(showSelectROI3D()));
 	addAction(selectROI);
 	setContextMenuPolicy(Qt::ActionsContextMenu);
+
+	showLightAct = new QAction(QIcon("image/busy.png"), QStringLiteral("显示灯光设置"), this);
+	showLightAct->setShortcuts(QKeySequence::MoveToNextChar);
+	showLightAct->setStatusTip(tr("Show Lighting"));
+	connect(showLightAct, SIGNAL(triggered()), this, SLOT(showLight()));
 }
 
 void VisionView::createToolBars()
@@ -130,6 +142,7 @@ void VisionView::createToolBars()
 
 	detectToolBar = addToolBar(tr("Detect"));
 	detectToolBar->addAction(show3DAct);
+	detectToolBar->addAction(showLightAct);
 }
 
 void VisionView::createStatusBar()
@@ -302,6 +315,14 @@ void VisionView::show3DView()
 	}
 }
 
+void VisionView::showLight()
+{
+	if (m_pLightWidget)
+	{
+		m_pLightWidget->show();
+	}
+}
+
 void VisionView::setSelect()
 {
 	if (m_pViewWidget)
@@ -379,6 +400,7 @@ void VisionView::setButtonsEnable(bool flag)
 	fullScreenAct->setEnabled(flag);
 	moveAct->setEnabled(flag);
 	show3DAct->setEnabled(flag);
+	showLightAct->setEnabled(flag);
 }
 
 void VisionView::setLiveButtonEnable(bool flag)
