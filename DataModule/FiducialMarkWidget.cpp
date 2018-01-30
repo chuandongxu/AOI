@@ -23,7 +23,7 @@ FiducialMarkWidget::~FiducialMarkWidget()
 {
 }
 
-void FiducialMarkWidget::on_btnAddFiducialMark_clicked()
+void FiducialMarkWidget::on_btnSelectFiducialMark_clicked()
 {
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_SET_FIDUCIAL_MARK);
@@ -167,7 +167,7 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
             alignment.tmplPosY = ( nBigImgHeight - nPosInCombineImageY ) * dResolutionY;
         }
 
-        alignment.tmplWidth = dialogSetFM.getFiducialMarkSize() * MM_TO_UM;
+        alignment.tmplWidth  = dialogSetFM.getFiducialMarkSize() * MM_TO_UM;
         alignment.tmplHeight = dialogSetFM.getFiducialMarkSize() * MM_TO_UM;
         alignment.srchWinWidth = 4.f * alignment.tmplWidth;
         alignment.srchWinHeight = 4.f * alignment.tmplHeight;
@@ -189,7 +189,7 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
 void FiducialMarkWidget::on_btnDoAlignment_clicked()
 {
     if ( m_vecFMCadWindow.size() < 2 ) {
-        QMessageBox::critical(nullptr, QStringLiteral("Fiducial Mark"), QStringLiteral("Please select 3 fiducial mark to do alignment."), QStringLiteral("Quit"));
+        QMessageBox::critical(nullptr, QStringLiteral("Fiducial Mark"), QStringLiteral("Please select at least 2 fiducial mark to do alignment."), QStringLiteral("Quit"));
         return;
     }
 
@@ -214,7 +214,11 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
         for ( const auto &rotatedRect : m_vecFMImageWindow )
             vecPointImage.push_back ( rotatedRect.center );
 
-        matTransform = cv::getAffineTransform ( vecPointCad, vecPointImage );
+        if ( m_vecFMCadWindow.size() == 3 )
+            matTransform = cv::getAffineTransform ( vecPointCad, vecPointImage );
+        else
+            matTransform = cv::estimateRigidTransform ( vecPointCad, vecPointImage, true );
+        
         matTransform.convertTo ( matTransform, CV_32FC1 );
 
         m_fCadOffsetX = matTransform.at<float>( 0, 2 ) * dResolutionX;

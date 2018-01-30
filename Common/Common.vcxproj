@@ -254,7 +254,7 @@
       <SubSystem>Windows</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetMachine>MachineX64</TargetMachine>
-      <AdditionalOptions> /SUBSYSTEM:WINDOWS</AdditionalOptions>
+      <AdditionalOptions> /SUBSYSTEM:WINDOWS /IGNORE:4099</AdditionalOptions>
     </Link>
     <Midl>
       <DefaultCharType>Unsigned</DefaultCharType>
