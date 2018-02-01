@@ -2,11 +2,18 @@
 #include "lightctrl.h"
 #include "LightDefine.h"
 #include "SystemData.h"
+#include "../include/IdDefine.h"
+#include "../Common/eos.h"
 
 LightWidget::LightWidget(QLightCtrl* pCtrl, QWidget *parent)
 	: m_pCtrl(pCtrl), QWidget(parent)
 {
 	ui.setupUi(this);
+
+	connect(ui.comboBox_selectLightMode, SIGNAL(currentIndexChanged(int)), SLOT(onLightModeIndexChanged(int)));
+	QStringList ls;
+	ls << QStringLiteral("白光") << QStringLiteral("低角度光") << QStringLiteral("锡形光") << QStringLiteral("均匀光") << QStringLiteral("3D灰阶图");
+	ui.comboBox_selectLightMode->addItems(ls);
 
 	QLineEdit * editCtrls[6] = { ui.lineEdit_1_name, ui.lineEdit_2_name, ui.lineEdit_3_name, ui.lineEdit_4_name, ui.lineEdit_5_name, ui.lineEdit_6_name };
 	QSlider * sliderCtrls[6] = { ui.horizontalSlider_1, ui.horizontalSlider_2, ui.horizontalSlider_3, ui.horizontalSlider_4, ui.horizontalSlider_5, ui.horizontalSlider_6 };
@@ -102,6 +109,13 @@ void LightWidget::setLight()
 			device->setChLuminance(i, data.toInt() * nLightInt / 100.0);
 		}
 	}
+}
+
+void LightWidget::onLightModeIndexChanged(int index)
+{
+	int nIndex = ui.comboBox_selectLightMode->currentIndex();
+
+	QEos::Notify(EVENT_IMAGE_STATE, 0, IMAGE_STATE_CHANGE, nIndex);
 }
 
 void LightWidget::setLightValue(int chn, int value)

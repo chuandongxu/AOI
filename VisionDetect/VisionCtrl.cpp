@@ -552,26 +552,30 @@ bool VisionCtrl::merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight)
 	return true;
 }
 
-bool VisionCtrl::mergeImage(QVector<cv::Mat>& matImages, cv::Mat& matImage)
+bool VisionCtrl::mergeImage(QVector<cv::Mat>& matInputImages, QVector<cv::Mat>& matOutputImages)
 {
 	Vision::PR_COMBINE_IMG_CMD stCmd;
 	Vision::PR_COMBINE_IMG_RPY stRpy;
 
-	for (int i = matImages.size() - 1; i >= 0; i--)
+	for (int i = matInputImages.size() - 1; i >= 0; i--)
 	{
-		stCmd.vecInputImages.push_back(matImages[i]);
+		stCmd.vecInputImages.push_back(matInputImages[i]);
 	}
-	stCmd.nCountOfImgPerFrame = 1;
-	stCmd.nCountOfFrameX = 4;
-	stCmd.nCountOfFrameY = 1;
-	stCmd.nOverlapX = 277;
-	stCmd.nOverlapY = 0;
-	stCmd.nCountOfImgPerRow = 4;
+
+	stCmd.nCountOfImgPerFrame = System->getParam("scan_image_OneFrameImageCount").toInt();
+	stCmd.nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
+	stCmd.nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
+	stCmd.nOverlapX = System->getParam("scan_image_OverlapX").toInt();
+	stCmd.nOverlapY = System->getParam("scan_image_OverlapY").toInt();
+	stCmd.nCountOfImgPerRow = System->getParam("scan_image_RowImageCount").toInt();
 
 	Vision::VisionStatus retStatus = PR_CombineImg(&stCmd, &stRpy);
 	if (retStatus == Vision::VisionStatus::OK)
 	{
-		matImage = stRpy.vecResultImages[0];
+		for each (cv::Mat img in stRpy.vecResultImages)
+		{
+			matOutputImages.push_back(img);
+		}
 	}
 	else
 	{

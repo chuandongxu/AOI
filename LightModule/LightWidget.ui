@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>421</width>
-    <height>346</height>
+    <height>374</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>20</y>
+     <y>50</y>
      <width>381</width>
      <height>281</height>
     </rect>
@@ -422,7 +422,7 @@
    <property name="geometry">
     <rect>
      <x>370</x>
-     <y>310</y>
+     <y>340</y>
      <width>31</width>
      <height>16</height>
     </rect>
@@ -438,7 +438,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>310</y>
+     <y>340</y>
      <width>101</width>
      <height>21</height>
     </rect>
@@ -451,7 +451,7 @@
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>310</y>
+     <y>340</y>
      <width>160</width>
      <height>22</height>
     </rect>
@@ -476,10 +476,33 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>310</y>
+     <y>340</y>
      <width>41</width>
      <height>21</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox_selectLightMode">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>20</y>
+     <width>171</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_21">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>20</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>光源模式:</string>
    </property>
   </widget>
  </widget>

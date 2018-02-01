@@ -19,6 +19,8 @@ private:
 	void setLightValue(int chn, int value);
 
 public slots:
+	void onLightModeIndexChanged(int index);
+
 	void onSliderChanged1(int i);
 	void onSliderChanged2(int i);
 	void onSliderChanged3(int i);

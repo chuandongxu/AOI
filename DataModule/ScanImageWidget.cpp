@@ -16,6 +16,13 @@ ScanImageWidget::ScanImageWidget(QWidget *parent)
     : QWidget(parent)
 {
     ui.setupUi(this);
+
+	ui.lineEditOneFrameImageCount->setText(QString("%1").arg(System->getParam("scan_image_OneFrameImageCount").toInt()));
+	ui.lineEditFrameCountX->setText(QString("%1").arg(System->getParam("scan_image_FrameCountX").toInt()));
+	ui.lineEditFrameCountY->setText(QString("%1").arg(System->getParam("scan_image_FrameCountY").toInt()));
+	ui.lineEditOverlapX->setText(QString("%1").arg(System->getParam("scan_image_OverlapX").toInt()));
+	ui.lineEditOverlapY->setText(QString("%1").arg(System->getParam("scan_image_OverlapY").toInt()));
+	ui.lineEditRowImageCount->setText(QString("%1").arg(System->getParam("scan_image_RowImageCount").toInt()));	
 }
 
 ScanImageWidget::~ScanImageWidget()
@@ -46,6 +53,13 @@ cv::Mat ScanImageWidget::combineImage(const QString &strInputFolder)
     stCmd.nOverlapX = ui.lineEditOverlapX->text().toInt();
     stCmd.nOverlapY = ui.lineEditOverlapY->text().toInt();
     stCmd.nCountOfImgPerRow = ui.lineEditRowImageCount->text().toInt();
+
+	System->setParam("scan_image_OneFrameImageCount", ui.lineEditOneFrameImageCount->text().toInt());
+	System->setParam("scan_image_FrameCountX", ui.lineEditFrameCountX->text().toInt());
+	System->setParam("scan_image_FrameCountY", ui.lineEditFrameCountY->text().toInt());
+	System->setParam("scan_image_OverlapX", ui.lineEditOverlapX->text().toInt());
+	System->setParam("scan_image_OverlapY", ui.lineEditOverlapY->text().toInt());
+	System->setParam("scan_image_RowImageCount", ui.lineEditRowImageCount->text().toInt());
 
     const std::string strFolder = strInputFolder.toStdString() + "/";
 
