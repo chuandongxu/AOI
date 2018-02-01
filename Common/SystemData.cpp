@@ -94,7 +94,6 @@ QSystem::QSystem()
 	{
 		m_errCodeMap.init();
 		LoadData();
-		m_userDataArch.load(m_product);
 	}
 	else
 	{
@@ -228,234 +227,86 @@ void QSystem::waitTime(int msTime)
 	
 
 void QSystem::LoadData()
-{
-	/*
-	QString queryStr = QString("SELECT key,value FROM T_position1d");
-	QSqlQuery query(queryStr);
-    while (query.next()) 
-	{
-		QPoint1D pos;
-		QString key = query.value(0).toString();
-		pos.x = query.value(1).toDouble();
-		
-		m_position1d[key] = pos;
-    }
-
-	queryStr = QString("SELECT key,x,y,z,c FROM T_position4d");
-	QSqlQuery query2(queryStr);
-    while (query2.next()) 
-	{
-		QPoint4D pos;
-		QString key = query2.value(0).toString();
-		pos.x = query2.value(1).toDouble();
-		pos.y = query2.value(2).toDouble();
-		pos.z = query2.value(3).toDouble();
-		pos.c = query2.value(4).toDouble();
-
-		m_position4d[key] = pos;
-    }
-	*/
+{	
 	QString queryStr = QString("SELECT name,value from T_param");
-	QSqlQuery query3(queryStr);
-    while (query3.next()) 
+	QSqlQuery query(queryStr);
+	while (query.next())
 	{
-		QString name = query3.value(0).toString();
-		m_params[name] = query3.value(1);
+		QString name = query.value(0).toString();
+		m_params[name] = query.value(1);
     }
 
-	m_product = this->getSysParam("current-product").toString();
-	if(m_product.isEmpty())m_product = "defaultProduct";
-}
-
-
-
-/*
-bool QSystem::getPosition(const QString &key,QPoint1D &pos)
-{
-	QAutoLocker loacker(&m_mutex);
-	if(m_position1d.contains(key))
+	QString queryStrUserData = QString("SELECT name,value from T_paramUserData");
+	QSqlQuery queryUserData(queryStrUserData);
+	while (queryUserData.next())
 	{
-		pos = m_position1d[key];
-		return true;
-	}
-	return false;
-}
-
-bool QSystem::getPosition(const QString &key,QPoint2D &pos)
-{
-	QAutoLocker loacker(&m_mutex);
-	if(m_position2d.contains(key))
-	{
-		pos = m_position2d[key];
-		return true;
-	}
-	return false;
-}
-	
-bool QSystem::getPosition(const QString &key,QPoint3D &pos)
-{
-	QAutoLocker loacker(&m_mutex);
-	if(m_position3d.contains(key))
-	{
-		pos = m_position3d[key];
-		return true;
-	}
-	return false;
-}
-
-bool QSystem::getPosition(const QString &key,QPoint4D &pos)
-{
-	QAutoLocker loacker(&m_mutex);
-	if(m_position4d.contains(key))
-	{
-		pos = m_position4d[key];
-		return true;
-	}
-	return false;
-}
-
-bool QSystem::getPosition(const QString &key,QPoint6D &pos)
-{
-	QAutoLocker loacker(&m_mutex);
-	if(m_position6d.contains(key))
-	{
-		pos = m_position6d[key];
-		return true;
-	}
-	return false;
-}
-
-void QSystem::setPosition(const QString &key,const QPoint1D &pos)
-{
-	QAutoLocker loacker(&m_mutex);
-
-	m_position1d[key] = pos;
-
-	if(isExist(QString("select id from T_position1d where key = '%0'").arg(key)))
-	{
-		QString queryStr = QString("update T_position1d set value = %0 where key = '%1'").arg(pos.x).arg(key);
-		QSqlQuery query;
-		query.exec(queryStr);
-	}
-	else
-	{
-		QString queryStr = QString("insert into T_position1d(key,value) values('%0',%1)").arg(key).arg(pos.x);
-		QSqlQuery query;
-		query.exec(queryStr);
+		QString name = queryUserData.value(0).toString();
+		m_paramUserData[name] = queryUserData.value(1);
 	}
 }
-
-void QSystem::setPosition(const QString &key,const QPoint2D &pos)
-{
-	QAutoLocker loacker(&m_mutex);
-
-	m_position2d[key] = pos;
-
-	if(isExist(QString("select id from T_position2d where key = '%0'").arg(key)))
-	{
-		QString queryStr = QString("update T_position2d set x=%0,y=%1 where key ='%3'").arg(pos.x).arg(pos.y).arg(key);
-		QSqlQuery query;
-		query.exec(queryStr);
-	}
-	else
-	{
-		QString queryStr = QString("insert into T_position2d(key,x,y) values('%0',%1,%2,)").arg(key).arg(pos.x).arg(pos.y);
-		QSqlQuery query;
-		query.exec(queryStr);
-	}
-}
-
-void QSystem::setPosition(const QString &key,const QPoint3D &pos)
-{
-	QAutoLocker loacker(&m_mutex);
-
-	m_position3d[key] = pos;
-
-	if(isExist(QString("select id from T_position3d where key = '%0'").arg(key)))
-	{
-		QString queryStr = QString("update T_position3d set x=%0,y=%1,z=%2where key ='%3'")
-			.arg(pos.x).arg(pos.y).arg(pos.z).arg(key);
-		QSqlQuery query;
-		query.exec(queryStr);
-	}
-	else
-	{
-		QString queryStr = QString("insert into T_position3d(key,x,y,z) values('%0',%1,%2,%3)")
-			.arg(key).arg(pos.x).arg(pos.y).arg(pos.z);
-		QSqlQuery query;
-		query.exec(queryStr);
-	}
-}
-	
-void QSystem::setPosition(const QString &key,const QPoint4D &pos)
-{
-	QAutoLocker loacker(&m_mutex);
-
-	m_position4d[key] = pos;
-
-	if(isExist(QString("select id from T_position4d where key = '%0'").arg(key)))
-	{
-		QString queryStr = QString("update T_position4d set x=%0,y=%1,z=%2,c=%3 where key = '%4'")
-			.arg(pos.x).arg(pos.y).arg(pos.z).arg(pos.c).arg(key);
-		QSqlQuery query;
-		query.exec(queryStr);
-	}
-	else
-	{
-		QString queryStr = QString("insert into T_position4d(key,x,y,z,c) values('%0',%1,%2,%3,%4)")
-			.arg(key).arg(pos.x).arg(pos.y).arg(pos.z).arg(pos.c);
-		QSqlQuery query;
-		query.exec(queryStr);
-	}
-}
-
-void QSystem::setPosition(const QString &key,const QPoint6D &pos)
-{
-	QAutoLocker loacker(&m_mutex);
-
-	m_position6d[key] = pos;
-
-	if(isExist(QString("select id from T_position6d where key = '%0'").arg(key)))
-	{
-		QString queryStr = QString("update T_position6d set x=%0,y=%1,z=%2,a=%3,b=%4,c=%5 where key = '%6'")
-			.arg(pos.x).arg(pos.y).arg(pos.z).arg(pos.a).arg(pos.b).arg(pos.c).arg(key);
-		QSqlQuery query;
-		query.exec(queryStr);
-	}
-	else
-	{
-		QString queryStr = QString("insert into T_position6d(key,x,y,z,a,b,c) values('%0',%1,%2,%3,%4,%5,%6)")
-			.arg(key).arg(pos.x).arg(pos.y).arg(pos.z).arg(pos.a).arg(pos.b).arg(pos.c);
-		QSqlQuery query;
-		query.exec(queryStr);
-	}
-}
-*/
 
 QVariant QSystem::getParam(const QString &name)
 {
 	QAutoLocker loacker(&m_mutex);
-	return m_userDataArch.getParam(name);
+
+	if (m_paramUserData.contains(name))
+	{
+		return m_paramUserData[name];
+	}
+
+	return QVariant();
 }
 
 void QSystem::setParam(const QString &name,const QVariant &data)
 {
 	QAutoLocker loacker(&m_mutex);
-	m_userDataArch.setParam(name,data);
 
-	emit paramChange(name,false);
+	m_paramUserData[name] = data;
+
+	if (isExist(QString("select id from T_paramUserData where name = '%0'").arg(name)))
+	{
+		QString queryStr = QString("update T_paramUserData set value='%0' where name = '%1'")
+			.arg(data.toString()).arg(name);
+		QSqlQuery query;
+		query.exec(queryStr);
+	}
+	else
+	{
+		QString queryStr = QString("insert into T_paramUserData(name,value) values('%0','%1')")
+			.arg(name).arg(data.toString());
+		QSqlQuery query;
+		query.exec(queryStr);
+	}
+
+	emit paramChange(name, true);
 }
 
 void QSystem::delParam(const QString &name)
 {
 	QAutoLocker loacker(&m_mutex);
-	return m_userDataArch.delParam(name);
+
+	m_paramUserData.remove(name);
+
+	QString queryStr = QString("delete from T_paramUserData where name = '%0'").arg(name);
+	//QString queryStr = QString("delete from T_param");
+
+	QSqlQuery query;
+	query.exec(queryStr);
 }
 
 QStringList QSystem::getParamKeys(const QString &condtion)
 {
-	QAutoLocker loacker(&m_mutex);
-	return m_userDataArch.getParamKeys(condtion);
+	QStringList keys;
+	QStringList ls = m_paramUserData.keys();
+	for (int i = 0; i < ls.size(); i++)
+	{
+		if (ls[i].contains(condtion))
+		{
+			keys.append(ls[i]);
+		}
+	}
+
+	return keys;
 }
 
 QVariant QSystem::getSysParam(const QString &name)
@@ -521,21 +372,6 @@ QStringList QSystem::getSysParamKeys(const QString &condtion)
 
 	return keys;
 }
-
-void QSystem::setCurrentProduct(const QString &product)
-{
-	m_product = product;
-	this->setSysParam("current-product",m_product);
-	m_userDataArch.load(m_product);
-
-	emit productChange(m_product);
-}
-
-QString QSystem::getCurrentProduct()
-{
-	return m_product;
-}
-
 
 bool QSystem::isExist(const QString &filtterSql)
 {

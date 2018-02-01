@@ -68,15 +68,6 @@
     <ClCompile Include="ImageDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\DataModule\QDetectObj.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_QDetectObj.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_QDetectObj.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_QMainProcess.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -124,9 +115,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="ImageDevice.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\DataModule\QDetectObj.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="QMainProcess.h">
