@@ -26,6 +26,7 @@ void QVisionUIModule::Show()
 	QAppMainWidget * p = (QAppMainWidget*)m_mainWidget;
 	if(p)
 	{
+        p->setWindowIcon(QIcon(":/VisionUI/AppIcon.png"));
 		p->showFullScreen();
 	}
 }

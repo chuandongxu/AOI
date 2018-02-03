@@ -135,8 +135,8 @@ void VisionView::createToolBars()
 void VisionView::createStatusBar()
 {
 	//statusBar()->showMessage(tr("Ready"));
-	statusBar()->hide();
-	statusBar()->setSizeGripEnabled(false);
+	//statusBar()->hide();
+	//statusBar()->setSizeGripEnabled(false);
 }
 
 void VisionView::openFile()

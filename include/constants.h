@@ -38,6 +38,9 @@ const float UM_TO_CM  =                             (1.f / CM_TO_UM );
 const std::string DEFAULT_PROJECT =                 "./data/DefaultProject.aoi";
 const std::string PROJECT_EXT =                     ".aoi";
 
+const int OK  =                                     0;
+const int NOK =                                     -1;
+
 enum VISION_VIEW_MODE {
     MODE_VIEW_NONE              = 1,
     MODE_VIEW_SELECT            = 2,
