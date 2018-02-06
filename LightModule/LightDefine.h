@@ -7,5 +7,6 @@
 
 #define LUM_CH "lum_ch"
 #define NAMED_CH "named_ch"
+#define LIGHT_INT_CH "light_int_ch"
 
 #endif

@@ -22,14 +22,6 @@ protected slots:
 	void onStateChangeCaptureAsMatlab(int iState);
 	void onStateChangeCrossEnable(int iState);
 
-	void onLogAllCase(int iState);
-	void onClickLogFailCase(bool s);
-	void onClickLogAllCase(bool s);
-	void onInitPRSystem();
-	void onUninitPRSystem();
-	void onClearAllRecords();
-	void onAutoClearRecord(int iState);
-
 	void onCaptureModeIndexChanged(int iIndex);
 	void onCaptureNumModeIndexChanged(int iIndex);
 	void onSelCapturePath();

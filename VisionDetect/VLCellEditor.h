@@ -10,6 +10,7 @@
 
 using namespace cv;
 
+class QColorWeight;
 class IVisionUI;
 class QVLMaskEditor;
 class QVLCellEditor : public QWidget
@@ -88,4 +89,6 @@ private:
 	int m_nObjIndex;
 
 	DataTypeEnum m_dataTypeEnum;
+
+	QColorWeight* m_pColorWeight;
 };

@@ -25,6 +25,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#define ToInt(value)                (static_cast<int>(value))
 #define ToFloat(param)      (static_cast<float>(param))
 
 const int RUN_VIEW_CTRL = 1;
@@ -552,26 +553,39 @@ bool VisionCtrl::merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight)
 	return true;
 }
 
-bool VisionCtrl::mergeImage(QVector<cv::Mat>& matImages, cv::Mat& matImage)
+bool VisionCtrl::mergeImage(QVector<cv::Mat>& matInputImages, QVector<cv::Mat>& matOutputImages)
 {
 	Vision::PR_COMBINE_IMG_CMD stCmd;
 	Vision::PR_COMBINE_IMG_RPY stRpy;
 
-	for (int i = matImages.size() - 1; i >= 0; i--)
+	//for (int i = matInputImages.size() - 1; i >= 0; i--)
+	//{
+	//	stCmd.vecInputImages.push_back(matInputImages[i]);
+	//}
+
+	for (int i = 0; i < matInputImages.size(); i++)
 	{
-		stCmd.vecInputImages.push_back(matImages[i]);
+		stCmd.vecInputImages.push_back(matInputImages[i]);
 	}
-	stCmd.nCountOfImgPerFrame = 1;
-	stCmd.nCountOfFrameX = 4;
-	stCmd.nCountOfFrameY = 1;
-	stCmd.nOverlapX = 277;
-	stCmd.nOverlapY = 0;
-	stCmd.nCountOfImgPerRow = 4;
+
+	double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+	double dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+
+	stCmd.nCountOfImgPerFrame = System->getParam("scan_image_OneFrameImageCount").toInt();
+	stCmd.nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
+	stCmd.nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
+	stCmd.nOverlapX = ToInt(System->getParam("scan_image_OverlapX").toDouble() * dResolutionX);
+	stCmd.nOverlapY = ToInt(System->getParam("scan_image_OverlapY").toDouble() * dResolutionY);
+	stCmd.nCountOfImgPerRow = System->getParam("scan_image_RowImageCount").toInt();
+	stCmd.enScanDir = Vision::PR_SCAN_IMAGE_DIR::LEFT_TO_RIGHT;
 
 	Vision::VisionStatus retStatus = PR_CombineImg(&stCmd, &stRpy);
 	if (retStatus == Vision::VisionStatus::OK)
 	{
-		matImage = stRpy.vecResultImages[0];
+		for each (cv::Mat img in stRpy.vecResultImages)
+		{
+			matOutputImages.push_back(img);
+		}
 	}
 	else
 	{

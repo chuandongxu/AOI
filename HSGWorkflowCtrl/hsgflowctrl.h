@@ -18,6 +18,17 @@
 
 using namespace cv;
 
+const int g_nImageStructDataNum = 5;
+struct QImageStruct
+{
+public:
+	QImageStruct()
+	{
+	}
+
+	cv::Mat _img[g_nImageStructDataNum];
+};
+
 struct Q3DStructData
 {
 public:
@@ -40,7 +51,7 @@ public:
 	bool _bCapturedDone;
 	cv::Mat _3DMatHeight;
 	cv::Mat _matImage;
-	QVector<cv::Mat> _srcImageMats;
+	QVector<cv::Mat> _srcImageMats;	
 };
 
 //---------------------------------------------------------------
@@ -102,6 +113,8 @@ public:
 	void quit();
 	void imgStop();//stop steppers
 
+	void setImageIndex(int nIndex);
+
 private:
 	int getPositionNum();
 	int getPositionID(int nIndex);
@@ -144,11 +157,11 @@ private:
 	QMutex m_mutex;
 	
 	QVector<cv::Mat> m_3DMatHeights;
-	QVector<cv::Mat> m_matImages;
-	QVector<cv::Mat> m_matGrayImgs;
 	cv::Mat m_3DMatHeight;
-	cv::Mat m_matImage;
-	cv::Mat m_matGrayImg;	
+
+	QVector<QImageStruct> m_matImages;
+	QImageStruct m_matImage;
+	int m_nImageIndex;
 };
 	
 
@@ -169,6 +182,8 @@ public:
 	bool isRuning();
 
 protected slots:
+	void onImageEvent(const QVariantList &data);
+
 	void home();
 	void startAutoRun();
 	void stopAutoRun();

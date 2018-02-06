@@ -177,7 +177,7 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
         alignment.vecLight.push_back(1);
         auto result = Engine::CreateAlignment ( alignment );
         if (Engine::OK != result) {
-            String errorType, errorMessage;
+            AOI::String errorType, errorMessage;
             Engine::GetErrorDetail(errorType, errorMessage);
             errorMessage = "Failed to create alignment, error message " + errorMessage;
             QMessageBox::critical(nullptr, QStringLiteral("Set Fiducial Mark"), errorMessage.c_str(), QStringLiteral("Quit"));
@@ -245,7 +245,7 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
     Engine::DeviceVector vecDevice;
     auto result = Engine::GetAllDevices ( vecDevice );
     if ( Engine::OK != result ) {
-        String errorType, errorMessage;
+        AOI::String errorType, errorMessage;
         Engine::GetErrorDetail ( errorType, errorMessage );
         errorMessage = "Failed to get devices from project, error message " + errorMessage;
         QMessageBox::critical(nullptr, QStringLiteral("Scan Image"), errorMessage.c_str(), QStringLiteral("Quit"));

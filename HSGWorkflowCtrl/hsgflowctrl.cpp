@@ -357,6 +357,8 @@ QMainRunable::QMainRunable(QCheckerParamMap * paramMap, QCheckerParamDataList* p
 	m_positionMap.insert(1, MTR_MOVETO_POS2);
 	m_positionMap.insert(2, MTR_MOVETO_POS3);
 	m_positionMap.insert(3, MTR_MOVETO_POS4);
+
+	m_nImageIndex = 0;
 }
 
 QMainRunable::~QMainRunable()
@@ -384,6 +386,13 @@ void QMainRunable::imgStop()
 {
 }
 
+void QMainRunable::setImageIndex(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= g_nImageStructDataNum) return;
+
+	m_nImageIndex = nIndex;
+}
+
 bool QMainRunable::preRunning()
 {
 	if (!moveToReadyPos())
@@ -393,14 +402,12 @@ bool QMainRunable::preRunning()
 	}
 
 	m_3DMatHeights.clear();
-	m_matImages.clear();
-	m_matGrayImgs.clear();
+	m_matImages.clear();	
 
 	for (int i = 0; i < getPositionNum(); i++)
 	{
 		m_3DMatHeights.push_back(cv::Mat());
-		m_matImages.push_back(cv::Mat());
-		m_matGrayImgs.push_back(cv::Mat());
+		m_matImages.push_back(QImageStruct());		
 	}
 
 	return true;
@@ -657,11 +664,11 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 		(*m_paramData)[i]._bStartCapturing = true;
 	}
 
-	bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
-	if (bCaptureLightImage)
-	{
-		saveImages(szImagePath, nIndex, imageMats.mid(nStationNum*nPatternNum));
-	}
+	//bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
+	//if (bCaptureLightImage)
+	//{
+	//	saveImages(szImagePath, nIndex, imageMats.mid(nStationNum*nPatternNum));
+	//}
 
 	int nWaitTime = 30 * 100;
 	while (nWaitTime-- > 0 && !isExit())
@@ -686,7 +693,7 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 	}
 
 	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_GENERATE_GRAY, 0);
-
+	
 	cv::Mat matGray; int nCapturedNum = 0;
 	for (int i = 0; i < nStationNum; i++)
 	{
@@ -699,11 +706,11 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 		nCapturedNum += 1;
 	}
 	matGray /= nCapturedNum;
-	m_matGrayImgs[nIndex] = matGray;
+	cv::cvtColor(matGray, matGray, CV_BayerGR2BGR);
+	m_matImages[nIndex]._img[4] = matGray;
 
-	pUI->setImage(matGray, true);
-
-	QEos::Notify(EVENT_RESULT_DISPLAY, 0, STATION_RESULT_IMAGE_DISPLAY);
+	//pUI->setImage(matGray, true);
+	//QEos::Notify(EVENT_RESULT_DISPLAY, 0, STATION_RESULT_IMAGE_DISPLAY);
 
 	QVector<cv::Mat> lightImages = imageMats.mid(nStationNum*nPatternNum);
 	cv::Mat outputPseudocolor(matGray.size(), CV_8UC3);
@@ -722,7 +729,24 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 			pixel[2] = abs(grayValueR);
 		}
 	}
-	m_matImages[nIndex] = outputPseudocolor;
+	cv::cvtColor(lightImages[0], lightImages[0], CV_BayerGR2BGR);
+	m_matImages[nIndex]._img[0] = lightImages[0];
+	cv::cvtColor(lightImages[1], lightImages[1], CV_BayerGR2BGR);
+	m_matImages[nIndex]._img[1] = lightImages[1];
+	m_matImages[nIndex]._img[2] = outputPseudocolor;
+	cv::cvtColor(lightImages[5], lightImages[5], CV_BayerGR2BGR);
+	m_matImages[nIndex]._img[3] = lightImages[5];
+
+	bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
+	if (bCaptureLightImage)
+	{
+		QVector<cv::Mat> savingImages;
+		for (int i = 0; i < g_nImageStructDataNum; i++)
+			savingImages.push_back(m_matImages[nIndex]._img[i]);
+		saveImages(szImagePath, nIndex, savingImages);
+	}
+
+	pUI->setImage(m_matImages[nIndex]._img[m_nImageIndex], true);
 
 	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_CALCULATE_3D, 0);
 
@@ -747,9 +771,26 @@ bool QMainRunable::mergeImages()
 
 	IVision* pVision = getModule<IVision>(VISION_MODEL);
 	if (!pVision) return false;
+
+	QVector<cv::Mat> matInputImages;
+	for each (QImageStruct var in m_matImages)
+	{
+		for (int i = 0; i < g_nImageStructDataNum; i++)
+		{
+			matInputImages.push_back(var._img[i]);
+		}
+	}
 	
-	pVision->mergeImage(m_matImages, m_matImage);
-	pUI->setImage(m_matImage, true);
+	QVector<cv::Mat> matOutputImages;
+	pVision->mergeImage(matInputImages, matOutputImages);
+	if (matOutputImages.size() == g_nImageStructDataNum)
+	{
+		for (int i = 0; i < matOutputImages.size(); i++)
+		{
+			m_matImage._img[i] = matOutputImages.at(i);
+		}
+	}
+	pUI->setImage(m_matImage._img[m_nImageIndex], true);
 
 	for (int i = 0; i < getPositionNum(); i++)
 	{
@@ -938,6 +979,8 @@ QFlowCtrl::QFlowCtrl(QObject *parent)
 
 	m_dateTime = QDateTime::currentDateTime();
 
+	QEos::Attach(EVENT_IMAGE_STATE, this, SLOT(onImageEvent(const QVariantList &)));
+
 	//IMotion * pMotion = getModule<IMotion>(MOTION_MODEL);
 	//if(pMotion)
 	//{
@@ -967,6 +1010,18 @@ QFlowCtrl::~QFlowCtrl()
 bool QFlowCtrl::isRuning()
 {
 	return m_isStart;
+}
+
+void QFlowCtrl::onImageEvent(const QVariantList &data)
+{
+	if (data.size() < 3) return;
+
+	int iBoard = data[0].toInt();
+	int iEvent = data[1].toInt();
+	if (iEvent != IMAGE_STATE_CHANGE) return;
+	int nIndex = data[2].toInt();
+
+	if (m_pMainStation) m_pMainStation->setImageIndex(nIndex);
 }
 
 void QFlowCtrl::home()
@@ -1309,6 +1364,8 @@ void QFlowCtrl::start()
 
 	QEos::Notify(EVENT_RUN_STATE,RUN_STATE_RUNING);
 
+	System->setParam("camera_show_image_toScreen_enable", false);
+
 	QSystem::closeMessage();
 }
 	
@@ -1382,6 +1439,8 @@ void QFlowCtrl::stop()
 		//p->releaseInputLock();
 		//p->releaseAllStationStart();
 	}
+
+	System->setParam("camera_show_image_toScreen_enable", true);
 
 	m_isStart = false;
 	QEos::Notify(EVENT_RUN_STATE,RUN_STATE_STOP);

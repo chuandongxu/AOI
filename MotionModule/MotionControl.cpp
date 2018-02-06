@@ -328,6 +328,8 @@ void MotionControl::setupTrigger(IMotion::TRIGGER emTrig)
 		setupTriggerConfig(MGenStrPrm + 2, DO_TRIGGER_DLP3);
 		setupTriggerConfig(MGenStrPrm + 3, DO_TRIGGER_DLP4);
 
+		double dLightExposure = System->getParam("motion_trigger_light_exposure").toDouble() / 1000.0;
+		double dLightPeriod = System->getParam("motion_trigger_light_period").toDouble();
 		MGenStrPrm[4].DoChnJoinNo = 7;
 		MGenStrPrm[4].DoChnMap[0] = DO_CAMERA_TRIGGER2; //should confirm id start from 0 or 1?
 		MGenStrPrm[4].DoChnMap[1] = DO_LIGHT1_CH1;
@@ -344,8 +346,8 @@ void MotionControl::setupTrigger(IMotion::TRIGGER emTrig)
 		MGenStrPrm[4].DoOutCfg[5] = 0x22; //100010;
 		MGenStrPrm[4].DoOutCfg[6] = 0x10; //010000;
 		MGenStrPrm[4].firstLevel = 1;
-		MGenStrPrm[4].highLevelTime = 1;
-		MGenStrPrm[4].lowLevelTime = 7;
+		MGenStrPrm[4].highLevelTime = dLightExposure;
+		MGenStrPrm[4].lowLevelTime = (dLightPeriod > dLightExposure) ? (dLightPeriod - dLightExposure) : 0;
 		MGenStrPrm[4].pulseNum = 6;			
 	}
 	break;
@@ -387,6 +389,9 @@ void MotionControl::setupTrigger(IMotion::TRIGGER emTrig)
 		break;
 	case IMotion::TRIGGER_LIGHT:
 	{
+		double dLightExposure = System->getParam("motion_trigger_light_exposure").toDouble() / 1000.0;
+		double dLightPeriod = System->getParam("motion_trigger_light_period").toDouble();
+
 		sTotalSerial = 1;
 		MGenStrPrm[0].DoChnJoinNo = 7;
 		MGenStrPrm[0].DoChnMap[0] = DO_CAMERA_TRIGGER2; //should confirm id start from 0 or 1?
@@ -404,8 +409,8 @@ void MotionControl::setupTrigger(IMotion::TRIGGER emTrig)
 		MGenStrPrm[0].DoOutCfg[5] = 0x22; //100010;
 		MGenStrPrm[0].DoOutCfg[6] = 0x10; //010000;
 		MGenStrPrm[0].firstLevel = 1;
-		MGenStrPrm[0].highLevelTime = 1;
-		MGenStrPrm[0].lowLevelTime = 7;
+		MGenStrPrm[0].highLevelTime = dLightExposure;
+		MGenStrPrm[0].lowLevelTime = (dLightPeriod > dLightExposure) ? (dLightPeriod - dLightExposure) : 0;
 		MGenStrPrm[0].pulseNum = 6;
 	}
 	break;
