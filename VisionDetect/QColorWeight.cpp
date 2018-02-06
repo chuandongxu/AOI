@@ -1,4 +1,4 @@
-#include "QColorWeight.h"
+ï»¿#include "QColorWeight.h"
 
 #include "qdebug.h"
 
@@ -46,7 +46,7 @@ void QColorWeight::initUI()
 	// Gray Level
 	connect(ui.comboBox_selectMode, SIGNAL(currentIndexChanged(int)), SLOT(onGrayModeIndexChanged(int)));
 	QStringList ls;
-	ls << QStringLiteral("ÊÖ¶¯ÉèÖÃ·§Öµ") << QStringLiteral("ÉèÖÃµ¥·§Öµ") << QStringLiteral("ÉèÖÃË«·§Öµ");
+	ls << QStringLiteral("æ‰‹åŠ¨è®¾ç½®é˜€å€¼") << QStringLiteral("è®¾ç½®å•é˜€å€¼") << QStringLiteral("è®¾ç½®åŒé˜€å€¼");
 	ui.comboBox_selectMode->addItems(ls);
 
 	connect(ui.checkBox_R, SIGNAL(stateChanged(int)), SLOT(onCheckBoxEnableR(int)));

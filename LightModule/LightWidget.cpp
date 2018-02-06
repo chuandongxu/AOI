@@ -1,4 +1,4 @@
-#include "LightWidget.h"
+ï»¿#include "LightWidget.h"
 #include "lightctrl.h"
 #include "LightDefine.h"
 #include "SystemData.h"
@@ -12,7 +12,7 @@ LightWidget::LightWidget(QLightCtrl* pCtrl, QWidget *parent)
 
 	connect(ui.comboBox_selectLightMode, SIGNAL(currentIndexChanged(int)), SLOT(onLightModeIndexChanged(int)));
 	QStringList ls;
-	ls << QStringLiteral("°×¹â") << QStringLiteral("µÍ½Ç¶È¹â") << QStringLiteral("²ÊÉ«¹â") << QStringLiteral("¾ùÔÈ¹â") << QStringLiteral("3D»Ò½×Í¼");
+	ls << QStringLiteral("ç™½å…‰") << QStringLiteral("ä½Žè§’åº¦å…‰") << QStringLiteral("å½©è‰²å…‰") << QStringLiteral("å‡åŒ€å…‰") << QStringLiteral("3Dç°é˜¶å›¾");
 	ui.comboBox_selectLightMode->addItems(ls);
 
 	QLineEdit * editCtrls[6] = { ui.lineEdit_1_name, ui.lineEdit_2_name, ui.lineEdit_3_name, ui.lineEdit_4_name, ui.lineEdit_5_name, ui.lineEdit_6_name };
