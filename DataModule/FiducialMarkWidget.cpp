@@ -109,9 +109,9 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
 
     SetFiducialMarkDialog dialogSetFM;
     dialogSetFM.setWindowFlags(Qt::WindowStaysOnTopHint);
-	dialogSetFM.show();
-	dialogSetFM.raise();
-	dialogSetFM.activateWindow();
+	  dialogSetFM.show();
+	  dialogSetFM.raise();
+	  dialogSetFM.activateWindow();
     int iReturn = dialogSetFM.exec();
     if ( iReturn != QDialog::Accepted ) {
         return;
@@ -120,7 +120,7 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
     double dResolutionX, dResolutionY;
     bool bBoardRotated = false;
     dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-	dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+	  dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
 
     bool bUseStandardShape = dialogSetFM.getUseStandardShape();
@@ -147,6 +147,9 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
             QMessageBox::critical(nullptr, QStringLiteral("Fiducial Mark"), stErrStrRpy.achErrorStr, QStringLiteral("Quit"));
             return;
         }
+        QString qstrMsg;
+        qstrMsg.sprintf ( "Success to search fiducial mark, match score %f, pos in original image [%f, %f].", stRpy.fMatchScore, stRpy.ptPos.x, stRpy.ptPos.y );
+        System->setTrackInfo( qstrMsg );
 
         int nPosInCombineImageX, nPosInCombineImageY;
         DataUtils::getCombinedImagePosFromFramePos ( nBigImgWidth, nBigImgHeight, matFirstImg.cols, matFirstImg.rows,
@@ -166,7 +169,7 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
 
         alignment.tmplWidth  = dialogSetFM.getFiducialMarkSize() * MM_TO_UM;
         alignment.tmplHeight = dialogSetFM.getFiducialMarkSize() * MM_TO_UM;
-        alignment.srchWinWidth = 4.f * alignment.tmplWidth;
+        alignment.srchWinWidth  = 4.f * alignment.tmplWidth;
         alignment.srchWinHeight = 4.f * alignment.tmplHeight;
         alignment.isFM = bUseStandardShape;
         alignment.fmShape = static_cast<int> ( dialogSetFM.getFiducialMarkShape() );
@@ -274,6 +277,9 @@ int FiducialMarkWidget::srchFiducialMark()
             QMessageBox::critical(nullptr, QStringLiteral("Fiducial Mark"), stErrStrRpy.achErrorStr, QStringLiteral("Quit"));
             return NOK;
         }
+        QString qstrMsg;
+        qstrMsg.sprintf ( "Success to search fiducial mark, match score %f, pos in original image [%f, %f].", stRpy.fMatchScore, stRpy.ptPos.x, stRpy.ptPos.y );
+        System->setTrackInfo( qstrMsg );
 
         int nPosInCombineImageX, nPosInCombineImageY;
         DataUtils::getCombinedImagePosFromFramePos ( nBigImgWidth, nBigImgHeight, matFirstImg.cols, matFirstImg.rows,
@@ -299,7 +305,7 @@ int FiducialMarkWidget::refreshFMWindow()
     double dResolutionX, dResolutionY;
     bool bBoardRotated = false;
     dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-	dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();    
 
     m_vecFMCadWindow.clear();
@@ -344,7 +350,7 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
     double dResolutionX, dResolutionY;
     bool bBoardRotated = false;
     dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-	dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
 
     float fRotationInRadian, Tx, Ty, fScale;
@@ -373,14 +379,16 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
         m_fCadOffsetX = Tx * dResolutionX;
         m_fCadOffsetY = Ty * dResolutionY;
 
-        //cv::Point2f ptCtr( m_vecFMCadWindow[0].center.x / 2.f + m_vecFMCadWindow[0].center.x / 2.f,  m_vecFMCadWindow[1].center.y / 2.f + m_vecFMCadWindow[1].center.y / 2.f );
-        cv::Point2f ptCtr( m_nBigImageWidth / 2.f, m_nBigImageHeight / 2.f );
+        cv::Point2f ptCtr( m_vecFMCadWindow[0].center.x / 2.f + m_vecFMCadWindow[1].center.x / 2.f,  m_vecFMCadWindow[0].center.y / 2.f + m_vecFMCadWindow[1].center.y / 2.f );
+        //cv::Point2f ptCtr( m_nBigImageWidth / 2.f, m_nBigImageHeight / 2.f );
         double fDegree = fRotationInRadian * 180. / CV_PI;
         matTransform = cv::getRotationMatrix2D ( ptCtr, fDegree, fScale );
         matTransform.at<double>(0, 2) += Tx;
         matTransform.at<double>(1, 2) += Ty;
         matTransform.convertTo ( matTransform, CV_32FC1 );
     }
+
+    auto vecVecTransform = DataUtils::matToVector<float> ( matTransform );
 
     Engine::BoardVector vecBoard;
     auto result = Engine::GetAllBoards ( vecBoard );

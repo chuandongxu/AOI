@@ -92,6 +92,22 @@ class DataUtils
     DataUtils();
     ~DataUtils();
 public:
+    template<typename _Tp>
+    static inline std::vector<std::vector<_Tp>> matToVector(const cv::Mat &matInputImg) {
+        std::vector<std::vector<_Tp>> vecVecArray ( matInputImg.rows, std::vector<_Tp>(matInputImg.cols, 0 ) );
+        if ( matInputImg.isContinuous () ) {
+            for ( int row = 0; row < matInputImg.rows; ++ row ) {
+                int nRowStart = row * matInputImg.cols;
+                vecVecArray[row].assign ( (_Tp *)matInputImg.datastart + nRowStart, (_Tp *)matInputImg.datastart + nRowStart + matInputImg.cols );
+            }
+        }else {
+            for ( int row = 0; row < matInputImg.rows; ++ row ) {
+                vecVecArray[row].assign ( (_Tp*)matInputImg.ptr<uchar> ( row ), (_Tp*)matInputImg.ptr<uchar> ( row ) + matInputImg.cols );
+            }
+        }
+        return vecVecArray;
+    }
+
     static bool isNumber(std::string const& n);
     static float toUm(float fInput, CAD_DATA_UNIT enDataUnit);
     static std::vector<std::string> splitString ( const std::string &s, char delim );

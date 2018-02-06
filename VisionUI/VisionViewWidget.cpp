@@ -1216,9 +1216,23 @@ void VisionViewWidget::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
 void VisionViewWidget::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows)
 {
 	m_vecDeviceWindows = vecWindows;
-	//Reset the device window offset.
-	m_szCadOffset.width = 0;
+    m_szCadOffset.width = 0;
 	m_szCadOffset.height = 0;
+
+    if ( ! m_hoImage.empty() ) {
+        //Calculate the centroid of all device windows.
+        double dSumX = 0., dSumY = 0.;
+        for ( const auto &rrect : m_vecDeviceWindows ) {
+            dSumX += rrect.center.x;
+            dSumY += rrect.center.y;
+        }
+        cv::Point ptCentroid( dSumX / m_vecDeviceWindows.size(), dSumY / m_vecDeviceWindows.size() );
+	    //If the CAD offset is too big, then set the default CAD offset to make CAD windows can display on the screen.
+        if ( abs ( m_hoImage.cols / 2 - ptCentroid.x ) > m_hoImage.cols / 2 || abs ( m_hoImage.rows / 2 - ptCentroid.y ) > m_hoImage.rows / 2 ) {
+	        m_szCadOffset.width =  m_hoImage.cols / 2 - ptCentroid.x;
+	        m_szCadOffset.height = m_hoImage.rows / 2 - ptCentroid.y;
+        }
+    }
     m_selectedDevice = cv::RotatedRect();
 	repaintAll();
 }
