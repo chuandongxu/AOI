@@ -13,9 +13,12 @@ public:
     ~ScanImageWidget();
 
 private slots:
+	void on_btnCombineImageParamsSave_clicked();
+
     void on_btnCombineLoadImage_clicked();
     void on_btnSelectFrameImages_clicked();
     void on_btnSelectCombinedImage_clicked();
+	
 
 private:
     cv::Mat combineImage(const QString &strFolder);

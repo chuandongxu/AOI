@@ -8,8 +8,6 @@
 
 namespace AOI
 {
-namespace Vision
-{
     typedef unsigned __int8  Byte;
     typedef __int16          Int16;
 	typedef unsigned __int16 UInt16;
@@ -48,7 +46,6 @@ namespace Vision
         Uncopyable() {}
         ~Uncopyable() {} /* Intentionally not virtual. */
     };
-}
 }
 
 #endif

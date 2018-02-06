@@ -664,11 +664,11 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 		(*m_paramData)[i]._bStartCapturing = true;
 	}
 
-	bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
-	if (bCaptureLightImage)
-	{
-		saveImages(szImagePath, nIndex, imageMats.mid(nStationNum*nPatternNum));
-	}
+	//bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
+	//if (bCaptureLightImage)
+	//{
+	//	saveImages(szImagePath, nIndex, imageMats.mid(nStationNum*nPatternNum));
+	//}
 
 	int nWaitTime = 30 * 100;
 	while (nWaitTime-- > 0 && !isExit())
@@ -706,11 +706,11 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 		nCapturedNum += 1;
 	}
 	matGray /= nCapturedNum;
+	cv::cvtColor(matGray, matGray, CV_BayerGR2BGR);
 	m_matImages[nIndex]._img[4] = matGray;
 
 	//pUI->setImage(matGray, true);
-
-	QEos::Notify(EVENT_RESULT_DISPLAY, 0, STATION_RESULT_IMAGE_DISPLAY);
+	//QEos::Notify(EVENT_RESULT_DISPLAY, 0, STATION_RESULT_IMAGE_DISPLAY);
 
 	QVector<cv::Mat> lightImages = imageMats.mid(nStationNum*nPatternNum);
 	cv::Mat outputPseudocolor(matGray.size(), CV_8UC3);
@@ -729,10 +729,22 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 			pixel[2] = abs(grayValueR);
 		}
 	}
+	cv::cvtColor(lightImages[0], lightImages[0], CV_BayerGR2BGR);
 	m_matImages[nIndex]._img[0] = lightImages[0];
+	cv::cvtColor(lightImages[1], lightImages[1], CV_BayerGR2BGR);
 	m_matImages[nIndex]._img[1] = lightImages[1];
 	m_matImages[nIndex]._img[2] = outputPseudocolor;
+	cv::cvtColor(lightImages[5], lightImages[5], CV_BayerGR2BGR);
 	m_matImages[nIndex]._img[3] = lightImages[5];
+
+	bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
+	if (bCaptureLightImage)
+	{
+		QVector<cv::Mat> savingImages;
+		for (int i = 0; i < g_nImageStructDataNum; i++)
+			savingImages.push_back(m_matImages[nIndex]._img[i]);
+		saveImages(szImagePath, nIndex, savingImages);
+	}
 
 	pUI->setImage(m_matImages[nIndex]._img[m_nImageIndex], true);
 
@@ -759,13 +771,16 @@ bool QMainRunable::mergeImages()
 
 	IVision* pVision = getModule<IVision>(VISION_MODEL);
 	if (!pVision) return false;
-	
+
 	QVector<cv::Mat> matInputImages;
 	for each (QImageStruct var in m_matImages)
 	{
 		for (int i = 0; i < g_nImageStructDataNum; i++)
+		{
 			matInputImages.push_back(var._img[i]);
+		}
 	}
+	
 	QVector<cv::Mat> matOutputImages;
 	pVision->mergeImage(matInputImages, matOutputImages);
 	if (matOutputImages.size() == g_nImageStructDataNum)
@@ -1349,6 +1364,8 @@ void QFlowCtrl::start()
 
 	QEos::Notify(EVENT_RUN_STATE,RUN_STATE_RUNING);
 
+	System->setParam("camera_show_image_toScreen_enable", false);
+
 	QSystem::closeMessage();
 }
 	
@@ -1422,6 +1439,8 @@ void QFlowCtrl::stop()
 		//p->releaseInputLock();
 		//p->releaseAllStationStart();
 	}
+
+	System->setParam("camera_show_image_toScreen_enable", true);
 
 	m_isStart = false;
 	QEos::Notify(EVENT_RUN_STATE,RUN_STATE_STOP);

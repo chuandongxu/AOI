@@ -15,6 +15,9 @@
 #include <QThread>
 #include <QMessageBox>
 #include <QBitmap>
+#include "QColorWeight.h"
+
+
 #include "../lib/VisionLibrary/include/VisionAPI.h"
 
 #include "../DataModule/QDetectObj.h"
@@ -87,6 +90,8 @@ QVLCellEditor::QVLCellEditor(DataTypeEnum emType, QWidget *parent)
 
 	setMouseTracking(true);
 	ui.checkBox_showNumber->setChecked(true);
+
+	m_pColorWeight = new QColorWeight();
 }
 
 QVLCellEditor::~QVLCellEditor()
@@ -345,13 +350,14 @@ void QVLCellEditor::onEditCellROI()
 	}	
 
 	getVisionUI()->setSelect();
-	//while (!m_pView->isSelect())
+
+	QMessageBox::information(this, QStringLiteral("提示"), QStringLiteral("请鼠标选择检测区域..."));
+	
+	//while (getVisionUI()->getSelectScale().width <= 100)
 	//{
 	//	QThread::msleep(100);
 	//	QApplication::processEvents();
 	//}
-
-	QMessageBox::information(this, QStringLiteral("提示"), QStringLiteral("请鼠标选择检测区域..."));
 }
 
 void QVLCellEditor::onEditCellFrame()
@@ -402,6 +408,10 @@ void QVLCellEditor::onEditCellFrame()
 		m_curObj->setFrame(cellFrameRect);	
 
 		displayObj();
+
+		m_pColorWeight->setImage(getVisionUI()->getImage()(cellFrameRect.boundingRect()));
+		cv::Mat grayImg = m_pColorWeight->generateGrayImage(cellFrameRect.center);
+		m_pColorWeight->show();
 	}
 	else
 	{

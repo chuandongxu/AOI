@@ -12,7 +12,7 @@ LightWidget::LightWidget(QLightCtrl* pCtrl, QWidget *parent)
 
 	connect(ui.comboBox_selectLightMode, SIGNAL(currentIndexChanged(int)), SLOT(onLightModeIndexChanged(int)));
 	QStringList ls;
-	ls << QStringLiteral("白光") << QStringLiteral("低角度光") << QStringLiteral("锡形光") << QStringLiteral("均匀光") << QStringLiteral("3D灰阶图");
+	ls << QStringLiteral("白光") << QStringLiteral("低角度光") << QStringLiteral("彩色光") << QStringLiteral("均匀光") << QStringLiteral("3D灰阶图");
 	ui.comboBox_selectLightMode->addItems(ls);
 
 	QLineEdit * editCtrls[6] = { ui.lineEdit_1_name, ui.lineEdit_2_name, ui.lineEdit_3_name, ui.lineEdit_4_name, ui.lineEdit_5_name, ui.lineEdit_6_name };

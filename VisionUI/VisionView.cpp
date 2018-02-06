@@ -400,7 +400,7 @@ void VisionView::setButtonsEnable(bool flag)
 	fullScreenAct->setEnabled(flag);
 	moveAct->setEnabled(flag);
 	show3DAct->setEnabled(flag);
-	showLightAct->setEnabled(flag);
+	//showLightAct->setEnabled(flag);
 }
 
 void VisionView::setLiveButtonEnable(bool flag)

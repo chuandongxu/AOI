@@ -98,17 +98,21 @@ void CameraOnLive::run()
 				imageMats.push_back(matImage);
 			}
 
-			if (imageMats.size() == 1)
+			bool bShowImageToScreen = System->getParam("camera_show_image_toScreen_enable").toBool();
+			if (bShowImageToScreen)
 			{
-				showImageToScreen(imageMats[0]);
-			}
-			else if (imageMats.size() > 1)
-			{
-				if (pVision->generateGrayImage(imageMats, image))
+				if (imageMats.size() == 1)
 				{
-					showImageToScreen(image);
+					showImageToScreen(imageMats[0]);
 				}
-			}
+				else if (imageMats.size() > 1)
+				{
+					if (pVision->generateGrayImage(imageMats, image))
+					{
+						showImageToScreen(image);
+					}
+				}
+			}			
 
 			System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));
 
