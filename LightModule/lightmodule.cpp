@@ -3,6 +3,8 @@
 #include "lightctrl.h"
 #include "LightDefine.h"
 #include "..\Common\SystemData.h"
+#include "LightWidget.h"
+
 QLightModule::QLightModule(int id,const QString &name)
 	:QModuleBase(id,name)
 	,m_devCtrl(NULL)
@@ -12,6 +14,7 @@ QLightModule::QLightModule(int id,const QString &name)
 	{
 		m_devCtrl = (void*)ctrl;
 	}
+	m_pLightWidget = new LightWidget(ctrl);
 }
 
 QLightModule::~QLightModule()
@@ -25,6 +28,19 @@ void QLightModule::init()
 	{
 		ctrl->init();
 	}
+}
+
+void QLightModule::setLight()
+{
+	if (m_pLightWidget)
+	{
+		m_pLightWidget->setLight();
+	}
+}
+
+QWidget* QLightModule::getLightWidget()
+{
+	return m_pLightWidget;
 }
 
 void QLightModule::setLuminance(int nDevice, int nChannel, int nLum)

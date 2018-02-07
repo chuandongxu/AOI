@@ -182,6 +182,15 @@
     <ClCompile Include="SysCalibrationView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_QColorWeight.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_QColorWeight.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="QColorWeight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VisionDetect.h">
@@ -218,6 +227,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_SysCalibrationView.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_QColorWeight.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -306,6 +318,12 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="SysCalibrationView.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QColorWeight.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QColorWeight.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>

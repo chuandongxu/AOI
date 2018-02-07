@@ -16,10 +16,30 @@ ScanImageWidget::ScanImageWidget(QWidget *parent)
     : QWidget(parent)
 {
     ui.setupUi(this);
+
+	ui.lineEditOneFrameImageCountScan->setText(QString("%1").arg(System->getParam("scan_image_OneFrameImageCount").toInt()));
+	ui.lineEditFrameCountXScan->setText(QString("%1").arg(System->getParam("scan_image_FrameCountX").toInt()));
+	ui.lineEditFrameCountYScan->setText(QString("%1").arg(System->getParam("scan_image_FrameCountY").toInt()));
+	ui.lineEditOverlapXScan->setText(QString("%1").arg(System->getParam("scan_image_OverlapX").toDouble()));
+	ui.lineEditOverlapYScan->setText(QString("%1").arg(System->getParam("scan_image_OverlapY").toDouble()));
+	ui.lineEditRowImageCountScan->setText(QString("%1").arg(System->getParam("scan_image_RowImageCount").toInt()));
+	ui.lineEditCombinedImageZoomFactorScan->setText(QString("%1").arg(System->getParam("scan_image_ZoomFactor").toDouble()));
 }
 
 ScanImageWidget::~ScanImageWidget()
 {
+}
+
+void ScanImageWidget::on_btnCombineImageParamsSave_clicked() {
+
+	System->setParam("scan_image_OneFrameImageCount", ui.lineEditOneFrameImageCountScan->text().toInt());
+	System->setParam("scan_image_FrameCountX", ui.lineEditFrameCountXScan->text().toInt());
+	System->setParam("scan_image_FrameCountY", ui.lineEditFrameCountYScan->text().toInt());
+	System->setParam("scan_image_OverlapX", ui.lineEditOverlapXScan->text().toDouble());
+	System->setParam("scan_image_OverlapY", ui.lineEditOverlapYScan->text().toDouble());
+	System->setParam("scan_image_RowImageCount", ui.lineEditRowImageCountScan->text().toInt());
+	System->setParam("scan_image_ZoomFactor", ui.lineEditCombinedImageZoomFactorScan->text().toDouble());
+
 }
 
 void ScanImageWidget::on_btnSelectFrameImages_clicked() {

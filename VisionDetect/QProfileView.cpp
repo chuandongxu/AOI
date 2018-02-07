@@ -184,8 +184,8 @@ Rect2f QProfileView::getSelectScale()
 	Rect2f scale;
 	scale.x = m_selectROI.x;
 	scale.y = m_selectROI.y;
-	//scale.width = m_selectROI.width / m_imageWidth;
-	//scale.height = m_selectROI.height / m_imageHeight;
+	scale.width = m_selectROI.width;
+	scale.height = m_selectROI.height;
 
 	return scale;
 }

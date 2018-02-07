@@ -158,7 +158,7 @@ void DalsaCameraDevice::XferCallback(SapXferCallbackInfo *pInfo)
 		pDalsaCam->m_bCapturedImage = true;
 	}
 	double dtime_movePos = double(clock());
-	qDebug() << "Transfer Image Time: " << dtime_movePos - dtime_start << " ms";
+	//qDebug() << "Transfer Image Time: " << dtime_movePos - dtime_start << " ms";
 }
 
 void DalsaCameraDevice::setCamera(IPylonDevice* dev)

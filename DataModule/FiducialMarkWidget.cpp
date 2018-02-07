@@ -393,7 +393,7 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
     Engine::BoardVector vecBoard;
     auto result = Engine::GetAllBoards ( vecBoard );
     if ( Engine::OK != result ) {
-        std::string errorType, errorMessage;
+        String errorType, errorMessage;
         Engine::GetErrorDetail ( errorType, errorMessage );
         errorMessage = "Failed to get board from project, error message " + errorMessage;
         QMessageBox::critical(nullptr, QStringLiteral("Scan Image"), errorMessage.c_str(), QStringLiteral("Quit"));

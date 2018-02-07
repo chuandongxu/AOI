@@ -5,6 +5,13 @@
 #include "../Common/eos.h"
 #include <QMessagebox>
 
+#include "../lib/VisionLibrary/include/VisionAPI.h"
+using namespace AOI;
+
+//定义系统Vision LOG
+#define VISION_LOG_ALL		2
+#define VISION_LOG_FAIL		1
+
 #define BACKUP_DIR_DEFAULT_PATH "D://backup"
 
 QWorkSetting::QWorkSetting(QFlowCtrl *p, QWidget *parent)
@@ -116,45 +123,13 @@ QWorkSetting::QWorkSetting(QFlowCtrl *p, QWidget *parent)
 
 	connect(ui.pushButton_5,SIGNAL(clicked()),SLOT(onSaveHsgType()));
 	connect(ui.checkBox_3,SIGNAL(stateChanged(int)),SLOT(onEnableSafeDoor(int)));
-    connect(ui.checkBox_safe_grating,SIGNAL(stateChanged(int)),SLOT(onCheckSafeGrating(int)));
+    connect(ui.checkBox_safe_grating,SIGNAL(stateChanged(int)),SLOT(onCheckSafeGrating(int)));	
 
-	connect(ui.comboBox_dlpMode, SIGNAL(currentIndexChanged(int)), SLOT(onDlpModeIndexChanged(int)));
-	ls.clear();
-	ls << QStringLiteral("DLP触发模式") << QStringLiteral("控制卡触发模式");
-	ui.comboBox_dlpMode->addItems(ls);
-	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
-	ui.comboBox_dlpMode->setCurrentIndex(nDlpMode);
+	initUI();
 
-	connect(ui.pushButton_DlpSave, SIGNAL(clicked()), SLOT(onDlpModeSave()));
-
-	if(USER_LEVEL_TECH > System->getUserLevel())
+	if (USER_LEVEL_MANAGER > System->getUserLevel())
 	{
-		ui.comboBox->setEnabled(false);
-		ui.pushButton_5->setEnabled(false);
-		ui.comboBoxSelectStation->setEnabled(false);	
-		ui.checkBox_safe_grating->setEnabled(false);
-		ui.checkBox_3->setEnabled(false);
-
-		ui.checkBox->setEnabled(false);
-
-		ui.lineEdit->setEnabled(false);
-		ui.pushButton->setEnabled(false);
-		ui.pushButton_2->setEnabled(false);
-		
-		ui.checkBox_2->setEnabled(false);
-		ui.lineEdit_2->setEnabled(false);
-		ui.pushButton_4->setEnabled(false);
-		ui.pushButton_3->setEnabled(false);
-
-		ui.checkBox_4->setEnabled(false);
-		ui.lineEdit_3->setEnabled(false);
-		ui.pushButton_7->setEnabled(false);
-		ui.pushButton_6->setEnabled(false);
-
-		ui.groupBox->setEnabled(false);	
-		ui.groupBox_3->setEnabled(false);
-		ui.groupBox_5->setEnabled(false);
-		ui.groupBox_6->setEnabled(false);		
+		ui.tabWidget->setEnabled(false);
 	}
 }
 
@@ -165,6 +140,85 @@ QWorkSetting::~QWorkSetting()
 		delete m_pValidatorDouble;
 		m_pValidatorDouble= NULL;
 	}
+}
+
+void QWorkSetting::initUI()
+{
+	QStringList ls;
+
+	connect(ui.comboBox_dlpMode, SIGNAL(currentIndexChanged(int)), SLOT(onDlpModeIndexChanged(int)));
+	ls.clear();
+	ls << QStringLiteral("DLP触发模式") << QStringLiteral("控制卡触发模式");
+	ui.comboBox_dlpMode->addItems(ls);
+	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
+	ui.comboBox_dlpMode->setCurrentIndex(nDlpMode);
+
+	connect(ui.pushButton_DlpSave, SIGNAL(clicked()), SLOT(onDlpModeSave()));
+
+	// Motion
+	connect(ui.comboBox_triggerNum, SIGNAL(currentIndexChanged(int)), SLOT(onTriggerNumIndexChanged(int)));
+	ls.clear();
+	ls << QStringLiteral("双头DLP检测") << QStringLiteral("四头DLP检测");
+	ui.comboBox_triggerNum->addItems(ls);
+	int nDlpNumIndex = System->getParam("motion_trigger_dlp_num_index").toInt();
+	ui.comboBox_triggerNum->setCurrentIndex(nDlpNumIndex);
+
+	int nPatternNum = System->getParam("motion_trigger_pattern_num").toInt();
+	double dPatternExposure = System->getParam("motion_trigger_pattern_exposure").toDouble();
+	double dPatternPeriod = System->getParam("motion_trigger_pattern_period").toDouble();
+	double dLightExposure = System->getParam("motion_trigger_light_exposure").toDouble();
+	double dLightPeriod = System->getParam("motion_trigger_light_period").toDouble();
+	ui.lineEdit_trigger_caputured_num->setText(QString("%1").arg(nPatternNum));
+	ui.lineEdit_trigger_pattern_exposure->setText(QString("%1").arg(dPatternExposure));
+	ui.lineEdit_trigger_pattern_period->setText(QString("%1").arg(dPatternPeriod));
+	ui.lineEdit_trigger_light_exposure->setText(QString("%1").arg(dLightExposure));
+	ui.lineEdit_trigger_light_period->setText(QString("%1").arg(dLightPeriod));
+
+	connect(ui.pushButton_trigger_save, SIGNAL(clicked()), SLOT(onTriggerSave()));
+
+	//Vision System Setting
+	bool bLogAllCase = System->getParam("camera_log_allcase_enable").toBool();
+	ui.checkBox_LogAllCase->setChecked(bLogAllCase);
+
+	int nLogType = System->getParam("vision_log_type").toInt();
+	if (VISION_LOG_ALL == nLogType)
+	{
+		ui.radioButton_logFailCase->setChecked(false);
+		ui.radioButton_logAllCase->setChecked(true);
+	}
+	else if (VISION_LOG_FAIL == nLogType)
+	{
+		ui.radioButton_logFailCase->setChecked(true);
+		ui.radioButton_logAllCase->setChecked(false);
+	}
+	ui.groupBox_LogType->setEnabled(bLogAllCase);
+
+	if (bLogAllCase)
+	{
+		if (VISION_LOG_ALL == nLogType)
+		{
+			Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_ALL_CASE);
+		}
+		else if (VISION_LOG_FAIL == nLogType)
+		{
+			Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_FAIL_CASE);
+		}
+	}
+	else
+	{
+		Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::DISABLED);
+	}
+
+	bool bAutoClearRecord = System->getParam("vision_record_auto_clear").toBool();
+	ui.checkBox_AutoClearRecord->setChecked(bAutoClearRecord);
+
+	connect(ui.checkBox_LogAllCase, SIGNAL(stateChanged(int)), SLOT(onLogAllCase(int)));
+	connect(ui.radioButton_logFailCase, SIGNAL(toggled(bool)), SLOT(onClickLogFailCase(bool)));
+	connect(ui.radioButton_logAllCase, SIGNAL(toggled(bool)), SLOT(onClickLogAllCase(bool)));
+	connect(ui.pushButton_PRInit, SIGNAL(clicked()), SLOT(onInitPRSystem()));
+	connect(ui.pushButton_PRRelease, SIGNAL(clicked()), SLOT(onUninitPRSystem()));
+	connect(ui.pushButton_PRClearRecord, SIGNAL(clicked()), SLOT(onClearAllRecords()));
+	connect(ui.checkBox_AutoClearRecord, SIGNAL(stateChanged(int)), SLOT(onAutoClearRecord(int)));
 }
 
 void QWorkSetting::onClickFullSpeed(bool s)
@@ -325,4 +379,122 @@ void QWorkSetting::onDlpModeSave()
 	{
 
 	}
+}
+
+void QWorkSetting::onTriggerNumIndexChanged(int iIndex)
+{
+	int nDlpNumIndex = ui.comboBox_triggerNum->currentIndex();
+}
+
+void QWorkSetting::onTriggerSave()
+{
+	int nDlpNumIndex = ui.comboBox_triggerNum->currentIndex();
+	System->setParam("motion_trigger_dlp_num_index", nDlpNumIndex);
+
+	int nPatternNum = ui.lineEdit_trigger_caputured_num->text().toInt();
+	double dPatternExposure = ui.lineEdit_trigger_pattern_exposure->text().toDouble();
+	double dPatternPeriod = ui.lineEdit_trigger_pattern_period->text().toDouble();
+	double dLightExposure = ui.lineEdit_trigger_light_exposure->text().toDouble();
+	double dLightPeriod = ui.lineEdit_trigger_light_period->text().toDouble();
+
+	System->setParam("motion_trigger_pattern_num", nPatternNum);
+	System->setParam("motion_trigger_pattern_exposure", dPatternExposure);
+	System->setParam("motion_trigger_pattern_period", dPatternPeriod);
+	System->setParam("motion_trigger_light_exposure", dLightExposure);
+	System->setParam("motion_trigger_light_period", dLightPeriod);
+}
+
+void QWorkSetting::onLogAllCase(int iState)
+{
+	int data = 0;
+	if (Qt::Checked == iState)data = 1;
+
+	System->setParam("camera_log_allcase_enable", (bool)data);
+	ui.groupBox_LogType->setEnabled((bool)data);
+
+	if ((bool)data)
+	{
+		int nLogType = System->getParam("vision_log_type").toInt();
+		if (VISION_LOG_ALL == nLogType)
+		{
+			Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_ALL_CASE);
+		}
+		else if (VISION_LOG_FAIL == nLogType)
+		{
+			Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_FAIL_CASE);
+		}
+	}
+	else
+	{
+		Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::DISABLED);
+	}
+}
+
+void QWorkSetting::onClickLogFailCase(bool s)
+{
+	if (s)
+	{
+		System->setParam("vision_log_type", (int)VISION_LOG_FAIL);
+		Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_FAIL_CASE);
+	}
+}
+
+void QWorkSetting::onClickLogAllCase(bool s)
+{
+	if (s)
+	{
+		System->setParam("vision_log_type", (int)VISION_LOG_ALL);
+		Vision::PR_SetDebugMode(Vision::PR_DEBUG_MODE::LOG_ALL_CASE);
+	}
+}
+
+void QWorkSetting::onInitPRSystem()
+{
+	Vision::VisionStatus retStatus = Vision::PR_Init();
+	if (retStatus == Vision::VisionStatus::OK)
+	{
+		QMessageBox::information(this, QStringLiteral("信息"), QStringLiteral("初始化成功"));
+	}
+	else
+	{
+		System->setTrackInfo(QString("Error at PR_Init, error code = %1").arg((int)retStatus));
+	}
+}
+
+void QWorkSetting::onUninitPRSystem()
+{
+	/*Vision::VisionStatus retStatus = Vision::PR_Init();
+	if (retStatus == Vision::VisionStatus::OK)
+	{
+	QMessageBox::information(this, QStringLiteral("信息"), QStringLiteral("初始化成功"));
+	}
+	else
+	{
+	System->setTrackInfo(QString("Error at PR_Init, error code = %1").arg((int)retStatus));
+	}*/
+}
+
+void QWorkSetting::onClearAllRecords()
+{
+	if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+		QStringLiteral("全部清除 Records ？"), QMessageBox::Ok, QMessageBox::Cancel))
+	{
+		Vision::VisionStatus retStatus = Vision::PR_FreeAllRecord();
+		if (retStatus == Vision::VisionStatus::OK)
+		{
+			QMessageBox::information(this, QStringLiteral("信息"), QStringLiteral("清除Records成功"));
+		}
+		else
+		{
+			System->setTrackInfo(QString("Error at PR_FreeAllRecord, error code = %1").arg((int)retStatus));
+		}
+	}
+}
+
+void QWorkSetting::onAutoClearRecord(int iState)
+{
+	int data = 0;
+	if (Qt::Checked == iState)data = 1;
+
+	System->setParam("vision_record_auto_clear", (bool)data);
 }
