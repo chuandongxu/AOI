@@ -160,11 +160,11 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
 
         Engine::Alignment alignment;
         if ( bBoardRotated ) {
-            alignment.tmplPosX = ( nBigImgWidth - nPosInCombineImageX )  * dResolutionX;
-            alignment.tmplPosY = nPosInCombineImageY * dResolutionY;
+            alignment.tmplPosX = ( nBigImgWidth - rrectCadWindow.center.x )  * dResolutionX;
+            alignment.tmplPosY = rrectCadWindow.center.y * dResolutionY;
         }else {
-            alignment.tmplPosX = nPosInCombineImageX * dResolutionX;
-            alignment.tmplPosY = ( nBigImgHeight - nPosInCombineImageY ) * dResolutionY;
+            alignment.tmplPosX = rrectCadWindow.center.x * dResolutionX;
+            alignment.tmplPosY = ( nBigImgHeight - rrectCadWindow.center.y ) * dResolutionY;
         }
 
         alignment.tmplWidth  = dialogSetFM.getFiducialMarkSize() * MM_TO_UM;
@@ -459,6 +459,19 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
             QMessageBox::critical(nullptr, QStringLiteral("Scan Image"), errorMessage.c_str(), QStringLiteral("Quit"));
             return;
         }
+    }
+
+    Engine::AlignmentVector vecAlignment;
+    Engine::GetAllAlignments ( vecAlignment );
+    for ( auto &alignment : vecAlignment ) {
+        if ( bBoardRotated ) {
+            alignment.tmplPosX += -m_fCadOffsetX;
+            alignment.tmplPosY +=  m_fCadOffsetY;
+        }else {
+            alignment.tmplPosX +=  m_fCadOffsetX;
+            alignment.tmplPosY += -m_fCadOffsetY;
+        }
+        Engine::UpdateAlignment ( alignment );
     }
 
     //Refresh the select FM window.
