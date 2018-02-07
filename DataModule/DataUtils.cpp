@@ -134,9 +134,17 @@ DataUtils::~DataUtils()
                 cadData.angle = ToFloat ( std::atof ( vecData[index].c_str () ) );
                 break;
             case CAD_DATA_COLUMNS::TOP_BOTTOM:
+                if ( vecData[index].length() != 1 ) {
+                    strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to TOP_BOTTOM, but data \"" + vecData[index] + "\" is not T or B.";
+                    return -1;
+                }
                 cadData.isBottom = vecData[index] == "B";
                 break;
             case CAD_DATA_COLUMNS::TYPE:
+                if ( vecData[index].length() < 2 ) {
+                    strErrorMsg = "Line " + std::to_string ( nLineNumber) + " column " + std::to_string ( index ) + " map to TYPE, but data \"" + vecData[index] + "\" is not valid.";
+                    return -1;
+                }
                 cadData.type = vecData[index];
                 break;
             case CAD_DATA_COLUMNS::GROUP:

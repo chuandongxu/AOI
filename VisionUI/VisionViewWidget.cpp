@@ -812,8 +812,6 @@ void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
 	if (event->button() & Qt::LeftButton)
 	{
 		const QPoint pos = event->pos();
-		//auto rectCentralWidget = ui.centralWidget->geometry();
-		const QPoint posOnImageLabel(pos.x()/* - rectCentralWidget.x()*/, pos.y()/* - rectCentralWidget.y()*/);
 		switch (m_stateView)
 		{
 		case MODE_VIEW_SELECT:
@@ -829,7 +827,7 @@ void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
 			setViewState(MODE_VIEW_NONE);
 			break;
 		case MODE_VIEW_SET_FIDUCIAL_MARK:
-			_checkSelectedDevice(cv::Point(posOnImageLabel.x(), posOnImageLabel.y()));
+			_checkSelectedDevice(cv::Point(pos.x(), pos.y()));
 			break;
 		case MODE_VIEW_NONE:
 			break;
@@ -1222,9 +1220,24 @@ void VisionViewWidget::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
 void VisionViewWidget::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows)
 {
 	m_vecDeviceWindows = vecWindows;
-	//Reset the device window offset.
-	m_szCadOffset.width = 0;
+    m_szCadOffset.width = 0;
 	m_szCadOffset.height = 0;
+
+    if ( ! m_hoImage.empty() ) {
+        //Calculate the centroid of all device windows.
+        double dSumX = 0., dSumY = 0.;
+        for ( const auto &rrect : m_vecDeviceWindows ) {
+            dSumX += rrect.center.x;
+            dSumY += rrect.center.y;
+        }
+        cv::Point ptCentroid( dSumX / m_vecDeviceWindows.size(), dSumY / m_vecDeviceWindows.size() );
+	    //If the CAD offset is too big, then set the default CAD offset to make CAD windows can display on the screen.
+        if ( abs ( m_hoImage.cols / 2 - ptCentroid.x ) > m_hoImage.cols / 2 || abs ( m_hoImage.rows / 2 - ptCentroid.y ) > m_hoImage.rows / 2 ) {
+	        m_szCadOffset.width =  m_hoImage.cols / 2 - ptCentroid.x;
+	        m_szCadOffset.height = m_hoImage.rows / 2 - ptCentroid.y;
+        }
+    }
+    m_selectedDevice = cv::RotatedRect();
 	repaintAll();
 }
 
@@ -1416,7 +1429,7 @@ void VisionViewWidget::_zoomImageForDisplay(const cv::Mat &matImg, cv::Mat &matO
 	ui.label_Img->setGeometry(rect);
 
 	cv::Mat mat;
-	double fScaleW = rect.width()*1.0 / matImg.size().width;
+	double fScaleW = rect.width()*1.0  / matImg.size().width;
 	double fScaleH = rect.height()*1.0 / matImg.size().height;
 	if (!matImg.empty())
 	{
@@ -1445,9 +1458,8 @@ void VisionViewWidget::_cutImageForDisplay(const cv::Mat &matInputImg, cv::Mat &
 	if (matInputImg.empty())
 		return;
 
-	QRect rect = ui.label_Img->geometry();
-	auto displayWidth = rect.width();
-	auto displayHeight = rect.height();
+	auto displayWidth  = this->size().width();
+	auto displayHeight = this->size().height();
 	matOutput = cv::Mat::ones(displayHeight, displayWidth, matInputImg.type()) * 255;
 	matOutput.setTo(cv::Scalar(255, 255, 255));
 
@@ -1550,7 +1562,7 @@ void VisionViewWidget::_calcMoveRange()
 
 	int rows = m_dispImage.rows * m_dScale;
 	int cols = m_dispImage.cols * m_dScale;
-	auto displayWidth = this->size().width();
+	auto displayWidth  = this->size().width();
 	auto displayHeight = this->size().height();
 
 	_szMoveRange.width = (cols - displayWidth) / 2;

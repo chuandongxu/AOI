@@ -33,6 +33,7 @@ API_CALL(int)  GetAllBoards(BoardVector &vecBoard);
 API_CALL(int)  CreateDevice(Int64 boardId, Device &device);
 API_CALL(int)  CreateDevice(Int64 boardId, DeviceVector &vecDevice);
 API_CALL(int)  UpdateDevice(const Device &device);
+API_CALL(int)  UpdateDevices(const DeviceVector &vecDevice);
 API_CALL(int)  DeleteDevice(Int64 boardId, const String &strDeviceName);
 API_CALL(int)  GetBoardDevice(Int64 boardId, DeviceVector &vecDevice);
 API_CALL(int)  GetAllDevices(DeviceVector &vecDevice);

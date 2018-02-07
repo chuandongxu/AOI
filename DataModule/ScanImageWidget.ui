@@ -336,7 +336,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>10</string>
+      <string>15.896</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelResolutionUnitX">
@@ -378,7 +378,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>10</string>
+      <string>15.896</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelCombinedImageZoomScale">
@@ -404,7 +404,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>0.5</string>
+      <string>1</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btnSelectFrameImages">
@@ -430,7 +430,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>4</string>
+      <string>1</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelFiducialMarkCount">
@@ -469,7 +469,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>13</string>
+      <string>1</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelFrameCountX">
@@ -495,7 +495,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>18</string>
+      <string>4</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelRowImageCount">
@@ -521,7 +521,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>72</string>
+      <string>4</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelOverlapX">
@@ -560,7 +560,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>102</string>
+      <string>277</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEditOverlapY">
@@ -573,7 +573,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>140</string>
+      <string>0</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEditFrameImageFolder">
