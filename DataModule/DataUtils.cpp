@@ -356,13 +356,21 @@ DataUtils::~DataUtils()
     int &nFrameX,
     int &nFrameY,
     int &nPtInFrameX,
-    int &nPtInFrameY)
+    int &nPtInFrameY,
+    Vision::PR_SCAN_IMAGE_DIR enDir)
 {
-    //X frame start from right to left.
-    nFrameX = ( nBigImgWidth - nSelectPtX ) / ( nFrameImgWidth - nOverlapX );
-    nFrameY = nSelectPtY / ( nFrameImgHeight - nOverlapY );
-    nPtInFrameX = nFrameImgWidth - ( ( nBigImgWidth - nSelectPtX ) - nFrameX * ( nFrameImgWidth - nOverlapX ) );
-    nPtInFrameY = nSelectPtY - nFrameY *  ( nFrameImgHeight - nOverlapY );
+    if ( Vision::PR_SCAN_IMAGE_DIR::RIGHT_TO_LEFT == enDir ) {
+        //X frame start from right to left.
+        nFrameX = ( nBigImgWidth - nSelectPtX ) / ( nFrameImgWidth - nOverlapX );
+        nFrameY = nSelectPtY / ( nFrameImgHeight - nOverlapY );
+        nPtInFrameX = nFrameImgWidth - ( ( nBigImgWidth - nSelectPtX ) - nFrameX * ( nFrameImgWidth - nOverlapX ) );
+        nPtInFrameY = nSelectPtY - nFrameY * ( nFrameImgHeight - nOverlapY );
+    }else {
+        nFrameX = nSelectPtX / ( nFrameImgWidth  - nOverlapX );
+        nFrameY = nSelectPtY / ( nFrameImgHeight - nOverlapY );
+        nPtInFrameX = nSelectPtX - nFrameX * ( nFrameImgWidth - nOverlapX );
+        nPtInFrameY = nSelectPtY - nFrameY * ( nFrameImgHeight - nOverlapY );
+    }
 
     return 0;
 }
@@ -380,10 +388,16 @@ DataUtils::~DataUtils()
         int nPtInFrameX,
         int nPtInFrameY,
         int &nCombinedImgPtX,
-        int &nCombinedImgPtY)
+        int &nCombinedImgPtY,
+        Vision::PR_SCAN_IMAGE_DIR enDir)
 {
-    nCombinedImgPtX = nBigImgWidth - ( nFrameX * ( nFrameImgWidth - nOverlapX ) + ( nFrameImgWidth- nPtInFrameX ) );
-    nCombinedImgPtY = nPtInFrameY + nFrameY *  ( nFrameImgHeight - nOverlapY );
+    if ( Vision::PR_SCAN_IMAGE_DIR::RIGHT_TO_LEFT == enDir ) {
+        nCombinedImgPtX = nBigImgWidth - ( nFrameX * ( nFrameImgWidth - nOverlapX ) + ( nFrameImgWidth- nPtInFrameX ) );
+        nCombinedImgPtY = nPtInFrameY + nFrameY * ( nFrameImgHeight - nOverlapY );
+    }else {
+        nCombinedImgPtX = nPtInFrameX + nFrameX * ( nFrameImgWidth  - nOverlapX );
+        nCombinedImgPtY = nPtInFrameY + nFrameY * ( nFrameImgHeight - nOverlapY );
+    }
     return 0;
 }
 

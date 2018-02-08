@@ -85,7 +85,6 @@
     <ClCompile Include="DataSetting.cpp" />
     <ClCompile Include="DataToolWidget.cpp" />
     <ClCompile Include="DataUtils.cpp" />
-    <ClCompile Include="DataVariables.cpp" />
     <ClCompile Include="DataWidget.cpp" />
     <ClCompile Include="errorprinter.cpp" />
     <ClCompile Include="FiducialMarkWidget.cpp" />
@@ -279,7 +278,6 @@
     </CustomBuild>
     <ClInclude Include="..\include\constants.h" />
     <ClInclude Include="DataUtils.h" />
-    <ClInclude Include="DataVariables.h" />
     <ClInclude Include="dog_vcode.h" />
     <ClInclude Include="errorprinter.h" />
     <CustomBuild Include="FiducialMarkWidget.h">

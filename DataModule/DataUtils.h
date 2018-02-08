@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include "VisionAPI.h"
 
+using namespace AOI;
+
 enum CAD_DATA_COLUMNS {
     BEGIN,
     NAME = BEGIN,
@@ -127,7 +129,8 @@ public:
         int &nFrameX,
         int &nFrameY,
         int &nPtInFrameX,
-        int &nPtInFrameY);
+        int &nPtInFrameY,
+        Vision::PR_SCAN_IMAGE_DIR enDir);
 
     static int getCombinedImagePosFromFramePos(
         int nBigImgWidth,
@@ -141,7 +144,8 @@ public:
         int nPtInFrameX,
         int nPtInFrameY,
         int &nCombinedImgPtX,
-        int &nCombinedImgPtY);
+        int &nCombinedImgPtY,
+        Vision::PR_SCAN_IMAGE_DIR enDir);
 
     static int alignWithTwoPoints(
         cv::Point2f  ptCadPos1,

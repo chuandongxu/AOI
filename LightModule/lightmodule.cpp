@@ -53,8 +53,7 @@ void QLightModule::setLuminance(int nDevice, int nChannel, int nLum)
 		if(device)
 		{
 			device->setChLuminance(nChannel,nLum);
-		}
-		
+		}		
 	}
 }
 
@@ -63,8 +62,7 @@ QString QLightModule::getChName(int nDevice, int nChannel)
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
 	
 	if (ctrl)
-	{
-		
+	{		
 		QString key;
 		QVariant data;
 		QLightDevice *device = ctrl->getLightDevice(nDevice);
@@ -73,8 +71,7 @@ QString QLightModule::getChName(int nDevice, int nChannel)
 			key = QString("%0-%1%2").arg(device->getDeviceName()).arg(NAMED_CH).arg(nChannel);
 			data = System->getParam(key);
 			return data.toString();
-		}
-		
+		}		
 	}
 
 	return "";
@@ -84,8 +81,7 @@ int QLightModule::getChLuminace(int nDevice, int nChannel)
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
 	
 	if (ctrl)
-	{
-		
+	{		
 		QString key;
 		QVariant data;
 		QLightDevice *device = ctrl->getLightDevice(nDevice);
@@ -94,8 +90,7 @@ int QLightModule::getChLuminace(int nDevice, int nChannel)
 			key = QString("%0-%1%2").arg(device->getDeviceName()).arg(LUM_CH).arg(nChannel);
 			data = System->getParam(key);
 			return data.toInt();
-		}
-		
+		}		
 	}
 
 	return 0;

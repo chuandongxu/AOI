@@ -7,7 +7,6 @@
 #include "opencv.hpp"
 #include "DataStoreAPI.h"
 #include "SystemData.h"
-#include "DataVariables.h"
 
 using namespace NFG::AOI;
 using namespace AOI;
@@ -24,6 +23,8 @@ ScanImageWidget::ScanImageWidget(QWidget *parent)
 	ui.lineEditOverlapYScan->setText(QString("%1").arg(System->getParam("scan_image_OverlapY").toDouble()));
 	ui.lineEditRowImageCountScan->setText(QString("%1").arg(System->getParam("scan_image_RowImageCount").toInt()));
 	ui.lineEditCombinedImageZoomFactorScan->setText(QString("%1").arg(System->getParam("scan_image_ZoomFactor").toDouble()));
+    ui.lineEditFrameImageFolder->setText(System->getParam("scan_image_Folder").toString());
+    ui.comboBoxScanDirection->setCurrentIndex(System->getParam("scan_image_Direction").toInt());
 }
 
 ScanImageWidget::~ScanImageWidget()
@@ -31,7 +32,6 @@ ScanImageWidget::~ScanImageWidget()
 }
 
 void ScanImageWidget::on_btnCombineImageParamsSave_clicked() {
-
 	System->setParam("scan_image_OneFrameImageCount", ui.lineEditOneFrameImageCountScan->text().toInt());
 	System->setParam("scan_image_FrameCountX", ui.lineEditFrameCountXScan->text().toInt());
 	System->setParam("scan_image_FrameCountY", ui.lineEditFrameCountYScan->text().toInt());
@@ -39,7 +39,7 @@ void ScanImageWidget::on_btnCombineImageParamsSave_clicked() {
 	System->setParam("scan_image_OverlapY", ui.lineEditOverlapYScan->text().toDouble());
 	System->setParam("scan_image_RowImageCount", ui.lineEditRowImageCountScan->text().toInt());
 	System->setParam("scan_image_ZoomFactor", ui.lineEditCombinedImageZoomFactorScan->text().toDouble());
-
+    System->setParam("scan_image_Direction", ui.comboBoxScanDirection->currentIndex());
 }
 
 void ScanImageWidget::on_btnSelectFrameImages_clicked() {
@@ -58,14 +58,31 @@ void ScanImageWidget::on_btnSelectFrameImages_clicked() {
 
 cv::Mat ScanImageWidget::combineImage(const QString &strInputFolder)
 {
+    auto nCountOfImgPerFrame = System->getParam("scan_image_OneFrameImageCount").toInt();
+	auto nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
+    auto nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
+	auto dOverlapUmX = System->getParam("scan_image_OverlapX").toDouble();
+    auto dOverlapUmY = System->getParam("scan_image_OverlapY").toDouble();
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+
+    int nOverlapX = static_cast<int> ( dOverlapUmX / dResolutionX + 0.5 );
+    int nOverlapY = static_cast<int> ( dOverlapUmY / dResolutionY + 0.5 );
+
+    auto nCountOfImgPerRow = System->getParam("scan_image_RowImageCount").toInt();
+    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+    auto nScanDirection = System->getParam("scan_image_Direction").toInt();
+
     Vision::PR_COMBINE_IMG_CMD stCmd;
     Vision::PR_COMBINE_IMG_RPY stRpy;
-    stCmd.nCountOfImgPerFrame = ui.lineEditOneFrameImageCount->text().toInt();
-    stCmd.nCountOfFrameX = ui.lineEditFrameCountX->text().toInt();
-    stCmd.nCountOfFrameY = ui.lineEditFrameCountY->text().toInt();
-    stCmd.nOverlapX = ui.lineEditOverlapX->text().toInt();
-    stCmd.nOverlapY = ui.lineEditOverlapY->text().toInt();
-    stCmd.nCountOfImgPerRow = ui.lineEditRowImageCount->text().toInt();
+    stCmd.nCountOfImgPerFrame = nCountOfImgPerFrame;
+    stCmd.nCountOfFrameX = nCountOfFrameX;
+    stCmd.nCountOfFrameY = nCountOfFrameY;
+    stCmd.nOverlapX = nOverlapX;
+    stCmd.nOverlapY = nOverlapX;
+    stCmd.nCountOfImgPerRow = nCountOfImgPerRow;
+    stCmd.enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR> ( nScanDirection );
 
     const std::string strFolder = strInputFolder.toStdString() + "/";
 
@@ -95,14 +112,33 @@ cv::Mat ScanImageWidget::combineImage(const QString &strInputFolder)
         return cv::Mat();
     }
 
-    double dScale = ui.lineEditCombinedImageZoomFactor->text().toFloat();
     cv::Mat matResize;
-    cv::resize ( stRpy.vecResultImages[0], matResize, cv::Size(), dScale, dScale );
+    cv::resize ( stRpy.vecResultImages[0], matResize, cv::Size(), dCombinedImageScale, dCombinedImageScale );
+
+    int imgNo = 1;
+    for ( const auto &mat : stRpy.vecResultImages ) {
+        char arrChFileName[100];
+        _snprintf(arrChFileName, sizeof(arrChFileName), "CombineResult_%d.bmp", imgNo);
+        std::string strResultFile = strFolder + arrChFileName;
+        cv::Mat matResize;
+        cv::resize ( mat, matResize, cv::Size(), dCombinedImageScale, dCombinedImageScale );
+        cv::imwrite(strResultFile, matResize);
+        ++ imgNo;
+    }
+
     return matResize;
 }
 
 void ScanImageWidget::on_btnCombineLoadImage_clicked() {
     auto strFolder = ui.lineEditFrameImageFolder->text();
+    bool bBoardRotated = ui.checkBoxBoardRotated->isChecked();
+    double dResolutionX = ui.lineEditResolutionX->text().toDouble();
+    double dResolutionY = ui.lineEditResolutionY->text().toDouble();
+    System->setParam("scan_image_Folder", strFolder);
+    System->setSysParam("CAM_RESOLUTION_X", dResolutionX );
+	System->setSysParam("CAM_RESOLUTION_Y", dResolutionY );
+    System->setSysParam("BOARD_ROTATED", bBoardRotated );
+
     auto matImage = combineImage ( strFolder );
     if ( matImage.empty() )
         return;
@@ -123,22 +159,14 @@ void ScanImageWidget::on_btnSelectCombinedImage_clicked()
     }else
         return;
 
-    std::string strFrameImageFolder = ui.lineEditFrameImageFolder->text().toStdString();
-    DataVariablesInstance->setFrameImageFolder ( strFrameImageFolder );
-    int nCountOfImgPerFrame = ui.lineEditOneFrameImageCount->text().toInt();
-    DataVariablesInstance->setCountOfImgPerFrame ( nCountOfImgPerFrame );
-    int nCountOfFrameX = ui.lineEditFrameCountX->text().toInt();
-    DataVariablesInstance->setFrameCountX ( nCountOfFrameX );
-    int nCountOfFrameY = ui.lineEditFrameCountY->text().toInt();
-    DataVariablesInstance->setFrameCountY ( nCountOfFrameY );
-    int nOverlapX = ui.lineEditOverlapX->text().toInt();
-    DataVariablesInstance->setOverlapX ( nOverlapX );
-    int nOverlapY = ui.lineEditOverlapY->text().toInt();
-    DataVariablesInstance->setOverlapY ( nOverlapY );
-    int nCountOfImgPerRow = ui.lineEditRowImageCount->text().toInt();
-    DataVariablesInstance->setCountOfImgPerRow ( nCountOfImgPerRow );
-    float fCombinedImgScale = ui.lineEditCombinedImageZoomFactor->text().toFloat();
-    DataVariablesInstance->setCombinedImgScale ( fCombinedImgScale );
+    auto strFolder = ui.lineEditFrameImageFolder->text();
+    bool bBoardRotated = ui.checkBoxBoardRotated->isChecked();
+    double dResolutionX = ui.lineEditResolutionX->text().toDouble();
+    double dResolutionY = ui.lineEditResolutionY->text().toDouble();
+    System->setParam("scan_image_Folder", strFolder);
+    System->setSysParam("CAM_RESOLUTION_X", dResolutionX );
+	System->setSysParam("CAM_RESOLUTION_Y", dResolutionY );
+    System->setSysParam("BOARD_ROTATED", bBoardRotated );
 
     auto matImage = cv::imread ( fileNames[0].toStdString() );
     updateImageDeviceWindows ( matImage );
@@ -146,10 +174,10 @@ void ScanImageWidget::on_btnSelectCombinedImage_clicked()
 
 void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage)
 {
-    bool bBoardRotated = ui.checkBoxBoardRotated->isChecked();
-    double dResolutionX = ui.lineEditResolutionX->text().toDouble();
-    double dResolutionY = ui.lineEditResolutionY->text().toDouble();
-    float fCombinedImgScale = ui.lineEditCombinedImageZoomFactor->text().toFloat();
+    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    float fCombinedImgScale = System->getParam("scan_image_ZoomFactor").toDouble();
     QVector<cv::RotatedRect> vecDeviceWindows;
 
     Engine::BoardVector vecBoard;
@@ -189,10 +217,6 @@ void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage)
             vecDeviceWindows.push_back ( deviceWindow );
         }
     }
-
-    System->setSysParam("CAM_RESOLUTION_X", dResolutionX );
-	System->setSysParam("CAM_RESOLUTION_Y", dResolutionY );
-    System->setSysParam("BOARD_ROTATED", bBoardRotated );
 
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_SET_FIDUCIAL_MARK);

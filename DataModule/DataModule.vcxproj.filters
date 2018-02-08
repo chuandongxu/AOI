@@ -158,9 +158,6 @@
     <ClCompile Include="FiducialMarkWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DataVariables.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_SetFiducialMarkDialog.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -210,9 +207,6 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_FiducialMarkWidget.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DataVariables.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_SetFiducialMarkDialog.h">
       <Filter>Generated Files</Filter>

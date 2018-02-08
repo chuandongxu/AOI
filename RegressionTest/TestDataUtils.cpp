@@ -221,7 +221,8 @@ void TestGetFrameFromCombinedImageSub(
         nFrameX,
         nFrameY,
         nPtInFrameX,
-        nPtInFrameY);
+        nPtInFrameY,
+        Vision::PR_SCAN_IMAGE_DIR::RIGHT_TO_LEFT);
     std::cout << "Input: " << std::endl;
     std::cout << "nBigImgWidth " << nBigImgWidth << ", nBigImgHeight " << nBigImgHeight << ", nFrameImgWidth " << nFrameImgWidth << ", nFrameImgHeight " << nFrameImgHeight << std::endl;
     std::cout << "nOverlapX " << nOverlapX << ", nOverlapY " << nOverlapY << ", nSelectPtX " << nSelectPtX << ", nSelectPtY " << nSelectPtY << std::endl;
@@ -241,8 +242,8 @@ void TestGetFrameFromCombinedImageSub(
         nPtInFrameX,
         nPtInFrameY,
         nCombinedImgPtX,
-        nCombinedImgPtY
-        );
+        nCombinedImgPtY,
+        Vision::PR_SCAN_IMAGE_DIR::RIGHT_TO_LEFT);
     std::cout << "nCombinedImgPtX " << nCombinedImgPtX << ", nCombinedImgPtY " << nCombinedImgPtY << std::endl;
 }
 
