@@ -49,6 +49,8 @@ public:
 	virtual bool saveProfDataBase(QString& szFilePath);
 	virtual bool loadProfDataBase(QString& szFilePath);
 
+    virtual bool doAlignment(const Vision::VectorOfMat &vecFrameImages) override;
+    
 private:
 	DataCtrl m_ctrl;
 	QWidget* m_pStatisticsWidget;
