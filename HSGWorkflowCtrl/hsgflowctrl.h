@@ -16,8 +16,6 @@
 
 #include "opencv/cv.h"
 
-using namespace cv;
-
 const int g_nImageStructDataNum = 5;
 struct QImageStruct
 {
@@ -51,7 +49,7 @@ public:
 	bool _bCapturedDone;
 	cv::Mat _3DMatHeight;
 	cv::Mat _matImage;
-	QVector<cv::Mat> _srcImageMats;	
+	QVector<cv::Mat> _srcImageMats;
 };
 
 //---------------------------------------------------------------
@@ -88,7 +86,7 @@ private:
 	int getStationID();
 
 private:
-	void addImageText(cv::Mat image, Point ptPos, QString szText);
+	void addImageText(cv::Mat image, cv::Point ptPos, QString szText);
 
 private:
 	QCheckerParamMap *m_paramMap;
@@ -132,7 +130,7 @@ protected:
 	bool matchPosition();
 	bool calculateDetectHeight();
 	bool waitCheckDone();
-
+    bool doAlignment();
 	bool isExit();
 private:
 	bool captureAllImages(QVector<cv::Mat>& imageMats);
@@ -142,10 +140,10 @@ private:
 	bool getLightIO(int &okLight, int &ngLight);
 
 	QString generateImagePath();
-	void saveImages(QString& szImagePath, int nIndex, QVector<cv::Mat>& imageMats);
+	void saveImages(const QString& szImagePath, int nIndex, const QVector<cv::Mat>& imageMats);
 
 private:
-	void addImageText(cv::Mat image, Point ptPos, QString szText);
+	void addImageText(cv::Mat image, cv::Point ptPos, QString szText);
 
 private:
 	QCheckerParamMap *m_paramMap;
@@ -160,10 +158,10 @@ private:
 	cv::Mat m_3DMatHeight;
 
 	QVector<QImageStruct> m_matImages;
-	QImageStruct m_matImage;
+	QImageStruct m_stCombinedImage;
 	int m_nImageIndex;
 };
-	
+
 
 //-------------------------------------------------------------
 class QFlowCtrl : public QObject
