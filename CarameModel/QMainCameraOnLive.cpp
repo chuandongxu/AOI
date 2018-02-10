@@ -90,7 +90,7 @@ void MainCameraOnLive::run()
 
 		if (m_bQuit)break;
 
-		QThread::msleep(1);		
+		QThread::msleep(1);
 	}
 
 	postProcess();	

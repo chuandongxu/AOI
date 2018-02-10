@@ -158,4 +158,9 @@ bool QDataModule::loadProfDataBase(QString& szFilePath)
 	return m_ctrl.loadProfDataBase(szFilePath);
 }
 
+bool QDataModule::doAlignment(const Vision::VectorOfMat &vecFrameImages )
+{
+    return m_ctrl.doAlignment ( vecFrameImages );
+}
+
 QMOUDLE_INSTANCE(QDataModule)

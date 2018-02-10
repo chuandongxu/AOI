@@ -50,7 +50,7 @@ public:
 	bool saveProfDataBase(QString& szFilePath);
 	bool loadProfDataBase(QString& szFilePath);
 	void clearProfDataBase();
-
+    bool doAlignment(const Vision::VectorOfMat &vecFrameImages);
 private:
 	void clearFiles(const QString &folderFullPath);
 

@@ -1,5 +1,5 @@
-#ifndef _AOI_STRUCT_H_
-#define _AOI_STRUCT_H_
+#ifndef _AOI_VISION_STRUCT_H_
+#define _AOI_VISION_STRUCT_H_
 
 #include "VisionType.h"
 #include "VisionStatus.h"
@@ -1294,4 +1294,4 @@ struct PR_COMBINE_IMG_RPY {
 
 }
 }
-#endif /*_AOI_STRUCT_H_*/
+#endif /*_AOI_VISION_STRUCT_H_*/
