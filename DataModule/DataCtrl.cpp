@@ -1,24 +1,26 @@
+#include <QDir>
+#include <QApplication>
+#include <QDebug>
+
 #include "DataCtrl.h"
 #include "../Common/ThreadPrioc.h"
 #include "datamodule_global.h"
 #include "QDetectObj.h"
 #include "QProfileObj.h"
-
-#include <QDir>
-
-#include <QApplication>
-#include <QDebug>
 #include "../Common/SystemData.h"
 
-#include "opencv2/opencv.hpp"
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui.hpp>
+#include "opencv2/video.hpp"
 
-#include "../lib/DataStoreAPI/include/DataStoreAPI.h"
+#include "DataStoreAPI.h"
 
 #include "dog_api_cpp.h"
 #include "dog_vcode.h"
 #include "errorprinter.h"
+#include "DataUtils.h"
+#include "../include/VisionUI.h"
+#include "../Common/ModuleMgr.h"
+#include "../include/IdDefine.h"
 
 #define DEFAULT_DATABASE_TMP_NAME "DeviceTmpDataBase.aoi"
 #define DEFAULT_DATABASE_OBJ_NAME "DeviceDataBase.aoi"
@@ -1211,7 +1213,6 @@ bool DataCtrl::loadProfDataBase(QString& szFilePath)
 
 void DataCtrl::clearProfDataBase()
 {
-
 }
 
 void DataCtrl::clearFiles(const QString &folderFullPath)
@@ -1223,4 +1224,171 @@ void DataCtrl::clearFiles(const QString &folderFullPath)
 		dir.remove(dir[i]);
 }
 
+bool DataCtrl::doAlignment(const Vision::VectorOfMat &vecFrameImages)
+{
+    if ( vecFrameImages.empty() ) {
+        System->setTrackInfo(QString("Input frame images are empty."));
+        return false;
+    }
 
+    auto nScanDirection = System->getParam("scan_image_Direction").toInt();
+    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+    auto nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
+    auto nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+    auto dOverlapUmX = System->getParam("scan_image_OverlapX").toDouble();
+    auto dOverlapUmY = System->getParam("scan_image_OverlapY").toDouble();
+
+    auto nOverlapX = static_cast<int> ( dOverlapUmX / dResolutionX + 0.5 );
+    auto nOverlapY = static_cast<int> ( dOverlapUmY / dResolutionY + 0.5 );
+
+    Engine::AlignmentVector vecAlignment;
+    auto result = Engine::GetAllAlignments ( vecAlignment );
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        System->setTrackInfo(QString("Error at GetAllAlignments, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+        return false;
+    }
+
+    int COMBINED_IMG_COLS = nCountOfFrameX * vecFrameImages[0].cols - nOverlapX * ( nCountOfFrameX - 1 );
+    int COMBINED_IMG_ROWS = nCountOfFrameY * vecFrameImages[0].rows - nOverlapY * ( nCountOfFrameY - 1 );
+
+    Vision::VectorOfPoint vecCadPoint, vecImagePoint;
+    for ( const auto &alignment : vecAlignment ) {
+        auto x = alignment.tmplPosX / dResolutionX;
+        auto y = alignment.tmplPosY / dResolutionY;
+        if (bBoardRotated)
+            x = COMBINED_IMG_COLS - x;
+        else
+            y = COMBINED_IMG_ROWS - y; //In cad, up is positive, but in image, down is positive.
+        
+        int nFrameX, nFrameY, nPtInFrameX, nPtInFrameY;
+        DataUtils::getFrameFromCombinedImage ( COMBINED_IMG_COLS, COMBINED_IMG_ROWS, vecFrameImages[0].cols, vecFrameImages[0].rows,
+            nOverlapX, nOverlapY, x, y, nFrameX, nFrameY, nPtInFrameX, nPtInFrameY,
+            static_cast<Vision::PR_SCAN_IMAGE_DIR> ( nScanDirection ) );
+
+        int nImageIndex = nFrameX + nFrameY * nCountOfFrameX;
+        if ( nImageIndex >= vecAlignment.size() ) {
+            System->setTrackInfo(QString("The target frame image index %1 is larger than the count of input image %2.").arg( nImageIndex ).arg( vecAlignment.size() ) );
+            return false;
+        }
+
+        auto matFrameImg = vecFrameImages[nImageIndex];
+
+        Vision::PR_SRCH_FIDUCIAL_MARK_CMD stCmd;
+        Vision::PR_SRCH_FIDUCIAL_MARK_RPY stRpy;
+        stCmd.matInputImg = matFrameImg;
+        stCmd.enType = static_cast<Vision::PR_FIDUCIAL_MARK_TYPE> ( alignment.fmShape );
+        stCmd.fSize = alignment.tmplWidth  / dResolutionX;
+        stCmd.fMargin = stCmd.fSize / 2.f;
+        int nSrchWinWidth  = alignment.srchWinWidth  / dResolutionX;
+        int nSrchWinHeight = alignment.srchWinHeight / dResolutionY;
+        stCmd.rectSrchWindow = cv::Rect ( nPtInFrameX - nSrchWinWidth / 2, nPtInFrameY - nSrchWinHeight / 2,
+            nSrchWinWidth, nSrchWinHeight );
+        if ( stCmd.rectSrchWindow.x < 0 ) stCmd.rectSrchWindow.x = 0;
+        if ( stCmd.rectSrchWindow.y < 0 ) stCmd.rectSrchWindow.y = 0;
+        if ( ( stCmd.rectSrchWindow.x + stCmd.rectSrchWindow.width ) > stCmd.matInputImg.cols )
+            stCmd.rectSrchWindow.width = stCmd.matInputImg.cols - stCmd.rectSrchWindow.x;
+        if ( ( stCmd.rectSrchWindow.y + stCmd.rectSrchWindow.height ) > stCmd.matInputImg.rows )
+            stCmd.rectSrchWindow.height = stCmd.matInputImg.rows - stCmd.rectSrchWindow.y;
+
+        PR_SrchFiducialMark ( &stCmd, &stRpy );
+        if ( stRpy.enStatus != Vision::VisionStatus::OK ) {
+            Vision::PR_GET_ERROR_INFO_RPY stErrStrRpy;
+            Vision::PR_GetErrorInfo(stRpy.enStatus, &stErrStrRpy);    
+            System->setTrackInfo(QString("Error at PR_SrchFiducialMark, Error code = %1, msg= %2").arg( Vision::ToInt32 ( stRpy.enStatus ) ).arg( stErrStrRpy.achErrorStr ) );
+            return false;
+        }
+        QString qstrMsg;
+        qstrMsg.sprintf ( "Success to search fiducial mark, match score %f, pos in original image [%f, %f].", stRpy.fMatchScore, stRpy.ptPos.x, stRpy.ptPos.y );
+        System->setTrackInfo( qstrMsg );
+
+        int nPosInCombineImageX, nPosInCombineImageY;
+        DataUtils::getCombinedImagePosFromFramePos ( COMBINED_IMG_COLS, COMBINED_IMG_ROWS, vecFrameImages[0].cols, vecFrameImages[0].rows,
+            nOverlapX, nOverlapY, nFrameX, nFrameY, stRpy.ptPos.x, stRpy.ptPos.y, nPosInCombineImageX, nPosInCombineImageY,
+            static_cast<Vision::PR_SCAN_IMAGE_DIR> ( nScanDirection ) );
+        vecCadPoint.push_back ( cv::Point ( x, y ) );
+        vecImagePoint.push_back ( cv::Point ( nPosInCombineImageX, nPosInCombineImageY ) );
+    }
+
+    float fRotationInRadian, Tx, Ty, fScale;
+    cv::Mat matTransform;
+    if ( vecCadPoint.size() >= 3 ) {
+        if ( vecCadPoint.size() == 3 )
+            matTransform = cv::getAffineTransform ( vecCadPoint, vecImagePoint );
+        else
+            matTransform = cv::estimateRigidTransform ( vecCadPoint, vecImagePoint, true );
+        
+        matTransform.convertTo ( matTransform, CV_32FC1 );
+    }else {
+        DataUtils::alignWithTwoPoints ( vecCadPoint[0],
+            vecCadPoint[1],
+            vecImagePoint[0],
+            vecImagePoint[1],
+            fRotationInRadian, Tx, Ty, fScale );
+
+        cv::Point2f ptCtr( vecCadPoint[0].x / 2.f + vecCadPoint[1].x / 2.f,  vecCadPoint[0].y / 2.f + vecCadPoint[1].y / 2.f );
+        //cv::Point2f ptCtr( m_nBigImageWidth / 2.f, m_nBigImageHeight / 2.f );
+        double fDegree = fRotationInRadian * 180. / CV_PI;
+        matTransform = cv::getRotationMatrix2D ( ptCtr, fDegree, fScale );
+        matTransform.at<double>(0, 2) += Tx;
+        matTransform.at<double>(1, 2) += Ty;
+        matTransform.convertTo ( matTransform, CV_32FC1 );
+    }
+
+    auto vecVecTransform = DataUtils::matToVector<float> ( matTransform );
+
+    Engine::BoardVector vecBoard;
+    result = Engine::GetAllBoards ( vecBoard );
+    if ( Engine::OK != result ) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail ( errorType, errorMessage );
+        System->setTrackInfo(QString("Error at GetAllBoards, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+        return false;
+    }
+    QVector<cv::RotatedRect> vecDeviceWindows;
+
+    for ( const auto &board : vecBoard ) {
+        Engine::DeviceVector vecDevice;
+        auto result = Engine::GetBoardDevice ( board.Id, vecDevice );
+        if ( Engine::OK != result ) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail ( errorType, errorMessage );
+            System->setTrackInfo(QString("Error at GetBoardDevice, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+            return false;
+        }
+
+        for ( const auto &device : vecDevice ) {
+            if ( device.isBottom )
+                continue;
+
+            auto x = ( device.x + board.x ) / dResolutionX;
+            auto y = ( device.y + board.y ) / dResolutionY;
+            if ( bBoardRotated )
+                x = COMBINED_IMG_COLS - x;
+            else
+                y = COMBINED_IMG_ROWS - y; //In cad, up is positive, but in image, down is positive.        
+        
+            std::vector<float> vecSrcPos;
+            vecSrcPos.push_back ( x );
+            vecSrcPos.push_back ( y );
+            vecSrcPos.push_back ( 1 );
+            cv::Mat matSrcPos ( vecSrcPos );
+            cv::Mat matDestPos = matTransform * matSrcPos;
+            x = matDestPos.at<float>(0) * dCombinedImageScale;
+            y = matDestPos.at<float>(1) * dCombinedImageScale;
+
+            auto width  = device.width  / dResolutionX * dCombinedImageScale;
+            auto height = device.height / dResolutionY * dCombinedImageScale;
+            cv::RotatedRect deviceWindow ( cv::Point2f(x, y), cv::Size2f(width, height), device.angle );
+            vecDeviceWindows.push_back ( deviceWindow );
+        }
+    }
+    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    pUI->setDeviceWindows ( vecDeviceWindows );
+
+    return true;
+}
