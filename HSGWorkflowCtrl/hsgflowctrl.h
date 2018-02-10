@@ -128,7 +128,7 @@ protected:
 	bool moveToReadyPos();
 	bool moveToCapturePos(int nIndex);
 	bool captureImages(int nIndex, QString& szImagePath);
-	bool mergeImages();
+	bool mergeImages(QString& szImagePath);
 	bool matchPosition();
 	bool calculateDetectHeight();
 	bool waitCheckDone();
@@ -142,7 +142,8 @@ private:
 	bool getLightIO(int &okLight, int &ngLight);
 
 	QString generateImagePath();
-	void saveImages(QString& szImagePath, int nIndex, QVector<cv::Mat>& imageMats);
+	void saveImages(QString& szImagePath, int nRowIndex, int nColIndex, int nCountOfImgPerRow, QVector<cv::Mat>& imageMats);
+	void saveCombineImages(QString& szImagePath, QVector<cv::Mat>& imageMats);
 
 private:
 	void addImageText(cv::Mat image, Point ptPos, QString szText);

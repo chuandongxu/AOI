@@ -450,7 +450,7 @@ void QMainRunable::run()
 		if (isExit())break;
 
 		dtime_start = double(clock());
-		if (!mergeImages())continue;
+		if (!mergeImages(szImagePath))continue;
 		if (isExit())break;
 		dtime_movePos = double(clock());
 		System->setTrackInfo(QStringLiteral("Board%1:合成数据: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
@@ -743,7 +743,7 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 		QVector<cv::Mat> savingImages;
 		for (int i = 0; i < g_nImageStructDataNum; i++)
 			savingImages.push_back(m_matImages[nIndex]._img[i]);
-		saveImages(szImagePath, nIndex, savingImages);
+		saveImages(szImagePath, 0, nIndex, g_nImageStructDataNum*getPositionNum(), savingImages);
 	}
 
 	pUI->setImage(m_matImages[nIndex]._img[m_nImageIndex], true);
@@ -764,7 +764,7 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 	return true;
 }
 
-bool QMainRunable::mergeImages()
+bool QMainRunable::mergeImages(QString& szImagePath)
 {
 	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
 	if (!pUI) return false;
@@ -791,6 +791,11 @@ bool QMainRunable::mergeImages()
 		}
 	}
 	pUI->setImage(m_matImage._img[m_nImageIndex], true);
+	bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
+	if (bCaptureLightImage)
+	{		
+		saveCombineImages(szImagePath, matOutputImages);
+	}
 
 	for (int i = 0; i < getPositionNum(); i++)
 	{
@@ -944,16 +949,30 @@ QString QMainRunable::generateImagePath()
 	return fileDir;
 }
 
-void QMainRunable::saveImages(QString& szImagePath, int nIndex, QVector<cv::Mat>& imageMats)
+void QMainRunable::saveImages(QString& szImagePath, int nRowIndex, int nColIndex, int nCountOfImgPerRow, QVector<cv::Mat>& imageMats)
 {
-	for (int i = 0; i < imageMats.size(); i++)
+	int nCountOfImgPerFrame = imageMats.size();
+	for (int i = 0; i < nCountOfImgPerFrame; i++)
 	{
-		QString strSave = szImagePath + QString("I") + QString::number(nIndex + 1, 'g', 2) + QString("_") +
-			QString::number(i + 1, 'g', 2) + QString(".bmp");
+		int nImageIndex = nRowIndex * nCountOfImgPerRow + nColIndex*nCountOfImgPerFrame + i + 1;
+
+		QString strSave = szImagePath + QString("F") + QString::number(nRowIndex + 1, 'g', 2) + QString("-") + QString::number(nImageIndex, 'g', 2) + QString("-") +
+			QString("1") + QString(".bmp");
 
 		IplImage frameImg = IplImage(imageMats[i]);
 		cvSaveImage(strSave.toStdString().c_str(), &frameImg);
 	}	
+}
+
+void QMainRunable::saveCombineImages(QString& szImagePath, QVector<cv::Mat>& imageMats)
+{
+	for (int i = 0; i < imageMats.size(); i++)
+	{
+		QString strSave = szImagePath + QString("CombineResult_") + QString::number(i + 1, 'g', 2) + QString(".bmp");
+
+		IplImage frameImg = IplImage(imageMats[i]);
+		cvSaveImage(strSave.toStdString().c_str(), &frameImg);
+	}
 }
 
 //*****************************************************************************
