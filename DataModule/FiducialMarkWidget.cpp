@@ -327,7 +327,7 @@ int FiducialMarkWidget::refreshFMWindow()
     if (Engine::OK != result) {
         String errorType, errorMessage;
         Engine::GetErrorDetail(errorType, errorMessage);
-        errorMessage = "Failed to get alignment from database, error message " + errorMessage;
+        errorMessage = "Failed to get alignment from data base, error message " + errorMessage;
         QMessageBox::critical(nullptr, QStringLiteral("Set Fiducial Mark"), errorMessage.c_str(), QStringLiteral("Quit"));
         return NOK;
     }

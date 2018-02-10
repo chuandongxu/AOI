@@ -36,9 +36,12 @@ CameraDevice::~CameraDevice(void)
 	//closeDevice();
 }
 
+
 void CameraDevice::saveImage(cv::Mat& image, QString name, QString path)
 {
+
 	QString capturePath = System->getParam("camera_cap_image_path").toString();
+
 	
 	QString fileName = QString("");
 	if (!name.isEmpty() && name.contains(".bmp"))

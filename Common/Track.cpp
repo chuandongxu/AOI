@@ -123,9 +123,8 @@ QString CTrackHandel::GetSuffix()
 	char buffer[100] = {0};
 
 	time(&t);
-	tm ntm;
-    localtime_s(&ntm, &t);
-	strftime(buffer,100,"%Y%m%d%H%M%S", &ntm);
+	tm * ntm = localtime(&t);
+	strftime(buffer,100,"%Y%m%d%H%M%S",ntm);
 	return buffer;
 }
 
@@ -305,7 +304,7 @@ CFuncTrack::CFuncTrack(const char *fun,int line,const char *str,...)
 
 	va_list valist;
 	va_start(valist, str);
-	vsnprintf_s(buffer, 2048, str, valist);
+	vsnprintf(buffer, 2048, str, valist);
 	va_end(valist);
 
 	CTrackHandel * p = CTrackHandel::Instance();
@@ -348,7 +347,7 @@ void track_print(int iLevel,const char* fun,int line,const char * str,...)
 
 	va_list valist;
 	va_start(valist, str);
-	vsnprintf_s(buffer, 2048, str, valist);
+	vsnprintf(buffer, 2048, str, valist);
 	va_end(valist);
 
 	CTrackHandel * p = CTrackHandel::Instance();

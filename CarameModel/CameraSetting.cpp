@@ -15,10 +15,13 @@
 #include <QMessageBox>
 #include <QThread>
 
+#include "opencv2/opencv.hpp"
+#include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/calib3d.hpp"
 
-#include "VisionAPI.h"
+#undef NO_ERROR
+#include "../lib/VisionLibrary/include/VisionAPI.h"
 
 #include "../CurveEditor/IGraphicEditor.h"
 

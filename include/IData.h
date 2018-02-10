@@ -2,9 +2,6 @@
 #define _DATA_INTERFACE_H_
 
 #include <QString>
-#include "VisionStruct.h"
-
-using namespace AOI;
 
 enum DataTypeEnum
 {
@@ -51,8 +48,6 @@ public:
 
 	virtual bool saveProfDataBase(QString& szFilePath) = 0;
 	virtual bool loadProfDataBase(QString& szFilePath) = 0;
-
-    virtual bool doAlignment(const Vision::VectorOfMat &vecFrameImages ) = 0;
 };
 
 #endif
