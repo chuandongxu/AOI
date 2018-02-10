@@ -6,6 +6,9 @@
 #include <qdebug.h>
 #include <qthreadpool.h>
 #include <QFileDialog>
+#include < QThread>
+#include <QTime>
+
 #include "hsgflowctrl.h"
 #include "../Common/ModuleMgr.h"
 #include "../Common/SystemData.h"
@@ -18,20 +21,15 @@
 #include "../include/IdDefine.h"
 #include "../Common/eos.h"
 #include "../Common/CVSFile.h"
-#include<QThread>
-#include<QTime>
+
 #include "../include/IFlowCtrl.h"
 #include "../Common/ThreadPrioc.h"
 #include "CryptLib.h"
-
-#include "opencv2/opencv.hpp"
-#include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 #define POS_ZHOME   "zHome%0"
 #define PROFILE_X   "xMoveProfile%0"
 const QString TimeFormatString ="MMdd";
-
 
 QCheckerRunable::QCheckerRunable(QCheckerParamMap * paramMap, Q3DStructData* dataParam)
 	:m_paramMap(paramMap), m_dataParam(dataParam), m_exit(false), m_normal("evAiValue.xml")
@@ -128,7 +126,7 @@ bool QCheckerRunable::waitStartBtn()
 	if (pData)
 	{
 		while (1)
-		{			
+		{
 			if (m_dataParam->_bStartCapturing)
 			{
 				return true;
@@ -314,24 +312,23 @@ bool QCheckerRunable::isExit()
 	return m_exit;
 }
 
-void QCheckerRunable::addImageText(cv::Mat image, Point ptPos, QString szText)
+void QCheckerRunable::addImageText(cv::Mat image, cv::Point ptPos, QString szText)
 {
 	double dScaleFactor = 2.0;
 
 
 	cv::String text = szText.toStdString();
 
-	Point ptPos1;
+	cv::Point ptPos1, ptPos2;
 	ptPos1.x = ptPos.x - 10 * dScaleFactor;
 	ptPos1.y = ptPos.y + 10 * dScaleFactor;
-	Point ptPos2;
 	ptPos2.x = ptPos.x + 10 * dScaleFactor * text.length();
 	ptPos2.y = ptPos.y - 20 * dScaleFactor;
-	rectangle(image, ptPos1, ptPos2, Scalar(125, 125, 125), -1);
-	rectangle(image, ptPos1, ptPos2, Scalar(200, 200, 200), 1);
+	cv::rectangle(image, ptPos1, ptPos2, cv::Scalar(125, 125, 125), -1);
+	cv::rectangle(image, ptPos1, ptPos2, cv::Scalar(200, 200, 200), 1);
 
 	double fontScale = dScaleFactor*0.5f;
-	cv::putText(image, text, ptPos, CV_FONT_HERSHEY_COMPLEX, fontScale, Scalar(0, 255, 255), 1);
+	cv::putText(image, text, ptPos, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 255, 255), 1);
 }
 
 int QCheckerRunable::getStationID()
@@ -431,7 +428,7 @@ void QMainRunable::run()
 		{
 			if (!moveToCapturePos(i))
 			{
-				bCaptureError = true; 
+				bCaptureError = true;
 				break;
 			}
 			if (isExit())break;
@@ -460,6 +457,12 @@ void QMainRunable::run()
 		if (isExit())break;
 		dtime_movePos = double(clock());
 		System->setTrackInfo(QStringLiteral("Board%1:模板匹配元件: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
+
+        dtime_start = double(clock());
+		if (!doAlignment())continue;
+		if (isExit())break;
+		dtime_movePos = double(clock());
+		System->setTrackInfo(QStringLiteral("Do fiducial mark alignment: %1 ms").arg(dtime_movePos - dtime_start), true);
 
 		dtime_start = double(clock());
 		if (!calculateDetectHeight())continue;
@@ -579,7 +582,7 @@ bool QMainRunable::captureAllImages(QVector<cv::Mat>& imageMats)
 	for (int i = 0; i < nCaptureNum; i++)
 	{
 		cv::Mat matImage = pCam->getImageItemBuffer(i);
-		imageMats.push_back(matImage);		
+		imageMats.push_back(matImage);
 	}
 
 	if (nCaptureNum != pCam->getImageBufferNum())
@@ -654,7 +657,7 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 			for (int j = 0; j < nPatternNum; j++)
 			{
 				(*m_paramData)[i]._srcImageMats.push_back(imageMats[i*nPatternNum + j]);
-			}				
+            }
 		}
 	}
 
@@ -723,7 +726,7 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 			grayValueG = lightImages[3].at<uchar>(y, x);
 			grayValueR = lightImages[2].at<uchar>(y, x);
 
-			Vec3b& pixel = outputPseudocolor.at<Vec3b>(y, x);
+			cv::Vec3b& pixel = outputPseudocolor.at<cv::Vec3b>(y, x);
 			pixel[0] = abs(grayValueB);
 			pixel[1] = abs(grayValueG);
 			pixel[2] = abs(grayValueR);
@@ -753,7 +756,7 @@ bool QMainRunable::captureImages(int nIndex, QString& szImagePath)
 	QVector<cv::Mat> matHeights;
 	for (int i = 0; i < nStationNum; i++)
 	{
-		matHeights.push_back((*m_paramData)[i]._3DMatHeight);	
+		matHeights.push_back((*m_paramData)[i]._3DMatHeight);
 	}
 
 	if (!pVision->merge3DHeight(matHeights, m_3DMatHeights[nIndex]))
@@ -787,10 +790,11 @@ bool QMainRunable::mergeImages(QString& szImagePath)
 	{
 		for (int i = 0; i < matOutputImages.size(); i++)
 		{
-			m_matImage._img[i] = matOutputImages.at(i);
+			m_stCombinedImage._img[i] = matOutputImages.at(i);
 		}
 	}
-	pUI->setImage(m_matImage._img[m_nImageIndex], true);
+
+	pUI->setImage(m_stCombinedImage._img[m_nImageIndex], true);
 	bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
 	if (bCaptureLightImage)
 	{		
@@ -850,7 +854,6 @@ bool QMainRunable::calculateDetectHeight()
 
 bool QMainRunable::waitCheckDone()
 {
-
 	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_RESOULT, 1);
 
 	IData * pData = getModule<IData>(DATA_MODEL);
@@ -862,28 +865,37 @@ bool QMainRunable::waitCheckDone()
 	return true;
 }
 
+bool QMainRunable::doAlignment()
+{
+    IData * pData = getModule<IData>(DATA_MODEL);
+    Vision::VectorOfMat vecFrameImage;
+    for ( const auto &stFrameImages : m_matImages ) {
+        vecFrameImage.push_back ( stFrameImages._img[m_nImageIndex] );
+    }
+    return pData->doAlignment ( vecFrameImage );
+}
+
 bool QMainRunable::isExit()
 {
 	return m_exit;
 }
 
-void QMainRunable::addImageText(cv::Mat image, Point ptPos, QString szText)
+void QMainRunable::addImageText(cv::Mat image, cv::Point ptPos, QString szText)
 {
 	double dScaleFactor = 2.0;
 
 	cv::String text = szText.toStdString();
 
-	Point ptPos1;
+	cv::Point ptPos1, ptPos2;
 	ptPos1.x = ptPos.x - 10 * dScaleFactor;
 	ptPos1.y = ptPos.y + 10 * dScaleFactor;
-	Point ptPos2;
 	ptPos2.x = ptPos.x + 10 * dScaleFactor * text.length();
 	ptPos2.y = ptPos.y - 20 * dScaleFactor;
-	rectangle(image, ptPos1, ptPos2, Scalar(125, 125, 125), -1);
-	rectangle(image, ptPos1, ptPos2, Scalar(200, 200, 200), 1);
+	cv::rectangle(image, ptPos1, ptPos2, cv::Scalar(125, 125, 125), -1);
+	cv::rectangle(image, ptPos1, ptPos2, cv::Scalar(200, 200, 200), 1);
 
 	double fontScale = dScaleFactor*0.5f;
-	cv::putText(image, text, ptPos, CV_FONT_HERSHEY_COMPLEX, fontScale, Scalar(0, 255, 255), 1);
+	cv::putText(image, text, ptPos, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 255, 255), 1);
 }
 
 void QMainRunable::setResoultLight(bool isOk)
@@ -949,7 +961,7 @@ QString QMainRunable::generateImagePath()
 	return fileDir;
 }
 
-void QMainRunable::saveImages(QString& szImagePath, int nRowIndex, int nColIndex, int nCountOfImgPerRow, QVector<cv::Mat>& imageMats)
+void QMainRunable::saveImages(const QString& szImagePath, int nRowIndex, int nColIndex, int nCountOfImgPerRow, const QVector<cv::Mat>& imageMats)
 {
 	int nCountOfImgPerFrame = imageMats.size();
 	for (int i = 0; i < nCountOfImgPerFrame; i++)
@@ -964,7 +976,7 @@ void QMainRunable::saveImages(QString& szImagePath, int nRowIndex, int nColIndex
 	}	
 }
 
-void QMainRunable::saveCombineImages(QString& szImagePath, QVector<cv::Mat>& imageMats)
+void QMainRunable::saveCombineImages(const QString& szImagePath, const QVector<cv::Mat>& imageMats)
 {
 	for (int i = 0; i < imageMats.size(); i++)
 	{
