@@ -35,10 +35,9 @@ public:
 	virtual void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues);
 	virtual void show3DView();
 
-	virtual void setSelect();
 	virtual cv::Mat getSelectImage();
-	virtual void clearSelect();
-	virtual cv::Rect2f getSelectScale();
+	virtual void clearSelect() override;
+	virtual cv::Rect2f getSelectedROI() override;
 
 	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber) override;
     virtual void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows) override;

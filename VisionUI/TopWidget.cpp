@@ -85,7 +85,7 @@ QTopWidget::QTopWidget(QWidget *parent) :
 	m_toolBtnHw->setStyleSheet(stytleStr);
 	m_toolBtnTools = new QPushButton();
 	m_toolBtnTools->setFixedSize(100, 25);
-	m_toolBtnTools->setText(QStringLiteral("编辑工具"));
+	m_toolBtnTools->setText(QStringLiteral("编辑检测框"));
 	m_toolBtnTools->setStyleSheet(stytleStr);
 	m_toolBtnSetting = new QPushButton();
 	m_toolBtnSetting->setFixedSize(100, 25);

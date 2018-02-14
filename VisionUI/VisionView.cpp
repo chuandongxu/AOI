@@ -324,14 +324,6 @@ void VisionView::showLight()
 	}
 }
 
-void VisionView::setSelect()
-{
-	if (m_pViewWidget)
-	{
-		m_pViewWidget->setSelect();
-	}
-}
-
 cv::Mat VisionView::getSelectImage()
 {
 	if (m_pViewWidget)
@@ -350,11 +342,11 @@ void VisionView::clearSelect()
 	}
 }
 
-cv::Rect2f VisionView::getSelectScale()
+cv::Rect2f VisionView::getSelectedROI()
 {
 	if (m_pViewWidget)
 	{
-		return m_pViewWidget->getSelectScale();
+		return m_pViewWidget->getSelectedROI();
 	}
 
 	return cv::Rect2f();

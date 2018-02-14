@@ -821,10 +821,8 @@ void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
 			}
 			m_selectROI.width = 0;
 			m_selectROI.height = 0;
-			setViewState(MODE_VIEW_NONE);
 			break;
 		case MODE_VIEW_SELECT_ROI:
-			setViewState(MODE_VIEW_NONE);
 			break;
 		case MODE_VIEW_SET_FIDUCIAL_MARK:
 			_checkSelectedDevice(cv::Point(pos.x(), pos.y()));
@@ -1109,11 +1107,6 @@ void VisionViewWidget::show3DView()
 	}
 }
 
-void VisionViewWidget::setSelect()
-{
-	setViewState(MODE_VIEW_SELECT_ROI);
-}
-
 cv::Mat VisionViewWidget::getSelectImage()
 {
 	return (m_selectROI.size().width <= 5 || m_selectROI.size().height <= 5) ? m_hoImage : m_hoImage(m_selectROI);
@@ -1127,7 +1120,7 @@ void VisionViewWidget::clearSelect()
 	m_selectROI.height = 0;
 }
 
-cv::Rect2f VisionViewWidget::getSelectScale()
+cv::Rect2f VisionViewWidget::getSelectedROI()
 {
 	//cv::Rect2f scale;
 	//scale.x = m_selectROI.x;

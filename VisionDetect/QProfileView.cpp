@@ -179,9 +179,9 @@ cv::Rect QProfileView::getSelectRect()
 	return m_selectROI;
 }
 
-Rect2f QProfileView::getSelectScale()
+cv::Rect2f QProfileView::getSelectedROI()
 {
-	Rect2f scale;
+	cv::Rect2f scale;
 	scale.x = m_selectROI.x;
 	scale.y = m_selectROI.y;
 	scale.width = m_selectROI.width;
@@ -247,7 +247,7 @@ void QProfileView::addImageText(QString szText)
 
 	cv::Mat image = m_hoImage.clone();
 	double fontScale = dScaleFactor*2.0f;
-	cv::putText(image, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, Scalar(0, 0, 255), 2);
+	cv::putText(image, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
 
 	// show
 	displayImage(image);
@@ -510,7 +510,7 @@ void QProfileView::wheelEvent(QWheelEvent * event)
 
 void QProfileView::loadImage(QString& fileName)
 {
-	m_hoImage = imread(fileName.toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_COLOR);
+	m_hoImage = cv::imread(fileName.toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_COLOR);
 
 	m_imageWidth = m_hoImage.size().width;
 	m_imageHeight = m_hoImage.size().height;
@@ -528,7 +528,7 @@ void QProfileView::repaintAll()
 
 	if (m_selectROI.width > 0)
 	{
-		cv::rectangle(matImage, m_selectROI, Scalar(255, 255, 0), 5, 8, 0);
+		cv::rectangle(matImage, m_selectROI, cv::Scalar(255, 255, 0), 5, 8, 0);
 	}
 
 	if (m_measRangeCurr.width > 0)
@@ -540,7 +540,7 @@ void QProfileView::repaintAll()
 
 		cv::Mat matRect = matImage(rect);
 		//rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
-		cv::Mat imgLayer(height, width, matImage.type(), Scalar(255, 0, 0));
+		cv::Mat imgLayer(height, width, matImage.type(), cv::Scalar(255, 0, 0));
 
 		double alpha = 0.3;
 		addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
@@ -555,7 +555,7 @@ void QProfileView::repaintAll()
 
 		cv::Mat matRect = matImage(rect);
 		//rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
-		cv::Mat imgLayer(height, width, matImage.type(), Scalar(0, 0, 255));
+		cv::Mat imgLayer(height, width, matImage.type(), cv::Scalar(0, 0, 255));
 
 		double alpha = 0.3;
 		addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
@@ -566,7 +566,7 @@ void QProfileView::repaintAll()
 	displayImage(matImage);
 }
 
-void QProfileView::A_Transform(Mat& src, Mat& dst, int dx, int dy)
+void QProfileView::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 {
 	CV_Assert(src.depth() == CV_8U);//CV_Assert（）若括号中的表达式值为false，则返回一个错误信息。  
 	const int rows = src.rows;
@@ -576,19 +576,19 @@ void QProfileView::A_Transform(Mat& src, Mat& dst, int dx, int dy)
 	//dst.row(i).setTo(Scalar(255));
 	//dst.col(j).setTo(Scalar(255));
 
-	dst.setTo(Scalar(0, 0, 0));
+	dst.setTo(cv::Scalar(0, 0, 0));
 
-	Vec3b *p;   //定义一个存放3通道的容器指针p  
+	cv::Vec3b *p;   //定义一个存放3通道的容器指针p  
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			p = dst.ptr<Vec3b>(i);//指向行数的容器p  
+			p = dst.ptr<cv::Vec3b>(i);//指向行数的容器p  
 			int x = j - dx;
 			int y = i - dy;
 			if (x>0 && y>0 && x < cols&&y < rows)//平移后的像素坐标在原图像的行数和列数内  
 			{
-				p[i, j] = src.ptr<Vec3b>(y)[x];//平移后的图像（i,j)对应于原图像的（y,x)  
+				p[i, j] = src.ptr<cv::Vec3b>(y)[x];//平移后的图像（i,j)对应于原图像的（y,x)  
 			}
 		}
 	}

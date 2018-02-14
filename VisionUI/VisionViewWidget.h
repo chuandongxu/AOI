@@ -31,9 +31,9 @@ private:
 	void drawCross(cv::Mat& image);
 	void showImageToScreen(cv::Mat& image);
 private:
-	VisionViewWidget*		m_pView;
-	bool          m_bQuit;
-	bool          m_bRuning;
+	VisionViewWidget       *m_pView;
+	bool                    m_bQuit;
+	bool                    m_bRuning;
 };
 
 class QDetectObj;
@@ -60,10 +60,9 @@ public:
 	void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues);
 	void show3DView();
 
-	void setSelect();
 	cv::Mat getSelectImage();
 	void clearSelect();
-	cv::Rect2f getSelectScale();
+	cv::Rect2f getSelectedROI();
 
 	void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
 	void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows);
