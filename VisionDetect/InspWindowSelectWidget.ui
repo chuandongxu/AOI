@@ -28,7 +28,7 @@
    <widget class="QPushButton" name="btnVoidInspWindow">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>170</x>
       <y>30</y>
       <width>60</width>
       <height>60</height>
@@ -52,14 +52,98 @@
    <widget class="QLabel" name="labelVoidInspWindow">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>90</y>
+      <x>170</x>
+      <y>100</y>
       <width>61</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>颜色检测  -void</string>
+     <string>颜色检测  void</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnFindLineWindow">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>60</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>Image/CaliperLine.png</normaloff>Image/CaliperLine.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>60</width>
+      <height>60</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelCaliperLineWindow">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>100</y>
+      <width>71</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>直线检测 Find Line</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnCaliperCircleWindow">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>30</y>
+      <width>60</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>Image/CaliperCircle.png</normaloff>Image/CaliperCircle.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>60</width>
+      <height>60</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelCaliperLineWindow_2">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>100</y>
+      <width>81</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>圆弧检测 Caliper Circle</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>

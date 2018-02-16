@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>InspVoidWidget</class>
- <widget class="QWidget" name="InspVoidWidget">
+ <class>FindLineWidget</class>
+ <widget class="QWidget" name="FindLineWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,19 +11,50 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>InspVoidWidget</string>
+   <string>FindLineWidget</string>
   </property>
+  <widget class="QLabel" name="labelTitle">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>171</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>直线检测 -- Find Line</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelBasicParameter">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>50</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>基础检测参数</string>
+   </property>
+  </widget>
   <widget class="QTableWidget" name="tableWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>70</y>
+     <y>80</y>
      <width>401</width>
-     <height>221</height>
+     <height>461</height>
     </rect>
    </property>
    <property name="rowCount">
-    <number>7</number>
+    <number>15</number>
    </property>
    <property name="columnCount">
     <number>2</number>
@@ -47,11 +78,19 @@
    <row/>
    <row/>
    <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
    <column/>
    <column/>
    <item row="0" column="0">
     <property name="text">
-     <string>检测模式</string>
+     <string>找线对</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -59,7 +98,7 @@
    </item>
    <item row="1" column="0">
     <property name="text">
-     <string>面积比例上限(%)</string>
+     <string>找线方向</string>
     </property>
     <property name="flags">
      <set>NoItemFlags</set>
@@ -67,12 +106,12 @@
    </item>
    <item row="1" column="1">
     <property name="text">
-     <string>100</string>
+     <string/>
     </property>
    </item>
    <item row="2" column="0">
     <property name="text">
-     <string>面积比例下限(%)</string>
+     <string>卡尺数量</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -80,12 +119,12 @@
    </item>
    <item row="2" column="1">
     <property name="text">
-     <string>80</string>
+     <string>20</string>
     </property>
    </item>
    <item row="3" column="0">
     <property name="text">
-     <string>孔洞数量上限</string>
+     <string>卡尺宽度</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -98,7 +137,7 @@
    </item>
    <item row="4" column="0">
     <property name="text">
-     <string>孔洞数量下限</string>
+     <string>边界门槛值</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -106,12 +145,12 @@
    </item>
    <item row="4" column="1">
     <property name="text">
-     <string>0</string>
+     <string>50</string>
     </property>
    </item>
    <item row="5" column="0">
     <property name="text">
-     <string>孔洞面积上限(um^2)</string>
+     <string>边界选择方式</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -119,12 +158,12 @@
    </item>
    <item row="5" column="1">
     <property name="text">
-     <string>5000</string>
+     <string/>
     </property>
    </item>
    <item row="6" column="0">
     <property name="text">
-     <string>孔洞面积下限(um^2)</string>
+     <string>离群点消除比例</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -132,46 +171,89 @@
    </item>
    <item row="6" column="1">
     <property name="text">
-     <string>100</string>
+     <string>0.2</string>
     </property>
    </item>
-  </widget>
-  <widget class="QLabel" name="labelTitle">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>141</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>颜色检测 -- Hole</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelBasicParameter">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>50</y>
-     <width>81</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>基础检测参数</string>
-   </property>
+   <item row="7" column="0">
+    <property name="text">
+     <string>高斯差值器半宽度(pixel)</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="7" column="1">
+    <property name="text">
+     <string>2</string>
+    </property>
+   </item>
+   <item row="8" column="0">
+    <property name="text">
+     <string>高斯插值器方差</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="8" column="1">
+    <property name="text">
+     <string>1</string>
+    </property>
+   </item>
+   <item row="9" column="0">
+    <property name="text">
+     <string>检查线性度</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="10" column="0">
+    <property name="text">
+     <string>最大点偏移量(um)</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="11" column="0">
+    <property name="text">
+     <string>最小线性度(%)</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="12" column="0">
+    <property name="text">
+     <string>检查角度</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="13" column="0">
+    <property name="text">
+     <string>期望角度(度)</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="14" column="0">
+    <property name="text">
+     <string>最大角度偏差(度)</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
   </widget>
   <widget class="QPushButton" name="btnTryInsp">
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>440</y>
+     <y>560</y>
      <width>351</width>
      <height>31</height>
     </rect>
@@ -184,7 +266,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>490</y>
+     <y>610</y>
      <width>351</width>
      <height>31</height>
     </rect>

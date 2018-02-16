@@ -3,10 +3,12 @@
 #include <QWidget>
 #include "ui_InspWindowWidget.h"
 #include "InspWindowSelectWidget.h"
+#include "FindLineWidget.h"
 #include "InspVoidWidget.h"
 
 enum INSP_WIDGET_INDEX {
     INSP_WINDOW_SELECT,
+    FIND_LINE,
     INSP_VOID,
 };
 
@@ -32,5 +34,6 @@ private:
     Ui::InspWindowWidget ui;
 
     InspWindowSelectWidget  *m_pInspWindowSelectWidget;
+    FindLineWidget          *m_pFindLineWidget;
     InspVoidWidget          *m_pInspVoidWidget;
 };

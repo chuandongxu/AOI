@@ -12,6 +12,9 @@ InspWindowWidget::InspWindowWidget(QWidget *parent)
     //m_pInspWindowSelectWidget->setParent(this);
     ui.stackedWidget->addWidget ( m_pInspWindowSelectWidget );
 
+    m_pFindLineWidget = new FindLineWidget(this);
+    ui.stackedWidget->addWidget ( m_pFindLineWidget );
+
     m_pInspVoidWidget = new InspVoidWidget(this);
     ui.stackedWidget->addWidget ( m_pInspVoidWidget );    
 }
