@@ -2,7 +2,7 @@
 #include <qthreadpool.h>
 #include "../Common/SystemData.h"
 #include "../Common/ModuleMgr.h"
-#include "../include/VisionUI.h"
+#include "../include/IVisionUI.h"
 #include "../include/IdDefine.h"
 #include "StartupWidget.h"
 #include <QDebug>

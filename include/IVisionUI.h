@@ -39,10 +39,12 @@ public:
 	virtual cv::Rect2f getSelectedROI() = 0;
 
 	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber = false) = 0;
+    virtual void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs) = 0;
+    virtual QVector<QDetectObj> getDetectObjs() const = 0;
     virtual void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows) = 0;
     virtual void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows) = 0;
     virtual void setViewState(VISION_VIEW_MODE enViewMode) = 0;
-    virtual void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) = 0; 
+    virtual void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) = 0;
 };
 
 #endif

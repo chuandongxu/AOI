@@ -360,6 +360,16 @@ void VisionView::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
 	}
 }
 
+void VisionView::setDetectObjs(const QVector<QDetectObj> &vecDetectObjs)
+{
+    m_pViewWidget->setDetectObjs(vecDetectObjs);
+}
+
+QVector<QDetectObj> VisionView::getDetectObjs() const
+{
+    return m_pViewWidget->getDetectObjs();
+}
+
 void VisionView::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows)
 {
 	if (m_pViewWidget)

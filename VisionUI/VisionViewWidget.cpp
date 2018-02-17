@@ -1078,15 +1078,14 @@ void VisionViewWidget::displayImage(cv::Mat& image)
 
 	cv::Mat matDisplay;
 	_drawDeviceWindows(m_dispImage);
+    _drawDetectObjs();
 	_cutImageForDisplay(m_dispImage, matDisplay);
+
 	if (matDisplay.type() == CV_8UC3)
-	{
 		cvtColor(matDisplay, matDisplay, CV_BGR2RGB);
-	}
 	else if (matDisplay.type() == CV_8UC1)
-	{
 		cvtColor(matDisplay, matDisplay, CV_GRAY2RGB);
-	}
+
 	QImage imagePixmap = QImage((uchar*)matDisplay.data, matDisplay.cols, matDisplay.rows, ToInt(matDisplay.step), QImage::Format_RGB888);
 	ui.label_Img->setPixmap(QPixmap::fromImage(imagePixmap));
 }
@@ -1208,6 +1207,17 @@ void VisionViewWidget::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
 	}
 
 	displayImage(matImage);
+}
+
+void VisionViewWidget::setDetectObjs(const QVector<QDetectObj> &vecDetectObjs)
+{
+    m_vecDetectObjs = vecDetectObjs;
+    repaintAll();
+}
+
+QVector<QDetectObj> VisionViewWidget::getDetectObjs() const
+{
+    return m_vecDetectObjs;
 }
 
 void VisionViewWidget::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows)
@@ -1397,15 +1407,15 @@ void VisionViewWidget::moveImage(double motionX, double motionY)
 	m_dMovedX += motionX;
 	m_dMovedY += motionY;
 
-	if (m_dMovedX > _szMoveRange.width)
-		m_dMovedX = _szMoveRange.width;
-	else if (m_dMovedX < -_szMoveRange.width)
-		m_dMovedX = -_szMoveRange.width;
+	if (m_dMovedX > m_szMoveRange.width)
+		m_dMovedX = m_szMoveRange.width;
+	else if (m_dMovedX < -m_szMoveRange.width)
+		m_dMovedX = -m_szMoveRange.width;
 
-	if (m_dMovedY > _szMoveRange.height)
-		m_dMovedY = _szMoveRange.height;
-	else if (m_dMovedY < -_szMoveRange.height)
-		m_dMovedY = -_szMoveRange.height;
+	if (m_dMovedY > m_szMoveRange.height)
+		m_dMovedY = m_szMoveRange.height;
+	else if (m_dMovedY < -m_szMoveRange.height)
+		m_dMovedY = -m_szMoveRange.height;
 
 	repaintAll();
 }
@@ -1546,10 +1556,86 @@ void VisionViewWidget::_drawDeviceWindows(cv::Mat &matImg)
 	cv::polylines(matImg, VectorOfVectorOfPoint(1, contour), true, _constCyanScalar, _constDeviceWindowLineWidth);
 }
 
+void VisionViewWidget::_drawDetectObjs()
+{
+    if ( ! m_bDisplayDetectObjs )
+        return;
+
+    bool bShowNumber = true;
+
+    for (const auto &obj : m_vecDetectObjs )
+    {
+        cv::Point2f vertices[4];
+        obj.getFrame().points(vertices);
+
+        for (int i = 0; i < 4; i++)
+        {
+            line( m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(128, 255, 255), 5);
+        }
+
+        obj.getLoc().points(vertices);
+
+        for (int i = 0; i < 4; i++)
+        {
+            line( m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 255, 0), 5);
+        }
+
+        for (int j = 0; j < obj.getHeightBaseNum(); j++)
+        {
+            obj.getHeightBase(j).points(vertices);
+
+            if (bShowNumber)
+            {
+                const int ImageWidth = 2048;
+                double dScaleFactor = (double)m_imageWidth / ImageWidth;
+
+                cv::Point p1;
+                p1.x = obj.getHeightBase(j).center.x;
+                p1.y = obj.getHeightBase(j).center.y;
+
+                cv::String text = QString("%1").arg(j + 1).toStdString();
+
+                double fontScale = dScaleFactor*2.0f;
+                cv::putText( m_dispImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                line( m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 0, 0), 5);
+            }
+        }
+
+        for (int j = 0; j < obj.getHeightDetectNum(); ++ j )
+        {
+            obj.getHeightDetect(j).points(vertices);
+
+            if (bShowNumber)
+            {
+                const int ImageWidth = 2048;
+                double dScaleFactor = (double)m_imageWidth / ImageWidth;
+
+                cv::Point p1;
+                p1.x = obj.getHeightDetect(j).center.x;
+                p1.y = obj.getHeightDetect(j).center.y;
+
+                cv::String text = QString("%1").arg(j + 1).toStdString();
+
+                double fontScale = dScaleFactor*2.0f;
+                cv::putText( m_dispImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                line( m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(0, 255, 0), 5);
+            }
+        }
+    }
+}
+
 void VisionViewWidget::_calcMoveRange()
 {
 	if (m_dispImage.empty()) {
-		_szMoveRange = cv::Size(0, 0);
+		m_szMoveRange = cv::Size(0, 0);
 		return;
 	}
 
@@ -1558,21 +1644,21 @@ void VisionViewWidget::_calcMoveRange()
 	auto displayWidth  = this->size().width();
 	auto displayHeight = this->size().height();
 
-	_szMoveRange.width = (cols - displayWidth) / 2;
-	if (_szMoveRange.width < 0) _szMoveRange.width = 0;
+	m_szMoveRange.width = (cols - displayWidth) / 2;
+	if (m_szMoveRange.width < 0) m_szMoveRange.width = 0;
 
-	_szMoveRange.height = (rows - displayHeight) / 2;
-	if (_szMoveRange.height < 0) _szMoveRange.height = 0;
+	m_szMoveRange.height = (rows - displayHeight) / 2;
+	if (m_szMoveRange.height < 0) m_szMoveRange.height = 0;
 
-	if (m_dMovedX > _szMoveRange.width)
-		m_dMovedX = _szMoveRange.width;
-	else if (m_dMovedX < -_szMoveRange.width)
-		m_dMovedX = -_szMoveRange.width;
+	if (m_dMovedX > m_szMoveRange.width)
+		m_dMovedX = m_szMoveRange.width;
+	else if (m_dMovedX < -m_szMoveRange.width)
+		m_dMovedX = -m_szMoveRange.width;
 
-	if (m_dMovedY > _szMoveRange.height)
-		m_dMovedY = _szMoveRange.height;
-	else if (m_dMovedY < -_szMoveRange.height)
-		m_dMovedY = -_szMoveRange.height;
+	if (m_dMovedY > m_szMoveRange.height)
+		m_dMovedY = m_szMoveRange.height;
+	else if (m_dMovedY < -m_szMoveRange.height)
+		m_dMovedY = -m_szMoveRange.height;
 }
 
 void VisionViewWidget::_checkSelectedDevice(const cv::Point &ptMousePos) {

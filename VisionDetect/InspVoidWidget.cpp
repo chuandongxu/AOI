@@ -7,9 +7,10 @@
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
 #include "json.h"
-#include "../include/VisionUI.h"
+#include "../include/IVisionUI.h"
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
+#include "../DataModule/QDetectObj.h"
 
 using namespace NFG::AOI;
 using namespace AOI;
@@ -144,8 +145,8 @@ void InspVoidWidget::on_btnConfirmWindow_clicked()
     Engine::Window window;
     window.usage = Engine::Window::Usage::INSP_HOLE;
     window.xmlParams = jsonValue.toStyledString();
-    window.x = rectROI.x * dResolutionX;
-    window.y = rectROI.y * dResolutionY;
+    window.x = ( rectROI.x + rectROI.width  / 2.f ) * dResolutionX;
+    window.y = ( rectROI.y + rectROI.height / 2.f ) * dResolutionY;
     window.width = rectROI.width * dResolutionX;
     window.height = rectROI.height * dResolutionY;
     char windowName[100];
@@ -161,4 +162,12 @@ void InspVoidWidget::on_btnConfirmWindow_clicked()
 	}else {
         System->setTrackInfo(QString("Success to Create Window: %1.").arg ( windowName ) );
     }
+
+    QDetectObj detectObj ( window.Id, window.name.c_str() );
+    cv::Point2f ptCenter ( window.x / dResolutionX, window.y / dResolutionY );
+    cv::Size2f szROI ( window.width / dResolutionX, window.height / dResolutionY );
+    detectObj.setFrame ( cv::RotatedRect ( ptCenter, szROI, window.angle ) );
+    auto vecDetectObjs = pUI->getDetectObjs();
+    vecDetectObjs.push_back ( detectObj );
+    pUI->setDetectObjs ( vecDetectObjs );
 }

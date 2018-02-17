@@ -2,7 +2,7 @@
 #define VISIONUI_H
 
 #include "visionui_global.h"
-#include "../include/VisionUI.h"
+#include "../include/IVisionUI.h"
 #include "../Common/modulebase.h"
 
 class VisionView;
@@ -40,6 +40,8 @@ public:
 	virtual cv::Rect2f getSelectedROI() override;
 
 	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber) override;
+    virtual void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs) override;
+    virtual QVector<QDetectObj> getDetectObjs() const override;
     virtual void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows) override;
     virtual void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows) override;
     virtual void setViewState(VISION_VIEW_MODE enViewMode) override;

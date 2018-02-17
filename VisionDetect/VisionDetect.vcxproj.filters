@@ -280,6 +280,9 @@
     <ClInclude Include="GeneratedFiles\ui_FindLineWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\IVision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="visiondetect_global.h">

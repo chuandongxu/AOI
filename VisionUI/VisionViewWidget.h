@@ -10,6 +10,7 @@
 #include "VisionAPI.h"
 #include "constants.h"
 #include <QThread>
+#include "../DataModule/QDetectObj.h"
 
 using namespace AOI::Vision;
 
@@ -36,7 +37,6 @@ private:
 	bool                    m_bRuning;
 };
 
-class QDetectObj;
 class DViewUtility;
 class VisionViewWidget : public QWidget
 {
@@ -65,9 +65,12 @@ public:
 	cv::Rect2f getSelectedROI();
 
 	void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
+    void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs);
+    QVector<QDetectObj> getDetectObjs() const;
 	void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows);
 	void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows);
 	void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const;
+    void setHeightData(cv::Mat& matHeight);
 
 private slots:
 	void onResultEvent(const QVariantList &data);
@@ -118,12 +121,9 @@ private:
 	void _zoomImageForDisplay(const cv::Mat &matInputImg, cv::Mat &matOutput);
 	void _cutImageForDisplay(const cv::Mat &matInputImg, cv::Mat &matOutput);
 	void _drawDeviceWindows(cv::Mat &matImg);
+    void _drawDetectObjs();
 	void _calcMoveRange();
-	void _checkSelectedDevice(const cv::Point &ptMousePos);
-	void setButtonsEnable(bool flag, bool bLiveVideo);
-
-public:
-	void setHeightData(cv::Mat& matHeight);
+	void _checkSelectedDevice(const cv::Point &ptMousePos);	
 
 private:
 	VISION_VIEW_MODE    m_stateView;
@@ -142,27 +142,28 @@ private:
 	double m_dMovedY;
 
 private:
-	Ui::VisionViewWidget ui;
+	Ui::VisionViewWidget        ui;
 
-	QMutex m_mutex;
-	CameraOnLive * m_pCameraOnLive;
+	QMutex                      m_mutex;
+	CameraOnLive               *m_pCameraOnLive;
 
-	cv::Mat	m_hoImage;
-	cv::Mat	m_dispImage;
-	cv::Mat m_3DMatHeight;
+	cv::Mat	                    m_hoImage;
+	cv::Mat	                    m_dispImage;
+	cv::Mat                     m_3DMatHeight;
 
-private:
-	DViewUtility   *m_pMainViewFull3D;
-	DViewUtility   *m_pView3D;
-	cv::Rect m_selectROI;
-	QDockWidget *m_pSelectView;
-	bool m_bShow3DInitial;
-	bool m_bMainView3DInitial;
+	DViewUtility               *m_pMainViewFull3D;
+	DViewUtility               *m_pView3D;
+	cv::Rect                    m_selectROI;
+	QDockWidget                *m_pSelectView;
+	bool                        m_bShow3DInitial;
+	bool                        m_bMainView3DInitial;
 	QVector<cv::RotatedRect>    m_vecDeviceWindows;
 	QVector<cv::RotatedRect>    m_vecSelectedFM;   //FM for fiducial mark
 	cv::RotatedRect             m_selectedDevice;
-	cv::Size m_szCadOffset;
-	cv::Size _szMoveRange;
+	cv::Size                    m_szCadOffset;
+	cv::Size                    m_szMoveRange;
+    bool                        m_bDisplayDetectObjs;
+    QVector<QDetectObj>         m_vecDetectObjs;
 
 	static const cv::Scalar _constRedScalar;
 	static const cv::Scalar _constBlueScalar;

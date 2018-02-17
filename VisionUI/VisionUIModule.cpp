@@ -191,6 +191,16 @@ void QVisionUIModule::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
 	}
 }
 
+void QVisionUIModule::setDetectObjs(const QVector<QDetectObj> &vecDetectObjs)
+{
+    m_pVisionView->setDetectObjs ( vecDetectObjs );
+}
+
+QVector<QDetectObj> QVisionUIModule::getDetectObjs() const
+{
+    return m_pVisionView->getDetectObjs();
+}
+
 void QVisionUIModule::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows) {
     if (m_pVisionView)
 	{

@@ -9,10 +9,10 @@
 #include "VisionAPI.h"
 #include "constants.h"
 #include <QThread>
+#include "../DataModule/QDetectObj.h"
 
 using namespace AOI::Vision;
 
-class QDetectObj;
 class VisionViewWidget;
 class VisionView : public QMainWindow
 {
@@ -38,6 +38,8 @@ public:
 	cv::Rect2f getSelectedROI();
 
 	void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
+    void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs);
+    QVector<QDetectObj> getDetectObjs() const;
     void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows);
     void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows);
     void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const;
