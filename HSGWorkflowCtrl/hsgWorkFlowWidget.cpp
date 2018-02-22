@@ -6,7 +6,7 @@
 #include "../include/IdDefine.h"
 #include "../Common/SystemData.h"
 #include "../include/ICamera.h"
-#include "../include/VisionUI.h"
+#include "../include/IVisionUI.h"
 #include "hsgworkflowctrl_global.h"
 #include <QMessagebox>
 #include <qdesktopwidget.h>

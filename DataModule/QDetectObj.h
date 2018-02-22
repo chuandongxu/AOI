@@ -39,16 +39,15 @@ private:
 	std::vector<int> m_boardAlignRecords;
 };
 
-class QDetectObj : public QObject
+class QDetectObj
 {
-	Q_OBJECT
-
 public:
-	QDetectObj(int nID, QString name, QObject *parent = NULL);
+    QDetectObj() = default;
+	QDetectObj(int nID, QString name);
 	~QDetectObj();
 
 	QDetectObj(const QDetectObj &other);//复制构造函数 
-	QDetectObj & operator = (const QDetectObj &other);//赋值符 
+	QDetectObj & operator = (const QDetectObj &other);//赋值符
 
 public:
 	QString getName(){ return m_objName; }
@@ -70,22 +69,22 @@ public:
 
 	bool isFrameCreated();
 	void setFrame(cv::RotatedRect& rect);
-	cv::RotatedRect getFrame();
+	cv::RotatedRect getFrame() const;
 
 	bool isLocCreated();
 	void setLoc(cv::RotatedRect& rect);
 	int getLocID();
-	cv::RotatedRect getLoc();
+	cv::RotatedRect getLoc() const;
 	void clearLoc();
 	void setRecordID(int nRecordID);
 	int getRecordID();
 
 	bool isHgtDetectCreated();
 	void addHeightDetect(cv::RotatedRect& rect);
-	int getHeightDetectNum();
+	int getHeightDetectNum() const;
 	void setHeightDetect(int index, cv::RotatedRect& rect);
 	void removeHeightDetect(int index);
-	cv::RotatedRect getHeightDetect(int index);
+	cv::RotatedRect getHeightDetect(int index) const;
 	void setHeightValue(int index, double dValue);
 	double getHeightValue(int index);
 	bool isTested();
@@ -94,10 +93,10 @@ public:
 
 	bool isHgtBaseCreated();
 	void addHeightBase(cv::RotatedRect& rect);
-	int getHeightBaseNum();
+	int getHeightBaseNum() const;
 	void setHeightBase(int index, cv::RotatedRect& rect);
 	void removeHeightBase(int index);
-	cv::RotatedRect getHeightBase(int index);
+	cv::RotatedRect getHeightBase(int index) const;
 	void clearHeightBase();
 
 	int getDBRelationNum();

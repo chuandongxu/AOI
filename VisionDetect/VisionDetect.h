@@ -5,6 +5,7 @@
 #include "../Common/modulebase.h"
 #include "../include/IVision.h"
 #include "VisionCtrl.h"
+#include "InspWindowWidget.h"
 
 class VisionDetectRunView;
 class SysCalibrationView;
@@ -20,6 +21,7 @@ public:
 	virtual QWidget* getDetectView();
 	virtual QWidget* getCellEditorView();
 	virtual QWidget* getCaliView();
+    virtual QWidget* getInspWindowView() override;
 
 public:
 	virtual bool loadCmdData(int nStation);
@@ -45,4 +47,5 @@ private:
 	VisionCtrl m_ctrl;
 	VisionDetectRunView* m_pDetectView;
 	SysCalibrationView* m_pCaliView;
+    InspWindowWidget* m_pInspWindowView;
 };

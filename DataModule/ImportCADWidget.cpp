@@ -9,7 +9,7 @@
 #include <map>
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
-#include "../include/VisionUI.h"
+#include "../include/IVisionUI.h"
 
 using namespace NFG::AOI;
 

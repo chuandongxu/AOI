@@ -100,6 +100,8 @@ struct Window {
         INSP_CHIP,
         INSP_CONTOUR,
         INSP_HOLE,
+        FIND_LINE,
+        FIND_CIRCLE,
     };
     Window() :
         Id          (0),

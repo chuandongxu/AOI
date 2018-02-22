@@ -29,7 +29,7 @@
     <enum>QTabWidget::Triangular</enum>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -52,8 +52,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>98</width>
-        <height>28</height>
+        <width>400</width>
+        <height>698</height>
        </rect>
       </property>
       <attribute name="label">
@@ -462,8 +462,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>98</width>
-        <height>28</height>
+        <width>400</width>
+        <height>698</height>
        </rect>
       </property>
       <attribute name="label">
@@ -1197,8 +1197,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>98</width>
-        <height>28</height>
+        <width>400</width>
+        <height>667</height>
        </rect>
       </property>
       <attribute name="label">
@@ -2190,7 +2190,7 @@
         <x>0</x>
         <y>0</y>
         <width>400</width>
-        <height>643</height>
+        <height>628</height>
        </rect>
       </property>
       <attribute name="label">

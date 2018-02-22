@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/VisionDetect">
+        <file>Image/InspVoid.png</file>
+    </qresource>
+</RCC>

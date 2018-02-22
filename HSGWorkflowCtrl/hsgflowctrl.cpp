@@ -17,7 +17,7 @@
 #include "../include/IDlp.h"
 #include "../include/ICamera.h"
 #include "../include/IVision.h"
-#include "../include/VisionUI.h"
+#include "../include/IVisionUI.h"
 #include "../include/IdDefine.h"
 #include "../Common/eos.h"
 #include "../Common/CVSFile.h"

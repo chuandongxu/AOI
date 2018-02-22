@@ -6,13 +6,16 @@
 #include <QToolBar>
 #include <QAction>
 #include <QDockWidget>
+#include <QThread>
+#include <memory>
+
 #include "VisionAPI.h"
 #include "constants.h"
-#include <QThread>
+
+#include "../DataModule/QDetectObj.h"
 
 using namespace AOI::Vision;
 
-class QDetectObj;
 class VisionViewWidget;
 class VisionView : public QMainWindow
 {
@@ -33,12 +36,13 @@ public:
 	void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues);
 	void show3DView();
 
-	void setSelect();
 	cv::Mat getSelectImage();
 	void clearSelect();
-	cv::Rect2f getSelectScale();
+	cv::Rect2f getSelectedROI();
 
 	void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
+    void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs);
+    QVector<QDetectObj> getDetectObjs() const;
     void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows);
     void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows);
     void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const;
@@ -61,6 +65,7 @@ private slots:
 	void onClickPushbutton_stopLive();
 
 	void show3D();
+    void selectROI();
 	void showSelectROI3D();
 
 	void showLight();
@@ -82,16 +87,17 @@ private:
 	QAction *openAct;
 	QAction *cameraAct;
 	QAction *saveAsAct;
-	QAction *zoomInAct;
-	QAction *zoomOutAct;
-	QAction *fullScreenAct;
-	QAction *moveAct;
+	std::unique_ptr<QAction> m_pZoomInAct;
+	std::unique_ptr<QAction> m_pZoomOutAct;
+	std::unique_ptr<QAction> m_pFullScreenAct;
+	std::unique_ptr<QAction> m_pMoveAct;
 
 	QAction *onLiveAct;
 	QAction *onStopAct;
 
 	QAction *show3DAct;
-	QAction *selectROI;
+    std::unique_ptr<QAction> m_pSelectROI;
+	std::unique_ptr<QAction> m_pSelect3DROI;
 
 	QAction *showLightAct;
 

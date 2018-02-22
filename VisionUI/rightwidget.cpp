@@ -26,7 +26,7 @@ QRightWidget::QRightWidget(QWidget *parent)
 	if (pVision)
 	{
 		ui.stackedWidget->addWidget(pVision->getDetectView());
-		ui.stackedWidget->addWidget(pVision->getCellEditorView());
+		ui.stackedWidget->addWidget(pVision->getInspWindowView());
 		ui.stackedWidget->addWidget(pVision->getCaliView());
 	}
 

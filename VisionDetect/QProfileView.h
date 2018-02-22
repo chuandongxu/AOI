@@ -8,8 +8,6 @@
 
 #include "opencv/cv.h"
 
-using namespace cv;
-
 class QProfileView : public QMainWindow
 {
 	Q_OBJECT
@@ -34,7 +32,7 @@ public:
 	bool isSelect();
 	cv::Mat getSelectImage();
 	cv::Rect getSelectRect();
-	Rect2f getSelectScale();
+	cv::Rect2f getSelectedROI();
 	void clearSelect();
 
 	QVector<cv::Rect>& getMeasureRange() { return m_measRanges; }
@@ -78,7 +76,7 @@ protected:
 private:
 	void loadImage(QString& fileName);
 	void repaintAll();
-	void A_Transform(Mat& src, Mat& dst, int dx, int dy);
+	void A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy);
 	void setViewState(int state);
 	double convertToImgX(double dMouseValue, bool bLen = false);
 	double convertToImgY(double dMouseValue, bool bLen = false);
