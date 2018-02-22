@@ -89,10 +89,10 @@ FindLineWidget::FindLineWidget(QWidget *parent)
     m_pEditPointMaxOffset->setText("100");
     ui.tableWidget->setCellWidget(POINT_MAX_OFFSET, DATA_COLUMN, m_pEditPointMaxOffset.get() );
 
-    m_pEditMinLinerity = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditMinLinerity->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinLinerity.get() ) );
-    m_pEditMinLinerity->setText("100");
-    ui.tableWidget->setCellWidget(MIN_LINERITY, DATA_COLUMN, m_pEditMinLinerity.get() );
+    m_pEditMinLinearity = std::make_unique<QLineEdit>( ui.tableWidget );
+    m_pEditMinLinearity->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinLinearity.get() ) );
+    m_pEditMinLinearity->setText("80");
+    ui.tableWidget->setCellWidget(MIN_LINERITY, DATA_COLUMN, m_pEditMinLinearity.get() );
 
     m_pEditCheckAngle = std::make_unique<QCheckBox>(ui.tableWidget);
     ui.tableWidget->setCellWidget ( CHECK_ANGLE, DATA_COLUMN, m_pEditCheckAngle.get() );
@@ -130,9 +130,9 @@ void FindLineWidget::on_btnTryInsp_clicked()
     stCmd.fRmStrayPointRatio = m_pEditRmStrayPointRatio->text().toFloat();
     stCmd.nDiffFilterHalfW = m_pEditDiffFilterHalfW->text().toInt();
     stCmd.fDiffFilterSigma = m_pEditDiffFilterSigma->text().toFloat();
-    stCmd.bCheckLinerity = m_pCheckLinerity->isChecked();
+    stCmd.bCheckLinearity = m_pCheckLinerity->isChecked();
     stCmd.fPointMaxOffset = m_pEditPointMaxOffset->text().toFloat() / dResolutionX;
-    stCmd.fMinLinerity = m_pEditMinLinerity->text().toFloat() / ONE_HUNDRED_PERCENT;
+    stCmd.fMinLinearity = m_pEditMinLinearity->text().toFloat() / ONE_HUNDRED_PERCENT;
     stCmd.bCheckAngle = m_pEditCheckAngle->isChecked();
     stCmd.fExpectedAngle = m_pEditExpectedAngle->text().toFloat();
     stCmd.fAngleDiffTolerance = m_pEditAngleDiffTolerance->text().toFloat();
@@ -149,7 +149,7 @@ void FindLineWidget::on_btnTryInsp_clicked()
     stCmd.rectRotatedROI.size = rectROI.size();
     Vision::PR_FindLine ( &stCmd, &stRpy );
     QString strMsg;
-    strMsg.sprintf("Inspect Status %d, linerity %f, angle %f", Vision::ToInt32 ( stRpy.enStatus ), stRpy.fLinerity, stRpy.fAngle );
+    strMsg.sprintf("Inspect Status %d, linearity %f pass %d, angle %f pass %d", Vision::ToInt32 ( stRpy.enStatus ), stRpy.fLinearity, stRpy.bLinearityCheckPass, stRpy.fAngle, stRpy.bAngleCheckPass );
     QMessageBox::information(this, "Find Line", strMsg);
 }
 
@@ -172,7 +172,7 @@ void FindLineWidget::on_btnConfirmWindow_clicked()
     jsonValue["DiffFilterSigma"] = m_pEditDiffFilterSigma->text().toFloat();
     jsonValue["CheckLinerity"] = m_pCheckLinerity->isChecked();
     jsonValue["PointMaxOffset"] = m_pEditPointMaxOffset->text().toFloat();
-    jsonValue["MinLinerity"] = m_pEditMinLinerity->text().toFloat() / ONE_HUNDRED_PERCENT;
+    jsonValue["MinLinearity"] = m_pEditMinLinearity->text().toFloat() / ONE_HUNDRED_PERCENT;
     jsonValue["CheckAngle"] = m_pEditCheckAngle->isChecked();
     jsonValue["ExpectedAngle"] = m_pEditExpectedAngle->text().toFloat();
     jsonValue["AngleDiffTolerance"] = m_pEditAngleDiffTolerance->text().toFloat();

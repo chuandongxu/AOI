@@ -6,9 +6,12 @@
 #include <QToolBar>
 #include <QAction>
 #include <QDockWidget>
+#include <QThread>
+#include <memory>
+
 #include "VisionAPI.h"
 #include "constants.h"
-#include <QThread>
+
 #include "../DataModule/QDetectObj.h"
 
 using namespace AOI::Vision;
@@ -62,6 +65,7 @@ private slots:
 	void onClickPushbutton_stopLive();
 
 	void show3D();
+    void selectROI();
 	void showSelectROI3D();
 
 	void showLight();
@@ -83,16 +87,17 @@ private:
 	QAction *openAct;
 	QAction *cameraAct;
 	QAction *saveAsAct;
-	QAction *zoomInAct;
-	QAction *zoomOutAct;
-	QAction *fullScreenAct;
-	QAction *moveAct;
+	std::unique_ptr<QAction> m_pZoomInAct;
+	std::unique_ptr<QAction> m_pZoomOutAct;
+	std::unique_ptr<QAction> m_pFullScreenAct;
+	std::unique_ptr<QAction> m_pMoveAct;
 
 	QAction *onLiveAct;
 	QAction *onStopAct;
 
 	QAction *show3DAct;
-	QAction *selectROI;
+    std::unique_ptr<QAction> m_pSelectROI;
+	std::unique_ptr<QAction> m_pSelect3DROI;
 
 	QAction *showLightAct;
 

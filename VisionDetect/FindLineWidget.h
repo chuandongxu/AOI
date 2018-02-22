@@ -33,7 +33,7 @@ private:
     std::unique_ptr<QLineEdit>  m_pEditDiffFilterSigma;
     std::unique_ptr<QCheckBox>  m_pCheckLinerity;
     std::unique_ptr<QLineEdit>  m_pEditPointMaxOffset;
-    std::unique_ptr<QLineEdit>  m_pEditMinLinerity;
+    std::unique_ptr<QLineEdit>  m_pEditMinLinearity;
     std::unique_ptr<QCheckBox>  m_pEditCheckAngle;
     std::unique_ptr<QLineEdit>  m_pEditExpectedAngle;
     std::unique_ptr<QLineEdit>  m_pEditAngleDiffTolerance;
