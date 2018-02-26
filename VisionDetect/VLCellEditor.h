@@ -89,6 +89,4 @@ private:
 	int m_nObjIndex;
 
 	DataTypeEnum m_dataTypeEnum;
-
-	QColorWeight* m_pColorWeight;
 };

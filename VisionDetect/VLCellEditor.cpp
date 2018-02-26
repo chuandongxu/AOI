@@ -15,7 +15,6 @@
 #include <QThread>
 #include <QMessageBox>
 #include <QBitmap>
-#include "QColorWeight.h"
 
 
 #include "../lib/VisionLibrary/include/VisionAPI.h"
@@ -89,9 +88,7 @@ QVLCellEditor::QVLCellEditor(DataTypeEnum emType, QWidget *parent)
 	//loadDataBase();
 
 	setMouseTracking(true);
-	ui.checkBox_showNumber->setChecked(true);
-
-	m_pColorWeight = new QColorWeight();
+	ui.checkBox_showNumber->setChecked(true);	
 }
 
 QVLCellEditor::~QVLCellEditor()
@@ -408,10 +405,6 @@ void QVLCellEditor::onEditCellFrame()
 		m_curObj->setFrame(cellFrameRect);	
 
 		displayObj();
-
-		m_pColorWeight->setImage(getVisionUI()->getImage()(cellFrameRect.boundingRect()));
-		cv::Mat grayImg = m_pColorWeight->generateGrayImage(cellFrameRect.center);
-		m_pColorWeight->show();
 	}
 	else
 	{

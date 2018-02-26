@@ -396,10 +396,10 @@ void VisionView::setButtonsEnable(bool flag)
 	openAct->setEnabled(flag);
 	cameraAct->setEnabled(flag);
 	saveAsAct->setEnabled(flag);
-	zoomInAct->setEnabled(flag);
-	zoomOutAct->setEnabled(flag);
-	fullScreenAct->setEnabled(flag);
-	moveAct->setEnabled(flag);
+	//zoomInAct->setEnabled(flag);
+	//zoomOutAct->setEnabled(flag);
+	//fullScreenAct->setEnabled(flag);
+	//moveAct->setEnabled(flag);
 	show3DAct->setEnabled(flag);
 	//showLightAct->setEnabled(flag);
 }
