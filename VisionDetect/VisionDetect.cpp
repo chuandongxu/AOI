@@ -9,6 +9,7 @@ VisionDetect::VisionDetect(int id, const QString &name)
 {
 	m_pDetectView = new VisionDetectRunView(&m_ctrl);
 	m_pCaliView = new SysCalibrationView(&m_ctrl);
+    m_pInspWindowView = new InspWindowWidget();
 }
 
 VisionDetect::~VisionDetect()
@@ -45,6 +46,11 @@ QWidget* VisionDetect::getCellEditorView()
 QWidget* VisionDetect::getCaliView()
 {
 	return m_pCaliView;
+}
+
+QWidget* VisionDetect::getInspWindowView()
+{
+    return m_pInspWindowView;
 }
 
 bool VisionDetect::loadCmdData(int nStation)

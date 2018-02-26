@@ -252,6 +252,9 @@
     <CustomBuild Include="VisionViewWidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="VisionUI.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_TimeWidget.h">
@@ -277,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_VisionViewWidget.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IVisionUI.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

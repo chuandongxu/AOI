@@ -4,7 +4,7 @@
 #include "../Common/SystemData.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
-#include "../include/VisionUI.h"
+#include "../include/IVisionUI.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -346,11 +346,11 @@ void QVLCellEditor::onEditCellROI()
 		return;
 	}	
 
-	getVisionUI()->setSelect();
+	getVisionUI()->setViewState(VISION_VIEW_MODE::MODE_VIEW_SELECT_ROI);
 
 	QMessageBox::information(this, QStringLiteral("提示"), QStringLiteral("请鼠标选择检测区域..."));
 	
-	//while (getVisionUI()->getSelectScale().width <= 100)
+	//while (getVisionUI()->getSelectedROI().width <= 100)
 	//{
 	//	QThread::msleep(100);
 	//	QApplication::processEvents();
@@ -374,7 +374,7 @@ void QVLCellEditor::onEditCellFrame()
 	m_pVLMaskEditor->setImage(getVisionUI()->getSelectImage(), true);
 	if (m_curObj->isFrameCreated())
 	{
-		Rect2f rtScale = getVisionUI()->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectedROI();
 
 		cv::RotatedRect frameRect = m_curObj->getFrame();
 		frameRect.center.x -= rtScale.x;
@@ -397,7 +397,7 @@ void QVLCellEditor::onEditCellFrame()
 	{
 		RotatedRect cellFrameRect = m_pVLMaskEditor->getSelect();
 
-		Rect2f rtScale = getVisionUI()->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectedROI();
 
 		cellFrameRect.center.x += rtScale.x;
 		cellFrameRect.center.y += rtScale.y;		
@@ -435,7 +435,7 @@ void QVLCellEditor::onEditCellLocFrame()
 	m_pVLMaskEditor->setImage(getVisionUI()->getSelectImage(), true);
 	if (m_curObj->isLocCreated())
 	{
-		Rect2f rtScale = getVisionUI()->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectedROI();
 
 		cv::RotatedRect locRect = m_curObj->getLoc();
 		locRect.center.x -= rtScale.x;
@@ -459,7 +459,7 @@ void QVLCellEditor::onEditCellLocFrame()
 	{
 		RotatedRect cellLocRect = m_pVLMaskEditor->getSelect();
 
-		Rect2f rtScale = getVisionUI()->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectedROI();
 
 		cellLocRect.center.x += rtScale.x;
 		cellLocRect.center.y += rtScale.y;
@@ -581,7 +581,7 @@ void QVLCellEditor::onEditCellBaseFrame()
 	m_pVLMaskEditor->setImage(getVisionUI()->getSelectImage(), true);
 	if (m_curObj->isHgtBaseCreated())
 	{
-		Rect2f rtScale = getVisionUI()->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectedROI();
 
 		for (int i = 0; i < m_curObj->getHeightBaseNum(); i++)
 		{
@@ -611,7 +611,7 @@ void QVLCellEditor::onEditCellBaseFrame()
 	m_curObj->clearHeightBase();
 	if (m_pVLMaskEditor->getSelectNum() > 0)
 	{		
-		Rect2f rtScale = getVisionUI()->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectedROI();
 
 		for (int i = 0; i < m_pVLMaskEditor->getSelectNum(); i++)
 		{
@@ -651,7 +651,7 @@ void QVLCellEditor::onEditCellDetectFrame()
 	m_pVLMaskEditor->setImage(getVisionUI()->getSelectImage(), true);
 	if (m_curObj->isHgtDetectCreated())
 	{
-		Rect2f rtScale = getVisionUI()->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectedROI();
 
 		for (int i = 0; i < m_curObj->getHeightDetectNum(); i++)
 		{
@@ -681,7 +681,7 @@ void QVLCellEditor::onEditCellDetectFrame()
 	m_curObj->clearHeightDetect();
 	if (m_pVLMaskEditor->getSelectNum() > 0)
 	{
-		Rect2f rtScale = getVisionUI()->getSelectScale();
+		Rect2f rtScale = getVisionUI()->getSelectedROI();
 
 		for (int i = 0; i < m_pVLMaskEditor->getSelectNum(); i++)
 		{

@@ -9,7 +9,7 @@
 #include "../include/IdDefine.h"
 #include "../include/ICamera.h"
 #include "../include/IDlp.h"
-#include "../include/VisionUI.h"
+#include "../include/IVisionUI.h"
 #include "../include/IMotion.h"
 #include "../Common/eos.h"
 #include <QMessageBox>

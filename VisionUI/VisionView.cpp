@@ -34,7 +34,7 @@ VisionView::VisionView(QWidget *parent)
 }
 
 VisionView::~VisionView()
-{	
+{
 }
 
 void VisionView::init()
@@ -73,25 +73,25 @@ void VisionView::createActions()
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAsFile()));
 
-	zoomInAct = new QAction(QIcon("image/zoomIn.png"), QStringLiteral("放大"), this);
-	zoomInAct->setShortcuts(QKeySequence::ZoomIn);
-	zoomInAct->setStatusTip(tr("Zoom in window"));
-	connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
+	m_pZoomInAct = std::make_unique<QAction>(QIcon("image/zoomIn.png"), QStringLiteral("放大"), this);
+	m_pZoomInAct->setShortcuts(QKeySequence::ZoomIn);
+	m_pZoomInAct->setStatusTip(tr("Zoom in window"));
+	connect(m_pZoomInAct.get(), SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-	zoomOutAct = new QAction(QIcon("image/zoomOut.png"), QStringLiteral("缩小"), this);
-	zoomOutAct->setShortcuts(QKeySequence::ZoomOut);
-	zoomOutAct->setStatusTip(tr("Zoom out window"));
-	connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
+	m_pZoomOutAct = std::make_unique<QAction>(QIcon("image/zoomOut.png"), QStringLiteral("缩小"), this);
+	m_pZoomOutAct->setShortcuts(QKeySequence::ZoomOut);
+	m_pZoomOutAct->setStatusTip(tr("Zoom out window"));
+	connect(m_pZoomOutAct.get(), SIGNAL(triggered()), this, SLOT(zoomOut()));
 
-	fullScreenAct = new QAction(QIcon("image/fullScreen.png"), QStringLiteral("全屏"), this);
-	fullScreenAct->setShortcuts(QKeySequence::FullScreen);
-	fullScreenAct->setStatusTip(tr("Full screen"));
-	connect(fullScreenAct, SIGNAL(triggered()), this, SLOT(fullScreen()));
+	m_pFullScreenAct = std::make_unique<QAction>(QIcon("image/fullScreen.png"), QStringLiteral("全屏"), this);
+	m_pFullScreenAct->setShortcuts(QKeySequence::FullScreen);
+	m_pFullScreenAct->setStatusTip(tr("Full screen"));
+	connect(m_pFullScreenAct.get(), SIGNAL(triggered()), this, SLOT(fullScreen()));
 
-	moveAct = new QAction(QIcon("image/moveView.png"), QStringLiteral("移动"), this);
-	moveAct->setShortcuts(QKeySequence::MoveToEndOfBlock);
-	moveAct->setStatusTip(tr("Move screen"));
-	connect(moveAct, SIGNAL(triggered()), this, SLOT(moveScreen()));
+	m_pMoveAct = std::make_unique<QAction>(QIcon("image/moveView.png"), QStringLiteral("移动"), this);
+	m_pMoveAct->setShortcuts(QKeySequence::MoveToEndOfBlock);
+	m_pMoveAct->setStatusTip(tr("Move screen"));
+	connect(m_pMoveAct.get(), SIGNAL(triggered()), this, SLOT(moveScreen()));
 
 	onLiveAct = new QAction(QIcon("image/onLive.png"), QStringLiteral("实时图像"), this);
 	onLiveAct->setShortcuts(QKeySequence::MoveToStartOfDocument);
@@ -108,11 +108,16 @@ void VisionView::createActions()
 	show3DAct->setStatusTip(tr("Show 3D"));
 	connect(show3DAct, SIGNAL(triggered()), this, SLOT(show3D()));
 
-	selectROI = new QAction(QIcon("cutSurface.png"), tr("&Select 3D"), this);
-	selectROI->setShortcuts(QKeySequence::Italic);
-	selectROI->setStatusTip(tr("Show Select 3D Data"));
-	connect(selectROI, SIGNAL(triggered()), this, SLOT(showSelectROI3D()));
-	addAction(selectROI);
+    m_pSelectROI = std::make_unique<QAction>(QIcon("image/SelectROI.png"), tr("&Select ROI"), this);
+    m_pSelectROI->setShortcut(QKeySequence::Bold);
+    connect(m_pSelectROI.get(), SIGNAL(triggered()), this, SLOT(selectROI()));
+    addAction(m_pSelectROI.get());
+
+	m_pSelect3DROI = std::make_unique<QAction>(QIcon("image/cutSurface.png"), tr("&Select 3D"), this);
+	m_pSelect3DROI->setShortcuts(QKeySequence::Italic);
+	m_pSelect3DROI->setStatusTip(tr("Show Select 3D Data"));
+	connect(m_pSelect3DROI.get(), SIGNAL(triggered()), this, SLOT(showSelectROI3D()));
+	addAction(m_pSelect3DROI.get());
 	setContextMenuPolicy(Qt::ActionsContextMenu);
 
 	showLightAct = new QAction(QIcon("image/busy.png"), QStringLiteral("显示灯光设置"), this);
@@ -131,10 +136,10 @@ void VisionView::createToolBars()
 	fileToolBar->addAction(saveAsAct);
 
 	editToolBar = addToolBar(tr("Edit"));
-	editToolBar->addAction(zoomInAct);
-	editToolBar->addAction(zoomOutAct);
-	editToolBar->addAction(fullScreenAct);
-	editToolBar->addAction(moveAct);
+	editToolBar->addAction(m_pZoomInAct.get());
+	editToolBar->addAction(m_pZoomOutAct.get());
+	editToolBar->addAction(m_pFullScreenAct.get());
+	editToolBar->addAction(m_pMoveAct.get());
 
 	videoToolBar = addToolBar(tr("Video"));
 	videoToolBar->addAction(onLiveAct);
@@ -242,6 +247,11 @@ void VisionView::show3D()
 	}
 }
 
+void VisionView::selectROI()
+{
+    m_pViewWidget->setViewState ( MODE_VIEW_SELECT_ROI );
+}
+
 void VisionView::showSelectROI3D()
 {
 	if (m_pViewWidget)
@@ -324,14 +334,6 @@ void VisionView::showLight()
 	}
 }
 
-void VisionView::setSelect()
-{
-	if (m_pViewWidget)
-	{
-		m_pViewWidget->setSelect();
-	}
-}
-
 cv::Mat VisionView::getSelectImage()
 {
 	if (m_pViewWidget)
@@ -350,11 +352,11 @@ void VisionView::clearSelect()
 	}
 }
 
-cv::Rect2f VisionView::getSelectScale()
+cv::Rect2f VisionView::getSelectedROI()
 {
 	if (m_pViewWidget)
 	{
-		return m_pViewWidget->getSelectScale();
+		return m_pViewWidget->getSelectedROI();
 	}
 
 	return cv::Rect2f();
@@ -366,6 +368,16 @@ void VisionView::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
 	{
 		m_pViewWidget->displayObjs(objs, bShowNumber);
 	}
+}
+
+void VisionView::setDetectObjs(const QVector<QDetectObj> &vecDetectObjs)
+{
+    m_pViewWidget->setDetectObjs(vecDetectObjs);
+}
+
+QVector<QDetectObj> VisionView::getDetectObjs() const
+{
+    return m_pViewWidget->getDetectObjs();
 }
 
 void VisionView::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows)
@@ -396,10 +408,12 @@ void VisionView::setButtonsEnable(bool flag)
 	openAct->setEnabled(flag);
 	cameraAct->setEnabled(flag);
 	saveAsAct->setEnabled(flag);
-	//zoomInAct->setEnabled(flag);
-	//zoomOutAct->setEnabled(flag);
-	//fullScreenAct->setEnabled(flag);
-	//moveAct->setEnabled(flag);
+
+	m_pZoomInAct->setEnabled(flag);
+	m_pZoomOutAct->setEnabled(flag);
+	m_pFullScreenAct->setEnabled(flag);
+	m_pMoveAct->setEnabled(flag);
+
 	show3DAct->setEnabled(flag);
 	//showLightAct->setEnabled(flag);
 }

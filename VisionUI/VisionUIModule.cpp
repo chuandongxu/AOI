@@ -155,14 +155,6 @@ void QVisionUIModule::show3DView()
 	}
 }
 
-void QVisionUIModule::setSelect()
-{
-	if (m_pVisionView)
-	{
-		m_pVisionView->setSelect();
-	}
-}
-
 cv::Mat QVisionUIModule::getSelectImage()
 {
 	if (m_pVisionView)
@@ -181,11 +173,11 @@ void QVisionUIModule::clearSelect()
 	}
 }
 
-cv::Rect2f QVisionUIModule::getSelectScale()
+cv::Rect2f QVisionUIModule::getSelectedROI()
 {
 	if (m_pVisionView)
 	{
-		return m_pVisionView->getSelectScale();
+		return m_pVisionView->getSelectedROI();
 	}
 
 	return cv::Rect2f();
@@ -197,6 +189,16 @@ void QVisionUIModule::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
 	{
 		m_pVisionView->displayObjs(objs, bShowNumber);
 	}
+}
+
+void QVisionUIModule::setDetectObjs(const QVector<QDetectObj> &vecDetectObjs)
+{
+    m_pVisionView->setDetectObjs ( vecDetectObjs );
+}
+
+QVector<QDetectObj> QVisionUIModule::getDetectObjs() const
+{
+    return m_pVisionView->getDetectObjs();
 }
 
 void QVisionUIModule::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows) {

@@ -1,7 +1,7 @@
 #include "ScanImageWidget.h"
 #include <QFileDialog>
 #include <QMessageBox>
-#include "../include/VisionUI.h"
+#include "../include/IVisionUI.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "opencv.hpp"

@@ -18,7 +18,7 @@
 #include "dog_vcode.h"
 #include "errorprinter.h"
 #include "DataUtils.h"
-#include "../include/VisionUI.h"
+#include "../include/IVisionUI.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 

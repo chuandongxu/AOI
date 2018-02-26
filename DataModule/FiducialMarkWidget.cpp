@@ -1,7 +1,7 @@
 ﻿#include <QMessageBox>
 #include "VisionAPI.h"
 #include "FiducialMarkWidget.h"
-#include "../include/VisionUI.h"
+#include "../include/IVisionUI.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../Common/SystemData.h"

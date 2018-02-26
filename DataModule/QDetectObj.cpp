@@ -1,11 +1,12 @@
-﻿#include "QDetectObj.h"
-#include <QMath.h>
+﻿#include <QMath.h>
 
 #include "opencv2/opencv.hpp"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
+
+#include "QDetectObj.h"
 
 QBoardObj::QBoardObj(int nID, QString name, QObject *parent)
 	: m_objName(name), QObject(parent)
@@ -95,13 +96,11 @@ void QBoardObj::clearBoardAlignments()
 	m_boardAlignRecords.clear();
 }
 
-QDetectObj::QDetectObj(int nID, QString name, QObject *parent)
-	: m_objName(name), QObject(parent)
+QDetectObj::QDetectObj(int nID, QString name)
+	: m_nID(nID), m_objName(name)
 {
 	//m_objPosX = 0;
 	//m_objPosY = 0;
-
-	m_nID = nID;
 
 	m_bframeCreated = false;
 	m_bLocCreated = false;
@@ -179,12 +178,12 @@ void QDetectObj::setObjPos(double posX, double posY)
 
 double QDetectObj::getX()
 {
-	return m_frameRect.center.x; 
+	return m_frameRect.center.x;
 }
 
 double QDetectObj::getY()
 {
-	return m_frameRect.center.y; 
+	return m_frameRect.center.y;
 }
 
 double QDetectObj::getAngle()
@@ -214,10 +213,10 @@ void QDetectObj::setFrame(cv::RotatedRect& rect)
 		changeCoordinateOfObjParts(rect);
 	}
 	m_frameRect = rect; 
-	m_bframeCreated = true; 
+	m_bframeCreated = true;
 }
 
-cv::RotatedRect QDetectObj::getFrame()
+cv::RotatedRect QDetectObj::getFrame() const
 { 
 	return m_frameRect;
 }
@@ -272,7 +271,7 @@ void QDetectObj::setLoc(cv::RotatedRect& rect)
 	m_bLocCreated = true;
 }
 
-cv::RotatedRect QDetectObj::getLoc()
+cv::RotatedRect QDetectObj::getLoc() const
 { 
 	cv::RotatedRect rect = m_locationRect;
 
@@ -317,7 +316,7 @@ void QDetectObj::addHeightDetect(cv::RotatedRect& rect)
 	m_bhgtDetectCreated = true;
 }
 
-int QDetectObj::getHeightDetectNum()
+int QDetectObj::getHeightDetectNum() const
 {
 	return m_heightDetectRect.size();
 }
@@ -339,7 +338,7 @@ void QDetectObj::removeHeightDetect(int index)
 	m_heightDetectValues.erase(m_heightDetectValues.begin() + index);
 }
 
-cv::RotatedRect QDetectObj::getHeightDetect(int index)
+cv::RotatedRect QDetectObj::getHeightDetect(int index) const
 {
 	if (index < 0 || index >= m_heightDetectRect.size()) return RotatedRect();
 
@@ -408,7 +407,7 @@ void QDetectObj::addHeightBase(cv::RotatedRect& rect)
 	m_bhgtBaseCreated = true;
 }
 
-int QDetectObj::getHeightBaseNum()
+int QDetectObj::getHeightBaseNum() const
 {
 	return m_heightDetectBaseRect.size();
 }
@@ -429,7 +428,7 @@ void QDetectObj::removeHeightBase(int index)
 	m_heightDetectBaseRect.erase(m_heightDetectBaseRect.begin() + index);
 }
 
-cv::RotatedRect QDetectObj::getHeightBase(int index)
+cv::RotatedRect QDetectObj::getHeightBase(int index) const
 {
 	if (index < 0 || index >= m_heightDetectBaseRect.size()) return RotatedRect();
 
