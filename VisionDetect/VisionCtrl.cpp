@@ -571,13 +571,15 @@ bool VisionCtrl::mergeImage(QVector<cv::Mat>& matInputImages, QVector<cv::Mat>& 
 	double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	double dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
+	auto nScanDirection = System->getParam("scan_image_Direction").toInt();
+
 	stCmd.nCountOfImgPerFrame = System->getParam("scan_image_OneFrameImageCount").toInt();
 	stCmd.nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
 	stCmd.nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
-	stCmd.nOverlapX = ToInt(System->getParam("scan_image_OverlapX").toDouble() * dResolutionX);
-	stCmd.nOverlapY = ToInt(System->getParam("scan_image_OverlapY").toDouble() * dResolutionY);
+	stCmd.nOverlapX = ToInt(System->getParam("scan_image_OverlapX").toDouble() / dResolutionX + 0.5);
+	stCmd.nOverlapY = ToInt(System->getParam("scan_image_OverlapY").toDouble() / dResolutionY + 0.5);
 	stCmd.nCountOfImgPerRow = System->getParam("scan_image_RowImageCount").toInt();
-	stCmd.enScanDir = Vision::PR_SCAN_IMAGE_DIR::LEFT_TO_RIGHT;
+	stCmd.enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR> (nScanDirection);
 
 	Vision::VisionStatus retStatus = PR_CombineImg(&stCmd, &stRpy);
 	if (retStatus == Vision::VisionStatus::OK)

@@ -1271,7 +1271,7 @@ bool DataCtrl::doAlignment(const Vision::VectorOfMat &vecFrameImages)
             static_cast<Vision::PR_SCAN_IMAGE_DIR> ( nScanDirection ) );
 
         int nImageIndex = nFrameX + nFrameY * nCountOfFrameX;
-        if ( nImageIndex >= vecAlignment.size() ) {
+		if (nImageIndex >= vecFrameImages.size()) {
             System->setTrackInfo(QString("The target frame image index %1 is larger than the count of input image %2.").arg( nImageIndex ).arg( vecAlignment.size() ) );
             return false;
         }
