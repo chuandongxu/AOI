@@ -1271,7 +1271,7 @@ bool DataCtrl::doAlignment(const Vision::VectorOfMat &vecFrameImages)
             static_cast<Vision::PR_SCAN_IMAGE_DIR> ( nScanDirection ) );
 
         int nImageIndex = nFrameX + nFrameY * nCountOfFrameX;
-		if (nImageIndex >= vecFrameImages.size()) {
+        if ( nImageIndex >= vecFrameImages.size() ) {
             System->setTrackInfo(QString("The target frame image index %1 is larger than the count of input image %2.").arg( nImageIndex ).arg( vecAlignment.size() ) );
             return false;
         }
@@ -1349,8 +1349,8 @@ bool DataCtrl::doAlignment(const Vision::VectorOfMat &vecFrameImages)
         System->setTrackInfo(QString("Error at GetAllBoards, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
         return false;
     }
-    QVector<cv::RotatedRect> vecDeviceWindows;
 
+    VisionViewDeviceVector vecVisionViewDevices;
     for ( const auto &board : vecBoard ) {
         Engine::DeviceVector vecDevice;
         auto result = Engine::GetBoardDevice ( board.Id, vecDevice );
@@ -1384,11 +1384,11 @@ bool DataCtrl::doAlignment(const Vision::VectorOfMat &vecFrameImages)
             auto width  = device.width  / dResolutionX * dCombinedImageScale;
             auto height = device.height / dResolutionY * dCombinedImageScale;
             cv::RotatedRect deviceWindow ( cv::Point2f(x, y), cv::Size2f(width, height), device.angle );
-            vecDeviceWindows.push_back ( deviceWindow );
+            vecVisionViewDevices.emplace_back ( device.Id, device.name, deviceWindow );
         }
     }
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-    pUI->setDeviceWindows ( vecDeviceWindows );
+    pUI->setDeviceWindows ( vecVisionViewDevices );
 
     return true;
 }

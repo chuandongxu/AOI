@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>420</width>
-    <height>800</height>
+    <height>430</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,7 +50,7 @@
      <x>10</x>
      <y>80</y>
      <width>401</width>
-     <height>461</height>
+     <height>341</height>
     </rect>
    </property>
    <property name="rowCount">
@@ -248,32 +248,6 @@
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
     </property>
    </item>
-  </widget>
-  <widget class="QPushButton" name="btnTryInsp">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>560</y>
-     <width>351</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>检测框结果</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btnConfirmWindow">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>610</y>
-     <width>351</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>确定添加检测框</string>
-   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

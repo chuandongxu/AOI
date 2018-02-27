@@ -94,13 +94,16 @@
 #define RUN_UI_STATE_CALI                174
 #define RUN_UI_STATE_AUTORUN			 175
 
-#define EVENT_IMAGE_STATE	"eventImageState"
+#define EVENT_IMAGE_STATE	            "eventImageState"
 #define IMAGE_STATE_CHANGE				 180
 
-#define EVENT_BARCODE_CHANGE "barCodeChange"
-#define STATION_STATE_BARCODE             190
+#define EVENT_BARCODE_CHANGE            "barCodeChange"
+#define STATION_STATE_BARCODE           190
 
-#define EVENT_AI_STATE			"AIStateChange"
-#define EVENT_CHANGE_USER		"changeUserLevel"
+#define EVENT_AI_STATE                  "AIStateChange"
+#define EVENT_CHANGE_USER               "changeUserLevel"
+
+#define EVENT_INSP_WINDOW_STATE         "eventInspWindowDevice"
+#define CHANGE_SELECTED_DEVICE          220
 
 #endif

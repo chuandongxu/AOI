@@ -9,6 +9,7 @@
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../DataModule/QDetectObj.h"
+#include "InspWindowWidget.h"
 
 using namespace NFG::AOI;
 using namespace AOI;
@@ -33,8 +34,8 @@ enum BASIC_PARAM {
     ANGLE_DIFF_TOL,
 };
 
-FindLineWidget::FindLineWidget(QWidget *parent)
-    : QWidget(parent)
+FindLineWidget::FindLineWidget(InspWindowWidget *parent)
+    : EditInspWindowBaseWidget(parent)
 {
     ui.setupUi(this);
 
@@ -47,18 +48,15 @@ FindLineWidget::FindLineWidget(QWidget *parent)
     ui.tableWidget->setCellWidget ( FIND_DIRECTION, DATA_COLUMN, m_pComboBoxFindLineDirection.get() );
 
     m_pEditCaliperCount = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditCaliperCount->setValidator(new QIntValidator( 2, 1000, m_pEditCaliperCount.get() ) );
-    m_pEditCaliperCount->setText("20");
+    m_pEditCaliperCount->setValidator(new QIntValidator( 2, 1000, m_pEditCaliperCount.get() ) );    
     ui.tableWidget->setCellWidget(CALIPER_COUNT, DATA_COLUMN, m_pEditCaliperCount.get() );
 
     m_pEditCaliperWidth = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditCaliperWidth->setValidator(new QDoubleValidator( 1, 1000, 0.1, m_pEditCaliperWidth.get() ) );
-    m_pEditCaliperWidth->setText("10");
+    m_pEditCaliperWidth->setValidator(new QDoubleValidator( 1, 1000, 0.1, m_pEditCaliperWidth.get() ) );    
     ui.tableWidget->setCellWidget(CALIPER_WIDTH, DATA_COLUMN, m_pEditCaliperWidth.get() );
 
     m_pEditEdgeThreshold = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditEdgeThreshold->setValidator(new QIntValidator ( 1, 255, m_pEditEdgeThreshold.get() ) );
-    m_pEditEdgeThreshold->setText("50");
+    m_pEditEdgeThreshold->setValidator(new QIntValidator ( 1, 255, m_pEditEdgeThreshold.get() ) );    
     ui.tableWidget->setCellWidget(EDGE_THRESHOLD, DATA_COLUMN, m_pEditEdgeThreshold.get() );
 
     m_pComboBoxEdgeSelectMethod = std::make_unique<QComboBox>(ui.tableWidget);
@@ -67,52 +65,65 @@ FindLineWidget::FindLineWidget(QWidget *parent)
     ui.tableWidget->setCellWidget(EDGE_SELECT_METHOD, DATA_COLUMN, m_pComboBoxEdgeSelectMethod.get() );
 
     m_pEditRmStrayPointRatio = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditRmStrayPointRatio->setValidator(new QDoubleValidator(0, 1, 2, m_pEditRmStrayPointRatio.get() ) );
-    m_pEditRmStrayPointRatio->setText("0.2");
+    m_pEditRmStrayPointRatio->setValidator(new QDoubleValidator(0, 1, 2, m_pEditRmStrayPointRatio.get() ) );    
     ui.tableWidget->setCellWidget(REMOVE_STRAY_POINT_RATIO, DATA_COLUMN, m_pEditRmStrayPointRatio.get() );
 
     m_pEditDiffFilterHalfW = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditDiffFilterHalfW->setValidator(new QIntValidator( 1, 10, m_pEditDiffFilterHalfW.get() ) );
-    m_pEditDiffFilterHalfW->setText("2");
+    m_pEditDiffFilterHalfW->setValidator(new QIntValidator( 1, 10, m_pEditDiffFilterHalfW.get() ) );   
     ui.tableWidget->setCellWidget(GAUSSIAN_DIFF_HALF_WIDTH, DATA_COLUMN, m_pEditDiffFilterHalfW.get() );
 
     m_pEditDiffFilterSigma = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditDiffFilterSigma->setValidator(new QDoubleValidator(0.1, 100, 2, m_pEditDiffFilterSigma.get() ) );
-    m_pEditDiffFilterSigma->setText("1");
+    m_pEditDiffFilterSigma->setValidator(new QDoubleValidator(0.1, 100, 2, m_pEditDiffFilterSigma.get() ) );    
     ui.tableWidget->setCellWidget(GAUSSIAN_DIFF_SIGMA, DATA_COLUMN, m_pEditDiffFilterSigma.get() );
 
     m_pCheckLinerity = std::make_unique<QCheckBox>(ui.tableWidget);
     ui.tableWidget->setCellWidget ( CHECK_LINERITY, DATA_COLUMN, m_pCheckLinerity.get() );
 
     m_pEditPointMaxOffset = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditPointMaxOffset->setValidator(new QDoubleValidator(1, 5000, 2, m_pEditPointMaxOffset.get() ) );
-    m_pEditPointMaxOffset->setText("100");
+    m_pEditPointMaxOffset->setValidator(new QDoubleValidator(1, 5000, 2, m_pEditPointMaxOffset.get() ) );    
     ui.tableWidget->setCellWidget(POINT_MAX_OFFSET, DATA_COLUMN, m_pEditPointMaxOffset.get() );
 
     m_pEditMinLinearity = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditMinLinearity->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinLinearity.get() ) );
-    m_pEditMinLinearity->setText("80");
+    m_pEditMinLinearity->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinLinearity.get() ) );    
     ui.tableWidget->setCellWidget(MIN_LINERITY, DATA_COLUMN, m_pEditMinLinearity.get() );
 
     m_pEditCheckAngle = std::make_unique<QCheckBox>(ui.tableWidget);
     ui.tableWidget->setCellWidget ( CHECK_ANGLE, DATA_COLUMN, m_pEditCheckAngle.get() );
 
     m_pEditExpectedAngle = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditExpectedAngle->setValidator(new QDoubleValidator(-360, 360, 2, m_pEditExpectedAngle.get() ) );
-    m_pEditExpectedAngle->setText("0");
+    m_pEditExpectedAngle->setValidator(new QDoubleValidator(-360, 360, 2, m_pEditExpectedAngle.get() ) );    
     ui.tableWidget->setCellWidget(EXPECTED_ANGLE, DATA_COLUMN, m_pEditExpectedAngle.get() );
 
     m_pEditAngleDiffTolerance = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditAngleDiffTolerance->setValidator(new QDoubleValidator(-100, 100, 2, m_pEditAngleDiffTolerance.get() ) );
-    m_pEditAngleDiffTolerance->setText("1");
+    m_pEditAngleDiffTolerance->setValidator(new QDoubleValidator(-100, 100, 2, m_pEditAngleDiffTolerance.get() ) );    
     ui.tableWidget->setCellWidget(ANGLE_DIFF_TOL, DATA_COLUMN, m_pEditAngleDiffTolerance.get() );
+
+    setDefaultValue();
 }
 
 FindLineWidget::~FindLineWidget()
 {
 }
 
-void FindLineWidget::on_btnTryInsp_clicked()
+void FindLineWidget::setDefaultValue()
+{
+    m_pCheckBoxFindPair->setChecked(false);
+    m_pComboBoxFindLineDirection->setCurrentIndex(0);
+    m_pEditCaliperCount->setText("20");
+    m_pEditCaliperWidth->setText("10");
+    m_pEditEdgeThreshold->setText("50");
+    m_pEditRmStrayPointRatio->setText("0.2");
+    m_pEditDiffFilterHalfW->setText("2");
+    m_pEditDiffFilterSigma->setText("1");
+    m_pCheckLinerity->setChecked(true);
+    m_pEditPointMaxOffset->setText("100");
+    m_pEditMinLinearity->setText("80");
+    m_pEditCheckAngle->setChecked(true);
+    m_pEditExpectedAngle->setText("0");
+    m_pEditAngleDiffTolerance->setText("1");
+}
+
+void FindLineWidget::tryInsp()
 {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
@@ -153,7 +164,7 @@ void FindLineWidget::on_btnTryInsp_clicked()
     QMessageBox::information(this, "Find Line", strMsg);
 }
 
-void FindLineWidget::on_btnConfirmWindow_clicked()
+void FindLineWidget::confirmWindow(OPERATION enOperation)
 {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
@@ -185,30 +196,77 @@ void FindLineWidget::on_btnConfirmWindow_clicked()
     }
     Engine::Window window;
     window.usage = Engine::Window::Usage::FIND_LINE;
-    window.xmlParams = jsonValue.toStyledString();
+    window.inspParams = jsonValue.toStyledString();
     window.x = ( rectROI.x + rectROI.width  / 2.f ) * dResolutionX;
     window.y = ( rectROI.y + rectROI.height / 2.f ) * dResolutionY;
     window.width  = rectROI.width  * dResolutionX;
     window.height = rectROI.height * dResolutionY;
-    char windowName[100];
-    _snprintf(windowName, sizeof(windowName), "FindLine [%d, %d]", Vision::ToInt32(window.x), Vision::ToInt32(window.y));
-    window.name = windowName;
+    window.deviceId = pUI->getSelectedDevice().getId();
     window.angle = 0;
-    auto result = Engine::CreateWindow ( window );
-    if (result != Engine::OK) {
-		String errorType, errorMessage;
-		Engine::GetErrorDetail(errorType, errorMessage);
-		System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-		return;
-	}else {
-        System->setTrackInfo(QString("Success to Create Window: %1.").arg ( windowName ) );
+    int result = Engine::OK;
+    if ( OPERATION::ADD == enOperation ) {
+        window.deviceId = pUI->getSelectedDevice().getId();
+        char windowName[100];
+        _snprintf(windowName, sizeof(windowName), "FindLine [%d, %d]", Vision::ToInt32(window.x), Vision::ToInt32(window.y));
+        window.name = windowName;
+        result = Engine::CreateWindow ( window );
+        if (result != Engine::OK) {
+		    String errorType, errorMessage;
+		    Engine::GetErrorDetail(errorType, errorMessage);
+		    System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+		    return;
+	    }else {
+            System->setTrackInfo(QString("Success to Create Window: %1.").arg ( window.name.c_str() ) );
+        }
+
+        QDetectObj detectObj ( window.Id, window.name.c_str() );
+        cv::Point2f ptCenter ( window.x / dResolutionX, window.y / dResolutionY );
+        cv::Size2f szROI ( window.width / dResolutionX, window.height / dResolutionY );
+        detectObj.setFrame ( cv::RotatedRect ( ptCenter, szROI, window.angle ) );
+        auto vecDetectObjs = pUI->getDetectObjs();
+        vecDetectObjs.push_back ( detectObj );
+        pUI->setDetectObjs ( vecDetectObjs );        
+    }else {
+        window.Id = m_currentWindow.Id;
+        window.name = m_currentWindow.name;
+        result = Engine::UpdateWindow ( window );
+        if (result != Engine::OK) {
+		    String errorType, errorMessage;
+		    Engine::GetErrorDetail(errorType, errorMessage);
+		    System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+		    return;
+	    }else {
+            System->setTrackInfo(QString("Success to update window: %1.").arg ( window.name.c_str() ) );
+        }
     }
 
-    QDetectObj detectObj ( window.Id, window.name.c_str() );
-    cv::Point2f ptCenter ( window.x / dResolutionX, window.y / dResolutionY );
-    cv::Size2f szROI ( window.width / dResolutionX, window.height / dResolutionY );
-    detectObj.setFrame ( cv::RotatedRect ( ptCenter, szROI, window.angle ) );
-    auto vecDetectObjs = pUI->getDetectObjs();
-    vecDetectObjs.push_back ( detectObj );
-    pUI->setDetectObjs ( vecDetectObjs );
+    m_pParent->UpdateInspWindowList();
+}
+
+void FindLineWidget::setCurrentWindow(const Engine::Window &window)
+{
+    m_currentWindow = window;
+
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+
+    Json::Value jsonValue;
+    Json::Reader jsonReader;
+    jsonReader.parse ( window.inspParams, jsonValue, false );
+    
+    m_pCheckBoxFindPair->setChecked ( jsonValue["FindPair"].asBool() );
+    m_pComboBoxFindLineDirection->setCurrentIndex ( jsonValue["DetectDir"] .asInt() );
+    m_pEditCaliperCount->setText( QString::number ( jsonValue["CaliperCount"].asInt() ) );
+    m_pEditCaliperWidth->setText ( QString::number ( jsonValue["CaliperWidth"].asFloat() ) );
+    m_pEditEdgeThreshold->setText ( QString::number ( jsonValue["EdgeThreshold"].asInt() ) );
+    m_pComboBoxEdgeSelectMethod->setCurrentIndex ( jsonValue["SelectEdge"].asInt() );
+    m_pEditRmStrayPointRatio->setText ( QString::number ( jsonValue["RmStrayPointRatio"].asFloat() ) );
+    m_pEditDiffFilterHalfW->setText ( QString::number ( jsonValue["DiffFilterHalfW"].asInt() ) );
+    m_pEditDiffFilterSigma->setText ( QString::number ( jsonValue["DiffFilterSigma"].asFloat() ) );
+    m_pCheckLinerity->setChecked ( jsonValue["CheckLinerity"].asBool() );
+    m_pEditPointMaxOffset->setText ( QString::number ( jsonValue["PointMaxOffset"].asFloat() ) );
+    m_pEditMinLinearity->setText ( QString::number ( jsonValue["MinLinearity"].asFloat() * ONE_HUNDRED_PERCENT ) );
+    m_pEditCheckAngle->setChecked ( jsonValue["CheckAngle"].asBool() );
+    m_pEditExpectedAngle->setText ( QString::number ( jsonValue["ExpectedAngle"].asFloat() ) );
+    m_pEditAngleDiffTolerance->setText ( QString::number ( jsonValue["AngleDiffTolerance"] .asFloat() ) );
 }

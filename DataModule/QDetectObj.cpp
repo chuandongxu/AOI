@@ -119,56 +119,58 @@ QDetectObj::~QDetectObj()
 {
 }
 
-QDetectObj::QDetectObj(const QDetectObj &other)//复制构造函数 
-{
-	this->m_objName = other.m_objName;
-
-	//this->m_objPosX = other.m_objPosX;
-	//this->m_objPosY = other.m_objPosY;
-
-	this->m_bframeCreated = other.m_bframeCreated;
-	this->m_bLocCreated = other.m_bLocCreated;
-	this->m_frameRect = other.m_frameRect;
-	this->m_locationRect = other.m_locationRect;
-	this->m_locRecordID = other.m_locRecordID;
-
-	this->m_bhgtDetectCreated = other.m_bhgtDetectCreated;
-	this->m_bhgtBaseCreated = other.m_bhgtBaseCreated;
-	this->m_heightDetectRect.assign(other.m_heightDetectRect.begin(), other.m_heightDetectRect.end());
-	this->m_heightDetectBaseRect.assign(other.m_heightDetectBaseRect.begin(), other.m_heightDetectBaseRect.end());	
-	this->m_detAndBaseRectRel = other.m_detAndBaseRectRel;
-
-	this->m_heightDetectValues.assign(other.m_heightDetectValues.begin(), other.m_heightDetectValues.end());
-}
-
-QDetectObj&  QDetectObj::operator = (const QDetectObj &other)//赋值符 
-{
-	if (this == &other) //如果对象和other是用一个对象，直接返回本身  
-	{
-		return *this;
-	}
-
-	this->m_objName = other.m_objName;	
-
-	//this->m_objPosX = other.m_objPosX;
-	//this->m_objPosY = other.m_objPosY;
-
-	this->m_bframeCreated = other.m_bframeCreated;
-	this->m_bLocCreated = other.m_bLocCreated;
-	this->m_frameRect = other.m_frameRect;
-	this->m_locationRect = other.m_locationRect;
-	this->m_locRecordID = other.m_locRecordID;
-
-	this->m_bhgtDetectCreated = other.m_bhgtDetectCreated;
-	this->m_bhgtBaseCreated = other.m_bhgtBaseCreated;
-	this->m_heightDetectRect.assign(other.m_heightDetectRect.begin(), other.m_heightDetectRect.end());
-	this->m_heightDetectBaseRect.assign(other.m_heightDetectBaseRect.begin(), other.m_heightDetectBaseRect.end());	
-	this->m_detAndBaseRectRel = other.m_detAndBaseRectRel;
-
-	this->m_heightDetectValues.assign(other.m_heightDetectValues.begin(), other.m_heightDetectValues.end());
-
-	return *this;
-}
+//QDetectObj::QDetectObj(const QDetectObj &other)//复制构造函数 
+//{
+//    this->m_nID = other.m_nID;
+//	this->m_objName = other.m_objName;
+//
+//	//this->m_objPosX = other.m_objPosX;
+//	//this->m_objPosY = other.m_objPosY;
+//
+//	this->m_bframeCreated = other.m_bframeCreated;
+//	this->m_bLocCreated = other.m_bLocCreated;
+//	this->m_frameRect = other.m_frameRect;
+//	this->m_locationRect = other.m_locationRect;
+//	this->m_locRecordID = other.m_locRecordID;
+//
+//	this->m_bhgtDetectCreated = other.m_bhgtDetectCreated;
+//	this->m_bhgtBaseCreated = other.m_bhgtBaseCreated;
+//	this->m_heightDetectRect.assign(other.m_heightDetectRect.begin(), other.m_heightDetectRect.end());
+//	this->m_heightDetectBaseRect.assign(other.m_heightDetectBaseRect.begin(), other.m_heightDetectBaseRect.end());	
+//	this->m_detAndBaseRectRel = other.m_detAndBaseRectRel;
+//
+//	this->m_heightDetectValues.assign(other.m_heightDetectValues.begin(), other.m_heightDetectValues.end());
+//}
+//
+//QDetectObj&  QDetectObj::operator = (const QDetectObj &other)//赋值符 
+//{
+//	if (this == &other) //如果对象和other是用一个对象，直接返回本身  
+//	{
+//		return *this;
+//	}
+//
+//    this->m_nID = other.m_nID;
+//	this->m_objName = other.m_objName;	
+//
+//	//this->m_objPosX = other.m_objPosX;
+//	//this->m_objPosY = other.m_objPosY;
+//
+//	this->m_bframeCreated = other.m_bframeCreated;
+//	this->m_bLocCreated = other.m_bLocCreated;
+//	this->m_frameRect = other.m_frameRect;
+//	this->m_locationRect = other.m_locationRect;
+//	this->m_locRecordID = other.m_locRecordID;
+//
+//	this->m_bhgtDetectCreated = other.m_bhgtDetectCreated;
+//	this->m_bhgtBaseCreated = other.m_bhgtBaseCreated;
+//	this->m_heightDetectRect.assign(other.m_heightDetectRect.begin(), other.m_heightDetectRect.end());
+//	this->m_heightDetectBaseRect.assign(other.m_heightDetectBaseRect.begin(), other.m_heightDetectBaseRect.end());	
+//	this->m_detAndBaseRectRel = other.m_detAndBaseRectRel;
+//
+//	this->m_heightDetectValues.assign(other.m_heightDetectValues.begin(), other.m_heightDetectValues.end());
+//
+//	return *this;
+//}
 
 void QDetectObj::setObjPos(double posX, double posY)
 {

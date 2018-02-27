@@ -375,17 +375,19 @@ void VisionView::setDetectObjs(const QVector<QDetectObj> &vecDetectObjs)
     m_pViewWidget->setDetectObjs(vecDetectObjs);
 }
 
+void VisionView::setCurrentDetectObj(const QDetectObj &detectObj)
+{
+    m_pViewWidget->setCurrentDetectObj(detectObj);
+}
+
 QVector<QDetectObj> VisionView::getDetectObjs() const
 {
     return m_pViewWidget->getDetectObjs();
 }
 
-void VisionView::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows)
+void VisionView::setDeviceWindows(const VisionViewDeviceVector &vecWindows)
 {
-	if (m_pViewWidget)
-	{
-		m_pViewWidget->setDeviceWindows(vecWindows);
-	}
+    m_pViewWidget->setDeviceWindows(vecWindows);
 }
 
 void VisionView::setSelectedFM(const QVector<cv::RotatedRect> &vecWindows)
@@ -401,6 +403,11 @@ void VisionView::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::Rota
 	{
 		m_pViewWidget->getSelectDeviceWindow(rrectCadWindow, rrectImageWindow);
 	}
+}
+
+VisionViewDevice VisionView::getSelectedDevice() const
+{
+    return m_pViewWidget->getSelectedDevice();
 }
 
 void VisionView::setButtonsEnable(bool flag)

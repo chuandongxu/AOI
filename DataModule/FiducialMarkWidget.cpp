@@ -431,8 +431,8 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
         QMessageBox::critical(nullptr, QStringLiteral("Scan Image"), errorMessage.c_str(), QStringLiteral("Quit"));
         return;
     }
-    QVector<cv::RotatedRect> vecDeviceWindows;
 
+    VisionViewDeviceVector vecVisionViewDevices;
     for ( const auto &board : vecBoard ) {
         Engine::DeviceVector vecDevice;
         auto result = Engine::GetBoardDevice ( board.Id, vecDevice );
@@ -467,11 +467,11 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
             auto width  = device.width  / dResolutionX * dCombinedImageScale;
             auto height = device.height / dResolutionY * dCombinedImageScale;
             cv::RotatedRect deviceWindow ( cv::Point2f(x, y), cv::Size2f(width, height), device.angle );
-            vecDeviceWindows.push_back ( deviceWindow );
+            vecVisionViewDevices.emplace_back ( device.Id, device.name, deviceWindow );
         }
     }
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-    pUI->setDeviceWindows ( vecDeviceWindows );
+    pUI->setDeviceWindows ( vecVisionViewDevices );
 
     //Update the offset to board.
     for ( auto &board : vecBoard ) {

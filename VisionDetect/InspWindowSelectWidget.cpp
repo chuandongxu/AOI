@@ -14,7 +14,7 @@ InspWindowSelectWidget::~InspWindowSelectWidget()
 
 void InspWindowSelectWidget::on_btnFindLineWindow_clicked()
 {
-    m_pParent->setCurrentIndex(FIND_LINE);
+    m_pParent->setCurrentIndex( static_cast<int>( INSP_WIDGET_INDEX::FIND_LINE ) );
 }
 
 void InspWindowSelectWidget::on_btnCaliperCircleWindow_clicked()
@@ -23,5 +23,5 @@ void InspWindowSelectWidget::on_btnCaliperCircleWindow_clicked()
 
 void InspWindowSelectWidget::on_btnVoidInspWindow_clicked()
 {
-    m_pParent->setCurrentIndex ( INSP_VOID );
+    m_pParent->setCurrentIndex ( static_cast<int>(INSP_WIDGET_INDEX::INSP_HOLE) );
 }

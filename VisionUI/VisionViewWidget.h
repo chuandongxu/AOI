@@ -11,6 +11,7 @@
 #include "constants.h"
 #include <QThread>
 #include "../DataModule/QDetectObj.h"
+#include "VisionViewStruct.hpp"
 
 using namespace AOI::Vision;
 
@@ -66,10 +67,12 @@ public:
 
 	void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
     void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs);
+    void setCurrentDetectObj(const QDetectObj &detectObj);
     QVector<QDetectObj> getDetectObjs() const;
-	void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows);
+	void setDeviceWindows(const VisionViewDeviceVector &vecWindows);
 	void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows);
 	void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const;
+    virtual VisionViewDevice getSelectedDevice() const;
     void setHeightData(cv::Mat& matHeight);
 
 private slots:
@@ -123,7 +126,7 @@ private:
 	void _drawDeviceWindows(cv::Mat &matImg);
     void _drawDetectObjs();
 	void _calcMoveRange();
-	void _checkSelectedDevice(const cv::Point &ptMousePos);	
+	bool _checkSelectedDevice(const cv::Point &ptMousePos);	
 
 private:
 	VISION_VIEW_MODE    m_stateView;
@@ -157,13 +160,14 @@ private:
 	QDockWidget                *m_pSelectView;
 	bool                        m_bShow3DInitial;
 	bool                        m_bMainView3DInitial;
-	QVector<cv::RotatedRect>    m_vecDeviceWindows;
+	VisionViewDeviceVector      m_vecDevices;
 	QVector<cv::RotatedRect>    m_vecSelectedFM;   //FM for fiducial mark
-	cv::RotatedRect             m_selectedDevice;
+	VisionViewDevice            m_selectedDevice;
 	cv::Size                    m_szCadOffset;
 	cv::Size                    m_szMoveRange;
     bool                        m_bDisplayDetectObjs;
     QVector<QDetectObj>         m_vecDetectObjs;
+    QDetectObj                  m_currentDetectObj;
 
 	static const cv::Scalar _constRedScalar;
 	static const cv::Scalar _constBlueScalar;
