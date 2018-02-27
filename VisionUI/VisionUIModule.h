@@ -41,12 +41,13 @@ public:
 
 	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber) override;
     virtual void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs) override;
+    virtual void setCurrentDetectObj(const QDetectObj &detectObj) override;
     virtual QVector<QDetectObj> getDetectObjs() const override;
-    virtual void setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows) override;
+    virtual void setDeviceWindows(const VisionViewDeviceVector &vecWindows) override;
     virtual void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows) override;
     virtual void setViewState(VISION_VIEW_MODE enViewMode) override;
     virtual void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) override; 
-
+    virtual VisionViewDevice getSelectedDevice() override;
 private:
 	void * m_mainWidget;
 	VisionView* m_pVisionView;

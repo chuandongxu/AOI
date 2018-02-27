@@ -284,6 +284,9 @@
     <ClInclude Include="..\include\IVisionUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VisionViewStruct.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="visionui_zh.ts">

@@ -105,6 +105,7 @@ struct Window {
     };
     Window() :
         Id          (0),
+        deviceId    (0),
         name        ("Default window"),
         x           (0),
         y           (0),
@@ -114,6 +115,7 @@ struct Window {
         usage       (Usage::UNDEFINED),
         recordID    (-1) {}
     Int64               Id;
+    Int64               deviceId;
     String              name;
     float               x;
     float               y;
@@ -122,7 +124,7 @@ struct Window {
     float               angle;
     Usage               usage;
     Int32               recordID;
-    String              xmlParams;
+    String              inspParams;
 };
 using WindowVector = std::vector<Window>;
 

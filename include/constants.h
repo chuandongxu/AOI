@@ -48,6 +48,7 @@ enum VISION_VIEW_MODE {
     MODE_VIEW_SELECT_ROI        = 3,
     MODE_VIEW_MOVE              = 4,
     MODE_VIEW_SET_FIDUCIAL_MARK = 5,
+    MODE_VIEW_EDIT_INSP_WINDOW  = 6,
 };
 
 #endif //_CONSTANTS_H_

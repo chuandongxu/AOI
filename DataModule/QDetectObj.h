@@ -46,13 +46,13 @@ public:
 	QDetectObj(int nID, QString name);
 	~QDetectObj();
 
-	QDetectObj(const QDetectObj &other);//复制构造函数 
-	QDetectObj & operator = (const QDetectObj &other);//赋值符
+	QDetectObj(const QDetectObj &other) = default;//复制构造函数 
+	QDetectObj & operator = (const QDetectObj &other) = default;//赋值符
 
 public:
-	QString getName(){ return m_objName; }
+	QString getName() const { return m_objName; }
 	void setName(QString& name){ m_objName = name; }
-	int		getID(){ return m_nID; }
+	int		getID() const { return m_nID; }
 
 	void setType(QString& szType){ m_objType = szType; }
 	QString getType(){ return m_objType; }

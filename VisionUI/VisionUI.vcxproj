@@ -553,6 +553,7 @@
     <ClInclude Include="..\include\IVisionUI.h" />
     <ClInclude Include="GeneratedFiles\ui_VisionView.h" />
     <ClInclude Include="GeneratedFiles\ui_VisionViewWidget.h" />
+    <ClInclude Include="VisionViewStruct.hpp" />
     <CustomBuild Include="VisionViewWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing VisionViewWidget.h...</Message>

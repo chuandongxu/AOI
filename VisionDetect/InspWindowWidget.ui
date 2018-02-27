@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>420</width>
-    <height>800</height>
+    <height>799</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,16 +17,16 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>60</y>
+     <y>280</y>
      <width>420</width>
-     <height>800</height>
+     <height>431</height>
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnReturn">
+  <widget class="QPushButton" name="btnAddWindow">
    <property name="geometry">
     <rect>
-     <x>310</x>
+     <x>20</x>
      <y>10</y>
      <width>50</width>
      <height>50</height>
@@ -37,13 +37,72 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>Image/Return.png</normaloff>Image/Return.png</iconset>
+     <normaloff>Image/Add.png</normaloff>Image/Add.png</iconset>
    </property>
    <property name="iconSize">
     <size>
      <width>50</width>
      <height>50</height>
     </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnRemoveWindow">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>10</y>
+     <width>50</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>Image/Remove.png</normaloff>Image/Remove.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>50</width>
+     <height>50</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="listWindowWidget">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>70</y>
+     <width>391</width>
+     <height>192</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnTryInsp">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>720</y>
+     <width>351</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>检测框结果</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnConfirmWindow">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>760</y>
+     <width>351</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>确定检测框</string>
    </property>
   </widget>
  </widget>

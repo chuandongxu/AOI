@@ -178,8 +178,8 @@ void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage)
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     float fCombinedImgScale = System->getParam("scan_image_ZoomFactor").toDouble();
-    QVector<cv::RotatedRect> vecDeviceWindows;
-
+    
+    VisionViewDeviceVector vecVisionViewDevices;
     Engine::BoardVector vecBoard;
     auto result = Engine::GetAllBoards ( vecBoard );
     if ( Engine::OK != result ) {
@@ -214,12 +214,12 @@ void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage)
             auto width  = device.width  / dResolutionX * fCombinedImgScale;
             auto height = device.height / dResolutionY * fCombinedImgScale;
             cv::RotatedRect deviceWindow ( cv::Point2f(x, y), cv::Size2f(width, height), device.angle );
-            vecDeviceWindows.push_back ( deviceWindow );
+            vecVisionViewDevices.emplace_back ( device.Id, device.name, deviceWindow );
         }
     }
 
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_SET_FIDUCIAL_MARK);
     pUI->setImage ( matImage, true );
-    pUI->setDeviceWindows ( vecDeviceWindows );
+    pUI->setDeviceWindows ( vecVisionViewDevices );
 }

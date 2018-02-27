@@ -196,16 +196,19 @@ void QVisionUIModule::setDetectObjs(const QVector<QDetectObj> &vecDetectObjs)
     m_pVisionView->setDetectObjs ( vecDetectObjs );
 }
 
+void QVisionUIModule::setCurrentDetectObj(const QDetectObj &detectObj)
+{
+    m_pVisionView->setCurrentDetectObj ( detectObj );
+}
+
 QVector<QDetectObj> QVisionUIModule::getDetectObjs() const
 {
     return m_pVisionView->getDetectObjs();
 }
 
-void QVisionUIModule::setDeviceWindows(const QVector<cv::RotatedRect> &vecWindows) {
-    if (m_pVisionView)
-	{
-		m_pVisionView->setDeviceWindows(vecWindows);
-	}
+void QVisionUIModule::setDeviceWindows(const VisionViewDeviceVector &vecWindows)
+{
+    m_pVisionView->setDeviceWindows(vecWindows);
 }
 
 void QVisionUIModule::setSelectedFM(const QVector<cv::RotatedRect> &vecWindows) {
@@ -223,10 +226,11 @@ void QVisionUIModule::setViewState(VISION_VIEW_MODE enViewMode) {
 }
 
 void QVisionUIModule::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) {
-    if (m_pVisionView)
-	{
-		m_pVisionView->getSelectDeviceWindow(rrectCadWindow, rrectImageWindow);
-	}
+    m_pVisionView->getSelectDeviceWindow(rrectCadWindow, rrectImageWindow);
+}
+
+VisionViewDevice QVisionUIModule::getSelectedDevice() {
+    return m_pVisionView->getSelectedDevice();
 }
 
 QMOUDLE_INSTANCE(QVisionUIModule)
