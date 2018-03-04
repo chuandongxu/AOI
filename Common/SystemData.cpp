@@ -562,7 +562,7 @@ bool QSystem::checkUserPwd(const QString& user, const QString& pwd)
 			QString pwdCacl = pwdHash.left(6);
 			if (pwd == pwdCacl)
 			{
-				setUser(user, level);				
+				setUser(user, level);
 				return true;
 			}
 		}
