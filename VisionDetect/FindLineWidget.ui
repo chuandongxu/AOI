@@ -7,35 +7,17 @@
     <x>0</x>
     <y>0</y>
     <width>420</width>
-    <height>430</height>
+    <height>348</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>FindLineWidget</string>
   </property>
-  <widget class="QLabel" name="labelTitle">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>171</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>直线检测 -- Find Line</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="labelBasicParameter">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>50</y>
+     <y>10</y>
      <width>81</width>
      <height>16</height>
     </rect>
@@ -48,9 +30,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>80</y>
+     <y>40</y>
      <width>401</width>
-     <height>341</height>
+     <height>291</height>
     </rect>
    </property>
    <property name="rowCount">

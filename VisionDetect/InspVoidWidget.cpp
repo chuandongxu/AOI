@@ -25,8 +25,6 @@ enum BASIC_PARAM {
     MIN_HOLE_AREA,
 };
 
-static const int DATA_COLUMN = 1;
-
 InspVoidWidget::InspVoidWidget(InspWindowWidget *parent)
     : EditInspWindowBaseWidget(parent)
 {
@@ -194,6 +192,7 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
         return;
     }
     Engine::Window window;
+    window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = Engine::Window::Usage::INSP_HOLE;
     window.inspParams = jsonValue.toStyledString();
     window.x = ( rectROI.x + rectROI.width  / 2.f ) * dResolutionX;
@@ -206,7 +205,7 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
     if ( OPERATION::ADD == enOperation ) {
         window.deviceId = pUI->getSelectedDevice().getId();
         char windowName[100];
-        _snprintf(windowName, sizeof(windowName), "InspHole [%d, %d]", Vision::ToInt32(window.x), Vision::ToInt32(window.y));
+        _snprintf(windowName, sizeof(windowName), "InspHole [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
         window.name = windowName;
         result = Engine::CreateWindow ( window );
         if (result != Engine::OK) {

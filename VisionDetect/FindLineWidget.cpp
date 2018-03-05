@@ -14,8 +14,6 @@
 using namespace NFG::AOI;
 using namespace AOI;
 
-static const int DATA_COLUMN = 1;
-
 enum BASIC_PARAM {
     FIND_PAIR,
     FIND_DIRECTION,
@@ -195,6 +193,7 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
         return;
     }
     Engine::Window window;
+    window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = Engine::Window::Usage::FIND_LINE;
     window.inspParams = jsonValue.toStyledString();
     window.x = ( rectROI.x + rectROI.width  / 2.f ) * dResolutionX;
@@ -207,7 +206,7 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
     if ( OPERATION::ADD == enOperation ) {
         window.deviceId = pUI->getSelectedDevice().getId();
         char windowName[100];
-        _snprintf(windowName, sizeof(windowName), "FindLine [%d, %d]", Vision::ToInt32(window.x), Vision::ToInt32(window.y));
+        _snprintf(windowName, sizeof(windowName), "FindLine [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
         window.name = windowName;
         result = Engine::CreateWindow ( window );
         if (result != Engine::OK) {
