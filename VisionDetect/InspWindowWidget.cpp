@@ -1,4 +1,4 @@
-#include <QMessageBox>
+﻿#include <QMessageBox>
 
 #include "InspWindowWidget.h"
 #include "../include/IVisionUI.h"
@@ -10,6 +10,14 @@
 #include "../Common/eos.h"
 #include "InspWindowSelectDialog.h"
 #include "FindLineWidget.h"
+
+static const QString DEFAULT_WINDOW_NAME[] = 
+{
+    "Find Line",
+    "Inspect Hole",
+};
+
+static_assert (static_cast<size_t>(INSP_WIDGET_INDEX::SIZE) == sizeof(DEFAULT_WINDOW_NAME) / sizeof(DEFAULT_WINDOW_NAME[0]), "The window name size is not correct");
 
 InspWindowWidget::InspWindowWidget(QWidget *parent)
     : QWidget(parent)
@@ -25,6 +33,14 @@ InspWindowWidget::InspWindowWidget(QWidget *parent)
     QEos::Attach(EVENT_INSP_WINDOW_STATE, this, SLOT(onInspWindowState(const QVariantList &)));
 
     connect(ui.listWindowWidget, SIGNAL(currentRowChanged(int)), this, SLOT(onSelectedWindowChanged(int)));
+
+    m_pComboBoxLighting = std::make_unique<QComboBox>(this);
+    QStringList ls;
+	ls << QStringLiteral("白光") << QStringLiteral("低角度光") << QStringLiteral("彩色光") << QStringLiteral("均匀光") << QStringLiteral("3D灰阶图");
+	m_pComboBoxLighting->addItems(ls);
+    ui.tableWidgetHardware->setCellWidget ( 0, DATA_COLUMN, m_pComboBoxLighting.get() );
+
+    _hideWidgets();
 }
 
 InspWindowWidget::~InspWindowWidget()
@@ -53,6 +69,11 @@ void InspWindowWidget::UpdateInspWindowList()
         ui.listWindowWidget->addItem(window.name.c_str());
 
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
+}
+
+int InspWindowWidget::getSelectedLighting() const
+{
+    return m_pComboBoxLighting->currentIndex();
 }
 
 void InspWindowWidget::showEvent(QShowEvent *event)
@@ -86,30 +107,51 @@ void InspWindowWidget::showEvent(QShowEvent *event)
     }
     
     pUI->setDetectObjs( vecDetectObjs );
+}
 
+void InspWindowWidget::_showWidgets()
+{
+    ui.stackedWidget->show();
+    ui.labelWindowName->show();
+    ui.labelHardwareConfig->show();
+    ui.tableWidgetHardware->show();
+}
+
+void InspWindowWidget::_hideWidgets()
+{
     ui.stackedWidget->hide();
+    ui.labelWindowName->hide();
+    ui.labelHardwareConfig->hide();
+    ui.tableWidgetHardware->hide();
 }
 
 void InspWindowWidget::on_btnAddWindow_clicked()
 {
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    if (pUI->getSelectedDevice().getId() <= 0 ) {
+        QMessageBox::critical(this, QStringLiteral("Add Window"), QStringLiteral("Please select a device first."));
+        return;
+    }
+
     InspWindowSelectDialog dialog;
     int iReturn = dialog.exec();
     if ( iReturn != QDialog::Accepted )
         return;
 
-    ui.stackedWidget->show();
-    m_enCurrentInspWidget = dialog.getWindowIndex();
-    ui.stackedWidget->setCurrentIndex ( static_cast<int> ( m_enCurrentInspWidget ) );
+    _showWidgets();
 
+    m_enCurrentInspWidget = dialog.getWindowIndex();
+    int index = static_cast<int> ( m_enCurrentInspWidget );
+    ui.stackedWidget->setCurrentIndex ( index );
+    ui.labelWindowName->setText(DEFAULT_WINDOW_NAME[index]);
     m_enOperation = OPERATION::ADD;
 
-    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_SELECT_ROI);
 }
 
 void InspWindowWidget::on_btnRemoveWindow_clicked()
 {
-    auto index = ui.listWindowWidget->currentIndex().row();
+    auto index = ui.listWindowWidget->currentRow();
     if ( index >= 0 ) {
         auto windowId = m_vecCurrentDeviceWindows[index].Id;
         Engine::DeleteWindow ( windowId );
@@ -140,7 +182,7 @@ void InspWindowWidget::onInspWindowState(const QVariantList &data)
     UpdateInspWindowList();
     if ( ui.listWindowWidget->count() > 0 ) {
         ui.listWindowWidget->item(0)->setSelected(true);
-        onSelectedWindowChanged(0);
+        ui.listWindowWidget->setCurrentRow(0);
     }
 }
 
@@ -148,16 +190,22 @@ void InspWindowWidget::onSelectedWindowChanged(int index)
 {
     if ( index < 0 )
         return;
-    ui.stackedWidget->show();
-    if ( Engine::Window::Usage::FIND_LINE == m_vecCurrentDeviceWindows[index].usage )
+    _showWidgets();
+
+    auto window = m_vecCurrentDeviceWindows[index];
+
+    if ( Engine::Window::Usage::FIND_LINE == window.usage )
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::FIND_LINE;
-    else if ( Engine::Window::Usage::INSP_HOLE == m_vecCurrentDeviceWindows[index].usage )
+    else if ( Engine::Window::Usage::INSP_HOLE == window.usage )
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_HOLE;
+
+    ui.labelWindowName->setText(window.name.c_str());
 
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setCurrentWindow( m_vecCurrentDeviceWindows[index] );
     ui.stackedWidget->setCurrentIndex ( static_cast<int>(m_enCurrentInspWidget) );
+    
+    m_pComboBoxLighting->setCurrentIndex(window.lightId - 1);
 
-    auto window = m_vecCurrentDeviceWindows[index];
     double dResolutionX, dResolutionY;
     dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();

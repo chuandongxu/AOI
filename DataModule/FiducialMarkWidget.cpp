@@ -187,7 +187,7 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
         alignment.isFM = bUseStandardShape;
         alignment.fmShape = static_cast<int> ( dialogSetFM.getFiducialMarkShape() );
         alignment.isFMDark = dialogSetFM.getIsFiducialMarkDark();
-        alignment.vecLight.push_back(1);
+        alignment.lightId = 1;
         auto result = Engine::CreateAlignment ( alignment );
         if (Engine::OK != result) {
             String errorType, errorMessage;

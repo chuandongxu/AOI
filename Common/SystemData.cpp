@@ -562,7 +562,7 @@ bool QSystem::checkUserPwd(const QString& user, const QString& pwd)
 			QString pwdCacl = pwdHash.left(6);
 			if (pwd == pwdCacl)
 			{
-				setUser(user, level);				
+				setUser(user, level);
 				return true;
 			}
 		}
@@ -573,7 +573,7 @@ bool QSystem::checkUserPwd(const QString& user, const QString& pwd)
 			QString pwdHash = QCryptographicHash::hash(pwdArr, QCryptographicHash::Md5).toBase64().data();
 			if (pwdHash == targPwd)
 			{
-				setUser(user, level);				
+				setUser(user, level);
 				return true;
 			}
 		}

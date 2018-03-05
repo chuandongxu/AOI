@@ -48,6 +48,10 @@ API_CALL(int)  GetAllWindowGroups(Int64Vector &vecGroupId);
 API_CALL(int)  GetDeviceWindowGroups(Int64 deviceId, Int64Vector &vecGroupId);
 //Get the detail of the windows in a group.
 API_CALL(int)  GetGroupWindows(Int64 groupId, WindowGroup &windowGroup);
+API_CALL(int)  SetLightSourceCount(Int32 value);
+API_CALL(int)  SetLightGroupCount(Int32 value);
+API_CALL(int)  SetLights(const LightVector &vecLights);
+API_CALL(int)  GetLights(LightVector &vecLights);
 }
 }
 }

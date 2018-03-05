@@ -374,7 +374,7 @@ bool DataCtrl::saveDataBase(QString& szFilePath, DataTypeEnum emDataType)
 		alignment.tmplPosY = rect.center.y;
 		alignment.tmplWidth = rect.size.width;
 		alignment.tmplHeight = rect.size.height;
-		alignment.vecLight.push_back(0);
+		alignment.lightId = 1;
 	
 		result = Engine::CreateAlignment(alignment);
 		if (result != Engine::OK) {

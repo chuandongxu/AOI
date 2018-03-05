@@ -14,6 +14,8 @@ enum class INSP_WIDGET_INDEX {
     SIZE
 };
 
+static const int DATA_COLUMN = 1;
+
 const int INSP_WIDGET_INDEX_SIZE = static_cast<int>(INSP_WIDGET_INDEX::SIZE);
 
 class InspWindowSelectWidget;
@@ -28,9 +30,11 @@ public:
 
     void setCurrentIndex(int index);
     void UpdateInspWindowList();
+    int getSelectedLighting() const;
 protected:
     virtual void showEvent(QShowEvent *event) override;
-
+    void _showWidgets();
+    void _hideWidgets();
 private slots:
     void on_btnAddWindow_clicked();
     void on_btnRemoveWindow_clicked();
@@ -39,9 +43,11 @@ private slots:
 
     void onInspWindowState(const QVariantList &data);
     void onSelectedWindowChanged(int index);
+
 private:
     Ui::InspWindowWidget ui;
 
+    std::unique_ptr<QComboBox>  m_pComboBoxLighting;
     InspWindowBaseWidgetPtr     m_arrInspWindowWidget[INSP_WIDGET_INDEX_SIZE];
     Engine::WindowVector        m_vecCurrentDeviceWindows;
     OPERATION                   m_enOperation;

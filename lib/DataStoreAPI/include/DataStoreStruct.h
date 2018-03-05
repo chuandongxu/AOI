@@ -12,6 +12,12 @@ namespace Engine
 
 const Int32 OK              = 0;
 
+struct Light {
+    std::vector<Int32>      vecLightIntensity;
+    Int32                   expTime;
+};
+using LightVector = std::vector<Light>;
+
 struct Alignment {
     Alignment() :
         Id              (0),
@@ -26,7 +32,7 @@ struct Alignment {
         tmplHeight      (0.f),
         srchWinWidth    (0.f),
         srchWinHeight   (0.f),
-        vecLight        (0) {}
+        lightId         (0) {}
     Int64               Id;
     BOOL                isFM;
     Int32               fmShape;
@@ -39,7 +45,7 @@ struct Alignment {
     float               tmplHeight;
     float               srchWinWidth;
     float               srchWinHeight;
-    std::vector<Int32>  vecLight;
+    Int64               lightId;
 };
 using AlignmentVector = std::vector<Alignment>;
 
@@ -113,7 +119,10 @@ struct Window {
         height      (0),
         angle       (0),
         usage       (Usage::UNDEFINED),
-        recordID    (-1) {}
+        recordID    (-1),
+        inspParams  ("{}"),
+        colorParams ("{}"),
+        lightId     (1) {}
     Int64               Id;
     Int64               deviceId;
     String              name;
@@ -125,6 +134,8 @@ struct Window {
     Usage               usage;
     Int32               recordID;
     String              inspParams;
+    String              colorParams;
+    Int64               lightId;        //Light Id in database start from 1.
 };
 using WindowVector = std::vector<Window>;
 
