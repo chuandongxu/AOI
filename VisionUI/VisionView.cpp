@@ -5,6 +5,7 @@
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../include/ILight.h"
+#include "../include/IVision.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QDebug>
@@ -53,6 +54,13 @@ void VisionView::init()
 	if (pLight)
 	{
 		m_pLightWidget = pLight->getLightWidget();
+	}
+
+	m_pColorWidget = NULL;
+	IVision* pVision = getModule<IVision>(VISION_MODEL);
+	if (pVision)
+	{
+		m_pColorWidget = pVision->getColorWeightView();
 	}
 }
 
@@ -124,6 +132,11 @@ void VisionView::createActions()
 	showLightAct->setShortcuts(QKeySequence::MoveToNextChar);
 	showLightAct->setStatusTip(tr("Show Lighting"));
 	connect(showLightAct, SIGNAL(triggered()), this, SLOT(showLight()));
+
+	showColorSpaceAct = new QAction(QIcon("image/colorSpace.png"), QStringLiteral("显示颜色框设置"), this);
+	showColorSpaceAct->setShortcuts(QKeySequence::MoveToPreviousChar);
+	showColorSpaceAct->setStatusTip(tr("Show Color Space"));
+	connect(showColorSpaceAct, SIGNAL(triggered()), this, SLOT(showColorSpace()));
 }
 
 void VisionView::createToolBars()
@@ -148,6 +161,7 @@ void VisionView::createToolBars()
 	detectToolBar = addToolBar(tr("Detect"));
 	detectToolBar->addAction(show3DAct);
 	detectToolBar->addAction(showLightAct);
+	detectToolBar->addAction(showColorSpaceAct);
 }
 
 void VisionView::createStatusBar()
@@ -331,6 +345,15 @@ void VisionView::showLight()
 	{
         m_pLightWidget->setWindowFlags(Qt::WindowStaysOnTopHint);
 		m_pLightWidget->show();
+	}
+}
+
+void VisionView::showColorSpace()
+{
+	if (m_pColorWidget)
+	{
+		//m_pColorWidget->setWindowFlags(Qt::WindowStaysOnTopHint);
+		m_pColorWidget->show();
 	}
 }
 

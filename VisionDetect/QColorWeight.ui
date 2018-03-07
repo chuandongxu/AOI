@@ -411,6 +411,32 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_saveParams">
+     <property name="geometry">
+      <rect>
+       <x>580</x>
+       <y>320</y>
+       <width>120</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>保存参数</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_loadParams">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>320</y>
+       <width>120</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>导入参数</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
