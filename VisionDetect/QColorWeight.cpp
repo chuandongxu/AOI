@@ -1,19 +1,25 @@
 ﻿#include "QColorWeight.h"
 #include "qdebug.h"
 
-#include "../lib/VisionLibrary/include/VisionAPI.h"
-
 #include "opencv2/opencv.hpp"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include "qcustomplot.h"
+#include "DataStoreAPI.h"
+#include "VisionAPI.h"
 
+#include "qcustomplot.h"
 #include "../Common/SystemData.h"
 
 #define ToInt(value)        (static_cast<int>(value))
 #define ToFloat(param)      (static_cast<float>(param))
+
+using namespace NFG::AOI;
 using namespace AOI;
+
+#if defined(CreateWindow) // If Win32 defines "CreateWindow":
+#undef CreateWindow       //   Undefine it to avoid conflict
+#endif                    //   with the line display method.
 
 QColorWeight::QColorWeight(QWidget *parent)
 	: QWidget(parent)
@@ -80,6 +86,13 @@ QColorWeight::~QColorWeight()
 	}
 }
 
+void QColorWeight::closeEvent(QCloseEvent *e){
+	//qDebug() << "关闭事件";
+	//e->ignore();
+
+	this->hide();
+}
+
 void QColorWeight::setImage(cv::Mat& img)
 {
 	if (img.type() != CV_8UC3) return;
@@ -106,9 +119,9 @@ stGrayWeightParams QColorWeight::getGrayParams()
 	int nIndex = ui.comboBox_selectMode->currentIndex();	
 	grayParams._emMode = static_cast<GrayWeightMethodEm>(nIndex);
 
-	grayParams._nBScale = ui.horizontalSlider_R->value();
-	grayParams._nGScale = ui.horizontalSlider_G->value();
 	grayParams._nRScale = ui.horizontalSlider_R->value();
+	grayParams._nGScale = ui.horizontalSlider_G->value();
+	grayParams._nBScale = ui.horizontalSlider_B->value();
 	grayParams._nThreshold1 = ui.horizontalSlider_grayLeft->value();
 	grayParams._nThreshold2 = ui.horizontalSlider_grayRight->value();
 
@@ -277,6 +290,9 @@ void QColorWeight::initUI()
 	ui.graphicsView_ColorImg->fitInView(QRectF(0, 0, 200, 150), Qt::KeepAspectRatioByExpanding);    //这样就没法缩放了 
 	ui.graphicsView_ColorImg->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 	ui.graphicsView_ColorImg->setRenderHint(QPainter::Antialiasing);
+
+	connect(ui.pushButton_loadParams, SIGNAL(clicked()), SLOT(onLoadParams()));
+	connect(ui.pushButton_saveParams, SIGNAL(clicked()), SLOT(onSaveParams()));
 }
 
 void QColorWeight::initData()
@@ -289,6 +305,196 @@ void QColorWeight::initData()
 
 	m_nGrayLevelThreshold1 = 0;
 	m_nGrayLevelThreshold2 = 255;
+
+	loadConfig();
+}
+
+void QColorWeight::loadConfig()
+{
+	stGrayWeightParams stGrayParams;
+	stColorSpaceParams stColorParams;
+	QByteArray byte_array;
+
+	Engine::Window window;
+	window.name = QString("Color Space Params").toStdString();
+	
+	Engine::WindowVector vecWindows;
+	auto result = Engine::GetAllWindows(vecWindows);
+	if (result != Engine::OK) {
+		String errorType, errorMessage;
+		Engine::GetErrorDetail(errorType, errorMessage);
+		System->setTrackInfo(QString("Error at GetAllWindows, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+		return;
+	}
+	
+	for (auto win : vecWindows)
+	{
+		if (win.name == window.name)
+		{
+			byte_array = win.colorParams.c_str();
+			break;
+		}
+	}
+
+	QJsonParseError json_error;
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(byte_array, &json_error);
+	if (json_error.error == QJsonParseError::NoError)
+	{
+		if (parse_doucment.isObject())
+		{
+			QJsonObject obj = parse_doucment.object();
+			if (obj.contains("grayMode"))
+			{
+				QJsonValue grayMode = obj.take("grayMode");
+				if (grayMode.isDouble())
+				{
+					int nMode = grayMode.toInt();
+					stGrayParams._emMode = static_cast<GrayWeightMethodEm>(nMode);
+				}
+			}
+			if (obj.contains("grayBScale"))
+			{
+				QJsonValue grayBScale = obj.take("grayBScale");
+				if (grayBScale.isDouble())
+				{
+					int nBScale = grayBScale.toInt();
+					stGrayParams._nBScale = nBScale;
+				}
+			}
+			if (obj.contains("grayGScale"))
+			{
+				QJsonValue grayGScale = obj.take("grayGScale");
+				if (grayGScale.isDouble())
+				{
+					int nGScale = grayGScale.toInt();
+					stGrayParams._nGScale = nGScale;
+				}
+			}
+			if (obj.contains("grayRScale"))
+			{
+				QJsonValue grayRScale = obj.take("grayRScale");
+				if (grayRScale.isDouble())
+				{
+					int nRScale = grayRScale.toInt();
+					stGrayParams._nRScale = nRScale;
+				}
+			}
+			if (obj.contains("grayThreshold1"))
+			{
+				QJsonValue grayThreshold1 = obj.take("grayThreshold1");
+				if (grayThreshold1.isDouble())
+				{
+					int nThres1 = grayThreshold1.toInt();
+					stGrayParams._nThreshold1 = nThres1;
+				}
+			}
+			if (obj.contains("grayThreshold2"))
+			{
+				QJsonValue grayThreshold2 = obj.take("grayThreshold2");
+				if (grayThreshold2.isDouble())
+				{
+					int nThres2 = grayThreshold2.toInt();
+					stGrayParams._nThreshold2 = nThres2;
+				}
+			}
+			if (obj.contains("colorRThreshold"))
+			{
+				QJsonValue colorRThreshold = obj.take("colorRThreshold");
+				if (colorRThreshold.isDouble())
+				{
+					int nRThres = colorRThreshold.toInt();
+					stColorParams._nRThreshold = nRThres;
+				}
+			}
+			if (obj.contains("colorTThreshold"))
+			{
+				QJsonValue colorTThreshold = obj.take("colorTThreshold");
+				if (colorTThreshold.isDouble())
+				{
+					int nTThres = colorTThreshold.toInt();
+					stColorParams._nTThreshold = nTThres;
+				}
+			}
+		}
+	}
+
+	setGrayParams(stGrayParams);
+	setColorParams(stColorParams);
+}
+
+void QColorWeight::saveConfig()
+{
+	stGrayWeightParams stGrayParams = getGrayParams();
+	stColorSpaceParams stColorParams = getColorParams();
+
+	QJsonObject json;
+	json.insert("grayMode", stGrayParams._emMode);
+	json.insert("grayBScale", stGrayParams._nBScale);
+	json.insert("grayGScale", stGrayParams._nGScale);
+	json.insert("grayRScale", stGrayParams._nRScale);
+	json.insert("grayThreshold1", stGrayParams._nThreshold1);
+	json.insert("grayThreshold2", stGrayParams._nThreshold2);
+
+	json.insert("colorRThreshold", stColorParams._nRThreshold);
+	json.insert("colorTThreshold", stColorParams._nTThreshold);
+
+	QJsonDocument document;
+	document.setObject(json);
+	QByteArray byte_array = document.toJson(QJsonDocument::Compact);	
+
+	Engine::Window window;
+	window.name = QString("Color Space Params").toStdString();
+	window.colorParams = byte_array;
+
+	bool bCreateNewOne = true;
+	Engine::WindowVector vecWindows;
+	auto result = Engine::GetAllWindows(vecWindows);
+	if (result != Engine::OK) {
+		String errorType, errorMessage;
+		Engine::GetErrorDetail(errorType, errorMessage);
+		System->setTrackInfo(QString("Error at GetAllWindows, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+		return;
+	}
+	for (auto win : vecWindows)
+	{
+		if (win.name == window.name)
+		{
+			window.Id = win.Id;
+			bCreateNewOne = false;
+			break;
+		}
+	}
+
+	if (bCreateNewOne)
+	{
+		auto result = Engine::CreateWindow(window);
+		if (result != Engine::OK) 
+		{
+			String errorType, errorMessage;
+			Engine::GetErrorDetail(errorType, errorMessage);
+			System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+			return;
+		}
+		else 
+		{
+			System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
+		}
+	}
+	else
+	{
+		auto result = Engine::UpdateWindow(window);
+		if (result != Engine::OK) 
+		{
+			String errorType, errorMessage;
+			Engine::GetErrorDetail(errorType, errorMessage);
+			System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+			return;
+		}
+		else 
+		{
+			System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
+		}
+	}	
 }
 
 void QColorWeight::setupDateDemo(QCustomPlot *customPlot)
@@ -1018,6 +1224,16 @@ void QColorWeight::onColorTnSliderChanged(int i)
 	ui.lineEdit_Tn->setText(str);
 
 	generateColorPlot();
+}
+
+void QColorWeight::onLoadParams()
+{
+	loadConfig();
+}
+
+void QColorWeight::onSaveParams()
+{
+	saveConfig();
 }
 
 cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage)

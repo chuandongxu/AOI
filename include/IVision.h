@@ -13,6 +13,7 @@ public:
 	virtual QWidget* getCellEditorView() = 0;
 	virtual QWidget* getCaliView() = 0;
     virtual QWidget* getInspWindowView() = 0;
+	virtual QWidget* getColorWeightView() = 0;
 public:
 	virtual bool loadCmdData(int nStation) = 0;
 
@@ -33,6 +34,9 @@ public:
 
 	virtual bool matchAlignment(cv::Mat& matDisplay, QVector<QProfileObj*>& objProfTests) = 0;
 	virtual bool calculateDetectProfile(cv::Mat& matHeight, QVector<QProfileObj*>& objProfTests) = 0;
+
+	virtual cv::Mat generateGrayImage(cv::Mat& img, cv::Point ptPos) = 0;
+	virtual cv::Mat generateColorImage(cv::Mat& img, cv::Point ptPos) = 0;
 };
 
 #endif

@@ -3,6 +3,8 @@
 #include "VisionDetectSetting.h"
 #include "VisionDetectRunView.h"
 #include "SysCalibrationView.h"
+#include "QColorWeight.h"
+#include "qthread.h"
 
 VisionDetect::VisionDetect(int id, const QString &name)
 	:QModuleBase(id, name)
@@ -10,6 +12,7 @@ VisionDetect::VisionDetect(int id, const QString &name)
 	m_pDetectView = new VisionDetectRunView(&m_ctrl);
 	m_pCaliView = new SysCalibrationView(&m_ctrl);
     m_pInspWindowView = new InspWindowWidget();
+	m_pColorWeightView = new QColorWeight();
 }
 
 VisionDetect::~VisionDetect()
@@ -51,6 +54,11 @@ QWidget* VisionDetect::getCaliView()
 QWidget* VisionDetect::getInspWindowView()
 {
     return m_pInspWindowView;
+}
+
+QWidget* VisionDetect::getColorWeightView()
+{
+	return m_pColorWeightView;
 }
 
 bool VisionDetect::loadCmdData(int nStation)
@@ -131,6 +139,38 @@ bool VisionDetect::matchAlignment(cv::Mat& matDisplay, QVector<QProfileObj*>& ob
 bool VisionDetect::calculateDetectProfile(cv::Mat& matHeight, QVector<QProfileObj*>& objProfTests)
 {
 	return m_ctrl.calculateDetectProfile(matHeight, objProfTests);
+}
+
+cv::Mat VisionDetect::generateGrayImage(cv::Mat& img, cv::Point ptPos)
+{
+	if (!m_pColorWeightView) return cv::Mat();
+
+	m_pColorWeightView->setImage(img);
+
+	m_pColorWeightView->show();
+	while (!m_pColorWeightView->isHidden())
+	{
+		QThread::msleep(100);
+		QApplication::processEvents();
+	}
+
+	return m_pColorWeightView->generateGrayImage(ptPos);
+}
+
+cv::Mat VisionDetect::generateColorImage(cv::Mat& img, cv::Point ptPos)
+{
+	if (!m_pColorWeightView) return cv::Mat();
+
+	m_pColorWeightView->setImage(img);
+
+	m_pColorWeightView->show();
+	while (!m_pColorWeightView->isHidden())
+	{
+		QThread::msleep(100);
+		QApplication::processEvents();
+	}
+
+	return m_pColorWeightView->generateColorImage(ptPos);
 }
 
 QMOUDLE_INSTANCE(VisionDetect)

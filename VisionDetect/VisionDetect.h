@@ -9,6 +9,7 @@
 
 class VisionDetectRunView;
 class SysCalibrationView;
+class QColorWeight;
 class  VisionDetect : public QModuleBase, public IVision
 {
 public:
@@ -22,6 +23,7 @@ public:
 	virtual QWidget* getCellEditorView();
 	virtual QWidget* getCaliView();
     virtual QWidget* getInspWindowView() override;
+	virtual QWidget* getColorWeightView() override;
 
 public:
 	virtual bool loadCmdData(int nStation);
@@ -43,9 +45,13 @@ public:
 	virtual bool matchAlignment(cv::Mat& matDisplay, QVector<QProfileObj*>& objProfTests);
 	virtual bool calculateDetectProfile(cv::Mat& matHeight, QVector<QProfileObj*>& objProfTests);
 
+	virtual cv::Mat generateGrayImage(cv::Mat& img, cv::Point ptPos);
+	virtual cv::Mat generateColorImage(cv::Mat& img, cv::Point ptPos);
+
 private:
 	VisionCtrl m_ctrl;
 	VisionDetectRunView* m_pDetectView;
 	SysCalibrationView* m_pCaliView;
     InspWindowWidget* m_pInspWindowView;
+	QColorWeight* m_pColorWeightView;
 };

@@ -120,8 +120,8 @@ struct Window {
         angle       (0),
         usage       (Usage::UNDEFINED),
         recordID    (-1),
-        inspParams  ("{}"),
-        colorParams ("{}"),
+        inspParams  (""),
+        colorParams (""),
         lightId     (1) {}
     Int64               Id;
     Int64               deviceId;

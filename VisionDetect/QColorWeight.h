@@ -38,6 +38,9 @@ public:
 	QColorWeight(QWidget *parent = Q_NULLPTR);
 	~QColorWeight();
 
+protected:
+	void closeEvent(QCloseEvent *e);
+
 public:
 	void setImage(cv::Mat& img);
 
@@ -54,6 +57,9 @@ public:
 private:
 	void initUI();
 	void initData();
+
+	void loadConfig();
+	void saveConfig();
 
 	void setupDateDemo(QCustomPlot *customPlot);
 	int calcGrayValue(cv::Scalar& pixel);
@@ -91,6 +97,9 @@ private slots:
 
 	void onColorRnSliderChanged(int i);
 	void onColorTnSliderChanged(int i);
+
+	void onLoadParams();
+	void onSaveParams();
 
 private:
 	cv::Mat generateColorRange(int nRn, int nTn, cv::Mat& matImage);
