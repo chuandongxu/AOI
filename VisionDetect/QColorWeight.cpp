@@ -84,14 +84,34 @@ QColorWeight::~QColorWeight()
 		delete m_customPlotGray;
 		m_customPlotGray = NULL;
 	}
+	if (m_regenBarR)
+	{
+		delete m_regenBarR;
+		m_regenBarR = NULL;
+	}
+	if (m_regenBarG)
+	{
+		delete m_regenBarG;
+		m_regenBarG = NULL;
+	}
+	if (m_regenBarB)
+	{
+		delete m_regenBarB;
+		m_regenBarB = NULL;
+	}
+	if (m_regenBarGray)
+	{
+		delete m_regenBarGray;
+		m_regenBarGray = NULL;
+	}
 }
 
-void QColorWeight::closeEvent(QCloseEvent *e){
-	//qDebug() << "关闭事件";
-	//e->ignore();
-
-	this->hide();
-}
+//void QColorWeight::closeEvent(QCloseEvent *e){
+//	//qDebug() << "关闭事件";
+//	//e->ignore();
+//
+//	this->hide();
+//}
 
 void QColorWeight::setImage(cv::Mat& img)
 {
@@ -251,19 +271,23 @@ void QColorWeight::initUI()
 	m_grayColorScene->addPixmap(QPixmap::fromImage(imageColor));
 
 	m_customPlotR = new QCustomPlot(this);
-	setupDateColor(m_customPlotR, 0);
+	m_regenBarR = new QCPBars(m_customPlotR->xAxis, m_customPlotR->yAxis);
+	setupDateColor(m_customPlotR, m_regenBarR, 0);
 	ui.verticalLayout_R->addWidget(m_customPlotR);
 
 	m_customPlotG = new QCustomPlot(this);
-	setupDateColor(m_customPlotG, 1);
+	m_regenBarG = new QCPBars(m_customPlotG->xAxis, m_customPlotG->yAxis);
+	setupDateColor(m_customPlotG, m_regenBarG, 1);
 	ui.verticalLayout_G->addWidget(m_customPlotG);
 
 	m_customPlotB = new QCustomPlot(this);
-	setupDateColor(m_customPlotB, 2);
+	m_regenBarB = new QCPBars(m_customPlotB->xAxis, m_customPlotB->yAxis);
+	setupDateColor(m_customPlotB, m_regenBarB, 2);
 	ui.verticalLayout_B->addWidget(m_customPlotB);
 
 	m_customPlotGray = new QCustomPlot(this);
-	setupDateColor(m_customPlotGray, 3);
+	m_regenBarGray = new QCPBars(m_customPlotGray->xAxis, m_customPlotGray->yAxis);
+	setupDateColor(m_customPlotGray, m_regenBarGray, 3);
 	ui.verticalLayout_Gray->addWidget(m_customPlotGray);
 
 	// Image Display
@@ -661,11 +685,11 @@ void QColorWeight::generateGrayPlot()
 	displayGrayImg();
 }
 
-void QColorWeight::setupDateColor(QCustomPlot *customPlot, int nColorIndex)
+void QColorWeight::setupDateColor(QCustomPlot *customPlot, QCPBars *regen, int nColorIndex)
 {
 	// create empty bar chart objects:
-	QCPBars *regen = new QCPBars(customPlot->xAxis, customPlot->yAxis);	
-
+	//QCPBars *regen = new QCPBars(customPlot->xAxis, customPlot->yAxis);	
+	
 	// set names and colors:
 	QPen pen;
 	pen.setWidthF(1.2);	
@@ -853,7 +877,8 @@ void QColorWeight::generateColorPlot()
 	{
 		delete m_customPlotR;
 		m_customPlotR = new QCustomPlot(this);
-		setupDateColor(m_customPlotR, 0);
+		m_regenBarR = new QCPBars(m_customPlotR->xAxis, m_customPlotR->yAxis);
+		setupDateColor(m_customPlotR, m_regenBarR, 0);
 		ui.verticalLayout_R->addWidget(m_customPlotR);
 	}
 
@@ -861,7 +886,8 @@ void QColorWeight::generateColorPlot()
 	{
 		delete m_customPlotG;
 		m_customPlotG = new QCustomPlot(this);
-		setupDateColor(m_customPlotG, 1);
+		m_regenBarG = new QCPBars(m_customPlotG->xAxis, m_customPlotG->yAxis);
+		setupDateColor(m_customPlotG, m_regenBarG, 1);
 		ui.verticalLayout_G->addWidget(m_customPlotG);
 	}
 
@@ -869,7 +895,8 @@ void QColorWeight::generateColorPlot()
 	{
 		delete m_customPlotB;
 		m_customPlotB = new QCustomPlot(this);
-		setupDateColor(m_customPlotB, 2);
+		m_regenBarB = new QCPBars(m_customPlotB->xAxis, m_customPlotB->yAxis);
+		setupDateColor(m_customPlotB, m_regenBarB, 2);
 		ui.verticalLayout_B->addWidget(m_customPlotB);
 	}
 
@@ -877,7 +904,8 @@ void QColorWeight::generateColorPlot()
 	{
 		delete m_customPlotGray;
 		m_customPlotGray = new QCustomPlot(this);
-		setupDateColor(m_customPlotGray, 3);
+		m_regenBarGray = new QCPBars(m_customPlotGray->xAxis, m_customPlotGray->yAxis);
+		setupDateColor(m_customPlotGray, m_regenBarGray, 3);
 		ui.verticalLayout_Gray->addWidget(m_customPlotGray);
 	}
 

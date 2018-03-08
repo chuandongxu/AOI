@@ -30,6 +30,7 @@ struct stColorSpaceParams
 
 
 class QCustomPlot;
+class QCPBars;
 class QColorWeight : public QWidget
 {
 	Q_OBJECT
@@ -39,7 +40,7 @@ public:
 	~QColorWeight();
 
 protected:
-	void closeEvent(QCloseEvent *e);
+	//void closeEvent(QCloseEvent *e);
 
 public:
 	void setImage(cv::Mat& img);
@@ -65,7 +66,7 @@ private:
 	int calcGrayValue(cv::Scalar& pixel);
 	void generateGrayPlot();
 
-	void setupDateColor(QCustomPlot *customPlot, int nColorIndex);
+	void setupDateColor(QCustomPlot *customPlot, QCPBars *regen, int nColorIndex);
 	void generateColorPlot();
 
 private:
@@ -126,10 +127,14 @@ private:
 
 	// Color Space
 	cv::Point m_colorGenPt;
-	QCustomPlot* m_customPlotR;
+	QCustomPlot* m_customPlotR;	
 	QCustomPlot* m_customPlotG;
 	QCustomPlot* m_customPlotB;
 	QCustomPlot* m_customPlotGray;
+	QCPBars* m_regenBarR;
+	QCPBars* m_regenBarG;
+	QCPBars* m_regenBarB;
+	QCPBars* m_regenBarGray;
 	QMap<int, int> m_colorRHitDatas;
 	QMap<int, int> m_colorGHitDatas;
 	QMap<int, int> m_colorBHitDatas;

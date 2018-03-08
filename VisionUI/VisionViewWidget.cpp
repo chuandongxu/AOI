@@ -1,4 +1,4 @@
-#include "VisionViewWidget.h"
+ï»¿#include "VisionViewWidget.h"
 
 #include <QFileDialog>
 #include "../Common/SystemData.h"
@@ -294,7 +294,7 @@ void VisionViewWidget::openFile()
 	path += "/";
 
 	QString picFilter = "Image(*.tif *.tiff *.gif *.bmp *.jpg *.jpeg *.jp2 *.png *.pcx *.pgm *.ppm *.pbm *.xwd *.ima)";
-	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("´ò¿ªÍ¼Æ¬"), path/*/*/, picFilter);
+	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡"), path/*/*/, picFilter);
 
 	if (!strFileName.isEmpty())
 	{
@@ -324,7 +324,7 @@ void VisionViewWidget::cameraFile()
 		}
 	}
 
-	QMessageBox::warning(this, "", QStringLiteral("ÎŞ·¢×¥È¡Í¼Ïñ"));
+	QMessageBox::warning(this, "", QStringLiteral("æ— å‘æŠ“å–å›¾åƒ"));
 }
 
 void VisionViewWidget::saveAsFile()
@@ -332,7 +332,7 @@ void VisionViewWidget::saveAsFile()
 	if (!m_dispImage.empty())
 	{
 		QString picFilter = "Image( *.bmp )";
-		QString strSave = QFileDialog::getSaveFileName(this, QStringLiteral("±£´æÍ¼Æ¬"), "/", picFilter);
+		QString strSave = QFileDialog::getSaveFileName(this, QStringLiteral("ä¿å­˜å›¾ç‰‡"), "/", picFilter);
 		if (!strSave.isEmpty())
 		{
 			IplImage frameImg = IplImage(m_dispImage);
@@ -340,12 +340,12 @@ void VisionViewWidget::saveAsFile()
 		}
 		else
 		{
-			QMessageBox::warning(this, "", QStringLiteral("ÊäÈëÎÄ¼şÃû"));
+			QMessageBox::warning(this, "", QStringLiteral("è¾“å…¥æ–‡ä»¶å"));
 		}
 	}
 	else
 	{
-		QMessageBox::warning(this, "", QStringLiteral("ÎŞÍ¼Ïñ"));
+		QMessageBox::warning(this, "", QStringLiteral("æ— å›¾åƒ"));
 	}
 }
 
@@ -385,7 +385,7 @@ bool VisionViewWidget::onLive()
 	int nCaptureMode = System->getParam("camera_capture_mode").toInt();
 	if (2 == nCaptureMode)
 	{
-		QMessageBox::warning(this, "", QStringLiteral("ÊÖ¶¯²É¼¯Ä£Ê½²»Ö§³ÖÊµÊ±Í¼ÏñÏÔÊ¾"));
+		QMessageBox::warning(this, "", QStringLiteral("æ‰‹åŠ¨é‡‡é›†æ¨¡å¼ä¸æ”¯æŒå®æ—¶å›¾åƒæ˜¾ç¤º"));
 		return false;
 	}
 
@@ -393,7 +393,7 @@ bool VisionViewWidget::onLive()
 	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
 	if (!bHardwareTrigger && bCaptureImage)
 	{
-		QMessageBox::warning(this, "", QStringLiteral("ÊµÊ±Í¼Ïñ²»Ö§³Ö¡¾·ÇÓ²´¥·¢¡¿±£´æÍ¼Ïñ£¬È¡Ïû±£´æÍ¼Ïñ»òÕßÆôÓÃÓ²´¥·¢Ä£Ê½"));
+		QMessageBox::warning(this, "", QStringLiteral("å®æ—¶å›¾åƒä¸æ”¯æŒã€éç¡¬è§¦å‘ã€‘ä¿å­˜å›¾åƒï¼Œå–æ¶ˆä¿å­˜å›¾åƒæˆ–è€…å¯ç”¨ç¡¬è§¦å‘æ¨¡å¼"));
 		return false;
 	}
 
@@ -415,14 +415,14 @@ bool VisionViewWidget::onLive()
 		if (!pCam->startUpCapture())
 		{
 			QSystem::closeMessage();
-			QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Ïà»ú³õÊ¼»¯ÎÊÌâ¡£"));
+			QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("ç›¸æœºåˆå§‹åŒ–é—®é¢˜ã€‚"));
 			return false;
 		}
 	}
 	else
 	{
 		QSystem::closeMessage();
-		QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Çë¼ì²éÏà»úÊÇ·ñÁ¬½Ó¡£"));
+		QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("è¯·æ£€æŸ¥ç›¸æœºæ˜¯å¦è¿æ¥ã€‚"));
 		return false;
 	}
 
@@ -453,7 +453,7 @@ void VisionViewWidget::onStopLive()
 	else
 	{
 		QSystem::closeMessage();
-		QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Çë¼ì²éÏà»úÊÇ·ñÁ¬½Ó¡£"));
+		QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("è¯·æ£€æŸ¥ç›¸æœºæ˜¯å¦è¿æ¥ã€‚"));
 	}
 
 	if (m_pCameraOnLive)
@@ -475,7 +475,7 @@ void VisionViewWidget::show3D()
 {
 	if (m_pMainViewFull3D->isShown())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("3D½çÃæÒÑÏÔÊ¾£¬Çë¹Ø±ÕºóÔÙ´ò¿ª"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("3Dç•Œé¢å·²æ˜¾ç¤ºï¼Œè¯·å…³é—­åå†æ‰“å¼€"));
 		return;
 	}
 
@@ -1021,7 +1021,7 @@ void VisionViewWidget::repaintAll()
 
 void VisionViewWidget::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 {
-	CV_Assert(src.depth() == CV_8U);//CV_Assert£¨£©ÈôÀ¨ºÅÖĞµÄ±í´ïÊ½ÖµÎªfalse£¬Ôò·µ»ØÒ»¸ö´íÎóĞÅÏ¢¡£  
+	CV_Assert(src.depth() == CV_8U);//CV_Assertï¼ˆï¼‰è‹¥æ‹¬å·ä¸­çš„è¡¨è¾¾å¼å€¼ä¸ºfalseï¼Œåˆ™è¿”å›ä¸€ä¸ªé”™è¯¯ä¿¡æ¯ã€‚  
 	const int rows = src.rows;
 	const int cols = src.cols;
 	dst.create(rows, cols, src.type());
@@ -1031,17 +1031,17 @@ void VisionViewWidget::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 
 	dst.setTo(cv::Scalar(0, 0, 0));
 
-	cv::Vec3b *p;   //¶¨ÒåÒ»¸ö´æ·Å3Í¨µÀµÄÈİÆ÷Ö¸Õëp  
+	cv::Vec3b *p;   //å®šä¹‰ä¸€ä¸ªå­˜æ”¾3é€šé“çš„å®¹å™¨æŒ‡é’ˆp  
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			p = dst.ptr<cv::Vec3b>(i);//Ö¸ÏòĞĞÊıµÄÈİÆ÷p  
+			p = dst.ptr<cv::Vec3b>(i);//æŒ‡å‘è¡Œæ•°çš„å®¹å™¨p  
 			int x = j - dx;
 			int y = i - dy;
-			if (x>0 && y>0 && x < cols&&y < rows)//Æ½ÒÆºóµÄÏñËØ×ø±êÔÚÔ­Í¼ÏñµÄĞĞÊıºÍÁĞÊıÄÚ  
+			if (x>0 && y>0 && x < cols&&y < rows)//å¹³ç§»åçš„åƒç´ åæ ‡åœ¨åŸå›¾åƒçš„è¡Œæ•°å’Œåˆ—æ•°å†…  
 			{
-				p[i, j] = src.ptr<cv::Vec3b>(y)[x];//Æ½ÒÆºóµÄÍ¼Ïñ£¨i,j)¶ÔÓ¦ÓÚÔ­Í¼ÏñµÄ£¨y,x)  
+				p[i, j] = src.ptr<cv::Vec3b>(y)[x];//å¹³ç§»åçš„å›¾åƒï¼ˆi,j)å¯¹åº”äºåŸå›¾åƒçš„ï¼ˆy,x)  
 			}
 		}
 	}
