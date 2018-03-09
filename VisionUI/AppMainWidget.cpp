@@ -7,6 +7,8 @@
 #include "../Common/eos.h"
 #include "../include/IFlowCtrl.h"
 #include "../Common/ModuleMgr.h"
+#include "../include/ILight.h"
+#include "../include/IVision.h"
 #include <QMessageBox>
 #include <qdesktopwidget.h>
 #include <QDateTime.h>
@@ -123,6 +125,18 @@ void QAppMainWidget::onCloseBtnclick()
 
 		QFile::copy(dataPath + "defaultProduct.xml",	backupFullPath + "defaultProduct.xml");
 		QFile::copy(dataPath + "systemData.s3db",		backupFullPath + "systemData.s3db");
+	}
+
+	ILight* pLight = getModule<ILight>(LIGHT_MODEL);
+	if (pLight)
+	{
+		 pLight->getLightWidget()->close();
+	}
+
+	IVision* pVision = getModule<IVision>(VISION_MODEL);
+	if (pVision)
+	{
+		pVision->getColorWeightView()->close();
 	}
 
 	this->close();
