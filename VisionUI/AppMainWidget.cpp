@@ -72,7 +72,6 @@ QAppMainWidget::QAppMainWidget(QWidget *parent)
 
     connect(m_topwidget,SIGNAL(closeBtnclick()),this,SLOT(onCloseBtnclick()));
 
-	QSystem::setMainWidget(this);
 	System->setTrackInfo(QStringLiteral("系统已启动"));
 
 	this->onChangeModuleType(QVariantList());
@@ -81,7 +80,6 @@ QAppMainWidget::QAppMainWidget(QWidget *parent)
 
 QAppMainWidget::~QAppMainWidget()
 {
-	QSystem::setMainWidget(NULL);
 }
 
 void QAppMainWidget::onChangeModuleType(const QVariantList &vars)

@@ -169,11 +169,17 @@ void InspWindowWidget::on_btnRemoveWindow_clicked()
 
 void InspWindowWidget::on_btnTryInsp_clicked()
 {
+    if (INSP_WIDGET_INDEX::UNDEFINED == m_enCurrentInspWidget)
+        return;
+
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
 }
 
 void InspWindowWidget::on_btnConfirmWindow_clicked()
 {
+    if (INSP_WIDGET_INDEX::UNDEFINED == m_enCurrentInspWidget)
+        return;
+
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->confirmWindow(m_enOperation);
 }
 

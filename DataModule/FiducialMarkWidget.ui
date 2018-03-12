@@ -39,30 +39,17 @@
     <string>Confirm Fiducial Mark</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEditFiducialMark">
-   <property name="geometry">
-    <rect>
-     <x>320</x>
-     <y>80</y>
-     <width>41</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>0</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="labelFiducialMarkCount">
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>90</y>
-     <width>121</width>
+     <y>30</y>
+     <width>131</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>Fiducial Mark Count</string>
+    <string>Current Fiducial Marks</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btnDoAlignment">
@@ -76,6 +63,39 @@
    </property>
    <property name="text">
     <string>Do Alignment</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="listFiducialMarkWidget">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>60</y>
+     <width>201</width>
+     <height>192</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnRemoveFM">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>260</y>
+     <width>50</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>./Image/Remove.png</normaloff>./Image/Remove.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>50</width>
+     <height>50</height>
+    </size>
    </property>
   </widget>
  </widget>
