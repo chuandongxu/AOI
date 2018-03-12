@@ -24,6 +24,7 @@
 #include <QPainter>
 
 #include "../DataModule/QDetectObj.h"
+#include "../DataModule/CalcUtils.hpp"
 
 #include "../3DViewUtility/DViewUtility.h"
 
@@ -41,6 +42,7 @@ const int LABEL_IMAGE_HEIGHT = 800;
 /*static*/ const cv::Scalar VisionViewWidget::_constCyanScalar(255, 255, 0);
 /*static*/ const cv::Scalar VisionViewWidget::_constGreenScalar(0, 255, 0);
 /*static*/ const cv::Scalar VisionViewWidget::_constYellowScalar(0, 255, 255);
+/*static*/ const cv::Scalar VisionViewWidget::_constOrchidScalar(214, 112, 218);
 
 CameraOnLive::CameraOnLive(VisionViewWidget* pView)
 	:m_pView(pView)
@@ -685,7 +687,6 @@ void VisionViewWidget::dropEvent(QDropEvent *event)
 	}
 }
 
-
 void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
 {
 	double mouseX = event->x(), mouseY = event->y();
@@ -746,6 +747,18 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
 			m_szCadOffset.height += (mouseY - m_preMoveY) / m_dScale;
 			repaintAll();
 			break;
+        case MODE_VIEW_EDIT_SRCH_WINDOW:
+            {
+                double dSizeOnImgX = motionX / m_dScale;
+                double dSizeOnImgY = motionY / m_dScale;
+                cv::Rect rectFMSrchWindow = m_currentFM.getSrchWindow();
+                if (dSizeOnImgX > m_currentFM.getFM().width && dSizeOnImgY > m_currentFM.getFM().height) {
+                    rectFMSrchWindow  = CalcUtils::resizeRect<int>(rectFMSrchWindow, cv::Size(dSizeOnImgX, dSizeOnImgY));
+                    m_currentFM.setSrchWindow(rectFMSrchWindow);
+                    repaintAll();
+                }
+            }
+            break;
 		case MODE_VIEW_NONE:
 			break;
 		default:
@@ -1256,12 +1269,6 @@ void VisionViewWidget::setDeviceWindows(const VisionViewDeviceVector &vecWindows
 	repaintAll();
 }
 
-void VisionViewWidget::setSelectedFM(const QVector<cv::RotatedRect> &vecWindows)
-{
-	m_vecSelectedFM = vecWindows;
-	repaintAll();
-}
-
 void VisionViewWidget::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const {
 	rrectImageWindow = rrectCadWindow = m_selectedDevice.getWindow();
 	rrectImageWindow.center.x += m_szCadOffset.width;
@@ -1273,12 +1280,29 @@ VisionViewDevice VisionViewWidget::getSelectedDevice() const
     return m_selectedDevice;
 }
 
+void VisionViewWidget::setConfirmedFM(const VisionViewFMVector &vecFM)
+{ 
+    m_vecConfirmedFM = vecFM;
+    repaintAll();
+}
+
+void VisionViewWidget::setCurrentFM(const VisionViewFM &fm)
+{ 
+    m_currentFM = fm;
+    repaintAll();
+}
+
+VisionViewFM VisionViewWidget::getCurrentFM() const
+{
+    return m_currentFM;
+}
+
 cv::Point VisionViewWidget::convertToImgPos(const cv::Point &ptMousePos)
 {
 	const auto COLS = m_hoImage.cols;
 	const auto ROWS = m_hoImage.rows;
 	cv::Point ptOnImage;
-	ptOnImage.x = (ptMousePos.x - m_dMovedX - (LABEL_IMAGE_WIDTH - COLS * m_dScale) / 2) / m_dScale;
+	ptOnImage.x = (ptMousePos.x - m_dMovedX - (LABEL_IMAGE_WIDTH -  COLS * m_dScale) / 2) / m_dScale;
 	ptOnImage.y = (ptMousePos.y - m_dMovedY - (LABEL_IMAGE_HEIGHT - ROWS * m_dScale) / 2) / m_dScale;
 
 	return ptOnImage;
@@ -1554,17 +1578,19 @@ void VisionViewWidget::_drawDeviceWindows(cv::Mat &matImg)
 		cv::polylines(matImg, vecContours, true, _constBlueScalar, _constDeviceWindowLineWidth);
 	}
 
-	if (!m_vecSelectedFM.empty()) {
-		vecContours.clear();
-		for (auto rotatedRect : m_vecSelectedFM) {
-			rotatedRect.center.x += ptCtrOfImage.x;
-			rotatedRect.center.y += ptCtrOfImage.y;
-			auto contour = getCornerOfRotatedRect(rotatedRect);
-			contour.push_back(contour.front());
-			vecContours.push_back(contour);
-		}
-		cv::polylines(matImg, vecContours, true, _constGreenScalar, _constDeviceWindowLineWidth);
-	}
+    if (!m_vecConfirmedFM.empty()) {
+        for (const auto &fm : m_vecConfirmedFM) {
+            cv::Rect rectFM(fm.getFM());
+            rectFM.x += ptCtrOfImage.x;
+            rectFM.y += ptCtrOfImage.y;
+            cv::rectangle(matImg, rectFM, _constGreenScalar, _constDeviceWindowLineWidth);
+
+            cv::Rect rectSrchWindow(fm.getSrchWindow());
+            rectSrchWindow.x += ptCtrOfImage.x;
+            rectSrchWindow.y += ptCtrOfImage.y;
+            cv::rectangle(matImg, rectSrchWindow, _constYellowScalar, _constDeviceWindowLineWidth);
+        }
+    }
 
 	auto localSelectedDevice(m_selectedDevice.getWindow());
 	localSelectedDevice.center.x += ptCtrOfImage.x;
@@ -1572,6 +1598,16 @@ void VisionViewWidget::_drawDeviceWindows(cv::Mat &matImg)
 	auto contour = getCornerOfRotatedRect(localSelectedDevice);
 	contour.push_back(contour.front());
 	cv::polylines(matImg, VectorOfVectorOfPoint(1, contour), true, _constCyanScalar, _constDeviceWindowLineWidth);
+
+    cv::Rect rectFM(m_currentFM.getFM());
+    rectFM.x += ptCtrOfImage.x;
+    rectFM.y += ptCtrOfImage.y;
+    cv::rectangle(matImg, rectFM, _constGreenScalar, _constDeviceWindowLineWidth);
+
+    cv::Rect rectSrchWindow(m_currentFM.getSrchWindow());
+    rectSrchWindow.x += ptCtrOfImage.x;
+    rectSrchWindow.y += ptCtrOfImage.y;
+    cv::rectangle(matImg, rectSrchWindow, _constOrchidScalar, _constDeviceWindowLineWidth);
 }
 
 void VisionViewWidget::_drawDetectObjs()

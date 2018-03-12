@@ -1,6 +1,6 @@
 ﻿#include "sysmessagebox.h"
 
-QSysMessageBox::QSysMessageBox(QWidget *parent)
+QSysMessageBox::QSysMessageBox(QWidget *parent, bool bInteract)
 	: QDialog(parent)
 {
 	ui.setupUi(this);
@@ -13,15 +13,22 @@ QSysMessageBox::QSysMessageBox(QWidget *parent)
 	pixmap.load(path);
 
 	ui.messageBox_icon->setPixmap(pixmap);
+    if (bInteract) {
+        ui.pushButton->hide();
+        ui.buttonBox->show();
+    }else {
+        ui.pushButton->show();
+        ui.buttonBox->hide();
+    }
 }
 
 QSysMessageBox::~QSysMessageBox()
 {
-
 }
 
 void QSysMessageBox::setTitle(const QString &str)
 {
+    QDialog::setWindowTitle(str);
 	ui.label->setText(str);
 }
 

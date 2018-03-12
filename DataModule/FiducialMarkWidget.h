@@ -7,6 +7,7 @@
 #include "VisionAPI.h"
 
 using namespace AOI;
+using namespace NFG::AOI;
 
 class FiducialMarkWidget : public QWidget
 {
@@ -15,6 +16,7 @@ class FiducialMarkWidget : public QWidget
 public:
     FiducialMarkWidget(QWidget *parent = Q_NULLPTR);
     ~FiducialMarkWidget();
+    static QString formatAlignmentName(const Engine::Alignment &alignment, int No);
 protected:
     virtual void showEvent(QShowEvent *event) override;
     int srchFiducialMark();
@@ -23,6 +25,7 @@ private slots:
     void on_btnSelectFiducialMark_clicked();
     void on_btnConfirmFiducialMark_clicked();
     void on_btnDoAlignment_clicked();
+    void on_btnRemoveFM_clicked();
     
 private:
     Ui::FiducialMarkWidget ui;
@@ -32,4 +35,6 @@ private:
     float m_fCadOffsetY = 0.f;
     int m_nBigImageWidth = 0;
     int m_nBigImageHeight = 0;
+
+    Engine::AlignmentVector m_vecAlignmentDB;
 };

@@ -9,7 +9,7 @@ class QSysMessageBox : public QDialog
 	Q_OBJECT
 
 public:
-	QSysMessageBox(QWidget *parent = 0);
+	QSysMessageBox(QWidget *parent = 0, bool bInteract = false);
 	~QSysMessageBox();
 
 	void setTitle(const QString &str);

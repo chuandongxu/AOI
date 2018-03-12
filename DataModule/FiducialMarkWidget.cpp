@@ -1,16 +1,14 @@
 ﻿#include <QMessageBox>
-#include "VisionAPI.h"
 #include "FiducialMarkWidget.h"
 #include "../include/IVisionUI.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../Common/SystemData.h"
 #include "DataUtils.h"
+#include "CalcUtils.hpp"
 #include "SetFiducialMarkDialog.h"
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/video.hpp"
-
-using namespace NFG::AOI;
 
 FiducialMarkWidget::FiducialMarkWidget(QWidget *parent)
     : QWidget(parent)
@@ -20,6 +18,19 @@ FiducialMarkWidget::FiducialMarkWidget(QWidget *parent)
 
 FiducialMarkWidget::~FiducialMarkWidget()
 {
+}
+
+/*static*/ QString FiducialMarkWidget::formatAlignmentName(const Engine::Alignment &alignment, int No)
+{
+    QString strAlignmentName = QString("FM_") + QString::number(No) + "_";
+    strAlignmentName += alignment.isFM ? QString("Standard Shape_") : QString("Template");
+    if (alignment.isFM) {
+        if (alignment.fmShape == static_cast<int>(Vision::PR_FIDUCIAL_MARK_TYPE::SQUARE))
+            strAlignmentName += "Square";
+        else
+            strAlignmentName += "Circle";
+    }
+    return strAlignmentName;
 }
 
 void FiducialMarkWidget::showEvent(QShowEvent *event)
@@ -53,6 +64,7 @@ static std::vector<cv::Point> getCornerOfRotatedRect (const cv::RotatedRect &rot
 
 void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
 {
+    int iReturn = 0;
     auto nCountOfImgPerFrame = System->getParam("scan_image_OneFrameImageCount").toInt();
 	auto nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
     auto nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
@@ -73,33 +85,40 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     cv::RotatedRect rrectCadWindow, rrectImageWindow;
     pUI->getSelectDeviceWindow ( rrectCadWindow, rrectImageWindow );
+
+    cv::Rect rectCadFMWindow = rrectCadWindow.boundingRect();
+    cv::RotatedRect rrSrchWindow(rrectCadWindow);
+    rrSrchWindow.size.width  *= 4;
+    rrSrchWindow.size.height *= 4;
+    cv::Rect rectFMSrchWindow = rrSrchWindow.boundingRect();
+
     rrectCadWindow.center.x /= dCombinedImageScale;
     rrectCadWindow.center.y /= dCombinedImageScale;
     rrectCadWindow.size.width  /= dCombinedImageScale;
     rrectCadWindow.size.height /= dCombinedImageScale;
 
     bool bFound = false;
-    for ( const auto &rotatedRect : m_vecFMCadWindow ) {
-        auto contour = getCornerOfRotatedRect ( rotatedRect );
-        contour.push_back ( contour.front() );
-        auto distance = cv::pointPolygonTest ( contour, rrectCadWindow.center, false );
-        if ( distance >= 0 ) {
+    for (const auto &rotatedRect : m_vecFMCadWindow) {
+        auto contour = getCornerOfRotatedRect(rotatedRect);
+        contour.push_back(contour.front());
+        auto distance = cv::pointPolygonTest(contour, rrectCadWindow.center, false);
+        if (distance >= 0) {
             bFound = true;
             break;
         }
     }
 
-    if ( bFound ) {
+    if (bFound) {
         QMessageBox::critical(nullptr, QStringLiteral("Fiducial Mark"), QStringLiteral("This ficucial mark already added"), QStringLiteral("Quit"));
         return;
-    }
+    }    
 
     auto matImage = pUI->getImage();
     int nBigImgWidth  = matImage.cols / dCombinedImageScale;
     int nBigImgHeight = matImage.rows / dCombinedImageScale;
     auto matFirstImg = cv::imread ( strImageFolder.toStdString() + "/F1-1-1.bmp" );
-    if ( matFirstImg.empty() ) {
-        QString strMsg = QString ( "Failed to read frame image from " ) + strImageFolder;
+    if (matFirstImg.empty()) {
+        QString strMsg = QString ( "Failed to read frame image from: " ) + strImageFolder;
         QMessageBox::critical(nullptr, QStringLiteral("Fiducial Mark"), strMsg, QStringLiteral("Quit"));
         return;
     }
@@ -118,8 +137,8 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
 
     auto strFrameImagePath = strImageFolder + arrCharFileName;
     auto matFrameImg = cv::imread ( strFrameImagePath.toStdString(), cv::IMREAD_GRAYSCALE );
-    if ( matFrameImg.empty() ) {
-        QString strMsg = QString ( "Failed to read frame image " ) + strFrameImagePath;
+    if (matFrameImg.empty()) {
+        QString strMsg = QString ( "Failed to read frame image: " ) + strFrameImagePath;
         QMessageBox::critical ( nullptr, QStringLiteral("Fiducial Mark"), strMsg, QStringLiteral("Quit") );
         return;
     }
@@ -130,22 +149,32 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
     dialogSetFM.show();
     dialogSetFM.raise();
     dialogSetFM.activateWindow();
-    int iReturn = dialogSetFM.exec();
-
-    if (iReturn != QDialog::Accepted) {
+    iReturn = dialogSetFM.exec();
+    if (iReturn != QDialog::Accepted)
         return;
-    }
 
     bool bUseStandardShape = dialogSetFM.getUseStandardShape();
-    if ( bUseStandardShape ) {
+    if (bUseStandardShape) {
+        float fFMImgSize = dialogSetFM.getFiducialMarkSize() * MM_TO_UM / System->getSysParam("CAM_RESOLUTION_X").toDouble();
+        rectCadFMWindow = CalcUtils::resizeRect(rectCadFMWindow, cv::Size(fFMImgSize * dCombinedImageScale, fFMImgSize * dCombinedImageScale));
+        VisionViewFM fm(0, rectCadFMWindow, rectFMSrchWindow);
+        pUI->setCurrentFM(fm);
+        pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_SRCH_WINDOW);
+        int iReturn = System->showInteractMessage(QStringLiteral("Fiducial Mark"), QStringLiteral("Please select the search window of the fiducial mark"));
+        if (iReturn != QDialog::Accepted)
+            return;
+
+        rectFMSrchWindow = pUI->getCurrentFM().getSrchWindow();
+        rectFMSrchWindow.width  /= dCombinedImageScale;
+        rectFMSrchWindow.height /= dCombinedImageScale;
         Vision::PR_SRCH_FIDUCIAL_MARK_CMD stCmd;
         Vision::PR_SRCH_FIDUCIAL_MARK_RPY stRpy;
         stCmd.matInputImg = matFrameImg;
         stCmd.enType = dialogSetFM.getFiducialMarkShape();
-        stCmd.fSize = dialogSetFM.getFiducialMarkSize() * MM_TO_UM / System->getSysParam("CAM_RESOLUTION_X").toDouble();
+        stCmd.fSize = fFMImgSize;
         stCmd.fMargin = stCmd.fSize / 2.f;
-        stCmd.rectSrchWindow = cv::Rect ( nPtInFrameX - stCmd.fSize * 2, nPtInFrameY - stCmd.fSize * 2,
-            stCmd.fSize * 4, stCmd.fSize * 4 );
+        stCmd.rectSrchWindow = cv::Rect ( nPtInFrameX - rectFMSrchWindow.width / 2, nPtInFrameY - rectFMSrchWindow.height / 2,
+            rectFMSrchWindow.width, rectFMSrchWindow.height );
         if ( stCmd.rectSrchWindow.x < 0 ) stCmd.rectSrchWindow.x = 0;
         if ( stCmd.rectSrchWindow.y < 0 ) stCmd.rectSrchWindow.y = 0;
         if ( ( stCmd.rectSrchWindow.x + stCmd.rectSrchWindow.width ) > stCmd.matInputImg.cols )
@@ -182,13 +211,13 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
 
         alignment.tmplWidth  = dialogSetFM.getFiducialMarkSize() * MM_TO_UM;
         alignment.tmplHeight = dialogSetFM.getFiducialMarkSize() * MM_TO_UM;
-        alignment.srchWinWidth  = 4.f * alignment.tmplWidth;
-        alignment.srchWinHeight = 4.f * alignment.tmplHeight;
+        alignment.srchWinWidth  = rectFMSrchWindow.width  * dResolutionX;
+        alignment.srchWinHeight = rectFMSrchWindow.height * dResolutionY;
         alignment.isFM = bUseStandardShape;
-        alignment.fmShape = static_cast<int> ( dialogSetFM.getFiducialMarkShape() );
+        alignment.fmShape = static_cast<int> (dialogSetFM.getFiducialMarkShape());
         alignment.isFMDark = dialogSetFM.getIsFiducialMarkDark();
         alignment.lightId = 1;
-        auto result = Engine::CreateAlignment ( alignment );
+        auto result = Engine::CreateAlignment(alignment);
         if (Engine::OK != result) {
             String errorType, errorMessage;
             Engine::GetErrorDetail(errorType, errorMessage);
@@ -196,18 +225,8 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked()
             QMessageBox::critical(nullptr, QStringLiteral("Set Fiducial Mark"), errorMessage.c_str(), QStringLiteral("Quit"));
             return;
         }
-
-        m_vecFMCadWindow.push_back ( rrectCadWindow );
-        ui.lineEditFiducialMark->setText( QString::number ( m_vecFMCadWindow.size() ) );
-
-        auto vecTmpVecFMCadWindow ( m_vecFMCadWindow );
-        for ( auto &rrFMCadWindow : vecTmpVecFMCadWindow ) {
-            rrFMCadWindow.center.x *= dCombinedImageScale;
-            rrFMCadWindow.center.y *= dCombinedImageScale;
-            rrFMCadWindow.size.width  *= dCombinedImageScale;
-            rrFMCadWindow.size.height *= dCombinedImageScale;
-        }
-        pUI->setSelectedFM ( vecTmpVecFMCadWindow );
+        pUI->setCurrentFM(VisionViewFM(0, cv::Rect(), cv::Rect())); //Clear selection.
+        refreshFMWindow();
     }
 }
 
@@ -228,8 +247,7 @@ int FiducialMarkWidget::srchFiducialMark()
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
     auto strImageFolder = System->getParam("scan_image_Folder").toString();
 
-    Engine::AlignmentVector vecAlignmentDB;
-    auto result = Engine::GetAllAlignments ( vecAlignmentDB );
+    auto result = Engine::GetAllAlignments ( m_vecAlignmentDB );
     if (Engine::OK != result) {
         String errorType, errorMessage;
         Engine::GetErrorDetail(errorType, errorMessage);
@@ -238,10 +256,10 @@ int FiducialMarkWidget::srchFiducialMark()
         return NOK;
     }
 
-    if ( vecAlignmentDB.size() != m_vecFMCadWindow.size() ) {
+    if ( m_vecAlignmentDB.size() != m_vecFMCadWindow.size() ) {
         QString strMsg;
         strMsg.sprintf("Software error, the DB alignment count %d not match with CAD alignment count %d.",
-            vecAlignmentDB.size(), m_vecFMCadWindow.size() );
+            m_vecAlignmentDB.size(), m_vecFMCadWindow.size() );
         QMessageBox::critical(nullptr, QStringLiteral("Do alignment"), strMsg, QStringLiteral("Quit"));
         return NOK;
     }
@@ -258,7 +276,7 @@ int FiducialMarkWidget::srchFiducialMark()
     }
 
     //Research for the fiducial mark again to do alignment. There is one problem here, the fiducial shape is not remembered.
-    for ( size_t i = 0; i < m_vecFMCadWindow.size(); ++ i ) {
+    for (size_t i = 0; i < m_vecFMCadWindow.size(); ++ i) {
         auto rrectCadWindow = m_vecFMCadWindow[i];
         int nSelectPtX = rrectCadWindow.center.x;
         int nSelectPtY = rrectCadWindow.center.y;
@@ -284,11 +302,11 @@ int FiducialMarkWidget::srchFiducialMark()
         Vision::PR_SRCH_FIDUCIAL_MARK_CMD stCmd;
         Vision::PR_SRCH_FIDUCIAL_MARK_RPY stRpy;
         stCmd.matInputImg = matFrameImg;
-        stCmd.enType = static_cast<Vision::PR_FIDUCIAL_MARK_TYPE> ( vecAlignmentDB[i].fmShape );
-        stCmd.fSize = vecAlignmentDB[i].tmplWidth / System->getSysParam("CAM_RESOLUTION_X").toDouble();
+        stCmd.enType = static_cast<Vision::PR_FIDUCIAL_MARK_TYPE> ( m_vecAlignmentDB[i].fmShape );
+        stCmd.fSize = m_vecAlignmentDB[i].tmplWidth / System->getSysParam("CAM_RESOLUTION_X").toDouble();
         stCmd.fMargin = stCmd.fSize / 2.f;
-        int nSrchWinWidth  = vecAlignmentDB[i].srchWinWidth  / System->getSysParam("CAM_RESOLUTION_X").toDouble();
-        int nSrchWinHeight = vecAlignmentDB[i].srchWinHeight / System->getSysParam("CAM_RESOLUTION_X").toDouble();
+        int nSrchWinWidth  = m_vecAlignmentDB[i].srchWinWidth  / dResolutionX;
+        int nSrchWinHeight = m_vecAlignmentDB[i].srchWinHeight / dResolutionY;
         stCmd.rectSrchWindow = cv::Rect ( nPtInFrameX - nSrchWinWidth / 2, nPtInFrameY - nSrchWinHeight / 2,
             nSrchWinWidth, nSrchWinHeight );
         if ( stCmd.rectSrchWindow.x < 0 ) stCmd.rectSrchWindow.x = 0;
@@ -310,10 +328,10 @@ int FiducialMarkWidget::srchFiducialMark()
         System->setTrackInfo( qstrMsg );
 
         int nPosInCombineImageX, nPosInCombineImageY;
-        DataUtils::getCombinedImagePosFromFramePos ( nBigImgWidth, nBigImgHeight, matFirstImg.cols, matFirstImg.rows,
+        DataUtils::getCombinedImagePosFromFramePos(nBigImgWidth, nBigImgHeight, matFirstImg.cols, matFirstImg.rows,
             nOverlapX, nOverlapY, nFrameX, nFrameY, stRpy.ptPos.x, stRpy.ptPos.y, nPosInCombineImageX, nPosInCombineImageY,
-            static_cast<Vision::PR_SCAN_IMAGE_DIR> ( nScanDirection ) );
-        m_vecFMBigImagePos.push_back ( cv::Point ( nPosInCombineImageX, nPosInCombineImageY ) );
+            static_cast<Vision::PR_SCAN_IMAGE_DIR> (nScanDirection));
+        m_vecFMBigImagePos.push_back(cv::Point(nPosInCombineImageX, nPosInCombineImageY));
     }
     return OK;
 }
@@ -322,8 +340,7 @@ int FiducialMarkWidget::refreshFMWindow()
 {
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
 
-    Engine::AlignmentVector vecAlignment;
-    auto result = Engine::GetAllAlignments ( vecAlignment );
+    auto result = Engine::GetAllAlignments ( m_vecAlignmentDB );
     if (Engine::OK != result) {
         String errorType, errorMessage;
         Engine::GetErrorDetail(errorType, errorMessage);
@@ -339,7 +356,10 @@ int FiducialMarkWidget::refreshFMWindow()
     bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();    
 
     m_vecFMCadWindow.clear();
-    for ( const auto &alignment : vecAlignment ) {
+    int index = 0;
+    ui.listFiducialMarkWidget->clear();
+    VisionViewFMVector vecFM;
+    for (const auto &alignment : m_vecAlignmentDB) {
         auto x = alignment.tmplPosX / dResolutionX;
         auto y = alignment.tmplPosY / dResolutionY;
         if (bBoardRotated)
@@ -348,20 +368,30 @@ int FiducialMarkWidget::refreshFMWindow()
             y = m_nBigImageHeight - y; //In cad, up is positive, but in image, down is positive.
         auto width  = alignment.tmplWidth  / dResolutionX;
         auto height = alignment.tmplHeight / dResolutionY;
+        auto srchWinWidth  = alignment.srchWinWidth  / dResolutionX;
+        auto srchWinHeight = alignment.srchWinHeight / dResolutionY;
         cv::RotatedRect alignmentWindow ( cv::Point2f(x, y), cv::Size2f(width, height), 0 );
         m_vecFMCadWindow.push_back ( alignmentWindow );
-    }
-    ui.lineEditFiducialMark->setText( QString::number ( m_vecFMCadWindow.size() ) );
 
-    auto vecTmpVecFMCadWindow(m_vecFMCadWindow);
-    for (auto &rrFMCadWindow : vecTmpVecFMCadWindow) {
-        rrFMCadWindow.center.x *= dCombinedImageScale;
-        rrFMCadWindow.center.y *= dCombinedImageScale;
-        rrFMCadWindow.size.width  *= dCombinedImageScale;
-        rrFMCadWindow.size.height *= dCombinedImageScale;
+        alignmentWindow.center.x *= dCombinedImageScale;
+        alignmentWindow.center.y *= dCombinedImageScale;
+        alignmentWindow.size.width  *= dCombinedImageScale;
+        alignmentWindow.size.height *= dCombinedImageScale;
+        
+        cv::RotatedRect srchWindow ( cv::Point2f(x, y), cv::Size2f(srchWinWidth, srchWinHeight), 0 );
+        srchWindow.center.x *= dCombinedImageScale;
+        srchWindow.center.y *= dCombinedImageScale;
+        srchWindow.size.width  *= dCombinedImageScale;
+        srchWindow.size.height *= dCombinedImageScale;
+
+        VisionViewFM fm(alignment.Id, alignmentWindow.boundingRect(), srchWindow.boundingRect() );
+        vecFM.push_back(fm);
+        
+        QString strAlignmentName = formatAlignmentName(alignment, ++ index);
+        ui.listFiducialMarkWidget->addItem(strAlignmentName);
     }
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-    pUI->setSelectedFM(vecTmpVecFMCadWindow);
+    pUI->setConfirmedFM(vecFM);
     return OK;
 }
 
@@ -372,11 +402,9 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
         return;
     }
 
-    if ( m_vecFMBigImagePos.size() < m_vecFMCadWindow.size() ) {
-        m_vecFMBigImagePos.clear();
-        if ( srchFiducialMark() != OK )
-            return;
-    } 
+    m_vecFMBigImagePos.clear();
+    if (srchFiducialMark() != OK)
+        return;
 
     double dResolutionX, dResolutionY;
     bool bBoardRotated = false;
@@ -390,12 +418,12 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
     if ( m_vecFMCadWindow.size() >= 3 ) {
         Vision::VectorOfPoint2f vecPointCad;
         for ( const auto &rotatedRect : m_vecFMCadWindow )
-            vecPointCad.push_back ( rotatedRect.center );
+            vecPointCad.push_back(rotatedRect.center);
 
-        if ( m_vecFMCadWindow.size() == 3 )
-            matTransform = cv::getAffineTransform ( vecPointCad, m_vecFMBigImagePos );
+        if (m_vecFMCadWindow.size() == 3)
+            matTransform = cv::getAffineTransform(vecPointCad, m_vecFMBigImagePos);
         else
-            matTransform = cv::estimateRigidTransform ( vecPointCad, m_vecFMBigImagePos, true );
+            matTransform = cv::estimateRigidTransform(vecPointCad, m_vecFMBigImagePos, true);
         
         matTransform.convertTo ( matTransform, CV_32FC1 );
 
@@ -414,13 +442,13 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
         cv::Point2f ptCtr( m_vecFMCadWindow[0].center.x / 2.f + m_vecFMCadWindow[1].center.x / 2.f,  m_vecFMCadWindow[0].center.y / 2.f + m_vecFMCadWindow[1].center.y / 2.f );
         //cv::Point2f ptCtr( m_nBigImageWidth / 2.f, m_nBigImageHeight / 2.f );
         double fDegree = fRotationInRadian * 180. / CV_PI;
-        matTransform = cv::getRotationMatrix2D ( ptCtr, fDegree, fScale );
+        matTransform = cv::getRotationMatrix2D(ptCtr, fDegree, fScale);
         matTransform.at<double>(0, 2) += Tx;
         matTransform.at<double>(1, 2) += Ty;
-        matTransform.convertTo ( matTransform, CV_32FC1 );
+        matTransform.convertTo(matTransform, CV_32FC1);
     }
 
-    auto vecVecTransform = DataUtils::matToVector<float> ( matTransform );
+    auto vecVecTransform = DataUtils::matToVector<float>(matTransform);
 
     Engine::BoardVector vecBoard;
     auto result = Engine::GetAllBoards ( vecBoard );
@@ -444,8 +472,8 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
             return;
         }
 
-        for ( const auto &device : vecDevice ) {
-            if ( device.isBottom )
+        for (const auto &device : vecDevice) {
+            if (device.isBottom)
                 continue;
 
             auto x = ( device.x + board.x ) / dResolutionX;
@@ -467,7 +495,7 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
             auto width  = device.width  / dResolutionX * dCombinedImageScale;
             auto height = device.height / dResolutionY * dCombinedImageScale;
             cv::RotatedRect deviceWindow ( cv::Point2f(x, y), cv::Size2f(width, height), device.angle );
-            vecVisionViewDevices.emplace_back ( device.Id, device.name, deviceWindow );
+            vecVisionViewDevices.emplace_back(device.Id, device.name, deviceWindow);
         }
     }
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
@@ -494,8 +522,8 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
     }
 
     Engine::AlignmentVector vecAlignment;
-    Engine::GetAllAlignments ( vecAlignment );
-    for ( auto &alignment : vecAlignment ) {
+    Engine::GetAllAlignments(vecAlignment);
+    for (auto &alignment : vecAlignment) {
         if ( bBoardRotated ) {
             alignment.tmplPosX += -m_fCadOffsetX;
             alignment.tmplPosY +=  m_fCadOffsetY;
@@ -508,4 +536,19 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked()
 
     //Refresh the select FM window.
     refreshFMWindow();
+}
+
+void FiducialMarkWidget::on_btnRemoveFM_clicked()
+{
+    auto index = ui.listFiducialMarkWidget->currentRow();
+    if ( index >= 0 ) {
+        auto alignmentId = m_vecAlignmentDB[index].Id;
+        QString msg = "Are you sure to delete the fiducial mark " + formatAlignmentName(m_vecAlignmentDB[index], index + 1);
+        int result = QMessageBox::warning(this, "Remove Fiducial Mark", msg, QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::Cancel);
+        if (result != QMessageBox::StandardButton::Ok)
+            return;
+
+        Engine::DeleteAlignment(alignmentId);
+        refreshFMWindow();
+    }
 }

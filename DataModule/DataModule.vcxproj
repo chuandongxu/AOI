@@ -277,6 +277,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SCRIPT_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DQT_XML_LIB -DDATAMODULE_LIB -DQT_PRINTSUPPORT_LIB -D_WINDLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtScript" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtPrintSupport" "-I.\..\lib\VisionLibrary\include" "-I.\..\lib\VisionLibrary\include\opencv" "-I.\..\lib\VisionLibrary\include\opencv2" "-I.\..\lib\DataStoreAPI\include" "-I.\..\lib\Runtime" "-I.\..\include" "-I.\..\Common" "-I.\..\VisionUI"</Command>
     </CustomBuild>
     <ClInclude Include="..\include\constants.h" />
+    <ClInclude Include="CalcUtils.hpp" />
     <ClInclude Include="DataUtils.h" />
     <ClInclude Include="dog_vcode.h" />
     <ClInclude Include="errorprinter.h" />

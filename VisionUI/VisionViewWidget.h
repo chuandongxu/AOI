@@ -70,9 +70,11 @@ public:
     void setCurrentDetectObj(const QDetectObj &detectObj);
     QVector<QDetectObj> getDetectObjs() const;
 	void setDeviceWindows(const VisionViewDeviceVector &vecWindows);
-	void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows);
 	void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const;
-    virtual VisionViewDevice getSelectedDevice() const;
+    VisionViewDevice getSelectedDevice() const;
+    void setConfirmedFM(const VisionViewFMVector &vecFM);
+    void setCurrentFM(const VisionViewFM &fm);
+    VisionViewFM getCurrentFM() const;
     void setHeightData(cv::Mat& matHeight);
 
 private slots:
@@ -161,8 +163,9 @@ private:
 	bool                        m_bShow3DInitial;
 	bool                        m_bMainView3DInitial;
 	VisionViewDeviceVector      m_vecDevices;
-	QVector<cv::RotatedRect>    m_vecSelectedFM;   //FM for fiducial mark
 	VisionViewDevice            m_selectedDevice;
+    VisionViewFMVector          m_vecConfirmedFM;
+    VisionViewFM                m_currentFM;
 	cv::Size                    m_szCadOffset;
 	cv::Size                    m_szMoveRange;
     bool                        m_bDisplayDetectObjs;
@@ -174,6 +177,7 @@ private:
 	static const cv::Scalar _constCyanScalar;
 	static const cv::Scalar _constGreenScalar;
 	static const cv::Scalar _constYellowScalar;
+    static const cv::Scalar _constOrchidScalar;
 	const float             _constMaxZoomScale = 4.f;
 	const float             _constMinZoomScale = 0.25;
 	const float             _constZoomInStep = 2.0;

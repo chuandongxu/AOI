@@ -14,10 +14,10 @@
 
 #include "../DataModule/QDetectObj.h"
 #include "VisionViewStruct.hpp"
+#include "VisionViewWidget.h"
 
 using namespace AOI::Vision;
 
-class VisionViewWidget;
 class VisionView : public QMainWindow
 {
 	Q_OBJECT
@@ -46,9 +46,11 @@ public:
     void setCurrentDetectObj(const QDetectObj &detectObj);
     QVector<QDetectObj> getDetectObjs() const;
     void setDeviceWindows(const VisionViewDeviceVector &vecWindows);
-    void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows);
     void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const;
     virtual VisionViewDevice getSelectedDevice() const;
+    void setConfirmedFM(const VisionViewFMVector &vecFM);
+    void setCurrentFM(const VisionViewFM &fm);
+    VisionViewFM getCurrentFM() const;
 
 	bool startUpCapture();
 	bool endUpCapture();

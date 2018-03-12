@@ -413,14 +413,6 @@ void VisionView::setDeviceWindows(const VisionViewDeviceVector &vecWindows)
     m_pViewWidget->setDeviceWindows(vecWindows);
 }
 
-void VisionView::setSelectedFM(const QVector<cv::RotatedRect> &vecWindows)
-{
-	if (m_pViewWidget)
-	{
-		m_pViewWidget->setSelectedFM(vecWindows);
-	}
-}
-
 void VisionView::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const {
 	if (m_pViewWidget)
 	{
@@ -431,6 +423,18 @@ void VisionView::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::Rota
 VisionViewDevice VisionView::getSelectedDevice() const
 {
     return m_pViewWidget->getSelectedDevice();
+}
+
+void VisionView::setConfirmedFM(const VisionViewFMVector &vecFM) {
+    m_pViewWidget->setConfirmedFM(vecFM);
+}
+
+void VisionView::setCurrentFM(const VisionViewFM &fm) {
+    m_pViewWidget->setCurrentFM(fm);
+}
+
+VisionViewFM VisionView::getCurrentFM() const {
+    return m_pViewWidget->getCurrentFM();
 }
 
 void VisionView::setButtonsEnable(bool flag)

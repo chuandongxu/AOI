@@ -51,5 +51,5 @@ private:
     InspWindowBaseWidgetPtr     m_arrInspWindowWidget[INSP_WIDGET_INDEX_SIZE];
     Engine::WindowVector        m_vecCurrentDeviceWindows;
     OPERATION                   m_enOperation;
-    INSP_WIDGET_INDEX           m_enCurrentInspWidget;
+    INSP_WIDGET_INDEX           m_enCurrentInspWidget = INSP_WIDGET_INDEX::UNDEFINED;
 };
