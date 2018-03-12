@@ -5,6 +5,8 @@
 #include "../include/IdDefine.h"
 #include "../Common/eos.h"
 
+#include "DataStoreAPI.h"
+
 LightWidget::LightWidget(QLightCtrl* pCtrl, QWidget *parent)
 	: m_pCtrl(pCtrl), QWidget(parent)
 {

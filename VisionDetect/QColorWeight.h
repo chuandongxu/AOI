@@ -4,6 +4,7 @@
 #include "ui_QColorWeight.h"
 
 #include "opencv/cv.h"
+#include <memory>
 
 enum GrayWeightMethodEm
 {
@@ -62,11 +63,11 @@ private:
 	void loadConfig();
 	void saveConfig();
 
-	void setupDateDemo(QCustomPlot *customPlot);
+	void setupDateDemo(std::shared_ptr<QCustomPlot> customPlot);
 	int calcGrayValue(cv::Scalar& pixel);
 	void generateGrayPlot();
 
-	void setupDateColor(QCustomPlot *customPlot, QCPBars *regen, int nColorIndex);
+	void setupDateColor(std::shared_ptr<QCustomPlot> customPlot, int nColorIndex);
 	void generateColorPlot();
 
 private:
@@ -112,7 +113,7 @@ private:
 	Ui::QColorWeight ui;
 
 	// Gray Weight
-	QCustomPlot* m_customPlot;
+	std::shared_ptr<QCustomPlot> m_customPlot;
 	cv::Mat m_imageMat;
 	cv::Mat m_maskMat;
 	QMap<int, int> m_grayHitDatas;
@@ -127,14 +128,10 @@ private:
 
 	// Color Space
 	cv::Point m_colorGenPt;
-	QCustomPlot* m_customPlotR;	
-	QCustomPlot* m_customPlotG;
-	QCustomPlot* m_customPlotB;
-	QCustomPlot* m_customPlotGray;
-	QCPBars* m_regenBarR;
-	QCPBars* m_regenBarG;
-	QCPBars* m_regenBarB;
-	QCPBars* m_regenBarGray;
+	std::shared_ptr<QCustomPlot> m_customPlotR;
+	std::shared_ptr<QCustomPlot> m_customPlotG;
+	std::shared_ptr<QCustomPlot> m_customPlotB;
+	std::shared_ptr<QCustomPlot> m_customPlotGray;
 	QMap<int, int> m_colorRHitDatas;
 	QMap<int, int> m_colorGHitDatas;
 	QMap<int, int> m_colorBHitDatas;

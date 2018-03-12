@@ -32,12 +32,6 @@ QColorWeight::QColorWeight(QWidget *parent)
 
 QColorWeight::~QColorWeight()
 {
-	if (m_customPlot)
-	{
-		delete m_customPlot;
-		m_customPlot = NULL;
-	}
-
 	if (m_grayScene)
 	{
 		delete m_grayScene;
@@ -60,50 +54,7 @@ QColorWeight::~QColorWeight()
 	{
 		delete m_colorImgScene;
 		m_colorImgScene = NULL;
-	}
-
-	if (m_customPlotR)
-	{
-		delete m_customPlotR;
-		m_customPlotR = NULL;
-	}
-
-	if (m_customPlotG)
-	{
-		delete m_customPlotG;
-		m_customPlotG = NULL;
-	}
-
-	if (m_customPlotB)
-	{
-		delete m_customPlotB;
-		m_customPlotB = NULL;
-	}
-	if (m_customPlotGray)
-	{
-		delete m_customPlotGray;
-		m_customPlotGray = NULL;
-	}
-	if (m_regenBarR)
-	{
-		delete m_regenBarR;
-		m_regenBarR = NULL;
-	}
-	if (m_regenBarG)
-	{
-		delete m_regenBarG;
-		m_regenBarG = NULL;
-	}
-	if (m_regenBarB)
-	{
-		delete m_regenBarB;
-		m_regenBarB = NULL;
-	}
-	if (m_regenBarGray)
-	{
-		delete m_regenBarGray;
-		m_regenBarGray = NULL;
-	}
+	}	
 }
 
 //void QColorWeight::closeEvent(QCloseEvent *e){
@@ -212,9 +163,9 @@ void QColorWeight::initUI()
 	ui.horizontalSlider_G->setValue(33);
 	ui.horizontalSlider_B->setValue(33);
 
-	m_customPlot = new QCustomPlot(this);
+	m_customPlot = std::make_shared<QCustomPlot>(this);
 	setupDateDemo(m_customPlot);
-	ui.dockWidget_grayHitChart->setWidget(m_customPlot);
+	ui.dockWidget_grayHitChart->setWidget(m_customPlot.get());
 
 	m_grayScene = new QGraphicsScene();
 	ui.graphicsView_gray->setScene(m_grayScene);
@@ -270,25 +221,21 @@ void QColorWeight::initUI()
 	QImage imageColor = QImage((uchar*)matGrayColor.data, matGrayColor.cols, matGrayColor.rows, ToInt(matGrayColor.step), QImage::Format_RGB888);
 	m_grayColorScene->addPixmap(QPixmap::fromImage(imageColor));
 
-	m_customPlotR = new QCustomPlot(this);
-	m_regenBarR = new QCPBars(m_customPlotR->xAxis, m_customPlotR->yAxis);
-	setupDateColor(m_customPlotR, m_regenBarR, 0);
-	ui.verticalLayout_R->addWidget(m_customPlotR);
+	m_customPlotR = std::make_shared<QCustomPlot>(this);
+	setupDateColor(m_customPlotR, 0);
+	ui.verticalLayout_R->addWidget(m_customPlotR.get());
 
-	m_customPlotG = new QCustomPlot(this);
-	m_regenBarG = new QCPBars(m_customPlotG->xAxis, m_customPlotG->yAxis);
-	setupDateColor(m_customPlotG, m_regenBarG, 1);
-	ui.verticalLayout_G->addWidget(m_customPlotG);
+	m_customPlotG = std::make_shared<QCustomPlot>(this);	
+	setupDateColor(m_customPlotG, 1);
+	ui.verticalLayout_G->addWidget(m_customPlotG.get());
 
-	m_customPlotB = new QCustomPlot(this);
-	m_regenBarB = new QCPBars(m_customPlotB->xAxis, m_customPlotB->yAxis);
-	setupDateColor(m_customPlotB, m_regenBarB, 2);
-	ui.verticalLayout_B->addWidget(m_customPlotB);
+	m_customPlotB = std::make_shared<QCustomPlot>(this);
+	setupDateColor(m_customPlotB, 2);
+	ui.verticalLayout_B->addWidget(m_customPlotB.get());
 
-	m_customPlotGray = new QCustomPlot(this);
-	m_regenBarGray = new QCPBars(m_customPlotGray->xAxis, m_customPlotGray->yAxis);
-	setupDateColor(m_customPlotGray, m_regenBarGray, 3);
-	ui.verticalLayout_Gray->addWidget(m_customPlotGray);
+	m_customPlotGray = std::make_shared<QCustomPlot>(this);	
+	setupDateColor(m_customPlotGray, 3);
+	ui.verticalLayout_Gray->addWidget(m_customPlotGray.get());
 
 	// Image Display
 	m_sourceImgScene = new QGraphicsScene();
@@ -521,7 +468,7 @@ void QColorWeight::saveConfig()
 	}	
 }
 
-void QColorWeight::setupDateDemo(QCustomPlot *customPlot)
+void QColorWeight::setupDateDemo(std::shared_ptr<QCustomPlot> customPlot)
 {	
 	// set locale to english, so we get english month names:
 	customPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
@@ -676,19 +623,18 @@ void QColorWeight::generateGrayPlot()
 
 	if (m_customPlot)
 	{
-		delete m_customPlot;
-		m_customPlot = new QCustomPlot(this);
+		m_customPlot = std::make_shared<QCustomPlot>(this);
 		setupDateDemo(m_customPlot);
-		ui.dockWidget_grayHitChart->setWidget(m_customPlot);
+		ui.dockWidget_grayHitChart->setWidget(m_customPlot.get());
 	}
 
 	displayGrayImg();
 }
 
-void QColorWeight::setupDateColor(QCustomPlot *customPlot, QCPBars *regen, int nColorIndex)
+void QColorWeight::setupDateColor(std::shared_ptr<QCustomPlot> customPlot, int nColorIndex)
 {
 	// create empty bar chart objects:
-	//QCPBars *regen = new QCPBars(customPlot->xAxis, customPlot->yAxis);	
+	QCPBars *regen = new QCPBars(customPlot->xAxis, customPlot->yAxis);	
 	
 	// set names and colors:
 	QPen pen;
@@ -874,39 +820,31 @@ void QColorWeight::generateColorPlot()
 	}
 
 	if (m_customPlotR)
-	{
-		delete m_customPlotR;
-		m_customPlotR = new QCustomPlot(this);
-		m_regenBarR = new QCPBars(m_customPlotR->xAxis, m_customPlotR->yAxis);
-		setupDateColor(m_customPlotR, m_regenBarR, 0);
-		ui.verticalLayout_R->addWidget(m_customPlotR);
+	{		
+		m_customPlotR = std::make_shared<QCustomPlot>(this);	
+		setupDateColor(m_customPlotR, 0);
+		ui.verticalLayout_R->addWidget(m_customPlotR.get());
 	}
 
 	if (m_customPlotG)
-	{
-		delete m_customPlotG;
-		m_customPlotG = new QCustomPlot(this);
-		m_regenBarG = new QCPBars(m_customPlotG->xAxis, m_customPlotG->yAxis);
-		setupDateColor(m_customPlotG, m_regenBarG, 1);
-		ui.verticalLayout_G->addWidget(m_customPlotG);
+	{		
+		m_customPlotG = std::make_shared<QCustomPlot>(this);	
+		setupDateColor(m_customPlotG, 1);
+		ui.verticalLayout_G->addWidget(m_customPlotG.get());
 	}
 
 	if (m_customPlotB)
-	{
-		delete m_customPlotB;
-		m_customPlotB = new QCustomPlot(this);
-		m_regenBarB = new QCPBars(m_customPlotB->xAxis, m_customPlotB->yAxis);
-		setupDateColor(m_customPlotB, m_regenBarB, 2);
-		ui.verticalLayout_B->addWidget(m_customPlotB);
+	{	
+		m_customPlotB = std::make_shared<QCustomPlot>(this);	
+		setupDateColor(m_customPlotB, 2);
+		ui.verticalLayout_B->addWidget(m_customPlotB.get());
 	}
 
 	if (m_customPlotGray)
-	{
-		delete m_customPlotGray;
-		m_customPlotGray = new QCustomPlot(this);
-		m_regenBarGray = new QCPBars(m_customPlotGray->xAxis, m_customPlotGray->yAxis);
-		setupDateColor(m_customPlotGray, m_regenBarGray, 3);
-		ui.verticalLayout_Gray->addWidget(m_customPlotGray);
+	{		
+		m_customPlotGray = std::make_shared<QCustomPlot>(this);	
+		setupDateColor(m_customPlotGray, 3);
+		ui.verticalLayout_Gray->addWidget(m_customPlotGray.get());
 	}
 
 	displayColorImg();
