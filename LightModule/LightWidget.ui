@@ -485,9 +485,9 @@
   <widget class="QComboBox" name="comboBox_selectLightMode">
    <property name="geometry">
     <rect>
-     <x>200</x>
+     <x>100</x>
      <y>20</y>
-     <width>171</width>
+     <width>120</width>
      <height>22</height>
     </rect>
    </property>
@@ -495,7 +495,7 @@
   <widget class="QLabel" name="label_21">
    <property name="geometry">
     <rect>
-     <x>40</x>
+     <x>20</x>
      <y>20</y>
      <width>71</width>
      <height>21</height>
@@ -503,6 +503,32 @@
    </property>
    <property name="text">
     <string>光源模式:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_saveParams">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>20</y>
+     <width>80</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>保存参数</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_loadParams">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>20</y>
+     <width>80</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>导入参数</string>
    </property>
   </widget>
  </widget>
