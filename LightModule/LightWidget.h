@@ -18,8 +18,13 @@ public:
 private:
 	void setLightValue(int chn, int value);
 
+	void loadConfig();
+	void saveConfig();
+
 public slots:
 	void onLightModeIndexChanged(int index);
+	void onSaveParams();
+	void onLoadParams();
 
 	void onSliderChanged1(int i);
 	void onSliderChanged2(int i);
