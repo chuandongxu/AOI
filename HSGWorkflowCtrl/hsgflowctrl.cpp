@@ -100,7 +100,7 @@ void QCheckerRunable::run()
 		}	
 		
 		dtime_start = double(clock());
-		if (!generateGrayImage(bMotionCardTrigger))continue;
+		if (!generateAverageImage(bMotionCardTrigger)) continue;
 		if (isExit())break;
 		dtime_movePos = double(clock());
 		System->setTrackInfo(QStringLiteral("Station%1:计算3D灰度图: %2 ms").arg(iStation).arg(dtime_movePos - dtime_start), true);
@@ -267,7 +267,7 @@ bool QCheckerRunable::calculate3DHeight(bool bMotionCardTrigger)
 	return false;
 }
 
-bool QCheckerRunable::generateGrayImage(bool bMotionCardTrigger)
+bool QCheckerRunable::generateAverageImage(bool bMotionCardTrigger)
 {
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
@@ -280,7 +280,7 @@ bool QCheckerRunable::generateGrayImage(bool bMotionCardTrigger)
 
 	if (pVision)
 	{
-		if (pVision->generateGrayImage(bMotionCardTrigger ? m_dataParam->_srcImageMats : m_imageMats, m_matImage))
+		if (pVision->generateAverageImage(bMotionCardTrigger ? m_dataParam->_srcImageMats : m_imageMats, m_matImage))
 		{	
 			m_dataParam->_matImage = m_matImage;
 			//pCam->setImage(m_matImage, false);

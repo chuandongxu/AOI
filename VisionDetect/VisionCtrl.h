@@ -33,7 +33,7 @@ public:
 
 	bool loadCmdData(int nStation);
 	bool calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv::Mat& heightMat, cv::Mat& matHeightResultImg);
-	bool generateGrayImage(QVector<cv::Mat>& imageMats, cv::Mat& grayMat);
+	bool generateAverageImage(const QVector<cv::Mat>& imageMats, cv::Mat& grayMat);
 	bool matchPosition(cv::Mat& matDisplay, QVector<QDetectObj*>& objTests);
 	bool calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>& objTests);
 	bool merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight);

@@ -10,14 +10,13 @@ VisionDetect::VisionDetect(int id, const QString &name)
 	:QModuleBase(id, name)
 {
 	m_pDetectView = new VisionDetectRunView(&m_ctrl);
-	m_pCaliView = new SysCalibrationView(&m_ctrl);
-    m_pInspWindowView = new InspWindowWidget();
+	m_pCaliView = new SysCalibrationView(&m_ctrl);    
 	m_pColorWeightView = new QColorWeight();
+    m_pInspWindowView = new InspWindowWidget(NULL, m_pColorWeightView);
 }
 
 VisionDetect::~VisionDetect()
 {
-
 }
 
 void VisionDetect::addSettingWiddget(QTabWidget * tabWidget)
@@ -106,9 +105,9 @@ bool VisionDetect::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, 
 	return m_ctrl.calculate3DHeight(nStation, imageMats, heightMat, matHeightResultImg);
 }
 
-bool VisionDetect::generateGrayImage(QVector<cv::Mat>& imageMats, cv::Mat& grayMat)
+bool VisionDetect::generateAverageImage(const QVector<cv::Mat>& imageMats, cv::Mat& grayMat)
 {
-	return m_ctrl.generateGrayImage(imageMats, grayMat);
+	return m_ctrl.generateAverageImage(imageMats, grayMat);
 }
 
 bool VisionDetect::matchPosition(cv::Mat& matDisplay, QVector<QDetectObj*>& objTests)
@@ -171,6 +170,17 @@ cv::Mat VisionDetect::generateColorImage(cv::Mat& img, cv::Point ptPos)
 	}
 
 	return m_pColorWeightView->generateColorImage(ptPos);
+}
+
+void VisionDetect::setColorWidgetImage(const cv::Mat &matImg)
+{
+    m_pColorWeightView->setImage(matImg);
+	m_pColorWeightView->show();
+}
+
+cv::Mat VisionDetect::getColorWidgetProcessedImage()
+{
+    return m_pColorWeightView->getProcessedImage();
 }
 
 QMOUDLE_INSTANCE(VisionDetect)
