@@ -189,7 +189,7 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     auto rectROI = pUI->getSelectedROI();
     if ( rectROI.width <= 0 || rectROI.height <= 0 ) {
-        QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI to do inspection."));
+        QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI first to add inspection window."));
         return;
     }
     Engine::Window window;

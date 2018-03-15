@@ -2,14 +2,17 @@
 #include "qdebug.h"
 
 #include "opencv2/opencv.hpp"
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include "opencv2/core.hpp"
+#include "opencv2/highgui.hpp"
 
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
-
 #include "qcustomplot.h"
 #include "../Common/SystemData.h"
+#include "../Common/eos.h"
+#include "../include/IVisionUI.h"
+#include "../include/IdDefine.h"
+#include "../Common/ModuleMgr.h"
 
 #define ToInt(value)        (static_cast<int>(value))
 #define ToFloat(param)      (static_cast<float>(param))
@@ -25,9 +28,12 @@ QColorWeight::QColorWeight(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
+    setWindowFlags(Qt::WindowStaysOnTopHint);
 
 	initUI();
 	initData();
+
+    QEos::Attach(EVENT_COLOR_WIDGET_STATE, this, SLOT(onColorWidgetState(const QVariantList &)));
 }
 
 QColorWeight::~QColorWeight()
@@ -64,7 +70,7 @@ QColorWeight::~QColorWeight()
 //	this->hide();
 //}
 
-void QColorWeight::setImage(cv::Mat& img)
+void QColorWeight::setImage(const cv::Mat& img)
 {
 	if (img.type() != CV_8UC3) return;
 
@@ -73,28 +79,31 @@ void QColorWeight::setImage(cv::Mat& img)
 	displaySourceImg();
 }
 
-void QColorWeight::setGrayParams(const stGrayWeightParams& grayParams)
+void QColorWeight::setGrayParams(const GrayWeightParams& grayParams)
 {
-	ui.comboBox_selectMode->setCurrentIndex(grayParams._emMode);
-	ui.horizontalSlider_R->setValue(grayParams._nRScale);
-	ui.horizontalSlider_G->setValue(grayParams._nGScale);
-	ui.horizontalSlider_B->setValue(grayParams._nBScale);
-	ui.horizontalSlider_grayLeft->setValue(grayParams._nThreshold1);
-	ui.horizontalSlider_grayRight->setValue(grayParams._nThreshold2);
+	ui.comboBox_selectMode->setCurrentIndex(grayParams.enMethod);
+	ui.horizontalSlider_R->setValue(grayParams.nRScale);
+	ui.horizontalSlider_G->setValue(grayParams.nGScale);
+	ui.horizontalSlider_B->setValue(grayParams.nBScale);
+	ui.horizontalSlider_grayLeft->setValue(grayParams.nThreshold1);
+	ui.horizontalSlider_grayRight->setValue(grayParams.nThreshold2);
 }
 
-stGrayWeightParams QColorWeight::getGrayParams()
+GrayWeightParams QColorWeight::getGrayParams() const
 {
-	stGrayWeightParams grayParams;
+	GrayWeightParams grayParams;
 
 	int nIndex = ui.comboBox_selectMode->currentIndex();	
-	grayParams._emMode = static_cast<GrayWeightMethodEm>(nIndex);
+	grayParams.enMethod = static_cast<GRAY_WEIGHT_METHOD>(nIndex);
 
-	grayParams._nRScale = ui.horizontalSlider_R->value();
-	grayParams._nGScale = ui.horizontalSlider_G->value();
-	grayParams._nBScale = ui.horizontalSlider_B->value();
-	grayParams._nThreshold1 = ui.horizontalSlider_grayLeft->value();
-	grayParams._nThreshold2 = ui.horizontalSlider_grayRight->value();
+    grayParams.bEnableR = ui.checkBox_R->isChecked();
+    grayParams.bEnableG = ui.checkBox_G->isChecked();
+    grayParams.bEnableB = ui.checkBox_B->isChecked();
+	grayParams.nRScale = ui.horizontalSlider_R->value();
+	grayParams.nGScale = ui.horizontalSlider_G->value();
+	grayParams.nBScale = ui.horizontalSlider_B->value();
+	grayParams.nThreshold1 = ui.horizontalSlider_grayLeft->value();
+	grayParams.nThreshold2 = ui.horizontalSlider_grayRight->value();
 
 	return grayParams;
 }
@@ -110,18 +119,18 @@ cv::Mat QColorWeight::generateGrayImage(cv::Point ptPos)
 	return m_maskMat;
 }
 
-void QColorWeight::setColorParams(const stColorSpaceParams& colorParams)
+void QColorWeight::setColorParams(const ColorSpaceParams& colorParams)
 {
-	ui.horizontalSlider_Rn->setValue(colorParams._nRThreshold);
-	ui.horizontalSlider_Tn->setValue(colorParams._nTThreshold);
+	ui.horizontalSlider_Rn->setValue(colorParams.nRThreshold);
+	ui.horizontalSlider_Tn->setValue(colorParams.nTThreshold);
 }
 
-stColorSpaceParams QColorWeight::getColorParams()
+ColorSpaceParams QColorWeight::getColorParams() const
 {
-	stColorSpaceParams colorParams;
+	ColorSpaceParams colorParams;
 
-	colorParams._nRThreshold = ui.horizontalSlider_Rn->value();
-	colorParams._nTThreshold = ui.horizontalSlider_Tn->value();
+	colorParams.nRThreshold = ui.horizontalSlider_Rn->value();
+	colorParams.nTThreshold = ui.horizontalSlider_Tn->value();
 
 	return colorParams;
 }
@@ -261,9 +270,6 @@ void QColorWeight::initUI()
 	ui.graphicsView_ColorImg->fitInView(QRectF(0, 0, 200, 150), Qt::KeepAspectRatioByExpanding);    //这样就没法缩放了 
 	ui.graphicsView_ColorImg->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 	ui.graphicsView_ColorImg->setRenderHint(QPainter::Antialiasing);
-
-	connect(ui.pushButton_loadParams, SIGNAL(clicked()), SLOT(onLoadParams()));
-	connect(ui.pushButton_saveParams, SIGNAL(clicked()), SLOT(onSaveParams()));
 }
 
 void QColorWeight::initData()
@@ -276,203 +282,78 @@ void QColorWeight::initData()
 
 	m_nGrayLevelThreshold1 = 0;
 	m_nGrayLevelThreshold2 = 255;
-
-	loadConfig();
 }
 
-void QColorWeight::loadConfig()
+std::string QColorWeight::getJsonFormattedParams() const
 {
-	stGrayWeightParams stGrayParams;
-	stColorSpaceParams stColorParams;
-	QByteArray byte_array;
-
-	Engine::Window window;
-	window.name = QString("Color Space Params").toStdString();
-	
-	Engine::WindowVector vecWindows;
-	auto result = Engine::GetAllWindows(vecWindows);
-	if (result != Engine::OK) {
-		String errorType, errorMessage;
-		Engine::GetErrorDetail(errorType, errorMessage);
-		System->setTrackInfo(QString("Error at GetAllWindows, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-		return;
-	}
-	
-	for (auto win : vecWindows)
-	{
-		if (win.name == window.name)
-		{
-			byte_array = win.colorParams.c_str();
-			break;
-		}
-	}
-
-	QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(byte_array, &json_error);
-	if (json_error.error == QJsonParseError::NoError)
-	{
-		if (parse_doucment.isObject())
-		{
-			QJsonObject obj = parse_doucment.object();
-			if (obj.contains("grayMode"))
-			{
-				QJsonValue grayMode = obj.take("grayMode");
-				if (grayMode.isDouble())
-				{
-					int nMode = grayMode.toInt();
-					stGrayParams._emMode = static_cast<GrayWeightMethodEm>(nMode);
-				}
-			}
-			if (obj.contains("grayBScale"))
-			{
-				QJsonValue grayBScale = obj.take("grayBScale");
-				if (grayBScale.isDouble())
-				{
-					int nBScale = grayBScale.toInt();
-					stGrayParams._nBScale = nBScale;
-				}
-			}
-			if (obj.contains("grayGScale"))
-			{
-				QJsonValue grayGScale = obj.take("grayGScale");
-				if (grayGScale.isDouble())
-				{
-					int nGScale = grayGScale.toInt();
-					stGrayParams._nGScale = nGScale;
-				}
-			}
-			if (obj.contains("grayRScale"))
-			{
-				QJsonValue grayRScale = obj.take("grayRScale");
-				if (grayRScale.isDouble())
-				{
-					int nRScale = grayRScale.toInt();
-					stGrayParams._nRScale = nRScale;
-				}
-			}
-			if (obj.contains("grayThreshold1"))
-			{
-				QJsonValue grayThreshold1 = obj.take("grayThreshold1");
-				if (grayThreshold1.isDouble())
-				{
-					int nThres1 = grayThreshold1.toInt();
-					stGrayParams._nThreshold1 = nThres1;
-				}
-			}
-			if (obj.contains("grayThreshold2"))
-			{
-				QJsonValue grayThreshold2 = obj.take("grayThreshold2");
-				if (grayThreshold2.isDouble())
-				{
-					int nThres2 = grayThreshold2.toInt();
-					stGrayParams._nThreshold2 = nThres2;
-				}
-			}
-			if (obj.contains("colorRThreshold"))
-			{
-				QJsonValue colorRThreshold = obj.take("colorRThreshold");
-				if (colorRThreshold.isDouble())
-				{
-					int nRThres = colorRThreshold.toInt();
-					stColorParams._nRThreshold = nRThres;
-				}
-			}
-			if (obj.contains("colorTThreshold"))
-			{
-				QJsonValue colorTThreshold = obj.take("colorTThreshold");
-				if (colorTThreshold.isDouble())
-				{
-					int nTThres = colorTThreshold.toInt();
-					stColorParams._nTThreshold = nTThres;
-				}
-			}
-		}
-	}
-
-	setGrayParams(stGrayParams);
-	setColorParams(stColorParams);
-}
-
-void QColorWeight::saveConfig()
-{
-	stGrayWeightParams stGrayParams = getGrayParams();
-	stColorSpaceParams stColorParams = getColorParams();
+    GrayWeightParams stGrayParams = getGrayParams();
+	ColorSpaceParams stColorParams = getColorParams();
 
 	QJsonObject json;
-	json.insert("grayMode", stGrayParams._emMode);
-	json.insert("grayBScale", stGrayParams._nBScale);
-	json.insert("grayGScale", stGrayParams._nGScale);
-	json.insert("grayRScale", stGrayParams._nRScale);
-	json.insert("grayThreshold1", stGrayParams._nThreshold1);
-	json.insert("grayThreshold2", stGrayParams._nThreshold2);
+	json.insert("Method", stGrayParams.enMethod);
+    json["EnableB"] = stGrayParams.bEnableB;    
+    json["EnableG"] = stGrayParams.bEnableG;
+    json["EnableR"] = stGrayParams.bEnableR;
+	json.insert("GrayScaleB", stGrayParams.nBScale);
+	json.insert("GrayScaleG", stGrayParams.nGScale);
+	json.insert("GrayScaleR", stGrayParams.nRScale);
+	json.insert("GrayThreshold1", stGrayParams.nThreshold1);
+	json.insert("GrayThreshold2", stGrayParams.nThreshold2);
 
-	json.insert("colorRThreshold", stColorParams._nRThreshold);
-	json.insert("colorTThreshold", stColorParams._nTThreshold);
+	json.insert("ColorRThreshold", stColorParams.nRThreshold);
+	json.insert("ColorTThreshold", stColorParams.nTThreshold);
 
 	QJsonDocument document;
 	document.setObject(json);
-	QByteArray byte_array = document.toJson(QJsonDocument::Compact);	
+	QByteArray byteArray = document.toJson(QJsonDocument::Compact);
+    return std::string(byteArray);
+}
 
-	Engine::Window window;
-	window.name = QString("Color Space Params").toStdString();
-	window.colorParams = byte_array;
+void QColorWeight::setJsonFormattedParams(const std::string &jsonParams)
+{
+    GrayWeightParams stGrayParams;
+	ColorSpaceParams stColorParams;
 
-	bool bCreateNewOne = true;
-	Engine::WindowVector vecWindows;
-	auto result = Engine::GetAllWindows(vecWindows);
-	if (result != Engine::OK) {
-		String errorType, errorMessage;
-		Engine::GetErrorDetail(errorType, errorMessage);
-		System->setTrackInfo(QString("Error at GetAllWindows, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-		return;
-	}
-	for (auto win : vecWindows)
-	{
-		if (win.name == window.name)
-		{
-			window.Id = win.Id;
-			bCreateNewOne = false;
-			break;
-		}
-	}
+    QJsonParseError json_error;
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(jsonParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
+        QMessageBox::critical(this, QStringLiteral("Color Weight"), QStringLiteral("Json data is invalid."), QStringLiteral("Quit"));
+        return;
+    }
 
-	if (bCreateNewOne)
-	{
-		auto result = Engine::CreateWindow(window);
-		if (result != Engine::OK) 
-		{
-			String errorType, errorMessage;
-			Engine::GetErrorDetail(errorType, errorMessage);
-			System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-			return;
-		}
-		else 
-		{
-			System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
-		}
-	}
-	else
-	{
-		auto result = Engine::UpdateWindow(window);
-		if (result != Engine::OK) 
-		{
-			String errorType, errorMessage;
-			Engine::GetErrorDetail(errorType, errorMessage);
-			System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-			return;
-		}
-		else 
-		{
-			System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
-		}
-	}	
+    if (parse_doucment.isObject()) {
+        QJsonObject obj = parse_doucment.object();
+
+        stGrayParams.enMethod = static_cast<GRAY_WEIGHT_METHOD>(obj["Method"].toInt());
+        stGrayParams.bEnableB = obj["EnableB"].toBool();
+        stGrayParams.bEnableG = obj["EnableG"].toBool();
+        stGrayParams.bEnableR = obj["EnableR"].toBool();
+        stGrayParams.nBScale = obj["GrayScaleB"].toInt();
+        stGrayParams.nGScale = obj["GrayScaleG"].toInt();
+        stGrayParams.nRScale = obj["GrayScaleR"].toInt();
+        stGrayParams.nThreshold1 = obj["GrayThreshold1"].toInt();
+        stGrayParams.nThreshold2 = obj["GrayThreshold2"].toInt();
+        
+        stColorParams.nRThreshold = obj["ColorRThreshold"].toInt();
+        stColorParams.nTThreshold = obj["ColorTThreshold"].toInt();
+        
+	    setGrayParams(stGrayParams);
+	    setColorParams(stColorParams);
+
+        if(GRAY_WEIGHT_METHOD::EM_MODE_ONE_THRESHOLD == stGrayParams.enMethod || GRAY_WEIGHT_METHOD::EM_MODE_TWO_THRESHOLD == stGrayParams.enMethod) {
+            ui.tabWidget->setCurrentIndex(0);
+            generateGrayPlot();
+        }else {
+            ui.tabWidget->setCurrentIndex(1);
+            generateColorPlot();
+        }
+    }
 }
 
 void QColorWeight::setupDateDemo(std::shared_ptr<QCustomPlot> customPlot)
 {	
 	// set locale to english, so we get english month names:
 	customPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
-
 	
 	customPlot->addGraph();
 	QPen pen;
@@ -598,28 +479,40 @@ int QColorWeight::calcGrayValue(cv::Scalar& pixel)
 	return nGrayValue;
 }
 
+cv::Mat QColorWeight::_convertToGrayImage()
+{
+    int nValueR = ui.horizontalSlider_R->value();
+	int nValueG = ui.horizontalSlider_G->value();
+	int nValueB = ui.horizontalSlider_B->value();
+
+	bool bUsedR = ui.checkBox_R->isChecked();
+	bool bUsedG = ui.checkBox_G->isChecked();
+	bool bUsedB = ui.checkBox_B->isChecked();
+
+    Vision::PR_COLOR_TO_GRAY_CMD stCmd;
+	Vision::PR_COLOR_TO_GRAY_RPY stRpy;
+
+    stCmd.stRatio.fRatioR = bUsedR ? nValueR / 100.0f : 0.f;
+    stCmd.stRatio.fRatioG = bUsedG ? nValueG / 100.0f : 0.f;
+    stCmd.stRatio.fRatioB = bUsedB ? nValueB / 100.0f : 0.f;
+    stCmd.matInputImg = m_imageMat;
+
+    Vision::PR_ColorToGray(&stCmd, &stRpy);
+
+	return stRpy.matResultImg;
+}
+
 void QColorWeight::generateGrayPlot()
 {
 	if (m_imageMat.empty()) return;
 
 	clearGrayData();
 
-	unsigned char grayValueB, grayValueG, grayValueR;
+    cv::Mat matGrayLocal = _convertToGrayImage();
+
 	for (int y = 0; y < m_imageMat.rows; y++)
-	{
 		for (int x = 0; x < m_imageMat.cols; x++)
-		{
-			cv::Vec3b& pixel = m_imageMat.at<cv::Vec3b>(y, x);
-		
-			grayValueB = pixel[0];
-			grayValueG = pixel[1];
-			grayValueR = pixel[2];			
-
-			int nGrayValue = calcGrayValue(cv::Scalar(grayValueB, grayValueG, grayValueR));		
-
-			incrementGrayValue(nGrayValue);
-		}
-	}
+			incrementGrayValue(matGrayLocal.at<uchar>(y,x));
 
 	if (m_customPlot)
 	{
@@ -852,11 +745,8 @@ void QColorWeight::generateColorPlot()
 
 void QColorWeight::clearGrayData()
 {
-	m_grayHitDatas.clear();
-	for (int i = 0; i < 255; i++)
-	{
-		m_grayHitDatas.insert(i, 0);
-	}
+	for (int i = 0; i < 255; ++ i)
+		m_grayHitDatas[i] = 0;
 }
 
 int QColorWeight::getGrayValue(int nGrayLevel)
@@ -908,8 +798,7 @@ void QColorWeight::clearColorData(int nColorIndex)
 		{
 			m_colorGrayHitDatas.insert(i, 0);
 		}
-	}
-	
+	}	
 }
 
 int QColorWeight::getColorValue(int nColorIndex, int nGrayLevel)
@@ -968,7 +857,7 @@ void QColorWeight::displaySourceImg()
 {
 	cv::Mat matSourceImg = m_imageMat.clone();
 
-	cvtColor(matSourceImg, matSourceImg, CV_BGR2RGB);
+	cv::cvtColor(matSourceImg, matSourceImg, CV_BGR2RGB);
 	QImage img = QImage((uchar*)matSourceImg.data, matSourceImg.cols, matSourceImg.rows, ToInt(matSourceImg.step), QImage::Format_RGB888);
 	m_sourceImgScene->clear();
 	m_sourceImgScene->addPixmap(QPixmap::fromImage(img));
@@ -981,7 +870,7 @@ void QColorWeight::displayGrayImg()
 	cv::Mat maskMat = cv::Mat::zeros(matGrayImg.rows, matGrayImg.cols, CV_8UC1);
 	
 	int nIndex = ui.comboBox_selectMode->currentIndex();
-	GrayWeightMethodEm emMode = static_cast<GrayWeightMethodEm>(nIndex);
+	GRAY_WEIGHT_METHOD emMode = static_cast<GRAY_WEIGHT_METHOD>(nIndex);
 	if (EM_MODE_PT_THRESHOLD == emMode)
 	{
 		cv::Vec3b& pixelGet = matGrayImg.at<cv::Vec3b>(m_grayGenPt.y, m_grayGenPt.x);
@@ -1014,30 +903,11 @@ void QColorWeight::displayGrayImg()
 	}
 	else if (EM_MODE_ONE_THRESHOLD == emMode)
 	{
-		for (int y = 0; y < matGrayImg.rows; y++)
-		{
-			for (int x = 0; x < matGrayImg.cols; x++)
-			{
-				cv::Vec3b& pixel = matGrayImg.at<cv::Vec3b>(y, x);
-				uchar& mask = maskMat.at<uchar>(y, x);
-
-				int nGrayValue = calcGrayValue(cv::Scalar(pixel[0], pixel[1], pixel[2]));
-				if (nGrayValue < m_nGrayLevelThreshold1)
-				{
-					pixel[0] = 0;
-					pixel[1] = 0;
-					pixel[2] = 0;
-				}
-				else
-				{
-					pixel[0] = nGrayValue;
-					pixel[1] = nGrayValue;
-					pixel[2] = nGrayValue;
-
-					mask = 1;
-				}
-			}
-		}
+        cv::Mat matGrayLocal = _convertToGrayImage();
+        cv::threshold(matGrayLocal, maskMat, m_nGrayLevelThreshold1, 255, cv::ThresholdTypes::THRESH_BINARY);
+        cv::Mat matMaskReverse = 255 - maskMat;
+        matGrayLocal.setTo(0, matMaskReverse);
+        cv::cvtColor(matGrayLocal, matGrayImg, CV_GRAY2RGB);
 	}
 	else if (EM_MODE_TWO_THRESHOLD == emMode)
 	{
@@ -1192,16 +1062,6 @@ void QColorWeight::onColorTnSliderChanged(int i)
 	generateColorPlot();
 }
 
-void QColorWeight::onLoadParams()
-{
-	loadConfig();
-}
-
-void QColorWeight::onSaveParams()
-{
-	saveConfig();
-}
-
 cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage)
 {
 	if (m_imageMat.empty()) return cv::Mat();
@@ -1257,12 +1117,11 @@ cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage)
 			cv::Vec3b& pixel = matImage.at<cv::Vec3b>(y, x);
 			uchar& mask = maskMat.at<uchar>(y, x);
 
-
 			uchar& r = R.at<uchar>(y, x);
 			uchar& g = G.at<uchar>(y, x);
 			uchar& b = B.at<uchar>(y, x);
 			uchar& t = T.at<uchar>(y, x);
-			uchar& s = S.at<uchar>(y, x);		
+			uchar& s = S.at<uchar>(y, x);
 
 			if (Rt == maxRGB)
 			{
@@ -1682,4 +1541,31 @@ bool QColorWeight::calcTwoLineIntersect(double k1, double b1, double k2, double 
 	}
 
 	return true;
+}
+
+void QColorWeight::onColorWidgetState(const QVariantList &data)
+{
+    if (! this->isVisible())
+        return;
+
+    IVisionUI *pUI = getModule<IVisionUI>(UI_MODEL);
+    cv::Mat matImage = pUI->getImage();
+    if (matImage.empty())
+        return;
+
+    cv::Rect rectROI = pUI->getSelectedROI();
+    cv::Mat matROI(matImage, rectROI);
+    setImage(matROI);
+
+    GrayWeightParams stGrayParams = getGrayParams();
+	ColorSpaceParams stColorParams = getColorParams();
+
+    if(GRAY_WEIGHT_METHOD::EM_MODE_ONE_THRESHOLD == stGrayParams.enMethod || GRAY_WEIGHT_METHOD::EM_MODE_TWO_THRESHOLD == stGrayParams.enMethod) {
+        ui.tabWidget->setCurrentIndex(0);
+        generateGrayPlot();
+    }
+    else {
+        ui.tabWidget->setCurrentIndex(1);
+        generateColorPlot();
+    }
 }

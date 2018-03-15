@@ -108,7 +108,7 @@ void CameraOnLive::run()
 				}
 				else if (imageMats.size() > 1)
 				{
-					if (pVision->generateGrayImage(imageMats, image))
+					if (pVision->generateAverageImage(imageMats, image))
 					{
 						showImageToScreen(image);
 					}
@@ -123,18 +123,15 @@ void CameraOnLive::run()
 		{
 			try
 			{
-				if (image.type() == CV_8UC1)
-				{
-					//input image is grayscale
+                //input image is grayscale
+				if (image.type() == CV_8UC1)					
 					cvtColor(image, image, CV_GRAY2RGB);
 
-				}
-
 				drawCross(image);
-				if (m_bQuit)break;
+				if (m_bQuit) break;
 
 				showImageToScreen(image);
-				if (m_bQuit)break;
+				if (m_bQuit) break;
 			}
 			catch (...)
 			{
@@ -701,6 +698,7 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
 		{
 		case MODE_VIEW_SELECT:
 		case MODE_VIEW_SELECT_ROI:
+        case MODE_VIEW_EDIT_INSP_WINDOW:
 			if ((0 != (int)motionX) || (0 != (int)motionY))
 			{
 				if ((int)motionX >= 0 && (int)motionY >= 0)
@@ -716,14 +714,8 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
 
 					if (select.x < 0 || select.y < 0 || (select.x + select.width) > m_hoImage.size().width || (select.y + select.height) > m_hoImage.size().height)
 					{
-						if (select.x < 0)
-						{
-							select.x = 0;
-						}
-						if (select.y < 0)
-						{
-							select.y = 0;
-						}
+						if (select.x < 0) select.x = 0;
+						if (select.y < 0) select.y = 0;
 						select.width = (select.x + select.width) > m_hoImage.size().width ? (m_hoImage.size().width - select.x) : select.width;
 						select.height = (select.y + select.height) > m_hoImage.size().height ? (m_hoImage.size().height - select.y) : select.height;
 					}
@@ -840,8 +832,11 @@ void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
 			_checkSelectedDevice(cv::Point(pos.x(), pos.y()));
 			break;
         case MODE_VIEW_EDIT_INSP_WINDOW:
-            if(_checkSelectedDevice(cv::Point(pos.x(), pos.y())))
-                QEos::Notify(EVENT_INSP_WINDOW_STATE, 0);
+            if (pos.x() == m_startX || pos.y() == m_startY) {
+                if(_checkSelectedDevice(cv::Point(pos.x(), pos.y())))
+                    QEos::Notify(EVENT_INSP_WINDOW_STATE, 0);
+            }else
+                QEos::Notify(EVENT_COLOR_WIDGET_STATE, 0);
             break;
 		case MODE_VIEW_NONE:
 			break;

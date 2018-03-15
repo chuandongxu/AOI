@@ -74,7 +74,7 @@ protected:
 
 	bool waitStartBtn();
 	bool captureImages();
-	bool generateGrayImage(bool bMotionCardTrigger);
+	bool generateAverageImage(bool bMotionCardTrigger);
 	bool calculate3DHeight(bool bMotionCardTrigger);
 	bool waitCheckDone();
 
