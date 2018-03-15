@@ -259,7 +259,7 @@ void QColorWeight::initUI()
 	ui.graphicsView_grayImg->setScene(m_grayImgScene);
 	ui.graphicsView_grayImg->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	ui.graphicsView_grayImg->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	ui.graphicsView_grayImg->fitInView(QRectF(0, 0, 200, 150), Qt::KeepAspectRatioByExpanding);    //这样就没法缩放了 
+	ui.graphicsView_grayImg->fitInView(QRectF(0, 0, 200, 150), Qt::KeepAspectRatio);    //这样就没法缩放了 
 	ui.graphicsView_grayImg->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 	ui.graphicsView_grayImg->setRenderHint(QPainter::Antialiasing);
 
@@ -267,7 +267,7 @@ void QColorWeight::initUI()
 	ui.graphicsView_ColorImg->setScene(m_colorImgScene);
 	ui.graphicsView_ColorImg->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	ui.graphicsView_ColorImg->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	ui.graphicsView_ColorImg->fitInView(QRectF(0, 0, 200, 150), Qt::KeepAspectRatioByExpanding);    //这样就没法缩放了 
+	ui.graphicsView_ColorImg->fitInView(QRectF(0, 0, 200, 150), Qt::KeepAspectRatio);    //这样就没法缩放了 
 	ui.graphicsView_ColorImg->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 	ui.graphicsView_ColorImg->setRenderHint(QPainter::Antialiasing);
 }
