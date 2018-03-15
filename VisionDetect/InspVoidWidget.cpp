@@ -214,9 +214,8 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
 		    Engine::GetErrorDetail(errorType, errorMessage);
 		    System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
 		    return;
-	    }else {
-            System->setTrackInfo(QString("Success to Create Window: %1.").arg ( window.name.c_str() ) );
-        }
+	    }else
+            System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
 
         QDetectObj detectObj ( window.Id, window.name.c_str() );
         cv::Point2f ptCenter ( window.x / dResolutionX, window.y / dResolutionY );
@@ -234,9 +233,8 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
 		    Engine::GetErrorDetail(errorType, errorMessage);
 		    System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
 		    return;
-	    }else {
-            System->setTrackInfo(QString("Success to update window: %1.").arg ( window.name.c_str() ) );
-        }
+	    }else
+            System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
     }
 
     m_pParent->UpdateInspWindowList();

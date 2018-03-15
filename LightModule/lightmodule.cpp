@@ -21,6 +21,7 @@ QLightModule::~QLightModule()
 {
 
 }
+
 void QLightModule::init()
 {
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
@@ -76,6 +77,7 @@ QString QLightModule::getChName(int nDevice, int nChannel)
 
 	return "";
 }
+
 int QLightModule::getChLuminace(int nDevice, int nChannel)
 {
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
@@ -95,6 +97,7 @@ int QLightModule::getChLuminace(int nDevice, int nChannel)
 
 	return 0;
 }
+
 int QLightModule::getDeviceCount()
 {
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
