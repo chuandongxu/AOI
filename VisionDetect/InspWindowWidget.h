@@ -2,8 +2,8 @@
 
 #include "EditInspWindowBaseWidget.h"
 #include "ui_InspWindowWidget.h"
-#include "InspVoidWidget.h"
 #include "DataStoreAPI.h"
+#include "QColorWeight.h"
 
 using namespace NFG::AOI;
 
@@ -26,12 +26,13 @@ class InspWindowWidget : public QWidget
     Q_OBJECT
 
 public:
-    InspWindowWidget(QWidget *parent = Q_NULLPTR);
+    InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget);
     ~InspWindowWidget();
 
     void setCurrentIndex(int index);
     void UpdateInspWindowList();
     int getSelectedLighting() const;
+    QColorWeight *getColorWidget() const;
 protected:
     virtual void showEvent(QShowEvent *event) override;
     void _showWidgets();
@@ -47,10 +48,10 @@ private slots:
 
 private:
     Ui::InspWindowWidget ui;
-
+    QColorWeight               *m_pColorWidget;
     std::unique_ptr<QComboBox>  m_pComboBoxLighting;
     InspWindowBaseWidgetPtr     m_arrInspWindowWidget[INSP_WIDGET_INDEX_SIZE];
     Engine::WindowVector        m_vecCurrentDeviceWindows;
     OPERATION                   m_enOperation;
-    INSP_WIDGET_INDEX           m_enCurrentInspWidget;
+    INSP_WIDGET_INDEX           m_enCurrentInspWidget = INSP_WIDGET_INDEX::UNDEFINED;
 };

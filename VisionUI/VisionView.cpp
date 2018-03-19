@@ -263,7 +263,7 @@ void VisionView::show3D()
 
 void VisionView::selectROI()
 {
-    m_pViewWidget->setViewState ( MODE_VIEW_SELECT_ROI );
+    m_pViewWidget->setViewState(MODE_VIEW_SELECT_ROI);
 }
 
 void VisionView::showSelectROI3D()
@@ -352,8 +352,18 @@ void VisionView::showColorSpace()
 {
 	if (m_pColorWidget)
 	{
-		//m_pColorWidget->setWindowFlags(Qt::WindowStaysOnTopHint);
 		m_pColorWidget->show();
+
+        cv::Mat matImage = getImage();
+        if (!matImage.empty())
+        {
+            cv::Rect rectROI = getSelectedROI();
+            cv::Mat matROI(matImage, rectROI);
+
+            IVision *pVision = getModule<IVision>(VISION_MODEL);
+            pVision->generateGrayImage(matROI, cv::Point(5,5));
+        }
+        //generateAverageImage
 	}
 }
 
@@ -413,14 +423,6 @@ void VisionView::setDeviceWindows(const VisionViewDeviceVector &vecWindows)
     m_pViewWidget->setDeviceWindows(vecWindows);
 }
 
-void VisionView::setSelectedFM(const QVector<cv::RotatedRect> &vecWindows)
-{
-	if (m_pViewWidget)
-	{
-		m_pViewWidget->setSelectedFM(vecWindows);
-	}
-}
-
 void VisionView::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const {
 	if (m_pViewWidget)
 	{
@@ -431,6 +433,18 @@ void VisionView::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::Rota
 VisionViewDevice VisionView::getSelectedDevice() const
 {
     return m_pViewWidget->getSelectedDevice();
+}
+
+void VisionView::setConfirmedFM(const VisionViewFMVector &vecFM) {
+    m_pViewWidget->setConfirmedFM(vecFM);
+}
+
+void VisionView::setCurrentFM(const VisionViewFM &fm) {
+    m_pViewWidget->setCurrentFM(fm);
+}
+
+VisionViewFM VisionView::getCurrentFM() const {
+    return m_pViewWidget->getCurrentFM();
 }
 
 void VisionView::setButtonsEnable(bool flag)

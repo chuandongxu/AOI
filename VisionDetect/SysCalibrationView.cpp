@@ -1150,7 +1150,7 @@ bool SysCalibrationView::convertToGrayImage(QString& szFilePath, cv::Mat &matGra
 		}
 	}
 
-	m_pCtrl->generateGrayImage(imageMats, matGray);
+	m_pCtrl->generateAverageImage(imageMats, matGray);
 
 	return true;
 }

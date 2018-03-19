@@ -188,7 +188,7 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
     auto pUI = getModule<IVisionUI>(UI_MODEL);  
     auto rectROI = pUI->getSelectedROI();
     if ( rectROI.width <= 0 || rectROI.height <= 0 ) {
-        QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI to do inspection."));
+        QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI first to add inspection window."));
         return;
     }
     Engine::Window window;
@@ -201,6 +201,7 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
     window.height = rectROI.height * dResolutionY;
     window.deviceId = pUI->getSelectedDevice().getId();
     window.angle = 0;
+    window.colorParams = m_pParent->getColorWidget()->getJsonFormattedParams();
     int result = Engine::OK;
     if ( OPERATION::ADD == enOperation ) {
         window.deviceId = pUI->getSelectedDevice().getId();
@@ -213,29 +214,27 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
 		    Engine::GetErrorDetail(errorType, errorMessage);
 		    System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
 		    return;
-	    }else {
-            System->setTrackInfo(QString("Success to Create Window: %1.").arg ( window.name.c_str() ) );
-        }
+	    }else
+            System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
 
         QDetectObj detectObj ( window.Id, window.name.c_str() );
         cv::Point2f ptCenter ( window.x / dResolutionX, window.y / dResolutionY );
         cv::Size2f szROI ( window.width / dResolutionX, window.height / dResolutionY );
         detectObj.setFrame ( cv::RotatedRect ( ptCenter, szROI, window.angle ) );
         auto vecDetectObjs = pUI->getDetectObjs();
-        vecDetectObjs.push_back ( detectObj );
-        pUI->setDetectObjs ( vecDetectObjs );        
+        vecDetectObjs.push_back(detectObj);
+        pUI->setDetectObjs(vecDetectObjs);
     }else {
         window.Id = m_currentWindow.Id;
         window.name = m_currentWindow.name;
-        result = Engine::UpdateWindow ( window );
+        result = Engine::UpdateWindow(window);
         if (result != Engine::OK) {
 		    String errorType, errorMessage;
 		    Engine::GetErrorDetail(errorType, errorMessage);
 		    System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
 		    return;
-	    }else {
-            System->setTrackInfo(QString("Success to update window: %1.").arg ( window.name.c_str() ) );
-        }
+	    }else
+            System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
     }
 
     m_pParent->UpdateInspWindowList();

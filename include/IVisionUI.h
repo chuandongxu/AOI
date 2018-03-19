@@ -17,7 +17,6 @@ public:
 	virtual void unInit() = 0;
 
 	virtual void setStateWidget(QWidget * stateWidget) = 0;
-	virtual void setCneterwidget(QWidget * centWidget) = 0;
 	virtual void setTitle(const QString & str,const QString &ver) = 0;
 
 	virtual QWidget* getVisionView() = 0; // Display on the main UI
@@ -44,10 +43,12 @@ public:
     virtual void setCurrentDetectObj(const QDetectObj &detectObj) = 0;
     virtual QVector<QDetectObj> getDetectObjs() const = 0;
     virtual void setDeviceWindows(const VisionViewDeviceVector &vecWindows) = 0;
-    virtual void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows) = 0;
     virtual void setViewState(VISION_VIEW_MODE enViewMode) = 0;
     virtual void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) = 0;
     virtual VisionViewDevice getSelectedDevice() = 0;
+    virtual void setConfirmedFM(const VisionViewFMVector &vecFM) = 0;
+    virtual void setCurrentFM(const VisionViewFM &fm) = 0;
+    virtual VisionViewFM getCurrentFM() const = 0;
 };
 
 #endif

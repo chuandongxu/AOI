@@ -2105,7 +2105,7 @@ bool VisionDetectRunView::convertToGrayImage(QString& szFilePath, cv::Mat &matGr
 		}
 	}
 
-	m_pCtrl->generateGrayImage(imageMats, matGray);
+	m_pCtrl->generateAverageImage(imageMats, matGray);
 
 	return true;
 }

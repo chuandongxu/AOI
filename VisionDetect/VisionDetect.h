@@ -36,7 +36,7 @@ public:
 	virtual void prepareNewProf();
 
 	virtual bool calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv::Mat& heightMat, cv::Mat& matHeightResultImg);
-	virtual bool generateGrayImage(QVector<cv::Mat>& imageMats, cv::Mat& grayMat);
+	virtual bool generateAverageImage(const QVector<cv::Mat>& imageMats, cv::Mat& grayMat) override;
 	virtual bool matchPosition(cv::Mat& matDisplay, QVector<QDetectObj*>& objTests);
 	virtual bool calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>& objTests);
 	virtual bool merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight);
@@ -45,13 +45,16 @@ public:
 	virtual bool matchAlignment(cv::Mat& matDisplay, QVector<QProfileObj*>& objProfTests);
 	virtual bool calculateDetectProfile(cv::Mat& matHeight, QVector<QProfileObj*>& objProfTests);
 
-	virtual cv::Mat generateGrayImage(cv::Mat& img, cv::Point ptPos);
-	virtual cv::Mat generateColorImage(cv::Mat& img, cv::Point ptPos);
+	virtual cv::Mat generateGrayImage(cv::Mat& img, cv::Point ptPos) override;
+	virtual cv::Mat generateColorImage(cv::Mat& img, cv::Point ptPos) override;
+
+    virtual void setColorWidgetImage(const cv::Mat &matImg) override;
+    virtual cv::Mat getColorWidgetProcessedImage() override;
 
 private:
 	VisionCtrl m_ctrl;
 	VisionDetectRunView* m_pDetectView;
-	SysCalibrationView* m_pCaliView;
-    InspWindowWidget* m_pInspWindowView;
+	SysCalibrationView* m_pCaliView;    
 	QColorWeight* m_pColorWeightView;
+    InspWindowWidget* m_pInspWindowView;
 };

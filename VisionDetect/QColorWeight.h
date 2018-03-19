@@ -5,30 +5,33 @@
 
 #include "opencv/cv.h"
 #include <memory>
+#include <string>
 
-enum GrayWeightMethodEm
+enum GRAY_WEIGHT_METHOD
 {
 	EM_MODE_PT_THRESHOLD = 0,
 	EM_MODE_ONE_THRESHOLD,
 	EM_MODE_TWO_THRESHOLD
 };
 
-struct stGrayWeightParams
+struct GrayWeightParams
 {
-	GrayWeightMethodEm _emMode;
-	int _nRScale;
-	int _nGScale;
-	int _nBScale;
-	int _nThreshold1;
-	int _nThreshold2;
+	GRAY_WEIGHT_METHOD enMethod;
+    bool bEnableR;
+    bool bEnableG;
+    bool bEnableB;
+	int nRScale;
+	int nGScale;
+	int nBScale;
+	int nThreshold1;
+	int nThreshold2;
 };
 
-struct stColorSpaceParams
+struct ColorSpaceParams
 {
-	int _nRThreshold;
-	int _nTThreshold;
+	int nRThreshold;
+	int nTThreshold;
 };
-
 
 class QCustomPlot;
 class QCPBars;
@@ -44,32 +47,33 @@ protected:
 	//void closeEvent(QCloseEvent *e);
 
 public:
-	void setImage(cv::Mat& img);
+	void setImage(const cv::Mat& img);
+    cv::Mat getProcessedImage() const { return m_maskMat; }
 
 	// Gray Weight
-	void setGrayParams(const stGrayWeightParams& grayParams);
-	stGrayWeightParams getGrayParams();
+	void setGrayParams(const GrayWeightParams& grayParams);
+	GrayWeightParams getGrayParams() const;
 	cv::Mat generateGrayImage(cv::Point ptPos);
 
 	// Color Space
-	void setColorParams(const stColorSpaceParams& colorParams);
-	stColorSpaceParams getColorParams();
+	void setColorParams(const ColorSpaceParams& colorParams);
+	ColorSpaceParams getColorParams() const;
 	cv::Mat generateColorImage(cv::Point ptPos);
 
+    std::string getJsonFormattedParams() const;
+    void setJsonFormattedParams(const std::string &jsonParams);
 private:
 	void initUI();
 	void initData();
 
-	void loadConfig();
-	void saveConfig();
-
 	void setupDateDemo(std::shared_ptr<QCustomPlot> customPlot);
 	int calcGrayValue(cv::Scalar& pixel);
+    cv::Mat _convertToGrayImage();
 	void generateGrayPlot();
 
 	void setupDateColor(std::shared_ptr<QCustomPlot> customPlot, int nColorIndex);
 	void generateColorPlot();
-
+    
 private:
 	void clearGrayData();
 	int getGrayValue(int nGrayLevel);	
@@ -100,9 +104,7 @@ private slots:
 	void onColorRnSliderChanged(int i);
 	void onColorTnSliderChanged(int i);
 
-	void onLoadParams();
-	void onSaveParams();
-
+    void onColorWidgetState(const QVariantList &data);
 private:
 	cv::Mat generateColorRange(int nRn, int nTn, cv::Mat& matImage);
 	cv::Mat generateColorTrig(int nWidth, int nHeight, int nMinR, int nMaxR, int nMinG, int nMaxG, int nMinB, int nMaxB);

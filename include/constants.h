@@ -18,7 +18,7 @@
 * History :
 * YYYYMMDD     AUTHOR       NOTES
 * 20180110	   Xiao SG  Initial version. 
-*------------------------------------------------------------------------
+*--------------------------------------------------------------------------
 */
 
 #ifndef _CONSTANTS_H_
@@ -48,7 +48,8 @@ enum VISION_VIEW_MODE {
     MODE_VIEW_SELECT_ROI        = 3,
     MODE_VIEW_MOVE              = 4,
     MODE_VIEW_SET_FIDUCIAL_MARK = 5,
-    MODE_VIEW_EDIT_INSP_WINDOW  = 6,
+    MODE_VIEW_EDIT_SRCH_WINDOW  = 6,
+    MODE_VIEW_EDIT_INSP_WINDOW  = 7,
 };
 
 #endif //_CONSTANTS_H_

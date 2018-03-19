@@ -265,28 +265,15 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
 	}
 }
 
-bool VisionCtrl::generateGrayImage(QVector<cv::Mat>& imageMats, cv::Mat& grayMat)
+bool VisionCtrl::generateAverageImage(const QVector<cv::Mat>& imageMats, cv::Mat& grayMat)
 {
-	cv::Mat matGray;
 	const int IMAGE_COUNT = 4;
-
 	if (imageMats.size() < IMAGE_COUNT) return false;
 
-	for (int i = 0; i < IMAGE_COUNT; ++i)
-	{		
-		if (matGray.empty())
-		{
-			//matGray = imageMats[i].clone();
-			//matGray.setTo(0);
-			int width = imageMats[i].cols;
-			int height = imageMats[i].rows;
-			matGray = Mat::zeros(cv::Size(width, height), imageMats[i].type());
-		}
-		matGray += imageMats[i] / IMAGE_COUNT;
-	}
-
-	grayMat = matGray;
-
+    cv::Mat matSum = cv::Mat::zeros(imageMats[0].size(), imageMats[0].type());
+	for (const auto &matImage : imageMats)
+        matSum = matSum + matImage;
+	grayMat = matSum / IMAGE_COUNT;
 	return true;
 }
 

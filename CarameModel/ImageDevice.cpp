@@ -223,7 +223,7 @@ bool ImageDevice::convertToGrayImage(QString& szFilePath, cv::Mat &matGray)
 		}
 	}
 
-	pVision->generateGrayImage(imageMats, matGray);
+	pVision->generateAverageImage(imageMats, matGray);
 
 	return true;
 }

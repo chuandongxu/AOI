@@ -25,7 +25,7 @@ public:
 	virtual void prepareNewProf() = 0;
 
 	virtual bool calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv::Mat& heightMat, cv::Mat& matHeightResultImg) = 0;
-	virtual bool generateGrayImage(QVector<cv::Mat>& imageMats, cv::Mat& grayMat) = 0;
+	virtual bool generateAverageImage(const QVector<cv::Mat>& imageMats, cv::Mat& grayMat) = 0;
 	virtual bool matchPosition(cv::Mat& matDisplay, QVector<QDetectObj*>& objTests) = 0;
 	virtual bool calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>& objTests) = 0;
 	virtual bool merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight) = 0;
@@ -37,6 +37,8 @@ public:
 
 	virtual cv::Mat generateGrayImage(cv::Mat& img, cv::Point ptPos) = 0;
 	virtual cv::Mat generateColorImage(cv::Mat& img, cv::Point ptPos) = 0;
+    virtual void setColorWidgetImage(const cv::Mat &matImg) = 0;
+    virtual cv::Mat getColorWidgetProcessedImage() = 0;
 };
 
 #endif

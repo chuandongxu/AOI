@@ -319,7 +319,7 @@ bool QCheckerRunable::generateGrayImage(bool bMotionCardTrigger)
 
 	if (pVision)
 	{
-		if (pVision->generateGrayImage(bMotionCardTrigger ? m_dataParam->_srcImageMats : m_imageMats, m_matImage))
+		if (pVision->generateAverageImage(bMotionCardTrigger ? m_dataParam->_srcImageMats : m_imageMats, m_matImage))
 		{
 			m_dataParam->_matImage = m_matImage;
 			//pCam->setImage(m_matImage, false);

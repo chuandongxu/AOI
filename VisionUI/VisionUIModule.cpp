@@ -46,15 +46,6 @@ void QVisionUIModule::setStateWidget(QWidget * stateWidget)
 	}
 }
 
-void QVisionUIModule::setCneterwidget(QWidget * centWidget)
-{
-	QAppMainWidget * p = (QAppMainWidget*)m_mainWidget;
-	if(p)
-	{
-		p->setStateWidget(centWidget);
-	}
-}
-
 void QVisionUIModule::setTitle(const QString & str,const QString &ver)
 {
 	QAppMainWidget * p = (QAppMainWidget*)m_mainWidget;
@@ -211,13 +202,6 @@ void QVisionUIModule::setDeviceWindows(const VisionViewDeviceVector &vecWindows)
     m_pVisionView->setDeviceWindows(vecWindows);
 }
 
-void QVisionUIModule::setSelectedFM(const QVector<cv::RotatedRect> &vecWindows) {
-    if (m_pVisionView)
-	{
-		m_pVisionView->setSelectedFM(vecWindows);
-	}
-}
-
 void QVisionUIModule::setViewState(VISION_VIEW_MODE enViewMode) {
     if (m_pVisionView)
 	{
@@ -231,6 +215,18 @@ void QVisionUIModule::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv:
 
 VisionViewDevice QVisionUIModule::getSelectedDevice() {
     return m_pVisionView->getSelectedDevice();
+}
+
+void QVisionUIModule::setConfirmedFM(const VisionViewFMVector &vecFM) {
+    m_pVisionView->setConfirmedFM(vecFM);
+}
+
+void QVisionUIModule::setCurrentFM(const VisionViewFM &fm) {
+    m_pVisionView->setCurrentFM(fm);
+}
+
+VisionViewFM QVisionUIModule::getCurrentFM() const {
+    return m_pVisionView->getCurrentFM();
 }
 
 QMOUDLE_INSTANCE(QVisionUIModule)

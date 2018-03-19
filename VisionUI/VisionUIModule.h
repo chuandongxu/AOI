@@ -18,7 +18,6 @@ public:
 	virtual void unInit();
 
 	void setStateWidget(QWidget * stateWidget);
-	void setCneterwidget(QWidget * centWidget);
 	void setTitle(const QString & str,const QString &ver);
 
 	virtual QWidget* getVisionView();
@@ -44,10 +43,12 @@ public:
     virtual void setCurrentDetectObj(const QDetectObj &detectObj) override;
     virtual QVector<QDetectObj> getDetectObjs() const override;
     virtual void setDeviceWindows(const VisionViewDeviceVector &vecWindows) override;
-    virtual void setSelectedFM(const QVector<cv::RotatedRect> &vecWindows) override;
     virtual void setViewState(VISION_VIEW_MODE enViewMode) override;
     virtual void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) override; 
     virtual VisionViewDevice getSelectedDevice() override;
+    virtual void setConfirmedFM(const VisionViewFMVector &vecFM) override;
+    virtual void setCurrentFM(const VisionViewFM &fm) override;
+    virtual VisionViewFM getCurrentFM() const override;
 private:
 	void * m_mainWidget;
 	VisionView* m_pVisionView;

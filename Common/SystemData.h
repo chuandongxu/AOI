@@ -102,8 +102,7 @@ public:
 	static void closeMessage();
 	static bool isMessageShowed();
 
-	static void setMainWidget(QWidget * widget);
-	static QWidget * getMainWidget();
+    static int showInteractMessage(const QString &title,const QString &msg);
 
 	static bool ChangeUser();
 	static void ManagerUser();

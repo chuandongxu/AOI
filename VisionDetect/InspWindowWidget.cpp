@@ -11,6 +11,7 @@
 #include "InspWindowSelectDialog.h"
 #include "FindLineWidget.h"
 #include "FindCircleWidget.h"
+#include "InspVoidWidget.h"
 
 static const QString DEFAULT_WINDOW_NAME[] = 
 {
@@ -21,8 +22,8 @@ static const QString DEFAULT_WINDOW_NAME[] =
 
 static_assert (static_cast<size_t>(INSP_WIDGET_INDEX::SIZE) == sizeof(DEFAULT_WINDOW_NAME) / sizeof(DEFAULT_WINDOW_NAME[0]), "The window name size is not correct");
 
-InspWindowWidget::InspWindowWidget(QWidget *parent)
-    : QWidget(parent)
+InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
+    : QWidget(parent), m_pColorWidget(pColorWidget)
 {
     ui.setupUi(this);
 
@@ -79,6 +80,11 @@ int InspWindowWidget::getSelectedLighting() const
     return m_pComboBoxLighting->currentIndex();
 }
 
+QColorWeight *InspWindowWidget::getColorWidget() const
+{
+    return m_pColorWidget;
+}
+
 void InspWindowWidget::showEvent(QShowEvent *event)
 {
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
@@ -98,7 +104,7 @@ void InspWindowWidget::showEvent(QShowEvent *event)
     dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();   
 
     QVector<QDetectObj> vecDetectObjs;
-    for ( const auto &window : vecWindow ) {
+    for (const auto &window : vecWindow) {
         auto x = window.x / dResolutionX;
         auto y = window.y / dResolutionY;
         auto width  = window.width  / dResolutionX;
@@ -109,7 +115,7 @@ void InspWindowWidget::showEvent(QShowEvent *event)
         vecDetectObjs.push_back ( detectObj );
     }
     
-    pUI->setDetectObjs( vecDetectObjs );
+    pUI->setDetectObjs(vecDetectObjs);
 }
 
 void InspWindowWidget::_showWidgets()
@@ -144,21 +150,29 @@ void InspWindowWidget::on_btnAddWindow_clicked()
     _showWidgets();
 
     m_enCurrentInspWidget = dialog.getWindowIndex();
-    int index = static_cast<int> ( m_enCurrentInspWidget );
-    ui.stackedWidget->setCurrentIndex ( index );
+    int index = static_cast<int> (m_enCurrentInspWidget);
+    ui.stackedWidget->setCurrentIndex(index);
     ui.labelWindowName->setText(DEFAULT_WINDOW_NAME[index]);
     m_enOperation = OPERATION::ADD;
 
-    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_SELECT_ROI);
+    if (INSP_WIDGET_INDEX::INSP_HOLE == m_enCurrentInspWidget)
+    {
+        m_pColorWidget->show();
+    }
+    else {
+        m_pColorWidget->hide();
+    }
+
+    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
 }
 
 void InspWindowWidget::on_btnRemoveWindow_clicked()
 {
     auto index = ui.listWindowWidget->currentRow();
-    if ( index >= 0 ) {
+    if (index >= 0) {
         auto windowId = m_vecCurrentDeviceWindows[index].Id;
-        Engine::DeleteWindow ( windowId );
-        ui.listWindowWidget->takeItem ( index );
+        Engine::DeleteWindow(windowId);
+        ui.listWindowWidget->takeItem(index);
 
         UpdateInspWindowList();
 
@@ -172,11 +186,17 @@ void InspWindowWidget::on_btnRemoveWindow_clicked()
 
 void InspWindowWidget::on_btnTryInsp_clicked()
 {
+    if (INSP_WIDGET_INDEX::UNDEFINED == m_enCurrentInspWidget)
+        return;
+
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
 }
 
 void InspWindowWidget::on_btnConfirmWindow_clicked()
 {
+    if (INSP_WIDGET_INDEX::UNDEFINED == m_enCurrentInspWidget)
+        return;
+
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->confirmWindow(m_enOperation);
 }
 
@@ -197,15 +217,15 @@ void InspWindowWidget::onSelectedWindowChanged(int index)
 
     auto window = m_vecCurrentDeviceWindows[index];
 
-    if ( Engine::Window::Usage::FIND_LINE == window.usage )
+    if (Engine::Window::Usage::FIND_LINE == window.usage)
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::FIND_LINE;
-    else if ( Engine::Window::Usage::INSP_HOLE == window.usage )
+    else if (Engine::Window::Usage::INSP_HOLE == window.usage)
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_HOLE;
 
     ui.labelWindowName->setText(window.name.c_str());
 
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setCurrentWindow( m_vecCurrentDeviceWindows[index] );
-    ui.stackedWidget->setCurrentIndex ( static_cast<int>(m_enCurrentInspWidget) );
+    ui.stackedWidget->setCurrentIndex(static_cast<int>(m_enCurrentInspWidget));
     
     m_pComboBoxLighting->setCurrentIndex(window.lightId - 1);
 
@@ -221,6 +241,19 @@ void InspWindowWidget::onSelectedWindowChanged(int index)
     detectObj.setFrame(detectObjWin);
 
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-    pUI->setCurrentDetectObj ( detectObj );
+    pUI->setCurrentDetectObj(detectObj);
     m_enOperation = OPERATION::EDIT;
+
+    if (INSP_WIDGET_INDEX::INSP_HOLE == m_enCurrentInspWidget)
+    {
+        cv::Mat matImage = pUI->getImage();
+        cv::Rect rectROI = cv::RotatedRect(cv::Point(x,y), cv::Size(width,height), window.angle).boundingRect();
+        cv::Mat matROI(matImage, rectROI);
+        m_pColorWidget->setImage(matROI);
+        m_pColorWidget->setJsonFormattedParams(window.colorParams);
+        m_pColorWidget->show();
+    }
+    else {
+        m_pColorWidget->hide();
+    }
 }

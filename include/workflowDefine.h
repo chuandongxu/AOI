@@ -106,4 +106,7 @@
 #define EVENT_INSP_WINDOW_STATE         "eventInspWindowDevice"
 #define CHANGE_SELECTED_DEVICE          220
 
+#define EVENT_COLOR_WIDGET_STATE        "eventColorWidget"
+#define CHANGE_SELECTED_ROI             230
+
 #endif

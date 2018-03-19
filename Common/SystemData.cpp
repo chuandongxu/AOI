@@ -22,6 +22,7 @@
 #include "userdialog.h"
 #include "usermanager.h"
 #include "sysmessagebox.h"
+#include <memory>
 
 #define ENABLE_RECORD   "enableRecord"
 #define ENABLE_RECORD_DETAILS   "enableRecordDetails"
@@ -920,16 +921,13 @@ void QSystem::initErrorModel()
 
 //----------------------------------------------------------------------------------------------------
 static QSysMessageBox *g_box = NULL;
-static bool g_bInitBox = false;
 static bool g_bShowed = false;
-static QWidget * g_mainWidget = NULL;
 
 void QSystem::showMessage(const QString &title,const QString &msg,int ErrorLevel)
 {
-	if(!g_bInitBox)
+	if(NULL == g_box)
 	{
 		g_box = new QSysMessageBox;
-		g_bInitBox = true;
 		
 		g_box->setWindowModality(Qt::ApplicationModal);
 		Qt::WindowFlags fs = g_box->windowFlags();
@@ -961,24 +959,6 @@ void QSystem::showMessage(const QString &title,const QString &msg,int ErrorLevel
 		g_box->show();
 		g_bShowed = true;
 	}
-
-	/*
-	if(g_box)delete g_box;
-	
-	g_box = new QSysMessageBox(g_mainWidget);
-		
-		
-		
-	g_box->setWindowModality(Qt::ApplicationModal);
-	Qt::WindowFlags fs = g_box->windowFlags();
-	fs = Qt::CustomizeWindowHint|Qt::FramelessWindowHint;
-	g_box->setWindowFlags(fs);
-
-	g_box->setText(msg);
-	g_box->setEnableCloseBtn(false);
-		
-	g_box->show();
-	*/
 }
 
 void QSystem::closeMessage()
@@ -989,15 +969,6 @@ void QSystem::closeMessage()
 		g_bShowed = false;
 		QApplication::processEvents();
 	}
-	
-	/*
-	if(g_box)
-	{
-		delete g_box;
-		g_box = NULL;
-		if(g_mainWidget)g_mainWidget->activateWindow();
-	}
-	*/
 }
 
 bool QSystem::isMessageShowed()
@@ -1005,14 +976,17 @@ bool QSystem::isMessageShowed()
 	return g_bShowed;
 }
 
-void QSystem::setMainWidget(QWidget * widget)
+/*static*/ int QSystem::showInteractMessage(const QString &title,const QString &msg)
 {
-	g_mainWidget = widget;
-}
-
-QWidget * QSystem::getMainWidget()
-{
-	return g_mainWidget;
+    QSysMessageBox msgBox(NULL, true);
+    msgBox.setText(msg);
+    msgBox.setTitle(title);
+    msgBox.setWindowModality(Qt::NonModal);
+	msgBox.setWindowFlags(Qt::WindowStaysOnTopHint);
+    msgBox.show();
+    msgBox.raise();
+    msgBox.activateWindow();
+    return msgBox.exec();
 }
 
 bool QSystem::ChangeUser()

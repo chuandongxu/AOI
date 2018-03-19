@@ -211,6 +211,9 @@
     <ClInclude Include="GeneratedFiles\ui_SetFiducialMarkDialog.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="CalcUtils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="datamodule_global.h">
