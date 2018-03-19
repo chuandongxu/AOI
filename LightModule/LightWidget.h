@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include "ui_LightWidget.h"
+#include "DataStoreStruct.h"
 
 class QLightCtrl;
 class LightWidget : public QWidget
@@ -13,13 +14,14 @@ public:
 	~LightWidget();
 
 public:
-	void setLight();
+	void setLight(int nLight);
 
 private:
 	void setLightValue(int chn, int value);
 
 	void loadConfig();
 	void saveConfig();
+	void updateUI();
 
 public slots:
 	void onLightModeIndexChanged(int index);
@@ -37,4 +39,5 @@ public slots:
 private:
 	Ui::LightWidget ui;
 	QLightCtrl* m_pCtrl;
+	NFG::AOI::Engine::LightVector m_vecLights;
 };

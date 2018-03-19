@@ -14,7 +14,7 @@ public:
 
 	void init();
 
-	void setLight();
+	void setLight(int nLight);
 	QWidget* getLightWidget();
 
 	void setLuminance(int nDevice, int nChannel, int nLum);

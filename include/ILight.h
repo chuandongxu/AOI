@@ -4,7 +4,7 @@
 class ILight
 {
 public:
-	virtual void setLight() = 0;
+	virtual void setLight(int nLight = 0) = 0;
 	virtual QWidget* getLightWidget() = 0;
 
 	virtual void setLuminance(int nDevice, int nChannel, int nLum) = 0;

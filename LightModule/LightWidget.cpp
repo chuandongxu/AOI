@@ -44,6 +44,7 @@ LightWidget::LightWidget(QLightCtrl* pCtrl, QWidget *parent)
 	}
 
 	loadConfig();
+	updateUI();
 
 	connect(ui.pushButton_saveParams, SIGNAL(clicked()), SLOT(onSaveParams()));
 	connect(ui.pushButton_loadParams, SIGNAL(clicked()), SLOT(onLoadParams()));
@@ -62,7 +63,7 @@ LightWidget::~LightWidget()
 {
 }
 
-void LightWidget::setLight()
+void LightWidget::setLight(int nLight)
 {
 	Engine::LightVector vecLights;
 	auto result = Engine::GetLights(vecLights);
@@ -74,8 +75,9 @@ void LightWidget::setLight()
 	}
 
 	if (vecLights.size() <= 0) return;
-	Engine::Light light = vecLights.at(0);
-	if (light.vecLightIntensity.size() < 6) return;
+	if (vecLights.size() <= nLight) return;
+
+	Engine::Light light = vecLights.at(nLight);
 
 	QLightDevice * device = m_pCtrl->getLightDevice(0);
 	if (device)
@@ -108,6 +110,8 @@ void LightWidget::onLightModeIndexChanged(int index)
 {
 	int nIndex = ui.comboBox_selectLightMode->currentIndex();
 
+	updateUI();
+
 	QEos::Notify(EVENT_IMAGE_STATE, 0, IMAGE_STATE_CHANGE, nIndex);
 }
 
@@ -119,12 +123,17 @@ void LightWidget::onSaveParams()
 void LightWidget::onLoadParams()
 {
 	loadConfig();
+	updateUI();
 }
 
 void LightWidget::setLightValue(int chn, int value)
 {
-	int i = 0;
+	int nIndex = ui.comboBox_selectLightMode->currentIndex();
+	if (nIndex >= m_vecLights.size()) return;
+	Engine::Light& light = m_vecLights[nIndex];
+	light.vecLightIntensity[chn] = value;
 
+	int i = 0;
 	QLightDevice * device = NULL;
 	if (chn >= 0 && chn < 4)
 	{
@@ -197,66 +206,28 @@ void LightWidget::onSliderChanged7(int lum)
 {
 	QString str = QString::number(lum);
 	ui.lineEdit_7->setText(str);	
+
+	int nIndex = ui.comboBox_selectLightMode->currentIndex();
+	if (nIndex >= m_vecLights.size()) return;
+	Engine::Light& light = m_vecLights[nIndex];
+	light.expTime = lum;
 }
 
 void LightWidget::loadConfig()
 {
-	Engine::LightVector vecLights;
-	auto result = Engine::GetLights(vecLights);
+	m_vecLights.clear();
+	auto result = Engine::GetLights(m_vecLights);
 	if (result != Engine::OK) {
 		String errorType, errorMessage;
 		Engine::GetErrorDetail(errorType, errorMessage);
 		System->setTrackInfo(QString("Error at GetLights, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
 		return;
 	}
-
-	if (vecLights.size() <= 0) return;
-	Engine::Light light = vecLights.at(0);
-	if (light.vecLightIntensity.size() < 6) return;
-
-	QSlider * sliderCtrls[6] = { ui.horizontalSlider_1, ui.horizontalSlider_2, ui.horizontalSlider_3, ui.horizontalSlider_4, ui.horizontalSlider_5, ui.horizontalSlider_6 };
-	QLineEdit * editLums[6] = { ui.lineEdit_1, ui.lineEdit_2, ui.lineEdit_3, ui.lineEdit_4, ui.lineEdit_5, ui.lineEdit_6 };
-
-	QLightDevice * device = m_pCtrl->getLightDevice(0);
-	if (device)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			int nLightInt = light.vecLightIntensity[i];
-			sliderCtrls[i]->setValue(nLightInt);
-			editLums[i]->setText(QString("%1").arg(nLightInt));
-		}
-	}
-
-	device = m_pCtrl->getLightDevice(1);
-	if (device)
-	{
-		for (int i = 0; i < 2; i++)
-		{
-			int nLightInt = light.vecLightIntensity[i + 4];
-			sliderCtrls[i + 4]->setValue(nLightInt);
-			editLums[i + 4]->setText(QString("%1").arg(nLightInt));
-		}
-	}
-
-	double dLightExposure = light.expTime;
-	ui.horizontalSlider_7->setValue(dLightExposure);
-	ui.lineEdit_7->setText(QString("%1").arg(dLightExposure));
 }
 
 void LightWidget::saveConfig()
 {
-	Engine::Light light;
-	QSlider * sliderCtrls[6] = { ui.horizontalSlider_1, ui.horizontalSlider_2, ui.horizontalSlider_3, ui.horizontalSlider_4, ui.horizontalSlider_5, ui.horizontalSlider_6 };
-	for (int i = 0; i < 6; i++)
-	{
-		light.vecLightIntensity.push_back(sliderCtrls[i]->value());
-	}
-	light.expTime = ui.horizontalSlider_7->value();
-
-	Engine::LightVector vecLights;
-	vecLights.push_back(light);
-	auto result = Engine::SetLights(vecLights);
+	auto result = Engine::SetLights(m_vecLights);
 	if (result != Engine::OK) {
 		String errorType, errorMessage;
 		Engine::GetErrorDetail(errorType, errorMessage);
@@ -264,5 +235,29 @@ void LightWidget::saveConfig()
 		return;
 	}
 	System->setTrackInfo(QString("Success save lights..."));
+}
+
+void LightWidget::updateUI()
+{
+	int nIndex = ui.comboBox_selectLightMode->currentIndex();
+
+	if (m_vecLights.size() <= 0) return;
+	if (nIndex >= m_vecLights.size()) return;
+
+	Engine::Light light = m_vecLights[nIndex];
+
+	QSlider * sliderCtrls[6] = { ui.horizontalSlider_1, ui.horizontalSlider_2, ui.horizontalSlider_3, ui.horizontalSlider_4, ui.horizontalSlider_5, ui.horizontalSlider_6 };
+	QLineEdit * editLums[6] = { ui.lineEdit_1, ui.lineEdit_2, ui.lineEdit_3, ui.lineEdit_4, ui.lineEdit_5, ui.lineEdit_6 };
+
+	for (int i = 0; i < 6; i++)
+	{
+		int nLightInt = light.vecLightIntensity[i];
+		sliderCtrls[i]->setValue(nLightInt);
+		editLums[i]->setText(QString("%1").arg(nLightInt));
+	}
+
+	double dLightExposure = light.expTime;
+	ui.horizontalSlider_7->setValue(dLightExposure);
+	ui.lineEdit_7->setText(QString("%1").arg(dLightExposure));
 }
 
