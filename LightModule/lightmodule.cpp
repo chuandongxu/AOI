@@ -31,11 +31,11 @@ void QLightModule::init()
 	}
 }
 
-void QLightModule::setLight()
+void QLightModule::setLight(int nLight)
 {
 	if (m_pLightWidget)
 	{
-		m_pLightWidget->setLight();
+		m_pLightWidget->setLight(nLight);
 	}
 }
 
