@@ -22,6 +22,7 @@ void InspWindowSelectDialog::on_btnFindLineWindow_clicked()
 
 void InspWindowSelectDialog::on_btnCaliperCircleWindow_clicked()
 {
+	m_enInspWidgetIndex = INSP_WIDGET_INDEX::CALIPER_CIRCLE;
 }
 
 void InspWindowSelectDialog::on_btnVoidInspWindow_clicked()

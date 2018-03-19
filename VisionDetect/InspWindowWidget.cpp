@@ -10,12 +10,14 @@
 #include "../Common/eos.h"
 #include "InspWindowSelectDialog.h"
 #include "FindLineWidget.h"
+#include "FindCircleWidget.h"
 #include "InspVoidWidget.h"
 
 static const QString DEFAULT_WINDOW_NAME[] = 
 {
     "Find Line",
     "Inspect Hole",
+	"Caliper Circle",
 };
 
 static_assert (static_cast<size_t>(INSP_WIDGET_INDEX::SIZE) == sizeof(DEFAULT_WINDOW_NAME) / sizeof(DEFAULT_WINDOW_NAME[0]), "The window name size is not correct");
@@ -27,6 +29,7 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
 
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::FIND_LINE)] = std::make_unique<FindLineWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_HOLE)] = std::make_unique<InspVoidWidget>(this);
+	m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::CALIPER_CIRCLE)] = std::make_unique<FindCircleWidget>(this);
 
     for ( const auto &ptrInspWindowWidget : m_arrInspWindowWidget )
         ui.stackedWidget->addWidget ( ptrInspWindowWidget.get() );
