@@ -11,6 +11,7 @@ enum class INSP_WIDGET_INDEX {
     UNDEFINED = -1,
     FIND_LINE,
     INSP_HOLE,
+	CALIPER_CIRCLE,
     SIZE
 };
 
