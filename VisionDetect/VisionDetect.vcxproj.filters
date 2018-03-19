@@ -410,9 +410,6 @@
     <CustomBuild Include="QColorWeight.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="VisionDetect.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="InspWindowSelectWidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
