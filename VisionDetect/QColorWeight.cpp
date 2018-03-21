@@ -14,6 +14,9 @@
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 
+#include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
+
 #define ToInt(value)        (static_cast<int>(value))
 #define ToFloat(param)      (static_cast<float>(param))
 
@@ -23,6 +26,38 @@ using namespace AOI;
 #if defined(CreateWindow) // If Win32 defines "CreateWindow":
 #undef CreateWindow       //   Undefine it to avoid conflict
 #endif                    //   with the line display method.
+
+const int IMG_DISPLAY_WIDTH = 200;
+const int IMG_DISPLAY_HEIGHT = 150;
+
+class QColorWeight;
+class ColorScene : public QGraphicsScene
+{
+public:
+	explicit ColorScene(QObject *parent = 0);
+	void setColorWeight(QColorWeight* colorWeight){ m_colorWeight = colorWeight; }
+
+protected:
+	void mousePressEvent(QGraphicsSceneMouseEvent *event);
+private:
+	QColorWeight* m_colorWeight;
+};
+
+ColorScene::ColorScene(QObject *parent)
+:QGraphicsScene(parent)
+{
+	clearFocus();
+}
+
+void ColorScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	//qDebug() << event->scenePos().x() << " " << event->scenePos().y();
+	if (m_colorWeight)
+	{
+		m_colorWeight->setColorImagePos(cv::Point(event->scenePos().x(), event->scenePos().y()));
+	}
+	QGraphicsScene::mousePressEvent(event);
+}
 
 QColorWeight::QColorWeight(QWidget *parent)
 	: QWidget(parent)
@@ -60,7 +95,7 @@ QColorWeight::~QColorWeight()
 	{
 		delete m_colorImgScene;
 		m_colorImgScene = NULL;
-	}	
+	}
 }
 
 //void QColorWeight::closeEvent(QCloseEvent *e){
@@ -144,6 +179,15 @@ cv::Mat QColorWeight::generateColorImage(cv::Point ptPos)
 	m_maskMat.release();
 	generateColorPlot();
 	return m_maskMat;
+}
+
+void QColorWeight::setColorImagePos(cv::Point ptMousePos)
+{
+	ui.tabWidget->setCurrentIndex(1);
+	m_colorGenPt.x = ptMousePos.x * m_imageMat.size().width / IMG_DISPLAY_WIDTH;
+	m_colorGenPt.y = ptMousePos.y * m_imageMat.size().height / IMG_DISPLAY_HEIGHT;
+
+	generateColorPlot();
 }
 
 void QColorWeight::initUI()
@@ -251,7 +295,7 @@ void QColorWeight::initUI()
 	ui.graphicsView_sourceImg->setScene(m_sourceImgScene);
 	ui.graphicsView_sourceImg->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	ui.graphicsView_sourceImg->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	ui.graphicsView_sourceImg->fitInView(QRectF(0, 0, 200, 150), Qt::KeepAspectRatio);    //这样就没法缩放了 
+	ui.graphicsView_sourceImg->fitInView(QRectF(0, 0, IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT), Qt::KeepAspectRatio);    //这样就没法缩放了 
 	ui.graphicsView_sourceImg->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 	ui.graphicsView_sourceImg->setRenderHint(QPainter::Antialiasing);
 
@@ -259,17 +303,18 @@ void QColorWeight::initUI()
 	ui.graphicsView_grayImg->setScene(m_grayImgScene);
 	ui.graphicsView_grayImg->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	ui.graphicsView_grayImg->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	ui.graphicsView_grayImg->fitInView(QRectF(0, 0, 200, 150), Qt::KeepAspectRatio);    //这样就没法缩放了 
+	ui.graphicsView_grayImg->fitInView(QRectF(0, 0, IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT), Qt::KeepAspectRatio);    //这样就没法缩放了 
 	ui.graphicsView_grayImg->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 	ui.graphicsView_grayImg->setRenderHint(QPainter::Antialiasing);
 
-	m_colorImgScene = new QGraphicsScene();
+	m_colorImgScene = new ColorScene();
+	m_colorImgScene->setColorWeight(this);
 	ui.graphicsView_ColorImg->setScene(m_colorImgScene);
 	ui.graphicsView_ColorImg->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	ui.graphicsView_ColorImg->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	ui.graphicsView_ColorImg->fitInView(QRectF(0, 0, 200, 150), Qt::KeepAspectRatio);    //这样就没法缩放了 
+	ui.graphicsView_ColorImg->fitInView(QRectF(0, 0, IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT), Qt::KeepAspectRatio);    //这样就没法缩放了 
 	ui.graphicsView_ColorImg->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-	ui.graphicsView_ColorImg->setRenderHint(QPainter::Antialiasing);
+	ui.graphicsView_ColorImg->setRenderHint(QPainter::Antialiasing);	
 }
 
 void QColorWeight::initData()
@@ -860,7 +905,7 @@ void QColorWeight::displaySourceImg()
 	cv::cvtColor(matSourceImg, matSourceImg, CV_BGR2RGB);
 	QImage img = QImage((uchar*)matSourceImg.data, matSourceImg.cols, matSourceImg.rows, ToInt(matSourceImg.step), QImage::Format_RGB888);
 	m_sourceImgScene->clear();
-	m_sourceImgScene->addPixmap(QPixmap::fromImage(img));
+	m_sourceImgScene->addPixmap(QPixmap::fromImage(img.scaled(QSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT))));
 }
 
 void QColorWeight::displayGrayImg()
@@ -940,7 +985,7 @@ void QColorWeight::displayGrayImg()
 
 	QImage img = QImage((uchar*)matGrayImg.data, matGrayImg.cols, matGrayImg.rows, ToInt(matGrayImg.step), QImage::Format_RGB888);
 	m_grayImgScene->clear();
-	m_grayImgScene->addPixmap(QPixmap::fromImage(img));
+	m_grayImgScene->addPixmap(QPixmap::fromImage(img.scaled(QSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT))));
 }
 
 void QColorWeight::displayColorImg()
@@ -958,7 +1003,7 @@ void QColorWeight::displayColorImg()
 	cvtColor(matColorImg, matColorImg, CV_BGR2RGB);
 	QImage img = QImage((uchar*)matColorImg.data, matColorImg.cols, matColorImg.rows, ToInt(matColorImg.step), QImage::Format_RGB888);
 	m_colorImgScene->clear();
-	m_colorImgScene->addPixmap(QPixmap::fromImage(img));
+	m_colorImgScene->addPixmap(QPixmap::fromImage(img.scaled(QSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT))));
 }
 
 void QColorWeight::onGrayModeIndexChanged(int iIndex)
@@ -1208,7 +1253,11 @@ cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage)
 	m_maxT = maxT;
 	m_minT = minT;
 
-	cv::circle(matImage, m_colorGenPt, 5, cv::Scalar(255, 0, 0), 2, 8);
+	double dXScale = m_imageMat.size().width * 1.0 / IMG_DISPLAY_WIDTH;
+	double dYScale = m_imageMat.size().height * 1.0 / IMG_DISPLAY_HEIGHT;
+	double dScale = qMax(dXScale, dYScale);
+
+	cv::circle(matImage, m_colorGenPt, 3.5 * dScale, cv::Scalar(0, 0, 255), 1 * dScale, 8);
 
 	int nWidth = ui.graphicsView_grayColor->geometry().width();
 	int nHeight = ui.graphicsView_grayColor->geometry().height();

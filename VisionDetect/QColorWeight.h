@@ -35,6 +35,7 @@ struct ColorSpaceParams
 
 class QCustomPlot;
 class QCPBars;
+class ColorScene;
 class QColorWeight : public QWidget
 {
 	Q_OBJECT
@@ -59,6 +60,7 @@ public:
 	void setColorParams(const ColorSpaceParams& colorParams);
 	ColorSpaceParams getColorParams() const;
 	cv::Mat generateColorImage(cv::Point ptPos);
+	void setColorImagePos(cv::Point ptMousePos);
 
     std::string getJsonFormattedParams() const;
     void setJsonFormattedParams(const std::string &jsonParams);
@@ -150,5 +152,5 @@ private:
 	// Display
 	QGraphicsScene * m_sourceImgScene;
 	QGraphicsScene * m_grayImgScene;
-	QGraphicsScene * m_colorImgScene;
+	ColorScene * m_colorImgScene;
 };
