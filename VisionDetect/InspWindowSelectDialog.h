@@ -17,6 +17,7 @@ private slots:
     void on_btnFindLineWindow_clicked();
     void on_btnCaliperCircleWindow_clicked();
     void on_btnVoidInspWindow_clicked();
+	void on_btnAlignmentWindow_clicked();
     void on_accept();
 
 private:
