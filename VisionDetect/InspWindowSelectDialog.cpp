@@ -30,6 +30,11 @@ void InspWindowSelectDialog::on_btnVoidInspWindow_clicked()
     m_enInspWidgetIndex = INSP_WIDGET_INDEX::INSP_HOLE;
 }
 
+void InspWindowSelectDialog::on_btnAlignmentWindow_clicked()
+{
+	m_enInspWidgetIndex = INSP_WIDGET_INDEX::ALIGNMENT;
+}
+
 void InspWindowSelectDialog::on_accept()
 {
     if ( INSP_WIDGET_INDEX::UNDEFINED == m_enInspWidgetIndex ) {

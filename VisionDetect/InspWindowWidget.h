@@ -12,6 +12,7 @@ enum class INSP_WIDGET_INDEX {
     FIND_LINE,
     INSP_HOLE,
 	CALIPER_CIRCLE,
+	ALIGNMENT,
     SIZE
 };
 
