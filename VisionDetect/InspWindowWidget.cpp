@@ -13,6 +13,7 @@
 #include "FindCircleWidget.h"
 #include "InspVoidWidget.h"
 #include "AlignmentWidget.h"
+#include "HeightDetectWidget.h"
 
 static const QString DEFAULT_WINDOW_NAME[] = 
 {
@@ -20,6 +21,7 @@ static const QString DEFAULT_WINDOW_NAME[] =
     "Inspect Hole",
 	"Caliper Circle",
 	"Alignment",
+	"Height Detect",
 };
 
 static_assert (static_cast<size_t>(INSP_WIDGET_INDEX::SIZE) == sizeof(DEFAULT_WINDOW_NAME) / sizeof(DEFAULT_WINDOW_NAME[0]), "The window name size is not correct");
@@ -33,6 +35,7 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_HOLE)] = std::make_unique<InspVoidWidget>(this);
 	m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::CALIPER_CIRCLE)] = std::make_unique<FindCircleWidget>(this);
 	m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::ALIGNMENT)] = std::make_unique<AlignmentWidget>(this);
+	m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::HEIGHT_DETECT)] = std::make_unique<HeightDetectWidget>(this);
 
     for ( const auto &ptrInspWindowWidget : m_arrInspWindowWidget )
         ui.stackedWidget->addWidget ( ptrInspWindowWidget.get() );
@@ -228,6 +231,10 @@ void InspWindowWidget::onSelectedWindowChanged(int index)
 		m_enCurrentInspWidget = INSP_WIDGET_INDEX::CALIPER_CIRCLE;
 	else if (Engine::Window::Usage::ALIGNMENT == window.usage)
 		m_enCurrentInspWidget = INSP_WIDGET_INDEX::ALIGNMENT;
+	else if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage)
+		m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_DETECT;
+	else if (Engine::Window::Usage::HEIGHT_BASE == window.usage)
+		m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_DETECT;
 
     ui.labelWindowName->setText(window.name.c_str());
 
