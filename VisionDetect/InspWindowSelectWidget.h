@@ -19,6 +19,7 @@ private slots:
     void on_btnCaliperCircleWindow_clicked();
     void on_btnVoidInspWindow_clicked();
 	void on_btnAlignmentWindow_clicked();
+	void on_btnHeightDetectWindow_clicked();
     
 private:
     Ui::InspWindowSelectWidget ui;

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HeightDetectWidget</class>
+ <widget class="QWidget" name="HeightDetectWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>420</width>
+    <height>348</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>HeightDetectWidget</string>
+  </property>
+  <widget class="QLabel" name="labelBasicParameter">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>基础检测参数</string>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>401</width>
+     <height>150</height>
+    </rect>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+   <property name="rowCount">
+    <number>4</number>
+   </property>
+   <attribute name="horizontalHeaderVisible">
+    <bool>false</bool>
+   </attribute>
+   <attribute name="horizontalHeaderDefaultSectionSize">
+    <number>210</number>
+   </attribute>
+   <attribute name="horizontalHeaderStretchLastSection">
+    <bool>true</bool>
+   </attribute>
+   <attribute name="verticalHeaderVisible">
+    <bool>false</bool>
+   </attribute>
+   <row>
+    <property name="text">
+     <string>新建行</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>新建行</string>
+    </property>
+   </row>
+   <row/>
+   <row/>
+   <column>
+    <property name="text">
+     <string>新建列</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>新建列</string>
+    </property>
+   </column>
+   <item row="0" column="0">
+    <property name="text">
+     <string>类型(Y=检查, N=基准)</string>
+    </property>
+   </item>
+   <item row="1" column="0">
+    <property name="text">
+     <string>最小范围（%）</string>
+    </property>
+   </item>
+   <item row="1" column="1">
+    <property name="text">
+     <string>30</string>
+    </property>
+   </item>
+   <item row="2" column="0">
+    <property name="text">
+     <string>最大范围（%）</string>
+    </property>
+   </item>
+   <item row="2" column="1">
+    <property name="text">
+     <string>70</string>
+    </property>
+   </item>
+   <item row="3" column="0">
+    <property name="text">
+     <string/>
+    </property>
+   </item>
+  </widget>
+  <widget class="QListView" name="listView">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>200</y>
+     <width>401</width>
+     <height>140</height>
+    </rect>
+   </property>
+   <property name="modelColumn">
+    <number>0</number>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

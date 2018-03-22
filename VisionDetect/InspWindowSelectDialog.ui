@@ -162,7 +162,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>定位检测  void</string>
+     <string>定位检测  Alignment</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -192,6 +192,48 @@
       <width>60</width>
       <height>60</height>
      </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnHeightDetectWindow">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>30</y>
+      <width>60</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>image/HeightDetect.png</normaloff>image/HeightDetect.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>60</width>
+      <height>60</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelHeightDetectWindow">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>100</y>
+      <width>61</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>高度检测  Height Detect</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

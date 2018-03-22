@@ -31,3 +31,8 @@ void InspWindowSelectWidget::on_btnAlignmentWindow_clicked()
 {
 	m_pParent->setCurrentIndex(static_cast<int>(INSP_WIDGET_INDEX::ALIGNMENT));
 }
+
+void InspWindowSelectWidget::on_btnHeightDetectWindow_clicked()
+{
+	m_pParent->setCurrentIndex(static_cast<int>(INSP_WIDGET_INDEX::HEIGHT_DETECT));
+}

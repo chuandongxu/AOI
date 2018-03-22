@@ -263,6 +263,15 @@
     <ClCompile Include="AlignmentWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_HeightDetectWidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_HeightDetectWidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="HeightDetectWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VisionDetect.h">
@@ -326,6 +335,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_AlignmentWidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_HeightDetectWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -465,6 +477,12 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="AlignmentWidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HeightDetectWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HeightDetectWidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
