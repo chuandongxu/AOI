@@ -496,3 +496,12 @@ void VisionView::setHeightData(cv::Mat& matHeight)
 		m_pViewWidget->setHeightData(matHeight);
 	}
 }
+
+cv::Mat VisionView::getHeightData()
+{
+	if (m_pViewWidget)
+	{
+		return m_pViewWidget->getHeightData();
+	}
+	return cv::Mat();
+}

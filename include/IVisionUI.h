@@ -28,6 +28,7 @@ public:
 	virtual void displayImage(cv::Mat& image) = 0;
 
 	virtual void setHeightData(cv::Mat& matHeight) = 0;
+	virtual cv::Mat getHeightData() = 0;
 	virtual bool startUpCapture() = 0;
 	virtual bool endUpCapture() = 0;
 
