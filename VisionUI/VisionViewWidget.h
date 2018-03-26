@@ -76,6 +76,7 @@ public:
     void setCurrentFM(const VisionViewFM &fm);
     VisionViewFM getCurrentFM() const;
     void setHeightData(cv::Mat& matHeight);
+	cv::Mat getHeightData();
 
 private slots:
 	void onResultEvent(const QVariantList &data);

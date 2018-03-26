@@ -76,6 +76,15 @@ void QVisionUIModule::setHeightData(cv::Mat& matHeight)
 	}
 }
 
+cv::Mat QVisionUIModule::getHeightData()
+{
+	if (m_pVisionView)
+	{
+		return m_pVisionView->getHeightData();
+	}
+	return cv::Mat();
+}
+
 bool QVisionUIModule::startUpCapture()
 {
 	if (m_pVisionView)

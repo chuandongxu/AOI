@@ -1461,6 +1461,11 @@ void VisionViewWidget::setHeightData(cv::Mat& matHeight)
 	m_3DMatHeight = matHeight;
 }
 
+cv::Mat VisionViewWidget::getHeightData()
+{
+	return m_3DMatHeight;
+}
+
 void VisionViewWidget::_zoomImageForDisplay(const cv::Mat &matImg, cv::Mat &matOutput) {
 	QRect rect = ui.label_Img->geometry();
 	rect.setX(0); rect.setY(0);
