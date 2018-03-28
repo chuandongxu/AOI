@@ -9,7 +9,6 @@ MotionModule::MotionModule(int id, const QString &name)
 
 MotionModule::~MotionModule()
 {
-
 }
 
 void MotionModule::addSettingWiddget(QTabWidget * tabWidget)

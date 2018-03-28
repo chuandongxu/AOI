@@ -38,65 +38,63 @@ FindLineWidget::FindLineWidget(InspWindowWidget *parent)
     ui.setupUi(this);
 
     m_pCheckBoxFindPair = std::make_unique<QCheckBox>(ui.tableWidget);
-    ui.tableWidget->setCellWidget ( FIND_PAIR, DATA_COLUMN, m_pCheckBoxFindPair.get() );
+    ui.tableWidget->setCellWidget(FIND_PAIR, DATA_COLUMN, m_pCheckBoxFindPair.get());
 
     m_pComboBoxFindLineDirection = std::make_unique<QComboBox>(ui.tableWidget);
     m_pComboBoxFindLineDirection->addItem("Dark to Bright");
     m_pComboBoxFindLineDirection->addItem("Bright to Dark");
-    ui.tableWidget->setCellWidget ( FIND_DIRECTION, DATA_COLUMN, m_pComboBoxFindLineDirection.get() );
+    ui.tableWidget->setCellWidget(FIND_DIRECTION, DATA_COLUMN, m_pComboBoxFindLineDirection.get());
 
-    m_pEditCaliperCount = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditCaliperCount->setValidator(new QIntValidator( 2, 1000, m_pEditCaliperCount.get() ) );    
-    ui.tableWidget->setCellWidget(CALIPER_COUNT, DATA_COLUMN, m_pEditCaliperCount.get() );
+    m_pEditCaliperCount = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditCaliperCount->setValidator(new QIntValidator(2, 1000, m_pEditCaliperCount.get()));
+    ui.tableWidget->setCellWidget(CALIPER_COUNT, DATA_COLUMN, m_pEditCaliperCount.get());
 
-    m_pEditCaliperWidth = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditCaliperWidth->setValidator(new QDoubleValidator( 1, 1000, 0.1, m_pEditCaliperWidth.get() ) );    
-    ui.tableWidget->setCellWidget(CALIPER_WIDTH, DATA_COLUMN, m_pEditCaliperWidth.get() );
+    m_pEditCaliperWidth = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditCaliperWidth->setValidator(new QDoubleValidator(1, 1000, 0.1, m_pEditCaliperWidth.get()));
+    ui.tableWidget->setCellWidget(CALIPER_WIDTH, DATA_COLUMN, m_pEditCaliperWidth.get());
 
-    m_pEditEdgeThreshold = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditEdgeThreshold->setValidator(new QIntValidator ( 1, 255, m_pEditEdgeThreshold.get() ) );    
-    ui.tableWidget->setCellWidget(EDGE_THRESHOLD, DATA_COLUMN, m_pEditEdgeThreshold.get() );
+    m_pEditEdgeThreshold = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditEdgeThreshold->setValidator(new QIntValidator(1, 255, m_pEditEdgeThreshold.get()));
+    ui.tableWidget->setCellWidget(EDGE_THRESHOLD, DATA_COLUMN, m_pEditEdgeThreshold.get());
 
     m_pComboBoxEdgeSelectMethod = std::make_unique<QComboBox>(ui.tableWidget);
     m_pComboBoxEdgeSelectMethod->addItem("Max Edge");
     m_pComboBoxEdgeSelectMethod->addItem("First Edge");
-    ui.tableWidget->setCellWidget(EDGE_SELECT_METHOD, DATA_COLUMN, m_pComboBoxEdgeSelectMethod.get() );
+    ui.tableWidget->setCellWidget(EDGE_SELECT_METHOD, DATA_COLUMN, m_pComboBoxEdgeSelectMethod.get());
 
-    m_pEditRmStrayPointRatio = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditRmStrayPointRatio->setValidator(new QDoubleValidator(0, 1, 2, m_pEditRmStrayPointRatio.get() ) );    
-    ui.tableWidget->setCellWidget(REMOVE_STRAY_POINT_RATIO, DATA_COLUMN, m_pEditRmStrayPointRatio.get() );
+    m_pEditRmStrayPointRatio = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditRmStrayPointRatio->setValidator(new QDoubleValidator(0, 1, 2, m_pEditRmStrayPointRatio.get()));
+    ui.tableWidget->setCellWidget(REMOVE_STRAY_POINT_RATIO, DATA_COLUMN, m_pEditRmStrayPointRatio.get());
 
-    m_pEditDiffFilterHalfW = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditDiffFilterHalfW->setValidator(new QIntValidator( 1, 10, m_pEditDiffFilterHalfW.get() ) );   
-    ui.tableWidget->setCellWidget(GAUSSIAN_DIFF_HALF_WIDTH, DATA_COLUMN, m_pEditDiffFilterHalfW.get() );
+    m_pEditDiffFilterHalfW = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditDiffFilterHalfW->setValidator(new QIntValidator(1, 10, m_pEditDiffFilterHalfW.get()));
+    ui.tableWidget->setCellWidget(GAUSSIAN_DIFF_HALF_WIDTH, DATA_COLUMN, m_pEditDiffFilterHalfW.get());
 
-    m_pEditDiffFilterSigma = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditDiffFilterSigma->setValidator(new QDoubleValidator(0.1, 100, 2, m_pEditDiffFilterSigma.get() ) );    
-    ui.tableWidget->setCellWidget(GAUSSIAN_DIFF_SIGMA, DATA_COLUMN, m_pEditDiffFilterSigma.get() );
+    m_pEditDiffFilterSigma = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditDiffFilterSigma->setValidator(new QDoubleValidator(0.1, 100, 2, m_pEditDiffFilterSigma.get()));
+    ui.tableWidget->setCellWidget(GAUSSIAN_DIFF_SIGMA, DATA_COLUMN, m_pEditDiffFilterSigma.get());
 
     m_pCheckLinerity = std::make_unique<QCheckBox>(ui.tableWidget);
-    ui.tableWidget->setCellWidget ( CHECK_LINERITY, DATA_COLUMN, m_pCheckLinerity.get() );
+    ui.tableWidget->setCellWidget(CHECK_LINERITY, DATA_COLUMN, m_pCheckLinerity.get());
 
-    m_pEditPointMaxOffset = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditPointMaxOffset->setValidator(new QDoubleValidator(1, 5000, 2, m_pEditPointMaxOffset.get() ) );    
-    ui.tableWidget->setCellWidget(POINT_MAX_OFFSET, DATA_COLUMN, m_pEditPointMaxOffset.get() );
+    m_pEditPointMaxOffset = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditPointMaxOffset->setValidator(new QDoubleValidator(1, 5000, 2, m_pEditPointMaxOffset.get()));
+    ui.tableWidget->setCellWidget(POINT_MAX_OFFSET, DATA_COLUMN, m_pEditPointMaxOffset.get());
 
-    m_pEditMinLinearity = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditMinLinearity->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinLinearity.get() ) );    
-    ui.tableWidget->setCellWidget(MIN_LINERITY, DATA_COLUMN, m_pEditMinLinearity.get() );
+    m_pEditMinLinearity = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditMinLinearity->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinLinearity.get()));
+    ui.tableWidget->setCellWidget(MIN_LINERITY, DATA_COLUMN, m_pEditMinLinearity.get());
 
     m_pEditCheckAngle = std::make_unique<QCheckBox>(ui.tableWidget);
-    ui.tableWidget->setCellWidget ( CHECK_ANGLE, DATA_COLUMN, m_pEditCheckAngle.get() );
+    ui.tableWidget->setCellWidget(CHECK_ANGLE, DATA_COLUMN, m_pEditCheckAngle.get());
 
-    m_pEditExpectedAngle = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditExpectedAngle->setValidator(new QDoubleValidator(-360, 360, 2, m_pEditExpectedAngle.get() ) );    
-    ui.tableWidget->setCellWidget(EXPECTED_ANGLE, DATA_COLUMN, m_pEditExpectedAngle.get() );
+    m_pEditExpectedAngle = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditExpectedAngle->setValidator(new QDoubleValidator(-360, 360, 2, m_pEditExpectedAngle.get()));
+    ui.tableWidget->setCellWidget(EXPECTED_ANGLE, DATA_COLUMN, m_pEditExpectedAngle.get());
 
-    m_pEditAngleDiffTolerance = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditAngleDiffTolerance->setValidator(new QDoubleValidator(-100, 100, 2, m_pEditAngleDiffTolerance.get() ) );    
-    ui.tableWidget->setCellWidget(ANGLE_DIFF_TOL, DATA_COLUMN, m_pEditAngleDiffTolerance.get() );
-
-    setDefaultValue();
+    m_pEditAngleDiffTolerance = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditAngleDiffTolerance->setValidator(new QDoubleValidator(-100, 100, 2, m_pEditAngleDiffTolerance.get()));
+    ui.tableWidget->setCellWidget(ANGLE_DIFF_TOL, DATA_COLUMN, m_pEditAngleDiffTolerance.get());
 }
 
 FindLineWidget::~FindLineWidget()
@@ -149,7 +147,7 @@ void FindLineWidget::tryInsp()
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     stCmd.matInputImg = pUI->getImage();
     cv::Rect rectROI = pUI->getSelectedROI();
-    if ( rectROI.width <= 0 || rectROI.height <= 0 ) {
+    if (rectROI.width <= 0 || rectROI.height <= 0) {
         QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI to do inspection."));
         return;
     }
@@ -169,7 +167,7 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
 
     Json::Value jsonValue;
     
-    jsonValue["Algorithm"] = Vision::ToInt32 ( Vision::PR_FIND_LINE_ALGORITHM::CALIPER );
+    jsonValue["Algorithm"] = Vision::ToInt32(Vision::PR_FIND_LINE_ALGORITHM::CALIPER);
     jsonValue["FindPair"] = m_pCheckBoxFindPair->isChecked();
     jsonValue["DetectDir"] = m_pComboBoxFindLineDirection->currentIndex();
     jsonValue["CaliperCount"] = m_pEditCaliperCount->text().toInt();
@@ -196,9 +194,9 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
     window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = Engine::Window::Usage::FIND_LINE;
     window.inspParams = jsonValue.toStyledString();
-    window.x = ( rectROI.x + rectROI.width  / 2.f ) * dResolutionX;
-    window.y = ( rectROI.y + rectROI.height / 2.f ) * dResolutionY;
-    window.width  = rectROI.width  * dResolutionX;
+    window.x = (rectROI.x + rectROI.width / 2.f) * dResolutionX;
+    window.y = (rectROI.y + rectROI.height / 2.f) * dResolutionY;
+    window.width = rectROI.width  * dResolutionX;
     window.height = rectROI.height * dResolutionY;
     window.deviceId = pUI->getSelectedDevice().getId();
     window.angle = 0;
@@ -251,21 +249,21 @@ void FindLineWidget::setCurrentWindow(const Engine::Window &window)
 
     Json::Value jsonValue;
     Json::Reader jsonReader;
-    jsonReader.parse ( window.inspParams, jsonValue, false );
+    jsonReader.parse(window.inspParams, jsonValue, false);
     
-    m_pCheckBoxFindPair->setChecked ( jsonValue["FindPair"].asBool() );
-    m_pComboBoxFindLineDirection->setCurrentIndex ( jsonValue["DetectDir"] .asInt() );
-    m_pEditCaliperCount->setText( QString::number ( jsonValue["CaliperCount"].asInt() ) );
-    m_pEditCaliperWidth->setText ( QString::number ( jsonValue["CaliperWidth"].asFloat() ) );
-    m_pEditEdgeThreshold->setText ( QString::number ( jsonValue["EdgeThreshold"].asInt() ) );
-    m_pComboBoxEdgeSelectMethod->setCurrentIndex ( jsonValue["SelectEdge"].asInt() );
-    m_pEditRmStrayPointRatio->setText ( QString::number ( jsonValue["RmStrayPointRatio"].asFloat() ) );
-    m_pEditDiffFilterHalfW->setText ( QString::number ( jsonValue["DiffFilterHalfW"].asInt() ) );
-    m_pEditDiffFilterSigma->setText ( QString::number ( jsonValue["DiffFilterSigma"].asFloat() ) );
-    m_pCheckLinerity->setChecked ( jsonValue["CheckLinerity"].asBool() );
-    m_pEditPointMaxOffset->setText ( QString::number ( jsonValue["PointMaxOffset"].asFloat() ) );
-    m_pEditMinLinearity->setText ( QString::number ( jsonValue["MinLinearity"].asFloat() * ONE_HUNDRED_PERCENT ) );
-    m_pEditCheckAngle->setChecked ( jsonValue["CheckAngle"].asBool() );
-    m_pEditExpectedAngle->setText ( QString::number ( jsonValue["ExpectedAngle"].asFloat() ) );
-    m_pEditAngleDiffTolerance->setText ( QString::number ( jsonValue["AngleDiffTolerance"] .asFloat() ) );
+    m_pCheckBoxFindPair->setChecked(jsonValue["FindPair"].asBool());
+    m_pComboBoxFindLineDirection->setCurrentIndex(jsonValue["DetectDir"].asInt());
+    m_pEditCaliperCount->setText(QString::number(jsonValue["CaliperCount"].asInt()));
+    m_pEditCaliperWidth->setText(QString::number(jsonValue["CaliperWidth"].asFloat()));
+    m_pEditEdgeThreshold->setText(QString::number(jsonValue["EdgeThreshold"].asInt()));
+    m_pComboBoxEdgeSelectMethod->setCurrentIndex(jsonValue["SelectEdge"].asInt());
+    m_pEditRmStrayPointRatio->setText(QString::number(jsonValue["RmStrayPointRatio"].asFloat()));
+    m_pEditDiffFilterHalfW->setText(QString::number(jsonValue["DiffFilterHalfW"].asInt()));
+    m_pEditDiffFilterSigma->setText(QString::number(jsonValue["DiffFilterSigma"].asFloat()));
+    m_pCheckLinerity->setChecked(jsonValue["CheckLinerity"].asBool());
+    m_pEditPointMaxOffset->setText(QString::number(jsonValue["PointMaxOffset"].asFloat()));
+    m_pEditMinLinearity->setText(QString::number(jsonValue["MinLinearity"].asFloat() * ONE_HUNDRED_PERCENT));
+    m_pEditCheckAngle->setChecked(jsonValue["CheckAngle"].asBool());
+    m_pEditExpectedAngle->setText(QString::number(jsonValue["ExpectedAngle"].asFloat()));
+    m_pEditAngleDiffTolerance->setText(QString::number(jsonValue["AngleDiffTolerance"].asFloat()));
 }

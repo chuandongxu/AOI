@@ -18,7 +18,7 @@ class EditInspWindowBaseWidget : public QWidget
 
 public:
     EditInspWindowBaseWidget(InspWindowWidget *parent = Q_NULLPTR);
-    ~EditInspWindowBaseWidget() = default;
+    virtual ~EditInspWindowBaseWidget() = default;
 
     virtual void setDefaultValue() = 0;
     virtual void tryInsp() = 0;

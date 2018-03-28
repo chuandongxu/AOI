@@ -12,7 +12,7 @@ HSGWorkflowCtrl::HSGWorkflowCtrl(int id,const QString &name)
 	initErrorCode();
 
 	m_ctrl = new QFlowCtrl(NULL);
-	m_workflowWidget = new QWorkFlowWidget;	
+	m_workflowWidget = new QWorkFlowWidget;
 }
 
 HSGWorkflowCtrl::~HSGWorkflowCtrl()

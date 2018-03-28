@@ -168,7 +168,7 @@ void InspWindowWidget::on_btnAddWindow_clicked()
     else {
         m_pColorWidget->hide();
     }
-
+    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setDefaultValue();
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
 }
 

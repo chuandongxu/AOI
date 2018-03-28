@@ -33,34 +33,32 @@ InspVoidWidget::InspVoidWidget(InspWindowWidget *parent)
     m_pComboBoxInspMode = std::make_unique<QComboBox>(this);
     m_pComboBoxInspMode->addItem("Ratio Mode");
     m_pComboBoxInspMode->addItem("Area Modes");
-    ui.tableWidget->setCellWidget ( INSP_MODE, DATA_COLUMN, m_pComboBoxInspMode.get() );
-    connect( m_pComboBoxInspMode.get(), SIGNAL(currentIndexChanged(int)), SLOT(on_testModeChanged(int)));
+    ui.tableWidget->setCellWidget(INSP_MODE, DATA_COLUMN, m_pComboBoxInspMode.get());
+    connect(m_pComboBoxInspMode.get(), SIGNAL(currentIndexChanged(int)), SLOT(on_testModeChanged(int)));
 
-    m_pEditMaxAreaRatio = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditMaxAreaRatio->setValidator(new QDoubleValidator( 1, 100, 2, m_pEditMaxAreaRatio.get() ) );    
-    ui.tableWidget->setCellWidget(MAX_AREA_RATIO, DATA_COLUMN, m_pEditMaxAreaRatio.get() );
+    m_pEditMaxAreaRatio = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditMaxAreaRatio->setValidator(new QDoubleValidator(1, 100, 2, m_pEditMaxAreaRatio.get()));
+    ui.tableWidget->setCellWidget(MAX_AREA_RATIO, DATA_COLUMN, m_pEditMaxAreaRatio.get());
 
-    m_pEditMinAreaRatio = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditMinAreaRatio->setValidator(new QDoubleValidator( 0, 99, 2, m_pEditMinAreaRatio.get() ) );    
-    ui.tableWidget->setCellWidget(MIN_AREA_RATIO, DATA_COLUMN, m_pEditMinAreaRatio.get() );
+    m_pEditMinAreaRatio = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditMinAreaRatio->setValidator(new QDoubleValidator(0, 99, 2, m_pEditMinAreaRatio.get()));
+    ui.tableWidget->setCellWidget(MIN_AREA_RATIO, DATA_COLUMN, m_pEditMinAreaRatio.get());
 
-    m_pEditMaxHoleCount = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditMaxHoleCount->setValidator(new QIntValidator( 1, 1000, m_pEditMaxHoleCount.get() ) );    
-    ui.tableWidget->setCellWidget(MAX_HOLE_COUNT, DATA_COLUMN, m_pEditMaxHoleCount.get() );
+    m_pEditMaxHoleCount = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditMaxHoleCount->setValidator(new QIntValidator(1, 1000, m_pEditMaxHoleCount.get()));
+    ui.tableWidget->setCellWidget(MAX_HOLE_COUNT, DATA_COLUMN, m_pEditMaxHoleCount.get());
 
-    m_pEditMinHoleCount = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditMinHoleCount->setValidator(new QIntValidator( m_pEditMinHoleCount.get() ) );    
-    ui.tableWidget->setCellWidget(MIN_HOLE_COUNT, DATA_COLUMN, m_pEditMinHoleCount.get() );
+    m_pEditMinHoleCount = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditMinHoleCount->setValidator(new QIntValidator(m_pEditMinHoleCount.get()));
+    ui.tableWidget->setCellWidget(MIN_HOLE_COUNT, DATA_COLUMN, m_pEditMinHoleCount.get());
 
-    m_pEditMaxHoleArea = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditMaxHoleArea->setValidator(new QDoubleValidator( m_pEditMaxHoleArea.get() ) );    
-    ui.tableWidget->setCellWidget(MAX_HOLE_AREA, DATA_COLUMN, m_pEditMaxHoleArea.get() );
+    m_pEditMaxHoleArea = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditMaxHoleArea->setValidator(new QDoubleValidator(m_pEditMaxHoleArea.get()));
+    ui.tableWidget->setCellWidget(MAX_HOLE_AREA, DATA_COLUMN, m_pEditMaxHoleArea.get());
 
-    m_pEditMinHoleArea = std::make_unique<QLineEdit>( ui.tableWidget );
-    m_pEditMinHoleArea->setValidator(new QDoubleValidator( m_pEditMinHoleArea.get() ) );    
-    ui.tableWidget->setCellWidget(MIN_HOLE_AREA, DATA_COLUMN, m_pEditMinHoleArea.get() );
-
-    setDefaultValue();
+    m_pEditMinHoleArea = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditMinHoleArea->setValidator(new QDoubleValidator(m_pEditMinHoleArea.get()));
+    ui.tableWidget->setCellWidget(MIN_HOLE_AREA, DATA_COLUMN, m_pEditMinHoleArea.get());
 }
 
 InspVoidWidget::~InspVoidWidget()

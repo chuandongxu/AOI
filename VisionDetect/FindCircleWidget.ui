@@ -114,7 +114,7 @@
    </column>
    <item row="0" column="0">
     <property name="text">
-     <string>园属性</string>
+     <string>圆属性</string>
     </property>
    </item>
    <item row="1" column="0">

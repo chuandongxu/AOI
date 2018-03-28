@@ -121,7 +121,7 @@ void AlignmentWidget::tryInsp()
 		stCmd.rectSrchWindow.x -= stCmd.rectSrchWindow.width * 0.1;
 		stCmd.rectSrchWindow.y -= stCmd.rectSrchWindow.height * 0.1;
 		stCmd.rectSrchWindow.width *= 1.2;
-		stCmd.rectSrchWindow.height *= 1.2;		
+		stCmd.rectSrchWindow.height *= 1.2;
 
 		Vision::PR_MatchTmpl(&stCmd, &stRpy);
 		QString strMsg;
