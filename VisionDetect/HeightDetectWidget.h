@@ -11,6 +11,8 @@
 #include <QStandardItemModel>
 #include <memory>
 
+#include "opencv/cv.h"
+
 class HeightDetectWidget : public EditInspWindowBaseWidget
 {
 	Q_OBJECT
@@ -25,6 +27,7 @@ public:
 
 private:
 	void getDeviceBaseWindows(Engine::WindowVector& vecCurrentDeviceWindows);
+	cv::Rect getWindowRect(int nWinID);
 
 private:
 	Ui::HeightDetectWidget ui;

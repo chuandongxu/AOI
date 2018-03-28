@@ -55,8 +55,46 @@ void HeightDetectWidget::setDefaultValue()
 
 void HeightDetectWidget::tryInsp()
 {
+	if (!m_pCheckBoxMeasure->isChecked())
+	{
+		QString strMsg;
+		strMsg.sprintf("Select Measure Window to measure height!");
+		QMessageBox::information(this, "Measure Height", strMsg);
+		return;
+	}
+
 	auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+
+	Vision::PR_CALC_3D_HEIGHT_DIFF_CMD stCmd;
+	Vision::PR_CALC_3D_HEIGHT_DIFF_RPY stRpy;
+
+	stCmd.fEffectHRatioStart = m_pEditMinRange->text().toFloat();
+	stCmd.fEffectHRatioEnd = m_pEditMaxRange->text().toFloat();
+
+	auto pUI = getModule<IVisionUI>(UI_MODEL);
+	stCmd.matHeight = pUI->getHeightData();
+	cv::Rect rectROI = pUI->getSelectedROI();
+	if (rectROI.width <= 0 || rectROI.height <= 0) {
+		QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI to do inspection."));
+		return;
+	}
+	stCmd.rectROI = rectROI;
+
+	for (int i = 0; i < m_pStdItmModelRel->rowCount(); i++)
+	{
+		QStandardItem* pItem = m_pStdItmModelRel->item(i);
+		if (pItem && pItem->checkState() == Qt::Checked)
+		{
+			int nWinID = pItem->text().toInt();	
+			stCmd.vecRectBases.push_back(getWindowRect(nWinID));
+		}
+	}
+
+	Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
+	QString strMsg;
+	strMsg.sprintf("Inspect Status %d, height(%f)", Vision::ToInt32(stRpy.enStatus), stRpy.fHeightDiff);
+	QMessageBox::information(this, "Height Detect", strMsg);
 }
 
 void HeightDetectWidget::confirmWindow(OPERATION enOperation)
@@ -223,4 +261,20 @@ void HeightDetectWidget::getDeviceBaseWindows(Engine::WindowVector& vecCurrentDe
 			vecCurrentDeviceWindows.push_back(win);
 		}
 	}
+}
+
+cv::Rect HeightDetectWidget::getWindowRect(int nWinID)
+{
+	Engine::WindowVector vecCurrentDeviceWindows;
+	getDeviceBaseWindows(vecCurrentDeviceWindows);
+
+	for each (Engine::Window win in vecCurrentDeviceWindows)
+	{
+		if (win.Id == nWinID)
+		{
+			return cv::Rect(win.x, win.y, win.width, win.height);
+		}
+	}
+
+	return cv::Rect();
 }

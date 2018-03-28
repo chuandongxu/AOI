@@ -56,6 +56,7 @@ public:
 	bool endUpCapture();
 
 	void setHeightData(cv::Mat& matHeight);
+	cv::Mat getHeightData();
 
 private slots:
 	void openFile();
