@@ -64,6 +64,7 @@ public:
 
     std::string getJsonFormattedParams() const;
     void setJsonFormattedParams(const std::string &jsonParams);
+
 private:
 	void initUI();
 	void initData();
@@ -75,8 +76,6 @@ private:
 
 	void setupDateColor(std::shared_ptr<QCustomPlot> customPlot, int nColorIndex);
 	void generateColorPlot();
-    
-private:
 	void clearGrayData();
 	int getGrayValue(int nGrayLevel);	
 	int incrementGrayValue(int nGrayLevel);
@@ -88,6 +87,11 @@ private:
 	void displaySourceImg();
 	void displayGrayImg();
 	void displayColorImg();
+
+	cv::Mat generateColorRange(int nRn, int nTn, cv::Mat& matImage);
+	cv::Mat generateColorTrig(int nWidth, int nHeight, int nMinR, int nMaxR, int nMinG, int nMaxG, int nMinB, int nMaxB);
+	bool calcTwoLineIntersect(cv::Point2f pt1, cv::Point2f pt2, cv::Point2f pt3, cv::Point2f pt4, cv::Point2f& ptIntersect);
+	bool calcTwoLineIntersect(double k1, double b1, double k2, double b2, cv::Point2f& ptIntersect);
 
 private slots:
 	void onGrayModeIndexChanged(int iIndex);
@@ -107,11 +111,7 @@ private slots:
 	void onColorTnSliderChanged(int i);
 
     void onColorWidgetState(const QVariantList &data);
-private:
-	cv::Mat generateColorRange(int nRn, int nTn, cv::Mat& matImage);
-	cv::Mat generateColorTrig(int nWidth, int nHeight, int nMinR, int nMaxR, int nMinG, int nMaxG, int nMinB, int nMaxB);
-	bool calcTwoLineIntersect(cv::Point2f pt1, cv::Point2f pt2, cv::Point2f pt3, cv::Point2f pt4, cv::Point2f& ptIntersect);
-	bool calcTwoLineIntersect(double k1, double b1, double k2, double b2, cv::Point2f& ptIntersect);
+
 
 private:
 	Ui::QColorWeight ui;

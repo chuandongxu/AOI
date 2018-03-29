@@ -96,7 +96,7 @@ void InspVoidWidget::setDefaultValue()
     m_pEditMaxHoleArea->setText("5000");
     m_pEditMinHoleArea->setText("500");
 
-    on_inspModeChanged ( m_pComboBoxInspMode->currentIndex() );
+    on_inspModeChanged(m_pComboBoxInspMode->currentIndex());
 }
 
 void InspVoidWidget::setCurrentWindow(const Engine::Window &window)
@@ -122,7 +122,7 @@ void InspVoidWidget::setCurrentWindow(const Engine::Window &window)
         m_pEditMinHoleArea->setText  ( QString::number(jsonValue["BlobMode"]["MinHoleArea"].asFloat()));
     }
 
-    on_inspModeChanged ( m_pComboBoxInspMode->currentIndex() );
+    on_inspModeChanged(m_pComboBoxInspMode->currentIndex());
 }
 
 void InspVoidWidget::tryInsp()
