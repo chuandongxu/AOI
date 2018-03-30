@@ -1,12 +1,11 @@
 #include "InspVoidWidget.h"
-#include <QStackedWidget>
-#include <QLineEdit>
 #include <QMessageBox>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "../Common/SystemData.h"
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
-#include "json.h"
 #include "../include/IVisionUI.h"
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
@@ -34,7 +33,7 @@ InspVoidWidget::InspVoidWidget(InspWindowWidget *parent)
     m_pComboBoxInspMode->addItem("Ratio Mode");
     m_pComboBoxInspMode->addItem("Area Modes");
     ui.tableWidget->setCellWidget(INSP_MODE, DATA_COLUMN, m_pComboBoxInspMode.get());
-    connect(m_pComboBoxInspMode.get(), SIGNAL(currentIndexChanged(int)), SLOT(on_testModeChanged(int)));
+    connect(m_pComboBoxInspMode.get(), SIGNAL(currentIndexChanged(int)), this, SLOT(on_inspModeChanged(int)));
 
     m_pEditMaxAreaRatio = std::make_unique<QLineEdit>(ui.tableWidget);
     m_pEditMaxAreaRatio->setValidator(new QDoubleValidator(1, 100, 2, m_pEditMaxAreaRatio.get()));
@@ -67,7 +66,7 @@ InspVoidWidget::~InspVoidWidget()
 
 void InspVoidWidget::on_inspModeChanged(int index)
 {
-    if ( static_cast<Vision::PR_INSP_HOLE_MODE> ( index ) == Vision::PR_INSP_HOLE_MODE::RATIO) {
+    if (static_cast<Vision::PR_INSP_HOLE_MODE> (index) == Vision::PR_INSP_HOLE_MODE::RATIO) {
         ui.tableWidget->showRow(MAX_AREA_RATIO);
         ui.tableWidget->showRow(MIN_AREA_RATIO);
         ui.tableWidget->hideRow(MAX_HOLE_COUNT);
@@ -75,7 +74,8 @@ void InspVoidWidget::on_inspModeChanged(int index)
         ui.tableWidget->hideRow(MAX_HOLE_AREA);
         ui.tableWidget->hideRow(MAX_HOLE_COUNT);
         ui.tableWidget->hideRow(MIN_HOLE_AREA);
-    }else if ( static_cast<Vision::PR_INSP_HOLE_MODE> ( index ) == Vision::PR_INSP_HOLE_MODE::BLOB) {
+    }
+    else if (static_cast<Vision::PR_INSP_HOLE_MODE> (index) == Vision::PR_INSP_HOLE_MODE::BLOB) {
         ui.tableWidget->hideRow(MAX_AREA_RATIO);
         ui.tableWidget->hideRow(MIN_AREA_RATIO);
         ui.tableWidget->showRow(MAX_HOLE_COUNT);
@@ -106,20 +106,26 @@ void InspVoidWidget::setCurrentWindow(const Engine::Window &window)
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-    Json::Value jsonValue;
-    Json::Reader jsonReader;
-    jsonReader.parse ( window.inspParams, jsonValue, false );
+    QJsonParseError json_error;
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+	if (json_error.error != QJsonParseError::NoError) {
+        System->setTrackInfo(QString("Invalid inspection parameter encounted."));
+		return;
+    }
+    QJsonObject jsonValue = parse_doucment.object();
 
-    m_pComboBoxInspMode->setCurrentIndex(jsonValue["InspMode"].asInt());    
+    m_pComboBoxInspMode->setCurrentIndex(jsonValue["InspMode"].toInt());
     
-    if ( Vision::PR_INSP_HOLE_MODE::RATIO == static_cast<Vision::PR_INSP_HOLE_MODE>( jsonValue["InspMode"].asInt() ) ) {
-        m_pEditMaxAreaRatio->setText(QString::number(jsonValue["RatioMode"]["MaxAreaRatio"].asFloat()));
-        m_pEditMinAreaRatio->setText(QString::number(jsonValue["RatioMode"]["MinAreaRatio"].asFloat()));
+    if ( Vision::PR_INSP_HOLE_MODE::RATIO == static_cast<Vision::PR_INSP_HOLE_MODE>( jsonValue["InspMode"].toInt() ) ) {
+        QJsonObject jsonRatioMode = jsonValue["RatioMode"].toObject();
+        m_pEditMaxAreaRatio->setText(QString::number(jsonRatioMode["MaxAreaRatio"].toDouble()));
+        m_pEditMinAreaRatio->setText(QString::number(jsonRatioMode["MinAreaRatio"].toDouble()));
     }else {
-        m_pEditMaxHoleCount->setText ( QString::number(jsonValue["BlobMode"]["MaxHoleCount"].asInt()));
-        m_pEditMinHoleCount->setText ( QString::number(jsonValue["BlobMode"]["MinHoleCount"].asInt()));
-        m_pEditMaxHoleArea->setText  ( QString::number(jsonValue["BlobMode"]["MaxHoleArea"].asFloat()));
-        m_pEditMinHoleArea->setText  ( QString::number(jsonValue["BlobMode"]["MinHoleArea"].asFloat()));
+        QJsonObject jsonBlobMode = jsonValue["BlobMode"].toObject();
+        m_pEditMaxHoleCount->setText(QString::number(jsonBlobMode["MaxHoleCount"].toInt()));
+        m_pEditMinHoleCount->setText(QString::number(jsonBlobMode["MinHoleCount"].toInt()));
+        m_pEditMaxHoleArea->setText(QString::number(jsonBlobMode["MaxHoleArea"].toDouble()));
+        m_pEditMinHoleArea->setText(QString::number(jsonBlobMode["MinHoleArea"].toDouble()));
     }
 
     on_inspModeChanged(m_pComboBoxInspMode->currentIndex());
@@ -146,8 +152,13 @@ void InspVoidWidget::tryInsp()
     }
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     stCmd.matInputImg = pUI->getImage();
+    cv::cvtColor(stCmd.matInputImg, stCmd.matInputImg, CV_BGR2GRAY);
     stCmd.rectROI = pUI->getSelectedROI();
-    if ( stCmd.rectROI.width <= 0 || stCmd.rectROI.height <= 0 ) {
+    cv::Mat matProcessedROI = m_pParent->getColorWidget()->getProcessedImage();
+    cv::Mat matOrigianlROI(stCmd.matInputImg, stCmd.rectROI);
+    matProcessedROI.copyTo(matOrigianlROI);
+
+    if (stCmd.rectROI.width <= 0 || stCmd.rectROI.height <= 0) {
         QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI to do inspection."));
         return;
     }
@@ -156,7 +167,7 @@ void InspVoidWidget::tryInsp()
     stCmd.stGrayScaleRange.nEnd = 255;
     Vision::PR_InspHole ( &stCmd, &stRpy );
     QString strMsg;
-    strMsg.sprintf("Inspect Status %d", Vision::ToInt32 ( stRpy.enStatus ) );
+    strMsg.sprintf("Inspect Status %d", Vision::ToInt32(stRpy.enStatus));
     if ( Vision::PR_INSP_HOLE_MODE::RATIO == stCmd.enInspMode )
         strMsg += QString(", ratio mode result: bright area ratio %1").arg(stRpy.stRatioModeResult.fRatio);
     else
@@ -172,17 +183,26 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-    Json::Value jsonValue;
+    QJsonObject jsonValue;
+
     jsonValue["InspMode"] = pComboBoxInspMode->currentIndex();
     if ( Vision::PR_INSP_HOLE_MODE::RATIO == static_cast<Vision::PR_INSP_HOLE_MODE>( pComboBoxInspMode->currentIndex() ) ) {
-        jsonValue["RatioMode"]["MaxAreaRatio"] = m_pEditMaxAreaRatio->text().toFloat();
-        jsonValue["RatioMode"]["MinAreaRatio"] = m_pEditMinAreaRatio->text().toFloat();
+        QJsonObject jsonRatioMode;
+        jsonRatioMode["MaxAreaRatio"] = m_pEditMaxAreaRatio->text().toFloat();
+        jsonRatioMode["MinAreaRatio"] = m_pEditMinAreaRatio->text().toFloat();
+        jsonValue["RatioMode"] = jsonRatioMode;
     }else {
-        jsonValue["BlobMode"]["MaxHoleCount"] = m_pEditMaxHoleCount->text().toInt();
-        jsonValue["BlobMode"]["MinHoleCount"] = m_pEditMinHoleCount->text().toInt();
-        jsonValue["BlobMode"]["MaxHoleArea"] = m_pEditMaxHoleArea->text().toFloat();
-        jsonValue["BlobMode"]["MinHoleArea"] = m_pEditMinHoleArea->text().toFloat();
+        QJsonObject jsonBlobMode;
+        jsonBlobMode["MaxHoleCount"] = m_pEditMaxHoleCount->text().toInt();
+        jsonBlobMode["MinHoleCount"] = m_pEditMinHoleCount->text().toInt();
+        jsonBlobMode["MaxHoleArea"] = m_pEditMaxHoleArea->text().toFloat();
+        jsonBlobMode["MinHoleArea"] = m_pEditMinHoleArea->text().toFloat();
+        jsonValue["BlobMode"] = jsonBlobMode;
     }
+    QJsonDocument document;
+	document.setObject(jsonValue);
+	QByteArray byteArray = document.toJson(QJsonDocument::Compact);
+
     auto pUI = getModule<IVisionUI>(UI_MODEL);  
     auto rectROI = pUI->getSelectedROI();
     if ( rectROI.width <= 0 || rectROI.height <= 0 ) {
@@ -192,7 +212,7 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
     Engine::Window window;
     window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = Engine::Window::Usage::INSP_HOLE;
-    window.inspParams = jsonValue.toStyledString();
+    window.inspParams = byteArray;
     window.x = ( rectROI.x + rectROI.width  / 2.f ) * dResolutionX;
     window.y = ( rectROI.y + rectROI.height / 2.f ) * dResolutionY;
     window.width = rectROI.width * dResolutionX;
