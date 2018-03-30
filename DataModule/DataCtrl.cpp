@@ -9,10 +9,10 @@
 #include "QProfileObj.h"
 #include "../Common/SystemData.h"
 
-#include <opencv2/highgui.hpp>
-#include "opencv2/video.hpp"
-
+#include "VisionAPI.h"
 #include "DataStoreAPI.h"
+#include "opencv2/highgui.hpp"
+#include "opencv2/video.hpp"
 
 #include "dog_api_cpp.h"
 #include "dog_vcode.h"
@@ -21,12 +21,14 @@
 #include "../include/IVisionUI.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
+#include "../Common/CommonFunc.h"
 
 #define DEFAULT_DATABASE_TMP_NAME "DeviceTmpDataBase.aoi"
 #define DEFAULT_DATABASE_OBJ_NAME "DeviceDataBase.aoi"
 #define DEFAULT_DATABASE_USER "XSG"
 
 using namespace NFG::AOI;
+using namespace AOI;
 
 //template<int id>
 //class CCompFindDevice {
@@ -293,6 +295,7 @@ bool DataCtrl::createProject(QString& szFilePath)
         System->setTrackInfo(QString("Error at CreateProject, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
         return false;
     }
+    Vision::PR_FreeAllRecord();
     System->setTrackInfo(QString("Success to create project ") + szFilePath );
     return true;
 }
@@ -309,7 +312,15 @@ bool DataCtrl::openProject(QString& szFilePath)
         System->setTrackInfo(QString("Error at OpenProject, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
         return false;
     }
-    System->setTrackInfo(QString("Success to open project ") + szFilePath );
+
+    Vision::PR_FreeAllRecord();
+    Engine::RecordIdDataMap mapRecordIdData;
+    Engine::GetRecords(mapRecordIdData);
+    for (const auto &pairIdData : mapRecordIdData)
+        WriteBinaryFile(FormatRecordName(pairIdData.first), pairIdData.second);
+
+    Vision::PR_Init();
+    System->setTrackInfo(QString("Success to open project ") + szFilePath);
     return true;
 }
 
@@ -366,10 +377,10 @@ bool DataCtrl::saveDataBase(QString& szFilePath, DataTypeEnum emDataType)
 	for (int i = 0; i < m_boardObj->getBoardAlignNum(); i++)
 	{
 		cv::RotatedRect rect = m_boardObj->getBoardAlign(i);
-		int nRecordID = m_boardObj->getRecordID(i);
+		int nRecordId = m_boardObj->getRecordID(i);
 
 		Engine::Alignment alignment;		
-		alignment.recordID = nRecordID;
+		alignment.recordId = nRecordId;
 		alignment.tmplPosX = rect.center.x;
 		alignment.tmplPosY = rect.center.y;
 		alignment.tmplWidth = rect.size.width;
@@ -426,7 +437,7 @@ bool DataCtrl::saveDataBase(QString& szFilePath, DataTypeEnum emDataType)
 				window.width = pObj->getLoc().size.width;
 				window.height = pObj->getLoc().size.height;
 				window.angle = pObj->getLoc().angle;
-				window.recordID = pObj->getRecordID();
+				window.recordId = pObj->getRecordID();
 
 				window.usage = Engine::Window::Usage::ALIGNMENT;
 				result = Engine::CreateWindow(window);
@@ -611,9 +622,9 @@ bool DataCtrl::loadDataBase(QString& szFilePath, DataTypeEnum emDataType)
 			rect.size.height = alignment.tmplHeight;
 			rect.angle = 0;
 
-			int recordID = alignment.recordID;
+			int recordId = alignment.recordId;
 
-			m_boardObj->addBoardAlign(rect, recordID);
+			m_boardObj->addBoardAlign(rect, recordId);
 		}
 
 		Engine::DeviceVector vecDevice;
@@ -660,7 +671,7 @@ bool DataCtrl::loadDataBase(QString& szFilePath, DataTypeEnum emDataType)
 							rtLoc.size.height = vecWindow[0].height;
 							rtLoc.angle = vecWindow[0].angle;
 							pObj->setLoc(rtLoc);
-							pObj->setRecordID(vecWindow[0].recordID);
+							pObj->setRecordID(vecWindow[0].recordId);
 						}
 					}
 				}

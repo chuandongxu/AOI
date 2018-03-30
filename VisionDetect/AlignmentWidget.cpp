@@ -9,6 +9,7 @@
 #include "../include/IVisionUI.h"
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
+#include "../Common/CommonFunc.h"
 #include "../DataModule/QDetectObj.h"
 #include "InspWindowWidget.h"
 
@@ -162,7 +163,12 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation)
 	window.height = rectROI.height * dResolutionY;
 	window.deviceId = pUI->getSelectedDevice().getId();
 	window.angle = 0;
-	window.recordID = m_pEditRecordID->text().toInt();
+	window.recordId = m_pEditRecordID->text().toInt();
+
+    if (ReadBinaryFile(FormatRecordName(window.recordId), window.recordData) != 0) {
+        QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Failed to read record data."));
+	    return;
+    }
 
 	int result = Engine::OK;
 	if (OPERATION::ADD == enOperation) {
@@ -230,5 +236,5 @@ void AlignmentWidget::setCurrentWindow(const Engine::Window &window)
 		}
 	}
 
-	m_pEditRecordID->setText(QString::number(window.recordID));
+	m_pEditRecordID->setText(QString::number(window.recordId));
 }

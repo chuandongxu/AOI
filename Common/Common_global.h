@@ -1,7 +1,6 @@
 ﻿#ifndef _COMMON_GLOBAL_H_
 #define _COMMON_GLOBAL_H_
 
-
 #include <QtCore/qglobal.h>
 
 #if defined(COMMON_LIBRARY)

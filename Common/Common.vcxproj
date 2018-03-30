@@ -267,6 +267,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="authright.cpp" />
+    <ClCompile Include="CommonFunc.cpp" />
     <ClCompile Include="CVSFile.cpp" />
     <ClCompile Include="eos.cpp" />
     <ClCompile Include="errorprinter.cpp" />
@@ -456,6 +457,7 @@
     </CustomBuild>
     <ClInclude Include="..\include\constants.h" />
     <ClInclude Include="..\include\workflowDefine.h" />
+    <ClInclude Include="CommonFunc.h" />
     <ClInclude Include="CVSFile.h" />
     <ClInclude Include="dog_vcode.h" />
     <ClInclude Include="encrypted_string1.h" />

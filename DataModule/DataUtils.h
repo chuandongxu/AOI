@@ -96,15 +96,16 @@ class DataUtils
 public:
     template<typename _Tp>
     static inline std::vector<std::vector<_Tp>> matToVector(const cv::Mat &matInputImg) {
-        std::vector<std::vector<_Tp>> vecVecArray ( matInputImg.rows, std::vector<_Tp>(matInputImg.cols, 0 ) );
-        if ( matInputImg.isContinuous () ) {
-            for ( int row = 0; row < matInputImg.rows; ++ row ) {
+        std::vector<std::vector<_Tp>> vecVecArray(matInputImg.rows, std::vector<_Tp>(matInputImg.cols, 0));
+        if (matInputImg.isContinuous()) {
+            for (int row = 0; row < matInputImg.rows; ++ row) {
                 int nRowStart = row * matInputImg.cols;
-                vecVecArray[row].assign ( (_Tp *)matInputImg.datastart + nRowStart, (_Tp *)matInputImg.datastart + nRowStart + matInputImg.cols );
+                vecVecArray[row].assign((_Tp *)matInputImg.datastart + nRowStart, (_Tp *)matInputImg.datastart + nRowStart + matInputImg.cols);
             }
-        }else {
-            for ( int row = 0; row < matInputImg.rows; ++ row ) {
-                vecVecArray[row].assign ( (_Tp*)matInputImg.ptr<uchar> ( row ), (_Tp*)matInputImg.ptr<uchar> ( row ) + matInputImg.cols );
+        }
+        else {
+            for (int row = 0; row < matInputImg.rows; ++ row) {
+                vecVecArray[row].assign((_Tp*)matInputImg.ptr<uchar>(row), (_Tp*)matInputImg.ptr<uchar>(row) + matInputImg.cols);
             }
         }
         return vecVecArray;
@@ -155,7 +156,6 @@ public:
         float       &fRotationInRadian,
         float       &Tx,
         float       &Ty,
-        float       &fScale
-        );
+        float       &fScale);
 };
 

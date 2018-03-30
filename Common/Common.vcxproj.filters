@@ -165,6 +165,9 @@
     <ClCompile Include="errorprinter.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="CommonFunc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common_global.h">
@@ -231,6 +234,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\workflowDefine.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonFunc.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
