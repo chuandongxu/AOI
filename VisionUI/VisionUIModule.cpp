@@ -3,17 +3,14 @@
 
 #include "VisionView.h"
 
-QVisionUIModule::QVisionUIModule(int id,const QString &name)
-	:QModuleBase(id,name)
+QVisionUIModule::QVisionUIModule(int id, const QString &name)
+	:QModuleBase(id, name)
 {
-	int n = 0;
-
 	m_pVisionView = new VisionView();
 }
 
 QVisionUIModule::~QVisionUIModule()
 {
-
 }
 
 void QVisionUIModule::init()
@@ -23,7 +20,7 @@ void QVisionUIModule::init()
 
 void QVisionUIModule::Show()
 {
-	QAppMainWidget * p = (QAppMainWidget*)m_mainWidget;
+	QAppMainWidget *p = (QAppMainWidget*)m_mainWidget;
 	if(p)
 	{
         p->setWindowIcon(QIcon(":/VisionUI/AppIcon.png"));
@@ -33,8 +30,8 @@ void QVisionUIModule::Show()
 
 void QVisionUIModule::unInit()
 {
-	QAppMainWidget * p = (QAppMainWidget*)m_mainWidget;
-	if(p)delete p;
+	QAppMainWidget *p = (QAppMainWidget*)m_mainWidget;
+	if(p) delete p;
 }
 
 void QVisionUIModule::setStateWidget(QWidget * stateWidget)

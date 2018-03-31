@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	}
 
 	QThreadPool * pIns = QThreadPool::globalInstance();
-	if(pIns)pIns->setMaxThreadCount(5);
+	if(pIns) pIns->setMaxThreadCount(5);
 
 	//QString path = QApplication::applicationDirPath();
 	//QDateTime dtm =  QDateTime::currentDateTime();

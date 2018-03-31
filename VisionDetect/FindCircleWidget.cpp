@@ -1,6 +1,6 @@
 #include <QMessageBox>
-#include <qjsonobject.h>
-#include <qjsondocument.h>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "FindCircleWidget.h"
 #include "../Common/SystemData.h"

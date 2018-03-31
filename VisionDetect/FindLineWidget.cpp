@@ -1,10 +1,11 @@
 #include <QMessageBox>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "FindLineWidget.h"
 #include "../Common/SystemData.h"
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
-#include "json.h"
 #include "../include/IVisionUI.h"
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
@@ -165,7 +166,7 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-    Json::Value jsonValue;
+    QJsonObject jsonValue;
     
     jsonValue["Algorithm"] = Vision::ToInt32(Vision::PR_FIND_LINE_ALGORITHM::CALIPER);
     jsonValue["FindPair"] = m_pCheckBoxFindPair->isChecked();
@@ -184,6 +185,10 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
     jsonValue["ExpectedAngle"] = m_pEditExpectedAngle->text().toFloat();
     jsonValue["AngleDiffTolerance"] = m_pEditAngleDiffTolerance->text().toFloat();
 
+    QJsonDocument document;
+	document.setObject(jsonValue);
+	QByteArray byteArray = document.toJson(QJsonDocument::Compact);
+
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     auto rectROI = pUI->getSelectedROI();
     if ( rectROI.width <= 0 || rectROI.height <= 0 ) {
@@ -193,7 +198,7 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
     Engine::Window window;
     window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = Engine::Window::Usage::FIND_LINE;
-    window.inspParams = jsonValue.toStyledString();
+    window.inspParams = byteArray;
     window.x = (rectROI.x + rectROI.width / 2.f) * dResolutionX;
     window.y = (rectROI.y + rectROI.height / 2.f) * dResolutionY;
     window.width = rectROI.width  * dResolutionX;
@@ -233,7 +238,7 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
 		    System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
 		    return;
 	    }else {
-            System->setTrackInfo(QString("Success to update window: %1.").arg ( window.name.c_str() ) );
+            System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
         }
     }
 
@@ -247,23 +252,28 @@ void FindLineWidget::setCurrentWindow(const Engine::Window &window)
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-    Json::Value jsonValue;
-    Json::Reader jsonReader;
-    jsonReader.parse(window.inspParams, jsonValue, false);
-    
-    m_pCheckBoxFindPair->setChecked(jsonValue["FindPair"].asBool());
-    m_pComboBoxFindLineDirection->setCurrentIndex(jsonValue["DetectDir"].asInt());
-    m_pEditCaliperCount->setText(QString::number(jsonValue["CaliperCount"].asInt()));
-    m_pEditCaliperWidth->setText(QString::number(jsonValue["CaliperWidth"].asFloat()));
-    m_pEditEdgeThreshold->setText(QString::number(jsonValue["EdgeThreshold"].asInt()));
-    m_pComboBoxEdgeSelectMethod->setCurrentIndex(jsonValue["SelectEdge"].asInt());
-    m_pEditRmStrayPointRatio->setText(QString::number(jsonValue["RmStrayPointRatio"].asFloat()));
-    m_pEditDiffFilterHalfW->setText(QString::number(jsonValue["DiffFilterHalfW"].asInt()));
-    m_pEditDiffFilterSigma->setText(QString::number(jsonValue["DiffFilterSigma"].asFloat()));
-    m_pCheckLinerity->setChecked(jsonValue["CheckLinerity"].asBool());
-    m_pEditPointMaxOffset->setText(QString::number(jsonValue["PointMaxOffset"].asFloat()));
-    m_pEditMinLinearity->setText(QString::number(jsonValue["MinLinearity"].asFloat() * ONE_HUNDRED_PERCENT));
-    m_pEditCheckAngle->setChecked(jsonValue["CheckAngle"].asBool());
-    m_pEditExpectedAngle->setText(QString::number(jsonValue["ExpectedAngle"].asFloat()));
-    m_pEditAngleDiffTolerance->setText(QString::number(jsonValue["AngleDiffTolerance"].asFloat()));
+    QJsonParseError json_error;
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+	if (json_error.error != QJsonParseError::NoError) {
+        System->setTrackInfo(QString("Invalid inspection parameter encounted."));
+		return;
+    }
+
+    QJsonObject jsonValue = parse_doucment.object();
+    QString strCaliperCount("abcd");
+    m_pCheckBoxFindPair->setChecked(jsonValue["FindPair"].toBool());
+    m_pComboBoxFindLineDirection->setCurrentIndex(jsonValue["DetectDir"].toInt());
+    m_pEditCaliperCount->setText(QString::number(jsonValue["CaliperCount"].toInt()));
+    m_pEditCaliperWidth->setText(QString::number(jsonValue["CaliperWidth"].toDouble()));
+    m_pEditEdgeThreshold->setText(QString::number(jsonValue["EdgeThreshold"].toInt()));
+    m_pComboBoxEdgeSelectMethod->setCurrentIndex(jsonValue["SelectEdge"].toInt());
+    m_pEditRmStrayPointRatio->setText(QString::number(jsonValue["RmStrayPointRatio"].toDouble()));
+    m_pEditDiffFilterHalfW->setText(QString::number(jsonValue["DiffFilterHalfW"].toInt()));
+    m_pEditDiffFilterSigma->setText(QString::number(jsonValue["DiffFilterSigma"].toDouble()));
+    m_pCheckLinerity->setChecked(jsonValue["CheckLinerity"].toBool());
+    m_pEditPointMaxOffset->setText(QString::number(jsonValue["PointMaxOffset"].toDouble()));
+    m_pEditMinLinearity->setText(QString::number(jsonValue["MinLinearity"].toDouble() * ONE_HUNDRED_PERCENT));
+    m_pEditCheckAngle->setChecked(jsonValue["CheckAngle"].toBool());
+    m_pEditExpectedAngle->setText(QString::number(jsonValue["ExpectedAngle"].toDouble()));
+    m_pEditAngleDiffTolerance->setText(QString::number(jsonValue["AngleDiffTolerance"].toDouble()));
 }

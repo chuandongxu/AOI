@@ -62,14 +62,13 @@ DataUtils::~DataUtils()
     return fResult;
 }
 
-/*static*/ std::vector<std::string> DataUtils::splitString ( const std::string &s, char delim )
-{
+/*static*/ std::vector<std::string> DataUtils::splitString(const std::string &s, char delim) {
     std::vector<std::string> elems;
-    std::stringstream ss ( s );
+    std::stringstream ss(s);
     std::string strItem;
-    while( std::getline ( ss, strItem, delim ) ) {
-        elems.push_back ( strItem );
-    }
+    while (std::getline(ss, strItem, delim))
+        elems.push_back(strItem);
+
     return elems;
 }
 

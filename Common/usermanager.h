@@ -5,8 +5,6 @@
 #include "ui_usermanager.h"
 #include <QStandardItemModel>
 
-
-
 class QUserManager : public QDialog
 {
 	Q_OBJECT

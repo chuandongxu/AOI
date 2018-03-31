@@ -2,6 +2,7 @@
 #define DATA_STORE_STRUCT_H
 
 #include "Common/BaseTypes.h"
+#include <map>
 
 namespace NFG
 {
@@ -24,7 +25,7 @@ struct Alignment {
         isFM            (0),
         fmShape         (0),
         isFMDark        (0),
-        recordID        (0),
+        recordId        (0),
         algorithm       (0),
         tmplPosX        (0.f),
         tmplPosY        (0.f),
@@ -37,7 +38,8 @@ struct Alignment {
     BOOL                isFM;
     Int32               fmShape;
     BOOL                isFMDark;
-    Int32               recordID;
+    Int32               recordId;
+    Binary              recordData;
     Int32               algorithm;
     float               tmplPosX;
     float               tmplPosY;
@@ -50,7 +52,13 @@ struct Alignment {
 using AlignmentVector = std::vector<Alignment>;
 
 struct Board {
-    Board() : x(0.f), y(0.f), width(0.f), height(0.f), angle(0.f), isBottom(false) {}
+    Board() : 
+        x           (0.f),
+        y           (0.f),
+        width       (0.f),
+        height      (0.f),
+        angle       (0.f),
+        isBottom    (false) {}
     Int64               Id;
     String              name;
     String              abbr;   // Abbreviation
@@ -119,7 +127,7 @@ struct Window {
         height      (0),
         angle       (0),
         usage       (Usage::UNDEFINED),
-        recordID    (-1),
+        recordId    (0),
         inspParams  (""),
         colorParams (""),
         lightId     (1) {}
@@ -132,7 +140,8 @@ struct Window {
     float               height;
     float               angle;
     Usage               usage;
-    Int32               recordID;
+    Int32               recordId;
+    Binary              recordData;
     String              inspParams;
     String              colorParams;
     Int64               lightId;        //Light Id in database start from 1.
@@ -149,6 +158,8 @@ struct WindowGroup {
     String              name;
     WindowVector        vecWindows;
 };
+
+using RecordIdDataMap = std::map<Int32, Binary>;
 
 }
 }
