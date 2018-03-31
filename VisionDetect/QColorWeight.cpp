@@ -35,7 +35,7 @@ class ColorScene : public QGraphicsScene
 {
 public:
 	explicit ColorScene(QObject *parent = 0);
-	void setColorWeight(QColorWeight* colorWeight){ m_colorWeight = colorWeight; }
+	void setColorWeight(QColorWeight* colorWeight) { m_colorWeight = colorWeight; }
 
 protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -911,7 +911,6 @@ void QColorWeight::displaySourceImg()
 void QColorWeight::displayGrayImg()
 {
 	cv::Mat matGrayImg = m_imageMat.clone();
-
 	cv::Mat maskMat = cv::Mat::zeros(matGrayImg.rows, matGrayImg.cols, CV_8UC1);
 	
 	int nIndex = ui.comboBox_selectMode->currentIndex();
@@ -956,36 +955,25 @@ void QColorWeight::displayGrayImg()
 	}
 	else if (EM_MODE_TWO_THRESHOLD == emMode)
 	{
-		for (int y = 0; y < matGrayImg.rows; y++)
-		{
-			for (int x = 0; x < matGrayImg.cols; x++)
-			{
-				cv::Vec3b& pixel = matGrayImg.at<cv::Vec3b>(y, x);
-				uchar& mask = maskMat.at<uchar>(y, x);
+        Vision::PR_THRESHOLD_CMD stCmd;
+        Vision::PR_THRESHOLD_RPY stRpy;
+        stCmd.matInputImg = _convertToGrayImage();
+        stCmd.bDoubleThreshold = true;
+        stCmd.nThreshold1 = m_nGrayLevelThreshold1;
+        stCmd.nThreshold2 = m_nGrayLevelThreshold2;
+        Vision::PR_Threshold(&stCmd, &stRpy);
+		maskMat = stRpy.matResultImg;
 
-				int nGrayValue = calcGrayValue(cv::Scalar(pixel[0], pixel[1], pixel[2]));
-				if (nGrayValue < m_nGrayLevelThreshold1 || nGrayValue > m_nGrayLevelThreshold2)
-				{
-					pixel[0] = 0;
-					pixel[1] = 0;
-					pixel[2] = 0;
-				}
-				else
-				{
-					pixel[0] = nGrayValue;
-					pixel[1] = nGrayValue;
-					pixel[2] = nGrayValue;
-
-					mask = 1;
-				}
-			}
-		}
+        cv::Mat matMaskReverse = 255 - maskMat;
+        stCmd.matInputImg.setTo(0, matMaskReverse);
+        cv::cvtColor(stCmd.matInputImg, matGrayImg, CV_GRAY2RGB);
 	}
-	m_maskMat = maskMat;
 
-	QImage img = QImage((uchar*)matGrayImg.data, matGrayImg.cols, matGrayImg.rows, ToInt(matGrayImg.step), QImage::Format_RGB888);
-	m_grayImgScene->clear();
-	m_grayImgScene->addPixmap(QPixmap::fromImage(img.scaled(QSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT))));
+    m_maskMat = maskMat;
+
+    QImage img = QImage((uchar*)matGrayImg.data, matGrayImg.cols, matGrayImg.rows, ToInt(matGrayImg.step), QImage::Format_RGB888);
+    m_grayImgScene->clear();
+    m_grayImgScene->addPixmap(QPixmap::fromImage(img.scaled(QSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT))));
 }
 
 void QColorWeight::displayColorImg()
@@ -1000,7 +988,7 @@ void QColorWeight::displayColorImg()
 	m_grayColorScene->clear();
 	m_grayColorScene->addPixmap(QPixmap::fromImage(imageColor));
 
-	cvtColor(matColorImg, matColorImg, CV_BGR2RGB);
+	cv::cvtColor(matColorImg, matColorImg, CV_BGR2RGB);
 	QImage img = QImage((uchar*)matColorImg.data, matColorImg.cols, matColorImg.rows, ToInt(matColorImg.step), QImage::Format_RGB888);
 	m_colorImgScene->clear();
 	m_colorImgScene->addPixmap(QPixmap::fromImage(img.scaled(QSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT))));
@@ -1113,6 +1101,12 @@ cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage)
 
 	int m = matImage.rows;
 	int n = matImage.cols;
+
+    if (m_colorGenPt.x < 0 || m_colorGenPt.x > n)
+        return cv::Mat();
+
+    if (m_colorGenPt.y < 0 || m_colorGenPt.y > m)
+        return cv::Mat();
 
 	cv::Mat R = cv::Mat::ones(m, n, CV_8UC1);
 	cv::Mat G = cv::Mat::ones(m, n, CV_8UC1);

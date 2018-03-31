@@ -157,14 +157,13 @@ void InspVoidWidget::tryInsp()
     cv::Mat matProcessedROI = m_pParent->getColorWidget()->getProcessedImage();
     cv::Mat matOrigianlROI(stCmd.matInputImg, stCmd.rectROI);
     matProcessedROI.copyTo(matOrigianlROI);
+    stCmd.bPreprocessedImg = true;
 
     if (stCmd.rectROI.width <= 0 || stCmd.rectROI.height <= 0) {
         QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI to do inspection."));
         return;
     }
-    stCmd.enSegmentMethod = Vision::PR_IMG_SEGMENT_METHOD::GRAY_SCALE_RANGE;
-    stCmd.stGrayScaleRange.nStart = 100;
-    stCmd.stGrayScaleRange.nEnd = 255;
+
     Vision::PR_InspHole ( &stCmd, &stRpy );
     QString strMsg;
     strMsg.sprintf("Inspect Status %d", Vision::ToInt32(stRpy.enStatus));

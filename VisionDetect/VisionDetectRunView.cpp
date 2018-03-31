@@ -1227,7 +1227,7 @@ void VisionDetectRunView::on3DDetectMerge()
 	{
 		if (m_3DMatHeights[i].empty())
 		{
-			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先分步计算3D高度！"));
+			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先分步计算3D高度!"));
 			return;
 		}
 	}
@@ -1262,7 +1262,6 @@ void VisionDetectRunView::on3DDetectMerge()
 
 			cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
 			getVisionUI()->displayImage(matHeightResultImg);
-
 
 			IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
 			if (pUI)

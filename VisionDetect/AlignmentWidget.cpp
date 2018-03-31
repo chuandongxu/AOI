@@ -44,7 +44,7 @@ AlignmentWidget::AlignmentWidget(InspWindowWidget *parent)
 	ui.tableWidget->setCellWidget(SUBPIXEL_ATTRI, DATA_COLUMN, m_pCheckBoxSubPixel.get());
 
 	m_pComboBoxMotion = std::make_unique<QComboBox>(ui.tableWidget);
-	m_pComboBoxMotion->addItem("TRANSLATION");	
+	m_pComboBoxMotion->addItem("TRANSLATION");
 	m_pComboBoxMotion->addItem("EUCLIDEAN");
 	m_pComboBoxMotion->addItem("AFFINE");
 	m_pComboBoxMotion->addItem("HOMOGRAPHY");
@@ -119,9 +119,9 @@ void AlignmentWidget::tryInsp()
 		}
 
 		stCmd.rectSrchWindow = rectROI;
-		stCmd.rectSrchWindow.x -= stCmd.rectSrchWindow.width * 0.1;
+		stCmd.rectSrchWindow.x -= stCmd.rectSrchWindow.width  * 0.1;
 		stCmd.rectSrchWindow.y -= stCmd.rectSrchWindow.height * 0.1;
-		stCmd.rectSrchWindow.width *= 1.2;
+		stCmd.rectSrchWindow.width  *= 1.2;
 		stCmd.rectSrchWindow.height *= 1.2;
 
 		Vision::PR_MatchTmpl(&stCmd, &stRpy);
@@ -157,7 +157,7 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation)
 	window.lightId = m_pParent->getSelectedLighting() + 1;
 	window.usage = Engine::Window::Usage::ALIGNMENT;
 	window.inspParams = byte_array;
-	window.x = (rectROI.x + rectROI.width / 2.f) * dResolutionX;
+	window.x = (rectROI.x + rectROI.width  / 2.f) * dResolutionX;
 	window.y = (rectROI.y + rectROI.height / 2.f) * dResolutionY;
 	window.width = rectROI.width  * dResolutionX;
 	window.height = rectROI.height * dResolutionY;
