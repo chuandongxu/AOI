@@ -19,7 +19,7 @@ QRightWidget::QRightWidget(QWidget *parent)
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (pCam)
 	{
-		ui.stackedWidget->addWidget(pCam->getSettingView());
+		ui.stackedWidget->addWidget(new QWidget());
 	}
 
 	IVision* pVision = getModule<IVision>(VISION_MODEL);

@@ -14,6 +14,9 @@ public:
 	SysCalibrationView(VisionCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
 	~SysCalibrationView();
 
+public:
+	QWidget* getTab();
+
 private:
 	void initUI();
 	void initLimits();

@@ -1,5 +1,8 @@
 ﻿#include "VisionDetect.h"
 #include "../common/SystemData.h"
+#include "../Common/ModuleMgr.h"
+#include "../include/IdDefine.h"
+#include "../include/ICamera.h"
 #include "VisionDetectSetting.h"
 #include "VisionDetectRunView.h"
 #include "SysCalibrationView.h"
@@ -47,7 +50,14 @@ QWidget* VisionDetect::getCellEditorView()
 
 QWidget* VisionDetect::getCaliView()
 {
-	return m_pCaliView;
+	QTabWidget* tabView = new QTabWidget();
+	tabView->addTab(m_pCaliView->getTab(), QStringLiteral("3D 标定"));
+	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	if (pCam)
+	{
+		tabView->addTab(pCam->getCalibrationView(), QStringLiteral("相机标定"));
+	}
+	return tabView;
 }
 
 QWidget* VisionDetect::getInspWindowView()

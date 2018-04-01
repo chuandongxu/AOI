@@ -15,6 +15,9 @@ public:
 	CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent = Q_NULLPTR);
 	~CameraSetting();
 
+public:
+	QWidget* getCaliTab();
+
 protected slots:
 	void onStateChangeHWTrig(int iState);
 	void onStateChangeCapture(int iState);

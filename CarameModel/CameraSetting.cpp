@@ -175,6 +175,11 @@ CameraSetting::~CameraSetting()
 	}
 }
 
+QWidget* CameraSetting::getCaliTab()
+{
+	return ui.tab_3;
+}
+
 void CameraSetting::onStateChangeHWTrig(int iState)
 {
 	int data = 0;
