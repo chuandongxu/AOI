@@ -16,7 +16,7 @@ public:
 	virtual void initial(int nWindow = 0 )=0;   // nWindow 设置显示窗口的个数， = 0 则设置窗口个数等于相机个数， 如果无相机则打开一个窗口
 	virtual void unInit() = 0;
 
-	virtual QWidget* getSettingView() = 0;
+	virtual QWidget* getCalibrationView() = 0;
 
 	virtual void openCamera() = 0;
 	virtual void closeCamera() = 0;

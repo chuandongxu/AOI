@@ -53,9 +53,9 @@ void CameraModule::unInit()
 	}
 }
 
-QWidget* CameraModule::getSettingView()
+QWidget* CameraModule::getCalibrationView()
 {
-	return m_pSetting;
+	return m_pSetting->getCaliTab();
 }
 
 void CameraModule::openCamera()
@@ -190,10 +190,10 @@ void CameraModule::setExposureTime(int nCamera, double exposureTime)
 
 void CameraModule::addSettingWiddget(QTabWidget *tabWidget)
 {
-	//if (tabWidget)
-	//{
-	//	tabWidget->addTab(new CameraSetting(m_pCameraCtrl), QStringLiteral("相机设定"));
-	//}
+	if (tabWidget)
+	{
+		tabWidget->addTab(m_pSetting/*new CameraSetting(m_pCameraCtrl)*/, QStringLiteral("相机设定"));
+	}
 
 	//QString user;
 	//int level = 0;

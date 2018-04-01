@@ -20,7 +20,7 @@ public:
 	 void unInit();
 
 public:
-	QWidget* getSettingView();
+	QWidget* getCalibrationView();
 
 	bool startUpCapture();
 	bool endUpCapture();

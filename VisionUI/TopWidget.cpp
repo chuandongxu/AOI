@@ -81,7 +81,7 @@ QTopWidget::QTopWidget(QWidget *parent) :
 	m_toolBtnSys->setStyleSheet(stytleStr);
 	m_toolBtnHw = new QPushButton();
 	m_toolBtnHw->setFixedSize(100, 25);
-	m_toolBtnHw->setText(QStringLiteral("采集设备"));
+	m_toolBtnHw->setText(QStringLiteral("硬件设备"));
 	m_toolBtnHw->setStyleSheet(stytleStr);
 	m_toolBtnTools = new QPushButton();
 	m_toolBtnTools->setFixedSize(100, 25);

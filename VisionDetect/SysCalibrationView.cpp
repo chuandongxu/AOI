@@ -88,6 +88,11 @@ SysCalibrationView::~SysCalibrationView()
 	}
 }
 
+QWidget* SysCalibrationView::getTab()
+{
+	return ui.tab;
+}
+
 void SysCalibrationView::initUI()
 {
 	QStringList ls;
