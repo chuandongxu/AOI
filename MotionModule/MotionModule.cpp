@@ -148,6 +148,16 @@ bool MotionModule::moveToPosGroup(int nPtGroup, bool bSyn)
 	return m_ctrl.movePosGroup(nPtGroup, bSyn);
 }
 
+bool MotionModule::moveToGroup(std::vector<int>& axis, std::vector<double>& pos, std::vector<int>& profiles, bool bSyn)
+{
+	return m_ctrl.moveToGroup(axis, pos, profiles, bSyn);
+}
+
+bool MotionModule::moveGroup(std::vector<int>& axis, std::vector<double>& dists, std::vector<int>& profiles, bool bSyn)
+{
+	return m_ctrl.moveGroup(axis, dists, profiles, bSyn);
+}
+
 bool MotionModule::waitDone()
 {
 	return m_ctrl.waitDone();

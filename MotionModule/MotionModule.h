@@ -51,6 +51,9 @@ public:
 	virtual bool movePosGroup(int nPtGroup, bool bSyn);
 	virtual bool moveToPosGroup(int nPtGroup, bool bSyn);
 
+	virtual bool moveToGroup(std::vector<int>& axis, std::vector<double>& pos, std::vector<int>& profiles, bool bSyn);
+	virtual bool moveGroup(std::vector<int>& axis, std::vector<double>& dists, std::vector<int>& profiles, bool bSyn);
+
 	virtual bool waitDone();
 
 	virtual bool isHomed(int AxisID);

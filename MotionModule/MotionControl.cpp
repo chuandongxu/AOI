@@ -1170,6 +1170,82 @@ bool MotionControl::moveToPosGroup(int nPtGroup, bool bSyn)
 	return false;
 }
 
+bool MotionControl::moveToGroup(std::vector<int>& axis, std::vector<double>& pos, std::vector<int>& profiles, bool bSyn)
+{
+	if ((axis.size() != pos.size()) || (pos.size() != profiles.size())) return false;
+
+	for (int i = 0; i < axis.size(); i++)
+	{
+		bool bRet = moveTo(axis[i], profiles[i], pos[i], false);
+		if (!bRet) return false;
+	}
+
+	if (bSyn)
+	{
+		int nTimeOut = 30 * 100;// 30 seconds
+		do
+		{
+			bool bMoveDone = true;
+			for (int i = 0; i < axis.size(); i++)
+			{
+				if (!isMoveDone(axis[i]))
+				{
+					bMoveDone = false;
+				}
+			}
+			if (bMoveDone) break;
+
+			QThread::msleep(10);
+		} while (nTimeOut-- > 0);
+
+		if (nTimeOut <= 0)
+		{
+			System->setTrackInfo(QStringLiteral("电机运动TimeOut！"));
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool MotionControl::moveGroup(std::vector<int>& axis, std::vector<double>& dists, std::vector<int>& profiles, bool bSyn)
+{
+	if ((axis.size() != dists.size()) || (dists.size() != profiles.size())) return false;
+
+	for (int i = 0; i < axis.size(); i++)
+	{
+		bool bRet = move(axis[i], profiles[i], dists[i], false);
+		if (!bRet) return false;
+	}
+
+	if (bSyn)
+	{
+		int nTimeOut = 30 * 100;// 30 seconds
+		do
+		{
+			bool bMoveDone = true;
+			for (int i = 0; i < axis.size(); i++)
+			{
+				if (!isMoveDone(axis[i]))
+				{
+					bMoveDone = false;
+				}
+			}
+			if (bMoveDone) break;
+
+			QThread::msleep(10);
+		} while (nTimeOut-- > 0);
+
+		if (nTimeOut <= 0)
+		{
+			System->setTrackInfo(QStringLiteral("电机运动TimeOut！"));
+			return false;
+		}
+	}
+
+	return true;
+}
+
 bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int smooth, double dPos, bool bSyn)
 {
 	short sRtn = 0; // 指令返回值变量
