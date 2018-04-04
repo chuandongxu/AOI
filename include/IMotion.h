@@ -10,6 +10,8 @@
 #define HOME_DIR_PDR  1
 #define HOME_DIR_NDR  -1
 
+#include <qlineedit.h>
+
 class IMotion
 {
 public:
@@ -81,6 +83,11 @@ public:
 	virtual bool EmStop(int AxisID) = 0;
 
 	virtual bool getCurrentPos(int AxisID, double *pos) = 0;
+	
+	virtual void setJoystickXMotor(int AxisID, double dStep, QLineEdit *pEdit = NULL) = 0;
+	virtual void setJoystickYMotor(int AxisID, double dStep, QLineEdit *pEdit = NULL) = 0;
+	virtual void startJoystick() = 0;
+
 
 	//virtual bool AxisAbsoluteMove_SafeCheck(int nAxisCount, int* nAxisID, int* nProfile, bool* bIsSafetyCheck, bool* bIsSignalInversion, bool bSynchronize) = 0;
 	//virtual bool isHomed(int nAxis,int *axis) = 0;
