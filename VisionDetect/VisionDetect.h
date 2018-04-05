@@ -9,6 +9,7 @@
 
 class VisionDetectRunView;
 class SysCalibrationView;
+class LightCalibrationView;
 class QColorWeight;
 class  VisionDetect : public QModuleBase, public IVision
 {
@@ -54,7 +55,8 @@ public:
 private:
 	VisionCtrl m_ctrl;
 	VisionDetectRunView* m_pDetectView;
-	SysCalibrationView* m_pCaliView;    
+	SysCalibrationView* m_pCaliView; 
+	LightCalibrationView* m_pLightCaliView;
 	QColorWeight* m_pColorWeightView;
     InspWindowWidget* m_pInspWindowView;
 };
