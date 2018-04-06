@@ -24,7 +24,7 @@ public:
 
 	bool startUpCapture();
 	bool endUpCapture();
-	bool selectCaptureMode(int nCaptureMode);
+	bool selectCaptureMode(TRIGGER emCaptureMode);
 
 	const QVector<cv::Mat>& getImageBuffer();
 	const cv::Mat& getImageItemBuffer(int nIndex);

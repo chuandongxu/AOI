@@ -739,7 +739,7 @@ bool SysCalibrationView::guideReadImages(QVector<cv::Mat>& matImgs)
 
 	matImgs.clear();
 
-	if (!pCam->selectCaptureMode(1))// all images
+	if (!pCam->selectCaptureMode(ICamera::TRIGGER_DLP_ALL))// all images
 	{
 		System->setTrackInfo(QString("startCapturing error"));
 		return false;
@@ -796,7 +796,7 @@ bool SysCalibrationView::guideReadImage(cv::Mat& matImg)
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return false;
 
-	if (!pCam->selectCaptureMode(3))// 1 image
+	if (!pCam->selectCaptureMode(ICamera::TRIGGER_ONE))// 1 image
 	{
 		System->setTrackInfo(QString("startCapturing error"));
 		return false;

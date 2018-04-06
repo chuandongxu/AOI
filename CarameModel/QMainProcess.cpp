@@ -148,7 +148,7 @@ bool QMainProcess::startUpCapture()
 	if (!m_pCameraOnLive)
 	{
 		int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
-		selectCaptureMode(nCaptureNumMode);	
+		selectCaptureMode(static_cast<ICamera::TRIGGER>(nCaptureNumMode));	
 
 		//System->setParam("camera_cap_image_sw_enable", true);
 
@@ -184,7 +184,7 @@ bool QMainProcess::endUpCapture()
 	return true;
 }
 
-bool QMainProcess::selectCaptureMode(int nCaptureMode)
+bool QMainProcess::selectCaptureMode(ICamera::TRIGGER emCaptureMode)
 {
 	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
 	bool bMotionCardTrigger = (1 == nDlpMode);
@@ -194,24 +194,22 @@ bool QMainProcess::selectCaptureMode(int nCaptureMode)
 	if (bMotionCardTrigger)
 	{
 		int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-		m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;
-
-		int nCaptureNumMode = nCaptureMode;
-		switch (nCaptureNumMode)
+		m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;		
+		switch (emCaptureMode)
 		{
-		case  0:
+		case  ICamera::TRIGGER_ALL:
 			m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * nDlpNum + nLightCaptureNum;
 			break;
-		case  1:
+		case  ICamera::TRIGGER_DLP_ALL:
 			m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;		
 			break;
-		case  2:
+		case  ICamera::TRIGGER_DLP:
 			m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * 1;		
 			break;
-		case  3:
+		case  ICamera::TRIGGER_ONE:
 			m_nCaptureNum = 1;			
 			break;
-		case  4:
+		case  ICamera::TRIGGER_LIGHT:
 			m_nCaptureNum = nLightCaptureNum; 			
 			break;
 		default:
