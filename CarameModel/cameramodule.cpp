@@ -97,11 +97,11 @@ bool CameraModule::endUpCapture()
 	return false;
 }
 
-bool CameraModule::selectCaptureMode(int nCaptureMode)
+bool CameraModule::selectCaptureMode(TRIGGER emCaptureMode)
 {
 	if (m_pMainProcess)
 	{
-		return m_pMainProcess->selectCaptureMode(nCaptureMode);
+		return m_pMainProcess->selectCaptureMode(emCaptureMode);
 	}
 	return false;
 }

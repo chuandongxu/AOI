@@ -9,6 +9,15 @@ class ViewCtrl;
 class ICamera
 {
 public:
+	enum TRIGGER
+	{
+		TRIGGER_ALL,// 54 pcs
+		TRIGGER_DLP_ALL, // 48 pcs
+		TRIGGER_DLP, // 12 pcs
+		TRIGGER_ONE, // 1 pcs
+		TRIGGER_LIGHT, // 6 pcs		
+	};
+
 	/************************************************************************/
 	/*  系统初始化   */
 	/*  硬件操作功能   */
@@ -30,7 +39,7 @@ public:
 	/************************************************************************/
 	virtual bool startUpCapture() = 0;
 	virtual bool endUpCapture() = 0;
-	virtual bool selectCaptureMode(int nCaptureMode) = 0; // 0 - all images (DLP num * 12), 1 - 12 images, 2 - 1 image
+	virtual bool selectCaptureMode(TRIGGER emCaptureMode) = 0; 
 	
 	virtual const QVector<cv::Mat>& getImageBuffer() = 0;
 	virtual const cv::Mat& getImageItemBuffer(int nIndex) = 0;
