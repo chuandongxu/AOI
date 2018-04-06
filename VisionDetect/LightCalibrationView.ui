@@ -19,7 +19,7 @@
      <x>10</x>
      <y>20</y>
      <width>401</width>
-     <height>151</height>
+     <height>180</height>
     </rect>
    </property>
    <property name="title">
@@ -110,7 +110,7 @@
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>100</y>
+      <y>90</y>
       <width>100</width>
       <height>21</height>
      </rect>
@@ -120,7 +120,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>102</y>
+      <y>92</y>
       <width>72</width>
       <height>15</height>
      </rect>
@@ -133,7 +133,7 @@
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>100</y>
+      <y>90</y>
       <width>21</width>
       <height>16</height>
      </rect>
@@ -165,6 +165,250 @@
      </size>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_MoveToReady">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>130</y>
+      <width>360</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>移动到标定位置</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_6">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>250</y>
+     <width>401</width>
+     <height>80</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>灯盘图像采集</string>
+   </property>
+   <widget class="QComboBox" name="comboBox_selectLight">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>30</y>
+      <width>150</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_21">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>34</y>
+      <width>72</width>
+      <height>15</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择灯光</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_captureLight">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>30</y>
+      <width>100</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>采集图像</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="pushButton_startCali">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>210</y>
+     <width>180</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>开始标定</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_stopCali">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>210</y>
+     <width>180</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>停止标定</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>340</y>
+     <width>401</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>灯光设置</string>
+   </property>
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>40</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>us</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="horizontalSlider">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>40</y>
+      <width>200</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>1000</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_6">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>40</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>亮度：</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_7">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>440</y>
+     <width>401</width>
+     <height>141</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>检测灰度</string>
+   </property>
+   <widget class="QPushButton" name="pushButton_DetectGrayScale">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>360</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>检测灰度</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_DetectGraySacleRow">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>30</y>
+      <width>70</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_25">
+    <property name="geometry">
+     <rect>
+      <x>45</x>
+      <y>30</y>
+      <width>41</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Row:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_35">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>30</y>
+      <width>41</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Col:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_DetectGrayScaleCol">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>30</y>
+      <width>70</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="pushButton_SaveCali">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>600</y>
+     <width>360</width>
+     <height>34</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>保存标定</string>
+   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

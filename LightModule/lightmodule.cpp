@@ -44,6 +44,22 @@ QWidget* QLightModule::getLightWidget()
 	return m_pLightWidget;
 }
 
+void QLightModule::saveLuminance(int nDevice, int nChannel)
+{
+	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
+
+	if (ctrl)
+	{
+		QLightDevice *device = ctrl->getLightDevice(nDevice);
+		if (device)
+		{
+			QString key = QString("%0-%1%2").arg(device->getDeviceName()).arg(LUM_CH).arg(nChannel);
+			QString data = QString("%1").arg(getChLuminace(nDevice, nChannel));
+			System->setParam(key, data);
+		}
+	}
+}
+
 void QLightModule::setLuminance(int nDevice, int nChannel, int nLum)
 {
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
