@@ -32,6 +32,7 @@ public:
 	virtual void setHardwareTrigger(bool bOn) = 0;
 	virtual void setTriggerActive(bool bActiveHigh) = 0;
 	virtual bool captureImage(cv::Mat &imageMat) = 0;
+	virtual bool getCameraScreenSize(int& nWidth, int& nHeight) = 0;
 
 	virtual void softwareTrigger() = 0;
 	virtual bool startGrabing(int nNum) = 0;
@@ -68,6 +69,7 @@ public:
 	virtual void setHardwareTrigger(bool bOn);
 	virtual void setTriggerActive(bool bActiveHigh){}
 	virtual bool captureImage(cv::Mat &imageMat);
+	virtual bool getCameraScreenSize(int& nWidth, int& nHeight);
 
 	virtual void softwareTrigger();
 	virtual bool startGrabing(int nNum);

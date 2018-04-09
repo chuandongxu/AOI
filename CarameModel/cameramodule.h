@@ -38,6 +38,8 @@ public:
 	void unlockCameraCapture();
 	bool isCameraCaptureAvaiable();
 
+	bool getCameraScreenSize(int& nWidth, int& nHeight);
+
 public:
 	 void openCamera();
 	 void closeCamera();

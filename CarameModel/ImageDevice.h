@@ -18,6 +18,7 @@ public:
 	virtual void setHardwareTrigger(bool bOn);
 	virtual void setTriggerActive(bool bActiveHigh){}
 	virtual bool captureImage(cv::Mat &imageMat);
+	virtual bool getCameraScreenSize(int& nWidth, int& nHeight){ nWidth = 0; nHeight = 0; return true; }
 
 	virtual void softwareTrigger();
 	virtual bool startGrabing(int nNum);
