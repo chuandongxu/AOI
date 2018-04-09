@@ -156,6 +156,23 @@ bool CameraModule::isCameraCaptureAvaiable()
 	return m_pMainProcess->isCameraCaptureAvaiable();
 }
 
+bool CameraModule::getCameraScreenSize(int& nWidth, int& nHeight)
+{
+	CameraCtrl * ctrlTmp = (CameraCtrl*)m_pCameraCtrl;
+	if (ctrlTmp)
+	{
+		CameraDevice * tmpDevice = ctrlTmp->getCamera(0);
+		if (tmpDevice)
+		{
+			return tmpDevice->getCameraScreenSize(nWidth, nHeight);
+		}
+	}
+
+	nWidth = 0;
+	nHeight = 0;
+	return false;
+}
+
 bool CameraModule::grabCamImage(int nCamera, cv::Mat& image, bool bSync)
 {
 	CameraCtrl * ctrlTmp = (CameraCtrl*)m_pCameraCtrl;
