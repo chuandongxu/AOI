@@ -38,6 +38,7 @@ const float UM_TO_CM  =                             (1.f / CM_TO_UM );
 const float ONE_HUNDRED_PERCENT =                   (100.f);
 const std::string DEFAULT_PROJECT =                 "./data/DefaultProject.aoi";
 const std::string PROJECT_EXT =                     ".aoi";
+const int DLP_IMG_COUNT =                           12;
 
 const int OK  =                                     0;
 const int NOK =                                     -1;
@@ -51,5 +52,13 @@ enum VISION_VIEW_MODE {
     MODE_VIEW_EDIT_SRCH_WINDOW  = 6,
     MODE_VIEW_EDIT_INSP_WINDOW  = 7,
 };
+
+enum GRAY_WEIGHT_METHOD
+{
+	EM_MODE_PT_THRESHOLD = 0,
+	EM_MODE_ONE_THRESHOLD,
+	EM_MODE_TWO_THRESHOLD
+};
+
 
 #endif //_CONSTANTS_H_

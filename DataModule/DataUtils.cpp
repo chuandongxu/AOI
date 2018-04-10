@@ -426,3 +426,73 @@ matTransform = [ cos(a) -sina(a) Tx ]
     Ty = ( ptTargetPos1.y + ptTargetPos2.y ) / 2.f - ( ptCadPos1.y + ptCadPos2.y ) / 2.f;
     return 0;
 }
+
+/*static*/ int DataUtils::assignFrames(
+        float                            left,
+        float                            top,
+        float                            right,
+        float                            bottom,
+        float                            fovWidth,
+        float                            fovHeight,
+        Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr)
+{
+    vecVecFrameCtr.clear();
+    if (right <= left || top <= bottom)
+        return -1;
+
+    int frameCountX = static_cast<int>((right - left) / fovWidth ) + 1;
+    int frameCountY = static_cast<int>((top - bottom) / fovHeight) + 1;
+    float overlapX = (frameCountX * fovWidth  - (right - left)) / (frameCountX - 1);
+    float overlapY = (frameCountY * fovHeight - (top - bottom)) / (frameCountY - 1);
+    for (int row = 0; row < frameCountY; ++ row) {
+        Vision::VectorOfPoint2f vecFrameCtr;
+        for (int col = 0; col < frameCountX; ++ col)
+        {
+            float frameCtrX = left + (col * (fovWidth  - overlapX) + fovWidth  / 2.f);
+            float frameCtrY = top  - (row * (fovHeight - overlapY) + fovHeight / 2.f);
+            vecFrameCtr.emplace_back(frameCtrX, frameCtrY);
+        }
+        vecVecFrameCtr.push_back(vecFrameCtr);
+    }
+    return 0;
+}
+
+/*static*/ bool DataUtils::isWindowInFrame(
+        const cv::Point2f &ptWindowCtr,
+        float              winWidth,
+        float              winHeight,
+        const cv::Point2f &ptFrameCtr,
+        float              fovWidth,
+        float              fovHeight)
+{
+    cv::Rect2f rectFrame(ptFrameCtr.x - fovWidth / 2, ptFrameCtr.y - fovHeight / 2, fovWidth, fovHeight);
+    Vision::VectorOfPoint2f vecPoints; vecPoints.reserve(4);
+    vecPoints.emplace_back(ptWindowCtr.x - winWidth / 2.f, ptWindowCtr.y - winHeight / 2.f);
+    vecPoints.emplace_back(ptWindowCtr.x + winWidth / 2.f, ptWindowCtr.y - winHeight / 2.f);
+    vecPoints.emplace_back(ptWindowCtr.x + winWidth / 2.f, ptWindowCtr.y + winHeight / 2.f);
+    vecPoints.emplace_back(ptWindowCtr.x - winWidth / 2.f, ptWindowCtr.y + winHeight / 2.f);
+    for (const auto &point : vecPoints)
+        if (! rectFrame.contains(point))
+            return false;
+
+    return true;
+}
+
+/*static*/ cv::Rect DataUtils::convertWindowToFrameRect(
+        const cv::Point2f &ptWindowCtr,
+        float              winWidth,
+        float              winHeight,
+        const cv::Point2f &ptFrameCtr,
+        int                imageWidth,
+        int                imageHeight,
+        float              fResolutionX,
+        float              fResolutionY
+        )
+{
+    cv::Point2f ptImageCtr;
+    ptImageCtr.x = imageWidth  / 2 + (ptWindowCtr.x - ptFrameCtr.x) / fResolutionX;
+    ptImageCtr.y = imageHeight / 2 - (ptWindowCtr.y - ptFrameCtr.y) / fResolutionY; //The image Y and CAD Y positive direction is inverse.
+    int winWidthPixel  = winWidth  / fResolutionX;
+    int winHeightPixel = winHeight / fResolutionY;
+    return cv::Rect(ptImageCtr.x - winWidthPixel / 2, ptImageCtr.y - winHeightPixel / 2, winWidthPixel, winHeightPixel);
+}

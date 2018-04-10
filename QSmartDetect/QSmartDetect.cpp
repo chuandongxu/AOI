@@ -390,7 +390,7 @@ bool QSmartDetect::start()
 		}
 	}
 
-	m_pMainStation = new QMainRunable(m_pMainParamMap, &m_stationDatas, &m_ctrl);
+	m_pMainStation = new AutoRunThread(m_pMainParamMap, &m_stationDatas, &m_ctrl);
 	QThreadPool::globalInstance()->start(m_pMainStation);
 
 	m_ctrl.run(true);

@@ -2,173 +2,22 @@
 #define FLOWCTRL_H
 
 #include <QObject>
-#include <qmap.h>
-#include <qvector.h>
-#include "hsgworkflowctrl_global.h"
-#include "../include/ICAN.h"
-#include <qrunnable.h>
-#include <qstringlist.h>
-#include "LineNormal.h"
-#include <QTcpServer>
-#include <qtcpsocket.h>
+#include <QMap>
+#include <QVector>
+#include <QRunnable>
+#include <QStringList>
 #include <QElapsedTimer>
 #include <QDateTime>
 
+#include "hsgworkflowctrl_global.h"
+#include "../include/ICAN.h"
+
+#include "AutoRunThread.h"
 #include "opencv/cv.h"
 
-const int g_nImageStructDataNum = 5;
-struct QImageStruct
-{
-public:
-	QImageStruct()
-	{
-	}
-
-	cv::Mat _img[g_nImageStructDataNum];
-};
-
-struct Q3DStructData
-{
-public:
-	Q3DStructData()
-	{
-		_bStartCapturing = false;
-		_bCapturedDone = false;
-	}
-
-	void clear()
-	{
-		_bStartCapturing = false;
-		_bCapturedDone = false;
-		_3DMatHeight.release();
-		_matImage.release();
-		_srcImageMats.clear();
-	}
-
-	bool _bStartCapturing;
-	bool _bCapturedDone;
-	cv::Mat _3DMatHeight;
-	cv::Mat _matImage;
-	QVector<cv::Mat> _srcImageMats;
-};
-
-//---------------------------------------------------------------
-typedef QMap<QString, QVariant> QCheckerParamMap;
-typedef QList<Q3DStructData> QCheckerParamDataList;
-typedef QMap<int, int> QCheckerPositionMap;
-
-//-------------------------------------------------------------
-class QDetectObj;
-class QCheckerRunable : public QRunnable
-{
-public:
-	QCheckerRunable(QCheckerParamMap *paramMap, Q3DStructData* dataParam);
-	~QCheckerRunable();
-
-	void quit();
-	void imgStop();//stop steppers
-protected:
-	void run();
-
-	bool startUpSetup();
-
-	bool waitStartBtn();
-	bool captureImages();
-	bool generateAverageImage(bool bMotionCardTrigger);
-	bool calculate3DHeight(bool bMotionCardTrigger);
-	bool waitCheckDone();
-
-	bool endUpSetup();
-
-	bool isExit();
-
-private:
-	int getStationID();
-
-private:
-	void addImageText(cv::Mat image, cv::Point ptPos, QString szText);
-
-private:
-	QCheckerParamMap *m_paramMap;
-	Q3DStructData* m_dataParam;
-
-	bool m_exit;
-	QLineNormal m_normal;
-	QMutex m_mutex;
-
-	QVector<cv::Mat> m_imageMats;
-	cv::Mat m_3DMatHeight;
-	cv::Mat m_matHeightResultImg;
-	cv::Mat m_matImage;
-};
-
-class QMainRunable : public QRunnable
-{
-public:
-	QMainRunable(QCheckerParamMap *paramMap, QCheckerParamDataList* paramData);
-	~QMainRunable();
-
-	void quit();
-	void imgStop();//stop steppers
-
-	void setImageIndex(int nIndex);
-
-private:
-	int getPositionNum();
-	int getPositionID(int nIndex);
-
-protected:
-	bool preRunning();
-
-	void run();
-	
-	bool waitStartBtn();
-	bool moveToReadyPos();
-	bool moveToCapturePos(int nIndex);
-	bool captureImages(int nIndex, QString& szImagePath);
-	bool mergeImages(QString& szImagePath);
-	bool matchPosition();
-	bool calculateDetectHeight();
-	bool waitCheckDone();
-    bool doAlignment();
-	bool isExit();
-private:
-	bool captureAllImages(QVector<cv::Mat>& imageMats);
-	void setResoultLight(bool isOk);
-	void resetResoultLight();
-
-	bool getLightIO(int &okLight, int &ngLight);
-
-	QString generateImagePath();
-	void saveImages(const QString& szImagePath, int nRowIndex, int nColIndex, int nCountOfImgPerRow, const QVector<cv::Mat>& imageMats);
-	void saveCombineImages(const QString& szImagePath, const QVector<cv::Mat>& imageMats);
-
-private:
-	void addImageText(cv::Mat image, cv::Point ptPos, QString szText);
-
-private:
-	QCheckerParamMap *m_paramMap;
-	QCheckerParamDataList *m_paramData;
-	QCheckerPositionMap m_positionMap;
-
-	bool m_exit;
-	QLineNormal m_normal;
-	QMutex m_mutex;
-	
-	QVector<cv::Mat> m_3DMatHeights;
-	cv::Mat m_3DMatHeight;
-
-	QVector<QImageStruct> m_matImages;
-	QImageStruct m_stCombinedImage;
-	int m_nImageIndex;
-};
-
-
-//-------------------------------------------------------------
 class QFlowCtrl : public QObject
 {
 	typedef QList<QCheckerParamMap*> QCheckerParamMapList;
-	typedef QList<QCheckerRunable*> QCheckerRunableList;
 	Q_OBJECT
 public:
 	QFlowCtrl(QObject *parent);
@@ -186,6 +35,7 @@ protected slots:
 	void home();
 	void startAutoRun();
 	void stopAutoRun();
+    void autoThreadFinish();
 
 protected:
 	virtual void timerEvent(QTimerEvent * event);
@@ -197,20 +47,15 @@ protected:
 	void readbarCode();
 	void checkMotionState();
 	void checkError();
-	/*void checkAI();
-	void checkSafeDoor();*/
-	void checkPowError();
 	void checkAuthError();
 
 	void initStationParam();
 	void initErrorCode();
-protected:
+
 	void imStop();
-	void imStopStation(int nStation);
 	void reset();
 	void start();
 	void stop();
-
 
 private:
 	int m_timerId;
@@ -219,10 +64,8 @@ private:
 	bool m_isStart;
 	QCheckerParamMapList m_stationParams;
 	QCheckerParamDataList m_stationDatas;
-	QCheckerRunableList m_checkStantion;
 	QCheckerParamMap *m_pMainParamMap;
-	QMainRunable* m_pMainStation;
-	QLineNormal m_normal;
+	AutoRunThread *m_pAutoRunThread;
 
 	QDateTime m_dateTime;
 	int m_errorCode;

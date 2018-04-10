@@ -94,6 +94,9 @@
     <ClInclude Include="GeneratedFiles\ui_MotionMotor.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\IMotion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="motionmodule_global.h">

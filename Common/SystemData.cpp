@@ -102,6 +102,7 @@ QSystem::QSystem()
 	}
 
 	initErrorModel();
+    initConfig();
 }
 	
 QSystem::~QSystem()
@@ -248,7 +249,7 @@ void QSystem::LoadData()
 
 QVariant QSystem::getParam(const QString &name)
 {
-	QAutoLocker loacker(&m_mutex);
+	QAutoLocker locker(&m_mutex);
 
 	if (m_paramUserData.contains(name))
 	{
@@ -312,7 +313,7 @@ QStringList QSystem::getParamKeys(const QString &condtion)
 
 QVariant QSystem::getSysParam(const QString &name)
 {
-	QAutoLocker loacker(&m_mutex);
+	QAutoLocker locker(&m_mutex);
 
 	if(m_params.contains(name))
 	{
@@ -324,7 +325,7 @@ QVariant QSystem::getSysParam(const QString &name)
 	
 void QSystem::setSysParam(const QString &name,const QVariant &data)
 {
-	QAutoLocker loacker(&m_mutex);
+	QAutoLocker locker(&m_mutex);
 
 	m_params[name] = data;
 
@@ -703,7 +704,7 @@ QString QSystem::getLangConfig()
 {
 	QString path = QApplication::applicationDirPath();
 	path += "/config/runing.ini";
-	QSettings setttings(path,QSettings::IniFormat);
+	QSettings setttings(path, QSettings::IniFormat);
 
 	return setttings.value("lang/langName","ch").toString();
 }
@@ -915,8 +916,16 @@ void QSystem::initErrorModel()
 	m_errModel.setHorizontalHeaderLabels(ls);
 
 	connect(this,SIGNAL(errorInfo(const QString &,const QString&,unsigned int)),
-			&m_errModel,SLOT(onErrorInfo(const QString &,const QString&,unsigned int)));
-	
+			&m_errModel,SLOT(onErrorInfo(const QString &,const QString&,unsigned int)));	
+}
+
+void QSystem::initConfig()
+{
+    QString path = QApplication::applicationDirPath();
+	path += "/config/runing.ini";
+	QSettings setttings(path, QSettings::IniFormat);
+
+	m_bRunOffline = setttings.value("General/RunOffLine","true").toBool();
 }
 
 //----------------------------------------------------------------------------------------------------

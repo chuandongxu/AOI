@@ -96,7 +96,7 @@
        <string>保存</string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="checkBox_2">
+     <widget class="QCheckBox" name="checkBoxRecordAllImage">
       <property name="geometry">
        <rect>
         <x>10</x>
