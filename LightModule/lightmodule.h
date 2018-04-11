@@ -21,6 +21,8 @@ public:
 	QString getChName(int nDevice, int nChannel);
 	int getChLuminace(int nDevice, int nChannel);
 
+	virtual void saveLuminance(int nDevice, int nChannel);
+
 	int getDeviceCount();
 	virtual void addSettingWiddget(QTabWidget *tabWidget);
     //virtual void addDiagonseWidget(QTabWidget *tabWidget);

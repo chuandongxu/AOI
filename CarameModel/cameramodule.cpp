@@ -97,11 +97,11 @@ bool CameraModule::endUpCapture()
 	return false;
 }
 
-bool CameraModule::selectCaptureMode(int nCaptureMode)
+bool CameraModule::selectCaptureMode(TRIGGER emCaptureMode)
 {
 	if (m_pMainProcess)
 	{
-		return m_pMainProcess->selectCaptureMode(nCaptureMode);
+		return m_pMainProcess->selectCaptureMode(emCaptureMode);
 	}
 	return false;
 }
@@ -154,6 +154,23 @@ void CameraModule::unlockCameraCapture()
 bool CameraModule::isCameraCaptureAvaiable()
 {
 	return m_pMainProcess->isCameraCaptureAvaiable();
+}
+
+bool CameraModule::getCameraScreenSize(int& nWidth, int& nHeight)
+{
+	CameraCtrl * ctrlTmp = (CameraCtrl*)m_pCameraCtrl;
+	if (ctrlTmp)
+	{
+		CameraDevice * tmpDevice = ctrlTmp->getCamera(0);
+		if (tmpDevice)
+		{
+			return tmpDevice->getCameraScreenSize(nWidth, nHeight);
+		}
+	}
+
+	nWidth = 0;
+	nHeight = 0;
+	return false;
 }
 
 bool CameraModule::grabCamImage(int nCamera, cv::Mat& image, bool bSync)

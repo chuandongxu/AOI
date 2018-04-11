@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QVector>
+#include "../include/ICamera.h"
 
 #include <QMutex>
 
@@ -34,7 +35,7 @@ public:
 
 	bool startUpCapture();
 	bool endUpCapture();
-	bool selectCaptureMode(int nCaptureMode);
+	bool selectCaptureMode(ICamera::TRIGGER emCaptureMode);
 
 private:
 	CameraCtrl* m_pCameraCtrl;

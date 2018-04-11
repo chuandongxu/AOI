@@ -24,7 +24,7 @@ public:
 
 	bool startUpCapture();
 	bool endUpCapture();
-	bool selectCaptureMode(int nCaptureMode);
+	bool selectCaptureMode(TRIGGER emCaptureMode);
 
 	const QVector<cv::Mat>& getImageBuffer();
 	const cv::Mat& getImageItemBuffer(int nIndex);
@@ -37,6 +37,8 @@ public:
 	bool lockCameraCapture();
 	void unlockCameraCapture();
 	bool isCameraCaptureAvaiable();
+
+	bool getCameraScreenSize(int& nWidth, int& nHeight);
 
 public:
 	 void openCamera();

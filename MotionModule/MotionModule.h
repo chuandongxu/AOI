@@ -6,6 +6,9 @@
 #include "../include/IMotion.h"
 #include "Motioncontrol.h"
 
+#include <memory>
+
+class JoystickWidget;
 class MotionModule : public QModuleBase, public IMotion
 {
 public:
@@ -63,6 +66,11 @@ public:
 
 	virtual bool getCurrentPos(int AxisID, double *pos);
 
+	virtual void startJoystick();
+	virtual void setJoystickXMotor(int AxisID, double dStep, QLineEdit *pEdit);
+	virtual void setJoystickYMotor(int AxisID, double dStep, QLineEdit *pEdit);
+
 private:
 	MotionControl m_ctrl;
+	std::unique_ptr<JoystickWidget> m_pJoystickWidget;
 };

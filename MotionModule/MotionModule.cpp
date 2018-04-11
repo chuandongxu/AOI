@@ -1,10 +1,12 @@
 ﻿#include "MotionModule.h"
 #include "../common/SystemData.h"
 #include "MotionSetting.h"
+#include "JoystickWidget.h"
 
 MotionModule::MotionModule(int id, const QString &name)
 	:QModuleBase(id, name)
 {
+	m_pJoystickWidget = std::make_unique<JoystickWidget>(&m_ctrl);
 }
 
 MotionModule::~MotionModule()
@@ -186,6 +188,21 @@ bool MotionModule::EmStop(int AxisID)
 bool MotionModule::getCurrentPos(int AxisID, double *pos)
 {
 	return m_ctrl.getCurrentPos(AxisID, pos);
+}
+
+void MotionModule::startJoystick()
+{
+	m_pJoystickWidget->show();
+}
+
+void MotionModule::setJoystickXMotor(int AxisID, double dStep, QLineEdit *pEdit)
+{
+	m_pJoystickWidget->SetXMotor(AxisID, dStep, pEdit);
+}
+
+void MotionModule::setJoystickYMotor(int AxisID, double dStep, QLineEdit *pEdit)
+{
+	m_pJoystickWidget->SetYMotor(AxisID, dStep, pEdit);
 }
 
 QMOUDLE_INSTANCE(MotionModule)

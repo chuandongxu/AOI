@@ -276,6 +276,35 @@ void DalsaCameraDevice::setExposureTime(double exposureTime)
 	}
 }
 
+bool DalsaCameraDevice::getCameraScreenSize(int& nWidth, int& nHeight)
+{
+	if (m_bOpen)
+	{
+		if (m_camera && m_camera->IsOpen())
+		{
+			try
+			{
+				// Only look for cameras supported by Camera_t.
+				CDeviceInfo info;
+				info.SetDeviceClass(Camera_t::DeviceClass());			
+
+				nWidth = m_camera->SensorWidth.GetValue();
+				nHeight = m_camera->SensorWidth.GetValue();
+				return true;
+			}
+			catch (GenICam::GenericException &e)
+			{
+				// Error handling.
+				qDebug() << "An exception occurred." << endl
+					<< e.GetDescription() << endl;
+			}
+		}
+	}
+	nWidth = 0;
+	nHeight = 0;
+	return false;
+}
+
 void DalsaCameraDevice::setHardwareTrigger(bool bOn)
 {
 	if (m_bOpen)

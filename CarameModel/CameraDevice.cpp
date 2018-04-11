@@ -203,6 +203,38 @@ void BaslerCameraDevice::setExposureTime(double exposureTime)
 	}
 }
 
+bool BaslerCameraDevice::getCameraScreenSize(int& nWidth, int& nHeight)
+{
+	if (m_bOpen)
+	{
+		//Pylon::PylonAutoInitTerm autoInitTerm;
+		try
+		{
+			// Only look for cameras supported by Camera_t.
+			CDeviceInfo info;
+			info.SetDeviceClass(Camera_t::DeviceClass());
+
+			// Create an instant camera object with the first found camera device that matches the specified device class.
+			Camera_t camera(m_hv_AcqHandle);
+
+			nWidth = camera.SensorWidth.GetValue();
+			nHeight = camera.SensorHeight.GetValue();
+
+			return true;
+		}
+		catch (GenICam::GenericException &e)
+		{
+			// Error handling.
+			qDebug() << "An exception occurred." << endl
+				<< e.GetDescription() << endl;
+		}
+	}
+
+	nWidth = 0;
+	nHeight = 0;
+	return false;
+}
+
 void BaslerCameraDevice::setHardwareTrigger(bool bOn)
 {
 	if (m_bOpen)
