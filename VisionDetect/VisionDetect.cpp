@@ -7,6 +7,7 @@
 #include "VisionDetectRunView.h"
 #include "SysCalibrationView.h"
 #include "LightCalibrationView.h"
+#include "TableCalibrationView.h"
 #include "QColorWeight.h"
 #include "qthread.h"
 
@@ -16,6 +17,7 @@ VisionDetect::VisionDetect(int id, const QString &name)
 	m_pDetectView = new VisionDetectRunView(&m_ctrl);
 	m_pCaliView = new SysCalibrationView(&m_ctrl);   
 	m_pLightCaliView = new LightCalibrationView(&m_ctrl);
+	m_pTableCaliView = new TableCalibrationView(&m_ctrl);
 	m_pColorWeightView = new QColorWeight();
     m_pInspWindowView = new InspWindowWidget(NULL, m_pColorWeightView);
 }
@@ -55,6 +57,7 @@ QWidget* VisionDetect::getCaliView()
 	QTabWidget* tabView = new QTabWidget();
 	tabView->addTab(m_pCaliView->getTab(), QStringLiteral("3D 标定"));
 	tabView->addTab(m_pLightCaliView, QStringLiteral("灯光标定"));
+	tabView->addTab(m_pTableCaliView, QStringLiteral("运动平台标定"));
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (pCam)
 	{

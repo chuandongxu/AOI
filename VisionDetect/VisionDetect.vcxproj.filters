@@ -281,6 +281,15 @@
     <ClCompile Include="LightCalibrationView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_TableCalibrationView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_TableCalibrationView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="TableCalibrationView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VisionDetect.h">
@@ -350,6 +359,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_LightCalibrationView.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_TableCalibrationView.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -501,6 +513,12 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="LightCalibrationView.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TableCalibrationView.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TableCalibrationView.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
