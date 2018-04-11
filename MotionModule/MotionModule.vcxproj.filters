@@ -105,11 +105,10 @@
     </ClInclude>
     <ClInclude Include="..\include\IMotion.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_JoystickWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="motionmodule_global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
