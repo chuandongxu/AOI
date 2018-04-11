@@ -21,8 +21,8 @@
 *--------------------------------------------------------------------------
 */
 
-#ifndef _CONSTANTS_H_
-#define _CONSTANTS_H_
+#ifndef _AOI_CONSTANTS_H_
+#define _AOI_CONSTANTS_H_
 
 #include <string>
 
@@ -38,6 +38,7 @@ const float UM_TO_CM  =                             (1.f / CM_TO_UM );
 const float ONE_HUNDRED_PERCENT =                   (100.f);
 const std::string DEFAULT_PROJECT =                 "./data/DefaultProject.aoi";
 const std::string PROJECT_EXT =                     ".aoi";
+const int DLP_IMG_COUNT =                           12;
 
 const int OK  =                                     0;
 const int NOK =                                     -1;
@@ -52,4 +53,23 @@ enum VISION_VIEW_MODE {
     MODE_VIEW_EDIT_INSP_WINDOW  = 7,
 };
 
-#endif //_CONSTANTS_H_
+enum GRAY_WEIGHT_METHOD
+{
+	EM_MODE_PT_THRESHOLD = 0,
+	EM_MODE_ONE_THRESHOLD,
+	EM_MODE_TWO_THRESHOLD
+};
+
+enum CAPTURE_2D_IMAGE_SEQUENCE
+{
+    WHITE_LIGHT,
+    LOW_ANGLE_LIGHT,
+    RED_LIGHT,
+    GREEN_LIGHT,
+    BLUE_LIGHT,
+    UNIFORM_LIGHT,
+    TOTAL_COUNT,
+};
+
+
+#endif //_AOI_CONSTANTS_H_

@@ -88,11 +88,11 @@ private:
 	cv::Mat m_matImage;
 };
 
-class QMainRunable : public QRunnable
+class AutoRunThread : public QRunnable
 {
 public:
-	QMainRunable(QCheckerParamMap *paramMap, QCheckerParamDataList* paramData, DataCtrl* pCtrl);
-	~QMainRunable();
+	AutoRunThread(QCheckerParamMap *paramMap, QCheckerParamDataList* paramData, DataCtrl* pCtrl);
+	~AutoRunThread();
 
 	void quit();
 	void imgStop();//stop steppers

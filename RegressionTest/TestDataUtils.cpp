@@ -337,11 +337,134 @@ void TestAlignWithTwoPoints() {
     }
 }
 
+void TestAssignFrames() {
+    auto printResult = [](const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr) {
+        std::cout << "Rows: " << vecVecFrameCtr.size() << " Cols: " << vecVecFrameCtr[0].size() << std::endl;
+        for (const auto &vecFrameCtr : vecVecFrameCtr) {
+            for (const auto &ptFrameCtr : vecFrameCtr)
+                std::cout << ptFrameCtr << " ";
+            std::cout << std::endl;
+        }
+    };
+
+    Vision::VectorOfVectorOfPoint2f vecVecFrameCtr;
+
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST assignFrames case 1";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+    
+    DataUtils::assignFrames(200, 500, 600, 300, 50, 50, vecVecFrameCtr);
+    printResult(vecVecFrameCtr);
+
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST assignFrames case 2";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+    
+    DataUtils::assignFrames(12435, 13224, 22678, 6543, 600, 600, vecVecFrameCtr);
+    printResult(vecVecFrameCtr);
+}
+
+void TestIsWindowInFrame() {
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST isWindowInFrame case 1";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+
+    {
+        cv::Point2f ptWindowCtr(100, 100);
+        float winWidth  = 20;
+        float winHeight = 20;
+        cv::Point2f ptFrameCtr(110, 110);
+        float frameWidth  = 40;
+        float frameHeight = 40;
+        bool bInside = DataUtils::isWindowInFrame(ptWindowCtr, winWidth, winHeight, ptFrameCtr, frameWidth, frameHeight);
+        std::cout << (bInside ? "inside" : "not inside") << std::endl;
+    }
+
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST isWindowInFrame case 2";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+    
+    {
+        cv::Point2f ptWindowCtr(110, 110);
+        float winWidth  = 20;
+        float winHeight = 20;
+        cv::Point2f ptFrameCtr(100, 100);
+        float frameWidth  = 20;
+        float frameHeight = 20;
+        bool bInside = DataUtils::isWindowInFrame(ptWindowCtr, winWidth, winHeight, ptFrameCtr, frameWidth, frameHeight);
+        std::cout << (bInside ? "inside" : "not inside") << std::endl;
+    }
+}
+
+void TestConvertWindowToFrameRect()
+{
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST convertWindowToFrameRect case 1";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+
+    {
+        cv::Point2f ptWindowCtr(100, 100);
+        float winWidth  = 500;
+        float winHeight = 600;
+        cv::Point2f ptFrameCtr(110, 110);
+        int imageWidth  = 2032;
+        int imageHeight = 2032;
+        float fResolutionX = 15;
+        float fResolutionY = 15;
+        cv::Rect rectResult = DataUtils::convertWindowToFrameRect(ptWindowCtr, winWidth, winHeight, ptFrameCtr, imageWidth, imageHeight, fResolutionX, fResolutionY);
+        std::cout << "Result rect " << rectResult << std::endl;
+    }
+
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST convertWindowToFrameRect case 2";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+
+    {
+        cv::Point2f ptWindowCtr(2200, 3220);
+        float winWidth  = 1500;
+        float winHeight = 1000;
+        cv::Point2f ptFrameCtr(100, 100);
+        int imageWidth  = 2032;
+        int imageHeight = 2032;
+        float fResolutionX = 15;
+        float fResolutionY = 15;
+        cv::Rect rectResult = DataUtils::convertWindowToFrameRect(ptWindowCtr, winWidth, winHeight, ptFrameCtr, imageWidth, imageHeight, fResolutionX, fResolutionY);
+        std::cout << "Result rect " << rectResult << std::endl;
+    }
+
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST convertWindowToFrameRect case 3";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+
+    {
+        cv::Point2f ptWindowCtr(200, 220);
+        float winWidth  = 1500;
+        float winHeight = 1000;
+        cv::Point2f ptFrameCtr(5000, 5000);
+        int imageWidth  = 2032;
+        int imageHeight = 2032;
+        float fResolutionX = 15;
+        float fResolutionY = 15;
+        cv::Rect rectResult = DataUtils::convertWindowToFrameRect(ptWindowCtr, winWidth, winHeight, ptFrameCtr, imageWidth, imageHeight, fResolutionX, fResolutionY);
+        std::cout << "Result rect " << rectResult << std::endl;
+    }
+}
+
 void TestDataUtils()
 {
+    TestConvertWindowToFrameRect();
+    TestAssignFrames();
     TestIsNumber();
     TestParseCad();
     TestParseCAD_1();
     TestGetFrameFromCombinedImage();
     TestAlignWithTwoPoints();
+    TestIsWindowInFrame();    
 }

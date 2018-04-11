@@ -866,7 +866,6 @@ void SysCalibrationView::onCaliGuide()
 		{
 			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("开始标定..."));
 		}
-
 	}
 }
 
@@ -1185,14 +1184,13 @@ bool SysCalibrationView::decrptImages(QString& szFilePath)
 		{
 			QString absolute_file_path = file_info.absoluteFilePath();
 			QString nameDecrypt = file_info.absolutePath() + "/" + file_info.baseName() + ".bmp";
-			AOI::Crypt::DecryptFileNfg(absolute_file_path.toStdString(), nameDecrypt.toStdString());		
-
+			AOI::Crypt::DecryptFileNfg(absolute_file_path.toStdString(), nameDecrypt.toStdString());
 		}		
 		else
 		{
 			return false;
 		}
-	}	
+	}
 
 	return true;
 }

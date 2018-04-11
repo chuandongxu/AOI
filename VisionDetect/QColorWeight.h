@@ -6,13 +6,7 @@
 #include "opencv/cv.h"
 #include <memory>
 #include <string>
-
-enum GRAY_WEIGHT_METHOD
-{
-	EM_MODE_PT_THRESHOLD = 0,
-	EM_MODE_ONE_THRESHOLD,
-	EM_MODE_TWO_THRESHOLD
-};
+#include "../include/constants.h"
 
 struct GrayWeightParams
 {

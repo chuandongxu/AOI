@@ -1,8 +1,8 @@
-#include "InspVoidWidget.h"
 #include <QMessageBox>
 #include <QJsonObject>
 #include <QJsonDocument>
 
+#include "InspVoidWidget.h"
 #include "../Common/SystemData.h"
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"

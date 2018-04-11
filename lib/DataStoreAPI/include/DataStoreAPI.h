@@ -5,7 +5,7 @@
 #ifdef  __cplusplus
 #define API_CALL(T) __declspec(dllimport) T
 #else
-#define API_CALL(T) extern     __declspec(dllimport) T __stdcall
+#define API_CALL(T) extern __declspec(dllimport) T __stdcall
 #endif
 #endif
 
@@ -22,6 +22,8 @@ API_CALL(void) GetVersion(String &strVersion);
 API_CALL(void) GetErrorDetail(String &errorType, String &errorMessage);
 API_CALL(int)  CreateProject(const std::string &strProjFile, String const &userName = String());
 API_CALL(int)  OpenProject(const std::string &strProjFile, String const &userName = String());
+API_CALL(int)  SetBigBoardCoords(float left, float top, float right, float bottom);
+API_CALL(int)  GetBigBoardCoords(float &left, float &top, float &right, float &bottom);
 API_CALL(int)  CreateAlignment(Alignment &alignment);
 API_CALL(int)  UpdateAlignment(const Alignment &alignment);
 API_CALL(int)  GetAllAlignments(AlignmentVector &vecAlignment);

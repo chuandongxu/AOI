@@ -83,7 +83,6 @@ void QLeftWidget::paintEvent(QPaintEvent *event)
 	QPainter painter(this);
 	style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
 	QWidget::paintEvent(event);
-
 }
 
 void QLeftWidget::setStateWidget(QWidget * w)

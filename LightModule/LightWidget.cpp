@@ -55,8 +55,7 @@ LightWidget::LightWidget(QLightCtrl* pCtrl, QWidget *parent)
 	connect(ui.horizontalSlider_4, SIGNAL(valueChanged(int)), SLOT(onSliderChanged4(int)));
 	connect(ui.horizontalSlider_5, SIGNAL(valueChanged(int)), SLOT(onSliderChanged5(int)));
 	connect(ui.horizontalSlider_6, SIGNAL(valueChanged(int)), SLOT(onSliderChanged6(int)));	
-	connect(ui.horizontalSlider_7, SIGNAL(valueChanged(int)), SLOT(onSliderChanged7(int)));
-	
+	connect(ui.horizontalSlider_7, SIGNAL(valueChanged(int)), SLOT(onSliderChanged7(int)));	
 }
 
 LightWidget::~LightWidget()
@@ -84,7 +83,7 @@ void LightWidget::setLight(int nLight)
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			int nLightInt = light.vecLightIntensity[i];		
+			int nLightInt = light.vecLightIntensity[i];
 
 			QString key = QString("%0-%1%2").arg(device->getDeviceName()).arg(LUM_CH).arg(i);
 			QVariant data = System->getParam(key);

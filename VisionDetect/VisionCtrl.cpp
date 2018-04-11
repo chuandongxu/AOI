@@ -168,7 +168,7 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
 {
 	const int IMAGE_COUNT = 12;
 
-	if (imageMats.size() < IMAGE_COUNT) return false;	
+	if (imageMats.size() < IMAGE_COUNT) return false;
 
 	//Vision::PR_FAST_CALC_3D_HEIGHT_CMD stCmd;
 	if (m_stCalcHeightCmds[nStation - 1].matThickToThinK.empty())

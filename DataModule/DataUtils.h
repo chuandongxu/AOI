@@ -152,10 +152,37 @@ public:
         cv::Point2f  ptCadPos1,
         cv::Point2f  ptCadPos2,
         cv::Point2f  ptTargetPos1,
-        cv::Point2f   ptTargetPos2,
+        cv::Point2f  ptTargetPos2,
         float       &fRotationInRadian,
         float       &Tx,
         float       &Ty,
         float       &fScale);
+
+    static int assignFrames(
+        float                            left,
+        float                            top,
+        float                            right,
+        float                            bottom,
+        float                            fovWidth,
+        float                            fovHeight,
+        Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr);
+
+    static bool isWindowInFrame(
+        const cv::Point2f &ptWindowCtr,
+        float              winWidth,
+        float              winHeight,
+        const cv::Point2f &ptFrameCtr,
+        float              fovWidth,
+        float              fovHeight);
+
+    static cv::Rect convertWindowToFrameRect(
+        const cv::Point2f &ptWindowCtr,
+        float              winWidth,
+        float              winHeight,
+        const cv::Point2f &ptFrameCtr,
+        int                imageWidth,
+        int                imageHeight,
+        float              fResolutionX,
+        float              fResolutionY);
 };
 

@@ -84,12 +84,11 @@ void QLightDevice::closeCommPort()
 {
 	if (m_comPort)
 	{
-		m_comPort->close();	
+		m_comPort->close();
 		delete m_comPort;
-		m_comPort = NULL;	
+		m_comPort = NULL;
 	}
 }
-
 
 void QLightDevice::openLight(int ch)
 {
@@ -106,7 +105,7 @@ bool QLightDevice::isOpenLight(int ch)
 	return m_data[ch].bOpen;
 }
 
-void QLightDevice::setChLuminance(int ch,int luminance)
+void QLightDevice::setChLuminance(int ch, int luminance)
 {
 	if (m_comPort)
 	{
@@ -137,7 +136,7 @@ void QLightDevice::setChLuminance(int ch,int luminance)
 		QString szRetValue = "I" + szCh;
 
 		int nWaitTime = 1 * 100;
-		while (nWaitTime-- > 0 )
+		while (nWaitTime-- > 0)
 		{
 			QByteArray readLine;
 			if (m_comPort->read(readLine))

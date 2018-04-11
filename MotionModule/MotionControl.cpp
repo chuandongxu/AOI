@@ -852,6 +852,8 @@ bool MotionControl::home(int AxisID, bool bSyn)
 
 bool MotionControl::homeLimit(int AxisID, bool bSyn)
 {
+    if (System->isRunOffline()) return true;
+
 	short sRtn = 0; // 指令返回值变量
 
 	int nHomeDir = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._dir == 0 ? 1 : -1;

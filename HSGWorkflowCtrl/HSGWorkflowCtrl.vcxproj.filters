@@ -74,7 +74,25 @@
     <ClCompile Include="GeneratedFiles\Release\moc_hsgworksetting.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="LineNormal.cpp">
+    <ClCompile Include="AutoRunThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AlignmentRunnable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DataModule\DataUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Insp3DHeightRunnable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Calc3DHeightRunnable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Insp2DRunnable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -85,9 +103,6 @@
     <ClInclude Include="hsgworkflowctrl_global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_InitChecker.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_WorkflowDiagions.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -97,17 +112,32 @@
     <ClInclude Include="GeneratedFiles\ui_worksetting.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="hsgDeviceDefine.h">
+    <ClInclude Include="AutoRunThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LineNormal.h">
+    <ClInclude Include="AlignmentRunnable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StopWatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DataModule\DataUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Insp3DHeightRunnable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Calc3DHeightRunnable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Insp2DRunnable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="InitChecker.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="WorkflowDiagions.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>

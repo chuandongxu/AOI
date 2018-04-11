@@ -153,8 +153,8 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
         VisionViewFM fm(0, rectCadFMWindow, rectFMSrchWindow);
         pUI->setCurrentFM(fm);
         pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_SRCH_WINDOW);
-        int iReturn = System->showInteractMessage(QStringLiteral("Fiducial Mark"), QStringLiteral("Please select the search window of the fiducial mark"));
-        if (iReturn != QDialog::Accepted)
+        int nReturn = System->showInteractMessage(QStringLiteral("Fiducial Mark"), QStringLiteral("Please select the search window of the fiducial mark"));
+        if (nReturn != QDialog::Accepted)
             return;
 
         rectFMSrchWindow = pUI->getCurrentFM().getSrchWindow();
@@ -473,7 +473,7 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked() {
             auto x = (device.x + board.x) / dResolutionX;
             auto y = (device.y + board.y) / dResolutionY;
             if (bBoardRotated)
-                x = m_nBigImageWidth - x;
+                x = m_nBigImageWidth  - x;
             else
                 y = m_nBigImageHeight - y; //In cad, up is positive, but in image, down is positive.        
 
@@ -499,10 +499,10 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked() {
     for (auto &board : vecBoard) {
         if (bBoardRotated) {
             board.x += -m_fCadOffsetX;
-            board.y += m_fCadOffsetY;
+            board.y +=  m_fCadOffsetY;
         }
         else {
-            board.x += m_fCadOffsetX;
+            board.x +=  m_fCadOffsetX;
             board.y += -m_fCadOffsetY;
         }
 
