@@ -112,9 +112,6 @@
     <ClInclude Include="GeneratedFiles\ui_worksetting.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorkFlowCommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AutoRunThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>

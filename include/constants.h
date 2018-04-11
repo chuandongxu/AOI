@@ -21,8 +21,8 @@
 *--------------------------------------------------------------------------
 */
 
-#ifndef _CONSTANTS_H_
-#define _CONSTANTS_H_
+#ifndef _AOI_CONSTANTS_H_
+#define _AOI_CONSTANTS_H_
 
 #include <string>
 
@@ -60,5 +60,16 @@ enum GRAY_WEIGHT_METHOD
 	EM_MODE_TWO_THRESHOLD
 };
 
+enum CAPTURE_2D_IMAGE_SEQUENCE
+{
+    WHITE_LIGHT,
+    LOW_ANGLE_LIGHT,
+    RED_LIGHT,
+    GREEN_LIGHT,
+    BLUE_LIGHT,
+    UNIFORM_LIGHT,
+    TOTAL_COUNT,
+};
 
-#endif //_CONSTANTS_H_
+
+#endif //_AOI_CONSTANTS_H_

@@ -28,14 +28,10 @@
 #include "Insp3DHeightRunnable.h"
 #include "Insp2DRunnable.h"
 
-AutoRunThread::AutoRunThread(QCheckerParamMap                    *paramMap,
-                           QCheckerParamDataList                 *paramData,
-                           const Engine::AlignmentVector         &vecAlignments,
-                           const Engine::WindowVector            &vecWindows,
-                           const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr)
-	:m_paramMap       (paramMap),
-     m_paramData      (paramData),
-     m_vecAlignments  (vecAlignments),
+AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignments,
+                             const Engine::WindowVector            &vecWindows,
+                             const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr)
+	:m_vecAlignments  (vecAlignments),
      m_vecWindows     (vecWindows),
      m_vecVecFrameCtr (vecVecFrameCtr),
      m_exit           (false)
@@ -47,16 +43,6 @@ AutoRunThread::~AutoRunThread()
 {
 }
 
-int AutoRunThread::getPositionNum()
-{
-	return m_positionMap.size();
-}
-
-int AutoRunThread::getPositionID(int nIndex)
-{
-	return m_positionMap.value(nIndex);
-}
-
 void AutoRunThread::quit()
 {
 	resetResoultLight();
@@ -65,19 +51,11 @@ void AutoRunThread::quit()
 
 bool AutoRunThread::preRunning()
 {
-	m_3DMatHeights.clear();
-	m_matImages.clear();	
-
-	for (int i = 0; i < getPositionNum(); i++)
-	{
-		m_3DMatHeights.push_back(cv::Mat());
-		m_matImages.push_back(QImageStruct());
-	}
-
     m_dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     m_dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     m_nDLPCount = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-
+    m_nImageWidthPixel =  2032; //This value temporarily hard code here, later it should get from config file for camera API.
+    m_nImageHeightPixel = 2032;
 	return true;
 }
 
@@ -85,21 +63,16 @@ void AutoRunThread::run()
 {
 	if (! preRunning()) return;
 
-	System->setTrackInfo(QString(QStringLiteral("主流程启动成功!")));	
+	System->setTrackInfo(QString(QStringLiteral("主流程启动成功!")));
 
 	double dtime_start = 0, dtime_movePos = 0;
 	while (! isExit())
 	{
-		if (!waitStartBtn()) continue;
+		if (! waitStartBtn()) continue;
 		if (isExit()) break;
-		
-		QString szImagePath = generateImagePath();
 
-		dtime_start = double(clock());
-		if (!mergeImages(szImagePath)) continue;
-		if (isExit()) break;
-		dtime_movePos = double(clock());
-		System->setTrackInfo(QStringLiteral("Board%1:合成数据: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
+        _feedBoard();
+        _readBarcode();
 
 		if (! _doAlignment()) continue;
 		if (isExit()) break;
@@ -150,19 +123,6 @@ bool AutoRunThread::waitStartBtn()
 	return false;
 }
 
-bool AutoRunThread::moveToCapturePos(int nIndex)
-{
-	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
-	if (!pMotion) return false;
-
-	if (!pMotion->moveToPosGroup(getPositionID(nIndex), true))
-	{
-		System->setTrackInfo(QString("move to position error"));
-		return false;
-	}
-	return true;
-}
-
 bool AutoRunThread::moveToCapturePos(float fPosX, float fPosY)
 {
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
@@ -181,26 +141,20 @@ bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
 
-	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
-	if (!pDlp) return false;
-
-	IVision* pVision = getModule<IVision>(VISION_MODEL);
-	if (!pVision) return false;
-
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return false;
 
-	imageMats.clear();	
+	imageMats.clear();
 
 	if (!pCam->startCapturing())
 	{
-		System->setTrackInfo(QString("startCapturing error"));	
+		System->setTrackInfo(QString("startCapturing error."));	
 		return false;
 	}
 	
 	if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true))
 	{
-		System->setTrackInfo(QString("triggerCapturing error"));	
+		System->setTrackInfo(QString("triggerCapturing error."));	
 		return false;
 	}	
 
@@ -212,12 +166,12 @@ bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
 
 	if (nWaitTime <= 0)
 	{
-		System->setTrackInfo(QString("CaptureImageBufferDone error"));		
+		System->setTrackInfo(QString("CaptureImageBufferDone error."));		
 		return false;
 	}
 
 	int nCaptureNum = pCam->getImageBufferCaptureNum();
-	for (int i = 0; i < nCaptureNum; i++)
+	for (int i = 0; i < nCaptureNum; ++ i)
 	{
 		cv::Mat matImage = pCam->getImageItemBuffer(i);
 		imageMats.push_back(matImage);
@@ -225,10 +179,10 @@ bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
 
 	if (nCaptureNum != pCam->getImageBufferNum())
 	{	
-		System->setTrackInfo(QString("System captureImages error, Image Num: %1").arg(nCaptureNum));
+		System->setTrackInfo(QString("System captureAllImages error, Image Num: %1").arg(nCaptureNum));
 
 		bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
-		if (!bCaptureImage)
+		if (! bCaptureImage)
 		{
 			QString capturePath = System->getParam("camera_cap_image_path").toString();
 
@@ -242,250 +196,15 @@ bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
 				cv::imwrite((fileDir + name).toStdString().c_str(), imageMats[i]);
 			}
 		}
-
-		return false;
-	}
-	System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));
-
-	return true;
-}
-
-bool AutoRunThread::captureImages(int nIndex, QString& szImagePath)
-{
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return false;
-
-	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
-	if (!pDlp) return false;
-
-	IVision* pVision = getModule<IVision>(VISION_MODEL);
-	if (!pVision) return false;
-
-	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-	if (!pUI) return false;
-
-	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_CAPTURING, 0);
-
-	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
-	bool bMotionCardTrigger = (1 == nDlpMode);
-
-	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-	for (int i = 0; i < nStationNum; i++)
-	{
-		if (!pDlp->isConnected(i))
-		{
-			System->setTrackInfo(QString("System DLP not connect error!"));
-			return false;
-		}
-	}
-
-	QVector<cv::Mat> imageMats;
-	int nPatternNum = System->getParam("motion_trigger_pattern_num").toInt();
-	if (bMotionCardTrigger)
-	{
-		double dtime_start = double(clock());		
-		if (!captureAllImages(imageMats)) return false;
-		double dtime_movePos = double(clock());
-		System->setTrackInfo(QStringLiteral("Board%1:采集图像数据: %2 ms").arg(0).arg(dtime_movePos - dtime_start), true);
-		
-		for (int i = 0; i < nStationNum; i++)
-		{
-			(*m_paramData)[i]._srcImageMats.clear();
-			for (int j = 0; j < nPatternNum; j++)
-			{
-				(*m_paramData)[i]._srcImageMats.push_back(imageMats[i*nPatternNum + j]);
-            }
-		}
-	}
-
-	for (int i = 0; i < nStationNum; i++)
-	{
-		(*m_paramData)[i]._bCapturedDone = false;
-		(*m_paramData)[i]._bStartCapturing = true;
-	}
-
-	//bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
-	//if (bCaptureLightImage)
-	//{
-	//	saveImages(szImagePath, nIndex, imageMats.mid(nStationNum*nPatternNum));
-	//}
-
-	int nWaitTime = 30 * 100;
-	while (nWaitTime-- > 0 && !isExit())
-	{
-		bool bCapturedDone = true;
-		for (int i = 0; i < nStationNum; i++)
-		{
-			if (!(*m_paramData)[i]._bCapturedDone)
-			{
-				bCapturedDone = false;
-				break;
-			}
-		}
-
-		if (bCapturedDone) break;
-		QThread::msleep(10);
-	}
-	if (nWaitTime <= 0)
-	{
-		System->setTrackInfo(QStringLiteral("等待DLP计算TimeOut. Try again!"));
 		return false;
 	}
 
-	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_GENERATE_GRAY, 0);
-	
-	cv::Mat matGray; int nCapturedNum = 0;
-	for (int i = 0; i < nStationNum; i++)
-	{
-		if (matGray.empty())
-		{
-			matGray = (*m_paramData)[i]._matImage.clone();
-			matGray.setTo(0);
-		}
-		matGray += (*m_paramData)[i]._matImage;
-		nCapturedNum += 1;
-	}
-	matGray /= nCapturedNum;
-	cv::cvtColor(matGray, matGray, CV_BayerGR2BGR);
-	m_matImages[nIndex]._img[4] = matGray;
-
-	//pUI->setImage(matGray, true);
-	//QEos::Notify(EVENT_RESULT_DISPLAY, 0, STATION_RESULT_IMAGE_DISPLAY);
-
-	QVector<cv::Mat> lightImages = imageMats.mid(nStationNum*nPatternNum);
-	cv::Mat outputPseudocolor(matGray.size(), CV_8UC3);
-	unsigned char grayValueB, grayValueG, grayValueR;
-	for (int y = 0; y < matGray.rows; y++)
-	{
-		for (int x = 0; x < matGray.cols; x++)
-		{
-			grayValueB = lightImages[4].at<uchar>(y, x);
-			grayValueG = lightImages[3].at<uchar>(y, x);
-			grayValueR = lightImages[2].at<uchar>(y, x);
-
-			cv::Vec3b& pixel = outputPseudocolor.at<cv::Vec3b>(y, x);
-			pixel[0] = abs(grayValueB);
-			pixel[1] = abs(grayValueG);
-			pixel[2] = abs(grayValueR);
-		}
-	}
-	cv::cvtColor(lightImages[0], lightImages[0], CV_BayerGR2BGR);
-	m_matImages[nIndex]._img[0] = lightImages[0];
-	cv::cvtColor(lightImages[1], lightImages[1], CV_BayerGR2BGR);
-	m_matImages[nIndex]._img[1] = lightImages[1];
-	m_matImages[nIndex]._img[2] = outputPseudocolor;
-	cv::cvtColor(lightImages[5], lightImages[5], CV_BayerGR2BGR);
-	m_matImages[nIndex]._img[3] = lightImages[5];
-
-	bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
-	if (bCaptureLightImage)
-	{
-		QVector<cv::Mat> savingImages;
-		for (int i = 0; i < g_nImageStructDataNum; i++)
-			savingImages.push_back(m_matImages[nIndex]._img[i]);
-		saveImages(szImagePath, 0, nIndex, g_nImageStructDataNum*getPositionNum(), savingImages);
-	}
-
-	pUI->setImage(m_matImages[nIndex]._img[m_nImageIndex], true);
-
-	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_CALCULATE_3D, 0);
-
-	QVector<cv::Mat> matHeights;
-	for (int i = 0; i < nStationNum; i++)
-	{
-		matHeights.push_back((*m_paramData)[i]._3DMatHeight);
-	}
-
-	if (!pVision->merge3DHeight(matHeights, m_3DMatHeights[nIndex]))
-	{		
-		return false;
-	}	
-	
 	return true;
 }
 
 bool AutoRunThread::mergeImages(QString& szImagePath)
 {
-	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-	if (!pUI) return false;
-
-	IVision* pVision = getModule<IVision>(VISION_MODEL);
-	if (!pVision) return false;
-
-	QVector<cv::Mat> matInputImages;
-	for each (QImageStruct var in m_matImages)
-	{
-		for (int i = 0; i < g_nImageStructDataNum; i++)
-		{
-			matInputImages.push_back(var._img[i]);
-		}
-	}
-	
-	QVector<cv::Mat> matOutputImages;
-	pVision->mergeImage(matInputImages, matOutputImages);
-	if (matOutputImages.size() == g_nImageStructDataNum)
-	{
-		for (int i = 0; i < matOutputImages.size(); i++)
-		{
-			m_stCombinedImage._img[i] = matOutputImages.at(i);
-		}
-	}
-
-	pUI->setImage(m_stCombinedImage._img[m_nImageIndex], true);
-	bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
-	if (bCaptureLightImage)
-	{		
-		saveCombineImages(szImagePath, matOutputImages);
-	}
-
-	for (int i = 0; i < getPositionNum(); i++)
-	{
-
-	}
-	pUI->setHeightData(m_3DMatHeight);
-
 	return true;
-}
-
-bool AutoRunThread::calculateDetectHeight()
-{
-	//ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	//if (!pCam) return false;
-
-	//IVision* pVision = getModule<IVision>(VISION_MODEL);
-	//if (!pVision) return false;
-
-	//QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_CALCULATE_HEIGHT, 0);
-
-	//if (pVision->calculateDetectHeight(m_3DMatHeight, m_objTests))
-	//{
-	//	return true;
-	//}
-
-	return true;
-}
-
-bool AutoRunThread::waitCheckDone()
-{
-	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_RESOULT, 1);
-
-	IData * pData = getModule<IData>(DATA_MODEL);
-	if (pData)
-	{
-		pData->decrementCycleTests();
-	}
-
-	return true;
-}
-
-bool AutoRunThread::doAlignment()
-{
-    IData * pData = getModule<IData>(DATA_MODEL);
-    Vision::VectorOfMat vecFrameImage;
-    for (const auto &stFrameImages : m_matImages) {
-        vecFrameImage.push_back(stFrameImages._img[m_nImageIndex]);
-    }
-    return pData->doAlignment(vecFrameImage);
 }
 
 bool AutoRunThread::isExit()
@@ -533,15 +252,6 @@ void AutoRunThread::resetResoultLight()
 
 bool AutoRunThread::getLightIO(int &okLight, int &ngLight)
 {
-	if (m_paramMap->contains(PARAM_STATION_OK_LIGHT)
-		&& m_paramMap->contains(PARAM_STATION_NG_LIGHT))
-	{
-		okLight = m_paramMap->value(PARAM_STATION_OK_LIGHT).toInt();
-		ngLight = m_paramMap->value(PARAM_STATION_NG_LIGHT).toInt();
-
-		return true;
-	}
-
 	return false;
 }
 
@@ -589,6 +299,20 @@ cv::Rect AutoRunThread::_calcImageRect(float fImgCapPosUmX, float fImgCapPosUmY,
     float fRectWidth  = fRectWidthUm  / m_dResolutionX;
     float fRectHeight = fRectHeightUm / m_dResolutionY;
     return cv::Rect(fRectCtrX - fRectWidth / 2.f, fRectCtrY - fRectHeight / 2.f, fRectWidth, fRectHeight);
+}
+
+bool AutoRunThread::_feedBoard()
+{
+    // Track motor on to drag the PCB board into the machine and put under camera.
+    // Need to implement later.
+    return true;
+}
+
+bool AutoRunThread::_readBarcode()
+{
+    // Read the bard code.
+    // Need to implement later.
+    return true;
 }
 
 bool AutoRunThread::_doAlignment()
@@ -702,9 +426,18 @@ bool AutoRunThread::_doInspection()
             auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolCalc3DHeight, vecCalc3dHeightRunnable);
             QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
 
-            Engine::WindowVector vecWindows = _getWindowInFrame(cv::Point2f(ptFrameCtr.x, ptFrameCtr.y));
-            Vision::VectorOfMat vec2DImages(vecMatImages.begin() + m_nDLPCount * DLP_IMG_COUNT, vecMatImages.end());
-            auto pInsp2DRunnable = new Insp2DRunnable(vec2DImages, vecWindows);
+            Engine::WindowVector vecWindows = _getWindowInFrame(ptFrameCtr);
+            Vision::VectorOfMat vec2DCaptureImages(vecMatImages.begin() + m_nDLPCount * DLP_IMG_COUNT, vecMatImages.end());
+            if (vec2DCaptureImages.size() != CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT) {
+                System->setTrackInfo(QString(QStringLiteral("2D image count %0 not correct.")).arg(vec2DCaptureImages.size()));
+                bGood = false;
+                break;
+            }
+
+            auto vec2DImages = _generate2DImages(vec2DCaptureImages);
+            auto pInsp2DRunnable = new Insp2DRunnable(vec2DImages, vecWindows, ptFrameCtr);
+            pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
+            pInsp2DRunnable->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
             QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
         }
 
@@ -719,8 +452,49 @@ Engine::WindowVector AutoRunThread::_getWindowInFrame(const cv::Point2f &ptFrame
 {
     Engine::WindowVector vecResult;
     for (const auto &window : m_vecAlignedWindows) {
-        if (DataUtils::isWindowInFrame(cv::Point2f(window.x, window.y), window.width, window.height, ptFrameCtr, m_fFovWidth, m_fFovHeight))
+        if (DataUtils::isWindowInFrame(cv::Point2f(window.x, window.y), window.width, window.height, ptFrameCtr, m_fFovWidthUm, m_fFovHeightUm))
             vecResult.push_back(window);
     }
     return vecResult;
+}
+
+Vision::VectorOfMat AutoRunThread::_generate2DImages(const Vision::VectorOfMat &vecInputImages)
+{
+    assert(vecInputImages.size() == CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT);
+
+    Vision::VectorOfMat vecResultImages;
+    cv::Mat matRed, matGreen, matBlue;
+    bool bColorCamera = false;
+    if (bColorCamera) {
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT],   matRed,   CV_BayerGR2GRAY);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT], matGreen, CV_BayerGR2GRAY);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT],  matBlue,  CV_BayerGR2GRAY);
+    }else {
+        matRed   = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT];
+        matGreen = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT];
+        matBlue  = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT];
+    }
+
+    Vision::VectorOfMat vecChannels{matBlue, matGreen, matRed};
+    cv::Mat matPseudocolorImage;
+    cv::merge(vecChannels, matPseudocolorImage);
+
+    cv::Mat matTopLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT], matTopLightImage, CV_BayerGR2BGR);
+	vecResultImages.push_back(matTopLightImage);
+
+    cv::Mat matLowAngleLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
+    vecResultImages.push_back(matLowAngleLightImage);
+
+    vecResultImages.push_back(matPseudocolorImage);
+
+	cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT], matUniformLightImage, CV_BayerGR2BGR);
+	vecResultImages.push_back(matUniformLightImage);
+
+    return vecResultImages;
 }

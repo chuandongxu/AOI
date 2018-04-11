@@ -3,7 +3,6 @@
 #include <QThreadPool>
 #include <atomic>
 
-#include "WorkFlowCommon.h"
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
 
@@ -13,18 +12,12 @@ using namespace AOI;
 class AutoRunThread : public QThread
 {
 public:
-	AutoRunThread(QCheckerParamMap                     *paramMap,
-                 QCheckerParamDataList                 *paramData,
-                 const Engine::AlignmentVector         &vecAlignments,
+	AutoRunThread(const Engine::AlignmentVector         &vecAlignments,
                  const Engine::WindowVector            &vecWindows,
                  const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr);
 	~AutoRunThread();
 
 	void quit();
-
-private:
-	int getPositionNum();
-	int getPositionID(int nIndex);
 
 protected:
 	bool preRunning();
@@ -32,13 +25,8 @@ protected:
 	void run() override;
 	
 	bool waitStartBtn();
-	bool moveToCapturePos(int nIndex);
     bool moveToCapturePos(float fPosX, float fPosY);
-	bool captureImages(int nIndex, QString& szImagePath);
 	bool mergeImages(QString& szImagePath);
-	bool calculateDetectHeight();
-	bool waitCheckDone();
-    bool doAlignment();
 	bool isExit();
 
 private:
@@ -53,23 +41,19 @@ private:
 	void saveCombineImages(const QString& szImagePath, const QVector<cv::Mat>& imageMats);
 
     cv::Rect _calcImageRect(float fImgCapPosUmX, float fImgCapPosUmY, float fRectPosUmX, float fRectPosUmY, float fRectWidthUm, float fRectHeightUm);
+    bool _feedBoard();
+    bool _readBarcode();
     bool _doAlignment();
     bool _alignWindows();
     bool _doInspection();
     Engine::WindowVector _getWindowInFrame(const cv::Point2f &ptFrameCtr);
+    Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
 
 private:
-	QCheckerParamMap *m_paramMap;
-	QCheckerParamDataList *m_paramData;
-	QCheckerPositionMap m_positionMap;
-
 	std::atomic<bool> m_exit;
 	
-	QVector<cv::Mat> m_3DMatHeights;
 	cv::Mat m_3DMatHeight;
 
-	QVector<QImageStruct> m_matImages;
-	QImageStruct m_stCombinedImage;
 	int m_nImageIndex;
 
     Engine::AlignmentVector         m_vecAlignments;
@@ -81,8 +65,10 @@ private:
     cv::Mat                         m_matTransform;
     Vision::VectorOfVectorOfPoint2f m_vecVecFrameCtr;
     QThreadPool                     m_threadPoolCalc3DHeight;
-    float                           m_fFovWidth;
-    float                           m_fFovHeight;
+    float                           m_fFovWidthUm;
+    float                           m_fFovHeightUm;
+    int                             m_nImageWidthPixel;
+    int                             m_nImageHeightPixel;
 };
 
 

@@ -492,7 +492,7 @@ matTransform = [ cos(a) -sina(a) Tx ]
     cv::Point2f ptImageCtr;
     ptImageCtr.x = imageWidth  / 2 + (ptWindowCtr.x - ptFrameCtr.x) / fResolutionX;
     ptImageCtr.y = imageHeight / 2 - (ptWindowCtr.y - ptFrameCtr.y) / fResolutionY; //The image Y and CAD Y positive direction is inverse.
-    int winWidthPixel  = winWidth  / fResolutionX;
-    int winHeightPixel = winHeight / fResolutionY;
-    return cv::Rect(ptImageCtr.x - winWidthPixel / 2, ptImageCtr.y - winHeightPixel / 2, winWidthPixel, winHeightPixel);
+    int winWidthPixel  = static_cast<int>(winWidth  / fResolutionX);
+    int winHeightPixel = static_cast<int>(winHeight / fResolutionY);
+    return cv::Rect(static_cast<int>(ptImageCtr.x) - winWidthPixel / 2, static_cast<int>(ptImageCtr.y) - winHeightPixel / 2, winWidthPixel, winHeightPixel);
 }

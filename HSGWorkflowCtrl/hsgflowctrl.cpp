@@ -37,7 +37,6 @@ QFlowCtrl::QFlowCtrl(QObject *parent)
 	m_errorCode = -1;
 	m_timerId = startTimer(50);
 
-	m_pMainParamMap = NULL;
 	m_pAutoRunThread = NULL;
 
 	this->initStationParam();
@@ -63,18 +62,6 @@ QFlowCtrl::QFlowCtrl(QObject *parent)
 
 QFlowCtrl::~QFlowCtrl()
 {
-	if(-1 != m_timerId)killTimer(m_timerId);
-	QCheckerParamMapList::iterator it = m_stationParams.begin();
-	for(; it != m_stationParams.end(); ++it)delete *it;
-
-	m_stationParams.clear();
-	m_stationDatas.clear();
-
-	if (m_pMainParamMap)
-	{
-		delete m_pMainParamMap;
-		m_pMainParamMap = NULL;
-	}
 }
 
 bool QFlowCtrl::isRuning()
@@ -157,146 +144,6 @@ void QFlowCtrl::startAutoRun()
 void QFlowCtrl::stopAutoRun()
 {
 	if (m_isStart) stop();
-}
-
-void QFlowCtrl::autoThreadFinish()
-{
-    delete m_pAutoRunThread;
-    m_pAutoRunThread = NULL;
-}
-
-void QFlowCtrl::timerEvent(QTimerEvent * event)
-{
-	static int count = 0;
-
-	if(count > 50)
-	{
-		checkImStop();
-		checkReset();
-		checkStart();
-		checkStop();
-		readbarCode();
-		checkMotionState();
-		checkError();
-		checkAuthError();
-	}
-	else count++;
-}
-
-
-void QFlowCtrl::checkImStop()
-{
-	static int s_iState = 1;
-
-	IMotion * p = getModule<IMotion>(MOTION_MODEL);
-	if(p)
-	{
-		int iState = 1;
-		//p->getExtDI(DI_IM_STOP,iState);
-		if(0 == iState && 1 == s_iState)
-		{
-			this->imStop();
-			s_iState = iState;
-		}
-		else if(1 == iState)
-		{
-			s_iState = 1;
-		}
-	}
-}
-
-void QFlowCtrl::checkReset()
-{
-	static int s_iState = 0;
-
-	IMotion * p = getModule<IMotion>(MOTION_MODEL);
-	if(p)
-	{
-		int iState = 0;
-		//p->getExtDI(DI_RESET,iState);
-		if(1 == iState && 0 == s_iState)
-		{
-			this->reset();
-			s_iState = iState;
-		}
-		else if(0 == iState)
-		{
-			s_iState = 0;
-		}
-	}
-}
-
-void QFlowCtrl::checkStart()
-{
-	static int s_iState = 0;
-	static clock_t s_clock = 0;
-
-	IMotion * p = getModule<IMotion>(MOTION_MODEL);
-	if(p)
-	{
-		int iState = 0;
-		if(System->isEnableOutline())
-		{
-			iState = System->data(OUT_LINE_RUN).toInt();
-		}
-		else
-		{
-			//p->getExtDI(DI_START,iState);
-		}
-
-		if(1 == iState && 0 == s_iState)
-		{
-			//启动按钮持续按下200ms以上在响应
-			if(0 == s_clock)
-			{
-				s_clock = clock();
-			}
-			else
-			{
-				clock_t tm = clock();
-				if((tm - s_clock) > 50)
-				{
-					this->start();
-					s_iState = iState;
-					s_clock = 0;
-				}
-			}
-		}
-		else if(0 == iState)
-		{
-			s_iState = 0;
-			s_clock = 0;
-		}
-	}
-}
-
-void QFlowCtrl::checkStop()
-{
-	static int s_iState = 0;
-
-	IMotion * p = getModule<IMotion>(MOTION_MODEL);
-	if(p)
-	{
-		int iState = 0;
-		if(System->isEnableOutline())
-		{
-			iState = System->data(OUT_LINE_STOP).toInt();
-		}
-		else
-		{
-			//p->getExtDI(DI_STOP,iState);
-		}
-		
-		if(1 == iState && 0 == s_iState)
-		{			
-			this->stop();
-			s_iState = iState;
-		}
-		else if(0 == iState)
-		{
-			s_iState = 0;
-		}
-	}
 }
 
 void QFlowCtrl::readbarCode()
@@ -387,7 +234,7 @@ void QFlowCtrl::start()
 
     auto fResolutionX = System->getSysParam("CAM_RESOLUTION_X").toFloat();
     auto fResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toFloat();
-    float fovWidth = 350.f, fovHeight = 350.f;
+    float fovWidth = 2032 * fResolutionX, fovHeight = 2032 * fResolutionY;  // 2032 is the camera resolution, later need to get from elsewhere.
     Vision::VectorOfVectorOfPoint2f vecVecFrameCtr;
     nResult = DataUtils::assignFrames(left, top, right, bottom, fovWidth, fovHeight, vecVecFrameCtr);
 
@@ -445,8 +292,8 @@ void QFlowCtrl::start()
 			System->setTrackInfo(QString(QStringLiteral("工位%0启动失败, 请检查DLP硬件！")).arg(i + 1));
 	}
 
-    m_pAutoRunThread = new AutoRunThread(m_pMainParamMap, &m_stationDatas, vecAlignments, vecWindows, vecVecFrameCtr);
-    connect(m_pAutoRunThread, &AutoRunThread::finished, m_pAutoRunThread, &QObject::deleteLater);
+    m_pAutoRunThread = new AutoRunThread(vecAlignments, vecWindows, vecVecFrameCtr);
+    connect(m_pAutoRunThread, &AutoRunThread::finished, this, &QObject::deleteLater);
     m_pAutoRunThread->start();
 
 	m_isStart = true;
@@ -515,37 +362,6 @@ void QFlowCtrl::stop()
 
 void QFlowCtrl::initStationParam()
 {
-	//第一个检测器
-	QCheckerParamMap *paramMap = new QCheckerParamMap;
-	paramMap->insert(PARAM_STATION_ID, 1);
-	/*paramMap->insert(PARAM_STATION_START_IO, DI_START_STATION1);
-	paramMap->insert(PARAM_STATION_IN_AXIS,AXIS_CHECK1_IN);
-	paramMap->insert(PARAM_STATION_TOP_AXIS, AXIS_CHECK1_TOP);
-	paramMap->insert(PARAM_STATION_CHECK_POS, 1);
-	paramMap->insert(PARAM_STATION_BACK_POS, 0);
-	paramMap->insert(PARAM_STATION_CHECK_TYPE, CHECK_TYPE_ATEQ);
-	paramMap->insert(PARAM_STATION_OK_LIGHT, DO_CHECK_OK1);
-	paramMap->insert(PARAM_STATION_NG_LIGHT, DO_CHECK_NG1);
-	paramMap->insert(PARAM_STATION_AI, CHECK_AI_1);*/
-	m_stationParams.append(paramMap);
-	m_stationDatas.append(Q3DStructData());
-
-	paramMap = new QCheckerParamMap;
-	paramMap->insert(PARAM_STATION_ID, 2);	
-	m_stationParams.append(paramMap);
-	m_stationDatas.append(Q3DStructData());
-
-	paramMap = new QCheckerParamMap;
-	paramMap->insert(PARAM_STATION_ID, 3);
-	m_stationParams.append(paramMap);
-	m_stationDatas.append(Q3DStructData());
-
-	paramMap = new QCheckerParamMap;
-	paramMap->insert(PARAM_STATION_ID, 4);
-	m_stationParams.append(paramMap);
-	m_stationDatas.append(Q3DStructData());
-
-	m_pMainParamMap = new QCheckerParamMap;
 }
 
 void QFlowCtrl::checkAuthError()
@@ -559,54 +375,16 @@ void QFlowCtrl::checkAuthError()
 			return;
 		}
 		m_dateTime = QDateTime::currentDateTime();
-	}
-	
+	}	
 }
 
 //检测电机驱动器状态，报警，急停，使能等。
 void QFlowCtrl::checkMotionState()
 {
-	static bool alm_state = false;
-
-	IMotion * p = getModule<IMotion>(MOTION_MODEL);
-	if(p)
-	{
-		int nAxis = 0;
-		int axis[12];
-		IMotion::STATE state[12];
-		memset(axis,0,sizeof(int));
-		memset(state,0,sizeof(IMotion::STATE));
-		//p->getState(nAxis,axis,state);
-
-		for(int i=0; i<nAxis; i++)
-		{
-			if(state[i] == IMotion::STATE_ALM)
-			{
-				if(!alm_state)
-				{
-					alm_state = true;
-					System->setErrorCode(ERROR_MOTOR_ALM);
-					return;
-				}
-			}
-		}
-
-		alm_state = false;
-	}
 }
 
 void QFlowCtrl::checkError()
 {
-	unsigned int code = System->getErrorCode();
-	if( m_errorCode == code) return;
-	if (code < 0x30000000)
-	{
-		if(!System->isImStop())
-		{
-			this->imStop();
-			m_errorCode = code;
-		}
-	}
 }
 
 void QFlowCtrl::initErrorCode()

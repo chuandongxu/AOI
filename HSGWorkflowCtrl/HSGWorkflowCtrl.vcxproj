@@ -195,7 +195,6 @@
     <ClInclude Include="AutoRunThread.h" />
     <ClInclude Include="StopWatch.h" />
     <ClInclude Include="TimeLog.h" />
-    <ClInclude Include="WorkFlowCommon.h" />
     <CustomBuild Include="hsgworksetting.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing hsgworksetting.h...</Message>

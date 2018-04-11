@@ -17,16 +17,11 @@
 
 class QFlowCtrl : public QObject
 {
-	typedef QList<QCheckerParamMap*> QCheckerParamMapList;
 	Q_OBJECT
 public:
 	QFlowCtrl(QObject *parent);
 	~QFlowCtrl();
 
-	/*void setEnableCheckStation(int *enableState);
-	void setEnableCheckStation(int n,int state);
-	void getEnableCheckStation(int *enableState);
-	bool isEnableCheckStation(int iStation);*/
 	bool isRuning();
 
 protected slots:
@@ -35,15 +30,8 @@ protected slots:
 	void home();
 	void startAutoRun();
 	void stopAutoRun();
-    void autoThreadFinish();
 
 protected:
-	virtual void timerEvent(QTimerEvent * event);
-
-	void checkImStop();
-	void checkReset();
-	void checkStart();
-	void checkStop();
 	void readbarCode();
 	void checkMotionState();
 	void checkError();
@@ -62,9 +50,7 @@ private:
 	bool m_isHome;
 	bool m_homeIng;
 	bool m_isStart;
-	QCheckerParamMapList m_stationParams;
-	QCheckerParamDataList m_stationDatas;
-	QCheckerParamMap *m_pMainParamMap;
+
 	AutoRunThread *m_pAutoRunThread;
 
 	QDateTime m_dateTime;
