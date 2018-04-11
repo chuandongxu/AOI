@@ -72,6 +72,6 @@ private:
 	QCheckerParamMapList m_stationParams;
 	QCheckerParamDataList m_stationDatas;
 	QCheckerParamMap *m_pMainParamMap;
-	QMainRunable* m_pMainStation;
+	AutoRunThread* m_pMainStation;
 	int m_errorCode;
 };

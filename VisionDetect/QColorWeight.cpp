@@ -526,20 +526,20 @@ int QColorWeight::calcGrayValue(cv::Scalar& pixel)
 
 cv::Mat QColorWeight::_convertToGrayImage()
 {
-    int nValueR = ui.horizontalSlider_R->value();
-	int nValueG = ui.horizontalSlider_G->value();
-	int nValueB = ui.horizontalSlider_B->value();
+    int nScaleR = ui.horizontalSlider_R->value();
+	int nScaleG = ui.horizontalSlider_G->value();
+	int nScaleB = ui.horizontalSlider_B->value();
 
-	bool bUsedR = ui.checkBox_R->isChecked();
-	bool bUsedG = ui.checkBox_G->isChecked();
-	bool bUsedB = ui.checkBox_B->isChecked();
+	bool bEnableR = ui.checkBox_R->isChecked();
+	bool bEnableG = ui.checkBox_G->isChecked();
+	bool bEnableB = ui.checkBox_B->isChecked();
 
     Vision::PR_COLOR_TO_GRAY_CMD stCmd;
 	Vision::PR_COLOR_TO_GRAY_RPY stRpy;
 
-    stCmd.stRatio.fRatioR = bUsedR ? nValueR / 100.0f : 0.f;
-    stCmd.stRatio.fRatioG = bUsedG ? nValueG / 100.0f : 0.f;
-    stCmd.stRatio.fRatioB = bUsedB ? nValueB / 100.0f : 0.f;
+    stCmd.stRatio.fRatioR = bEnableR ? nScaleR / 100.0f : 0.f;
+    stCmd.stRatio.fRatioG = bEnableG ? nScaleG / 100.0f : 0.f;
+    stCmd.stRatio.fRatioB = bEnableB ? nScaleB / 100.0f : 0.f;
     stCmd.matInputImg = m_imageMat;
 
     Vision::PR_ColorToGray(&stCmd, &stRpy);

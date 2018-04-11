@@ -26,6 +26,7 @@ int COMMON_EXPORT WriteBinaryFile(String const &filePathname, Binary const &data
 
     fs.write(reinterpret_cast<char const *>(&data[0]), data.size());
     fs.close();
+    return 0;
 }
 
 String COMMON_EXPORT FormatRecordName(int nRecordId) {

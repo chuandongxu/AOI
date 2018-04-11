@@ -381,27 +381,27 @@ int QCheckerRunable::getStationID()
 //
 //******************************************************************************
 
-QMainRunable::QMainRunable(QCheckerParamMap * paramMap, QCheckerParamDataList* paramData, DataCtrl* pCtrl)
+AutoRunThread::AutoRunThread(QCheckerParamMap * paramMap, QCheckerParamDataList* paramData, DataCtrl* pCtrl)
 	:m_paramMap(paramMap), m_paramData(paramData), m_pCtrl(pCtrl), m_exit(false)
 {
 }
 
-QMainRunable::~QMainRunable()
+AutoRunThread::~AutoRunThread()
 {
 
 }
 
-void QMainRunable::quit()
+void AutoRunThread::quit()
 {
 	resetResoultLight();
 	m_exit = true;
 }
 
-void QMainRunable::imgStop()
+void AutoRunThread::imgStop()
 {
 }
 
-void QMainRunable::run()
+void AutoRunThread::run()
 {
 	System->setTrackInfo(QString(QStringLiteral("主流程启动成功!")));
 
@@ -452,7 +452,7 @@ void QMainRunable::run()
 	System->setTrackInfo(QString(QStringLiteral("主流程已停止")));
 }
 
-bool QMainRunable::waitStartBtn()
+bool AutoRunThread::waitStartBtn()
 {
 	if (m_pCtrl)
 	{
@@ -477,7 +477,7 @@ bool QMainRunable::waitStartBtn()
 	return false;
 }
 
-bool QMainRunable::captureAllImages(QVector<cv::Mat>& imageMats)
+bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
 {
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
@@ -599,7 +599,7 @@ bool QMainRunable::captureAllImages(QVector<cv::Mat>& imageMats)
 	return true;
 }
 
-bool QMainRunable::captureImages()
+bool AutoRunThread::captureImages()
 {
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
@@ -725,7 +725,7 @@ bool QMainRunable::captureImages()
 	return true;
 }
 
-bool QMainRunable::matchPosition()
+bool AutoRunThread::matchPosition()
 {
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
@@ -753,7 +753,7 @@ bool QMainRunable::matchPosition()
 	return true;
 }
 
-bool QMainRunable::calculateDetectHeight()
+bool AutoRunThread::calculateDetectHeight()
 {
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
@@ -771,7 +771,7 @@ bool QMainRunable::calculateDetectHeight()
 	return false;
 }
 
-bool QMainRunable::calculateDetectProfile()
+bool AutoRunThread::calculateDetectProfile()
 {
 	IVision* pVision = getModule<IVision>(VISION_MODEL);
 	if (!pVision) return false;
@@ -784,7 +784,7 @@ bool QMainRunable::calculateDetectProfile()
 	return false;
 }
 
-bool QMainRunable::waitCheckDone()
+bool AutoRunThread::waitCheckDone()
 {
 
 	QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_RESOULT, 1);
@@ -804,12 +804,12 @@ bool QMainRunable::waitCheckDone()
 	return true;
 }
 
-bool QMainRunable::isExit()
+bool AutoRunThread::isExit()
 {
 	return m_exit;
 }
 
-void QMainRunable::clearTestObjs()
+void AutoRunThread::clearTestObjs()
 {
 	for (int i = 0; i < m_objTests.size(); i++)
 	{
@@ -818,7 +818,7 @@ void QMainRunable::clearTestObjs()
 	m_objTests.clear();
 }
 
-void QMainRunable::clearTestProfObjs()
+void AutoRunThread::clearTestProfObjs()
 {
 	for (int i = 0; i < m_objProfTests.size(); i++)
 	{
@@ -827,7 +827,7 @@ void QMainRunable::clearTestProfObjs()
 	m_objProfTests.clear();
 }
 
-void QMainRunable::displayAllObjs()
+void AutoRunThread::displayAllObjs()
 {
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return;
@@ -876,7 +876,7 @@ void QMainRunable::displayAllObjs()
 	QEos::Notify(EVENT_RESULT_DISPLAY, 0, STATION_RESULT_IMAGE_DISPLAY);
 }
 
-void QMainRunable::displayAllProfObjs()
+void AutoRunThread::displayAllProfObjs()
 {
 	for (int i = 0; i < m_objProfTests.size(); i++)
 	{
@@ -928,7 +928,7 @@ void QMainRunable::displayAllProfObjs()
 	}
 }
 
-void QMainRunable::addImageText(cv::Mat image, Point ptPos, QString szText)
+void AutoRunThread::addImageText(cv::Mat image, Point ptPos, QString szText)
 {
 	double dScaleFactor = 2.0;
 
@@ -947,7 +947,7 @@ void QMainRunable::addImageText(cv::Mat image, Point ptPos, QString szText)
 	cv::putText(image, text, ptPos, CV_FONT_HERSHEY_COMPLEX, fontScale, Scalar(0, 255, 255), 1);
 }
 
-void QMainRunable::setResoultLight(bool isOk)
+void AutoRunThread::setResoultLight(bool isOk)
 {
 	IMotion * p = getModule<IMotion>(MOTION_MODEL);
 	if (p)
@@ -970,7 +970,7 @@ void QMainRunable::setResoultLight(bool isOk)
 	}
 }
 
-void QMainRunable::resetResoultLight()
+void AutoRunThread::resetResoultLight()
 {
 	IMotion * p = getModule<IMotion>(MOTION_MODEL);
 	if (p)
@@ -985,7 +985,7 @@ void QMainRunable::resetResoultLight()
 	}
 }
 
-bool QMainRunable::getLightIO(int &okLight, int &ngLight)
+bool AutoRunThread::getLightIO(int &okLight, int &ngLight)
 {
 	if (m_paramMap->contains(PARAM_STATION_OK_LIGHT)
 		&& m_paramMap->contains(PARAM_STATION_NG_LIGHT))

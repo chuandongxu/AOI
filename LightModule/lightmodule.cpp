@@ -69,7 +69,7 @@ void QLightModule::setLuminance(int nDevice, int nChannel, int nLum)
 		QLightDevice *device = ctrl->getLightDevice(nDevice);
 		if(device)
 		{
-			device->setChLuminance(nChannel,nLum);
+			device->setChLuminance(nChannel, nLum);
 		}		
 	}
 }

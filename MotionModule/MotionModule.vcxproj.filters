@@ -103,6 +103,8 @@
     <ClInclude Include="GeneratedFiles\ui_MotionMotor.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\IMotion.h">
+      <Filter>Header Files</Filter>
     <ClInclude Include="GeneratedFiles\ui_JoystickWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>

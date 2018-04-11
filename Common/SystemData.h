@@ -168,6 +168,7 @@ public:
 
 	QString getLangConfig();
 	void setLangConfig(const QString & lang);
+    inline bool isRunOffline() const { return m_bRunOffline; };
 
 public:
 	void userGoHome();
@@ -204,6 +205,7 @@ private:
 	bool readAuthData(QAuthData * data);
 	bool writeAuthData(QAuthData * data);
 	void initErrorModel();
+    void initConfig();
 
 private:
 	QMutex m_mutex;
@@ -220,6 +222,8 @@ private:
 	QMap<QString,QVariant> m_data;
 	QMap<QString,void*> m_ptrData;
 	QErrorModel m_errModel;
+
+    bool    m_bRunOffline = false;
 
 private:
 	static QSystem * _instance_;
