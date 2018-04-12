@@ -1,4 +1,4 @@
-#include "QStatisticsWidget.h"
+ï»¿#include "QStatisticsWidget.h"
 #include "qcustomplot.h"
 #include "../Common/SystemData.h"
 #include <qmessagebox>
@@ -37,7 +37,7 @@ void QStatisticsWidget::updateResultList()
 	m_model.clear();
 
 	QStringList ls;
-	ls << QStringLiteral("°å×Ó") << QStringLiteral("Ôª¼þ") << QStringLiteral("Î»ÖÃ") << QStringLiteral("½á¹û") << QStringLiteral("±£Áô1");
+	ls << QStringLiteral("æ¿å­") << QStringLiteral("å…ƒä»¶") << QStringLiteral("ä½ç½®") << QStringLiteral("ç»“æžœ") << QStringLiteral("ä¿ç•™1");
 	m_model.setHorizontalHeaderLabels(ls);
 
 	ui.tableView_resultList->setColumnWidth(0, 55);
@@ -58,42 +58,42 @@ void QStatisticsWidget::onStateEvent(const QVariantList &data)
 	{
 		//ui.label_resultStatus->setStyleSheet("background-color: rgb(50, 255, 50);");
 		ui.label_resultStatus->setStyleSheet("background-color: rgb(0, 128, 192);");
-		ui.label_resultStatus->setText(QStringLiteral("µÈ´ý²âÊÔ"));
+		ui.label_resultStatus->setText(QStringLiteral("ç­‰å¾…æµ‹è¯•"));
 
 		ui.progressBar_resultPrg->setValue(0);
 	}
 	else if (STATION_STATE_CAPTURING == iEvent)
 	{
 		ui.label_resultStatus->setStyleSheet("background-color: rgb(153, 217, 234);");
-		ui.label_resultStatus->setText(QStringLiteral("×¥È¡Í¼Ïñ"));
+		ui.label_resultStatus->setText(QStringLiteral("æŠ“å–å›¾åƒ"));
 
 		ui.progressBar_resultPrg->setValue(10);
 	}
 	else if (STATION_STATE_GENERATE_GRAY == iEvent)
 	{
 		ui.label_resultStatus->setStyleSheet("background-color: rgb(153, 217, 234);");
-		ui.label_resultStatus->setText(QStringLiteral("Éú³É»Ò¶ÈÍ¼"));
+		ui.label_resultStatus->setText(QStringLiteral("ç”Ÿæˆç°åº¦å›¾"));
 
 		ui.progressBar_resultPrg->setValue(20);
 	}
 	else if (STATION_STATE_CALCULATE_3D == iEvent)
 	{
 		ui.label_resultStatus->setStyleSheet("background-color: rgb(153, 217, 234);");
-		ui.label_resultStatus->setText(QStringLiteral("¼ÆËã3D"));
+		ui.label_resultStatus->setText(QStringLiteral("è®¡ç®—3D"));
 
 		ui.progressBar_resultPrg->setValue(40);
 	}
 	else if (STATION_STATE_MATCH_POSITION == iEvent)
 	{
 		ui.label_resultStatus->setStyleSheet("background-color: rgb(153, 217, 234);");
-		ui.label_resultStatus->setText(QStringLiteral("Æ¥ÅäÔª¼þ¿ò"));
+		ui.label_resultStatus->setText(QStringLiteral("åŒ¹é…å…ƒä»¶æ¡†"));
 
 		ui.progressBar_resultPrg->setValue(70);
 	}
 	else if (STATION_STATE_CALCULATE_HEIGHT == iEvent)
 	{
 		ui.label_resultStatus->setStyleSheet("background-color: rgb(153, 217, 234);");
-		ui.label_resultStatus->setText(QStringLiteral("¼ÆËã¸ß¶ÈÖµ"));
+		ui.label_resultStatus->setText(QStringLiteral("è®¡ç®—é«˜åº¦å€¼"));
 
 		ui.progressBar_resultPrg->setValue(80);
 	}	
@@ -103,12 +103,12 @@ void QStatisticsWidget::onStateEvent(const QVariantList &data)
 
 		if (iValue > 0)
 		{
-			ui.label_resultOutput->setStyleSheet("color: rgb(50, 255, 50);font: 75 48pt 'ËÎÌå';");
+			ui.label_resultOutput->setStyleSheet("color: rgb(50, 255, 50);font: 75 48pt 'å®‹ä½“';");
 			ui.label_resultOutput->setText(QStringLiteral("OK"));
 		}
 		else 
 		{		
-			ui.label_resultOutput->setStyleSheet("color: rgb(255, 50, 50);font: 75 48pt 'ËÎÌå';");
+			ui.label_resultOutput->setStyleSheet("color: rgb(255, 50, 50);font: 75 48pt 'å®‹ä½“';");
 			ui.label_resultOutput->setText(QStringLiteral("FAIL"));
 		}		
 	}
@@ -146,11 +146,11 @@ void QStatisticsWidget::onStateChangeAutoRun(int iState)
 
 	if ((bool)data)
 	{
-		ui.pushButton_runOnce->setText(QStringLiteral("×Ô¶¯²âÊÔ"));			
+		ui.pushButton_runOnce->setText(QStringLiteral("è‡ªåŠ¨æµ‹è¯•"));			
 	}
 	else
 	{
-		ui.pushButton_runOnce->setText(QStringLiteral("µ¥²½²âÊÔ"));		
+		ui.pushButton_runOnce->setText(QStringLiteral("å•æ­¥æµ‹è¯•"));		
 	}	
 
 	m_pCtrl->setInfiniteCycles(false);
@@ -165,13 +165,13 @@ void QStatisticsWidget::onRunOnce()
 	{
 		if (m_bAutoRunning)
 		{
-			ui.pushButton_runOnce->setText(QStringLiteral("×Ô¶¯²âÊÔ"));
+			ui.pushButton_runOnce->setText(QStringLiteral("è‡ªåŠ¨æµ‹è¯•"));
 			m_pCtrl->setInfiniteCycles(false);
 			m_bAutoRunning = false;
 		}
 		else
 		{
-			ui.pushButton_runOnce->setText(QStringLiteral("Í£Ö¹²âÊÔ"));
+			ui.pushButton_runOnce->setText(QStringLiteral("åœæ­¢æµ‹è¯•"));
 			m_pCtrl->setInfiniteCycles(true);
 			m_bAutoRunning = true;
 		}
