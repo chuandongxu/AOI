@@ -77,6 +77,8 @@ private slots:
 	void showLight();
 	void showColorSpace();
 
+	void showJoystickWidget();
+
 private:
 	void init();
 	void createActions();
@@ -108,6 +110,8 @@ private:
 
 	QAction *showLightAct;
 	QAction *showColorSpaceAct;
+
+	QAction *showJoystick;
 
 private:
 	void setButtonsEnable(bool flag);

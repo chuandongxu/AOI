@@ -1,4 +1,4 @@
-#include "LightCalibrationView.h"
+ï»¿#include "LightCalibrationView.h"
 
 #include "../Common/SystemData.h"
 #include "../Common/ModuleMgr.h"
@@ -51,7 +51,7 @@ void LightCalibrationView::initUI()
 	connect(ui.pushButton_MoveToReady, SIGNAL(clicked()), SLOT(onMoveToReady()));
 
 	QStringList ls;
-	ls << QStringLiteral("µÚÒ»È¦ºì") << QStringLiteral("µÚÒ»È¦°×") << QStringLiteral("µÚ¶şÈ¦ÂÌ") << QStringLiteral("µÚÈıÈ¦À¶") << QStringLiteral("µÚËÄÈ¦°×") << QStringLiteral("µÚËÄÈ¦À¶");
+	ls << QStringLiteral("ç¬¬ä¸€åœˆçº¢") << QStringLiteral("ç¬¬ä¸€åœˆç™½") << QStringLiteral("ç¬¬äºŒåœˆç»¿") << QStringLiteral("ç¬¬ä¸‰åœˆè“") << QStringLiteral("ç¬¬å››åœˆç™½") << QStringLiteral("ç¬¬å››åœˆè“");
 	ui.comboBox_selectLight->addItems(ls);	
 
 	connect(ui.pushButton_startCali, SIGNAL(clicked()), SLOT(onStart()));
@@ -144,7 +144,7 @@ void LightCalibrationView::onStart()
 
 	if (m_bGuideCali)
 	{
-		QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Ä¿Ç°ÒÑ¾­ÔÚÔËĞĞ£¡"));
+		QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("ç›®å‰å·²ç»åœ¨è¿è¡Œï¼"));
 		return;
 	}
 
@@ -153,14 +153,14 @@ void LightCalibrationView::onStart()
 		if (!pCam->startUpCapture() || !pUI->startUpCapture())
 		{
 			QSystem::closeMessage();
-			QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Ïà»ú³õÊ¼»¯ÎÊÌâ¡£"));
+			QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("ç›¸æœºåˆå§‹åŒ–é—®é¢˜ã€‚"));
 			return;
 		}
 	}
 	else
 	{
 		QSystem::closeMessage();
-		QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Çë¼ì²éÏà»úÊÇ·ñÁ¬½Ó¡£"));
+		QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("è¯·æ£€æŸ¥ç›¸æœºæ˜¯å¦è¿æ¥ã€‚"));
 		return;
 	}
 
@@ -352,7 +352,7 @@ void LightCalibrationView::onDetectGrayScale()
 
 	if (m_matImage.empty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 

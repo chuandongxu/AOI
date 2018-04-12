@@ -1,4 +1,4 @@
-#include "TableCalibrationView.h"
+﻿#include "TableCalibrationView.h"
 
 #include "../Common/SystemData.h"
 #include "../Common/ModuleMgr.h"

@@ -6,6 +6,7 @@
 #include "../include/IdDefine.h"
 #include "../include/ILight.h"
 #include "../include/IVision.h"
+#include "../include/IMotion.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QDebug>
@@ -137,6 +138,11 @@ void VisionView::createActions()
 	showColorSpaceAct->setShortcuts(QKeySequence::MoveToPreviousChar);
 	showColorSpaceAct->setStatusTip(tr("Show Color Space"));
 	connect(showColorSpaceAct, SIGNAL(triggered()), this, SLOT(showColorSpace()));
+
+	showJoystick = new QAction(QIcon("image/joystick.png"), QStringLiteral("移动马达"), this);
+	showJoystick->setShortcuts(QKeySequence::MoveToNextWord);
+	showJoystick->setStatusTip(tr("Show Joystick Widget"));
+	connect(showJoystick, SIGNAL(triggered()), this, SLOT(showJoystickWidget()));
 }
 
 void VisionView::createToolBars()
@@ -162,6 +168,7 @@ void VisionView::createToolBars()
 	detectToolBar->addAction(show3DAct);
 	detectToolBar->addAction(showLightAct);
 	detectToolBar->addAction(showColorSpaceAct);
+	detectToolBar->addAction(showJoystick);
 }
 
 void VisionView::createStatusBar()
@@ -364,6 +371,18 @@ void VisionView::showColorSpace()
             pVision->generateGrayImage(matROI, cv::Point(5,5));
         }
         //generateAverageImage
+	}
+}
+
+void VisionView::showJoystickWidget()
+{
+	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
+	if (pMotion)
+	{
+		pMotion->setJoystickXMotor(AXIS_MOTOR_X, 1.2, NULL);
+		pMotion->setJoystickYMotor(AXIS_MOTOR_Y, 1.2, NULL);
+
+		pMotion->startJoystick();
 	}
 }
 
