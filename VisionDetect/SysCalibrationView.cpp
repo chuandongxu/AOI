@@ -1,4 +1,4 @@
-#include "SysCalibrationView.h"
+ï»¿#include "SysCalibrationView.h"
 
 #include <QFileDialog>
 
@@ -97,7 +97,7 @@ void SysCalibrationView::initUI()
 {
 	QStringList ls;
 
-	//3D»ùÃæ±ê¶¨
+	//3DåŸºé¢æ ‡å®š
 	connect(ui.comboBox_selectDLP, SIGNAL(currentIndexChanged(int)), SLOT(onDLPIndexChanged(int)));
 	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
 	for (int i = 0; i < nStationNum; i++)
@@ -119,7 +119,7 @@ void SysCalibrationView::initUI()
 	connect(ui.pushButton_3DCali, SIGNAL(clicked()), SLOT(on3DCali()));
 	connect(ui.pushButton_Save3DDetectCaliParams, SIGNAL(clicked()), SLOT(onSave3DDetectCaliParams()));
 
-	//3D±ê¶¨
+	//3Dæ ‡å®š
 	connect(ui.comboBox_selectCaliType, SIGNAL(currentIndexChanged(int)), SLOT(onSelectCaliTypeChanged(int)));
 	ls.clear();
 	int nStepIndex = 0;
@@ -163,7 +163,7 @@ void SysCalibrationView::initUI()
 
 void SysCalibrationView::initLimits()
 {
-	//ÊäÈëÏŞÖÆ
+	//è¾“å…¥é™åˆ¶
 	inputIntRangePos = new QIntValidator(0, 1000, this);
 	inputIntRangeAll = new QIntValidator(-1000, 1000, this);
 	inputDoubleRangePos = new QDoubleValidator(0, 1000, 10, this);
@@ -193,7 +193,7 @@ void SysCalibrationView::on3DCaliOpen()
 	QString path = QApplication::applicationDirPath();
 	path += "/capture/";
 
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("´ò¿ªÍ¼Æ¬ÎÄ¼ş¼Ğ"), path);
+	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡æ–‡ä»¶å¤¹"), path);
 
 	if (!filePath.isEmpty())
 	{
@@ -212,7 +212,7 @@ void SysCalibrationView::on3DCaliOpen()
 	else
 	{
 		ui.lineEdit_3DCaliFile->setText("");
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÑ¡ÔñÎÄ¼ş¼Ğ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·é€‰æ‹©æ–‡ä»¶å¤¹"));
 	}
 }
 
@@ -222,7 +222,7 @@ void SysCalibrationView::on3DCaliRstOpen()
 	path += "/3D/config/";
 
 	QString picFilter = "Config(*.yml)";
-	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("´ò¿ªÎÄ¼ş"), path, picFilter);
+	QString strFileName = QFileDialog::getOpenFileName(this, QStringLiteral("æ‰“å¼€æ–‡ä»¶"), path, picFilter);
 
 	QDir dir(path);
 	if (!strFileName.isEmpty() && strFileName.indexOf(dir.absolutePath()) >= 0)
@@ -231,7 +231,7 @@ void SysCalibrationView::on3DCaliRstOpen()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÔÚ×ÓÄ¿Â¼ÏÂÉèÖÃÂ·¾¶"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·åœ¨å­ç›®å½•ä¸‹è®¾ç½®è·¯å¾„"));
 	}
 }
 
@@ -240,14 +240,14 @@ void SysCalibrationView::on3DCali()
 	QString sz3DCaliFile = ui.lineEdit_3DCaliFile->text();
 	if (sz3DCaliFile.isEmpty() && !m_bGuideCali)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
 	if (sz3DCaliRstFile.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñĞ£×¼Êä³öÎÄ¼ş"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©æ ¡å‡†è¾“å‡ºæ–‡ä»¶"));
 		return;
 	}
 
@@ -259,12 +259,12 @@ void SysCalibrationView::on3DCali()
 	Vision::PR_CALIB_3D_BASE_RPY stRpy;
 	if (!readImages(sz3DCaliFile, stCmd.vecInputImgs))
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¶ÁÈ¡ÎÄ¼ş´íÎó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯»å–æ–‡ä»¶é”™è¯¯"));
 		return;
 	}
 
 	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("±ê¶¨DLP%1µÄBaseÃæ...ÇëÄÍĞÄµÈ´ı...").arg(nDLPIndex + 1), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("æ ‡å®šDLP%1çš„Baseé¢...è¯·è€å¿ƒç­‰å¾…...").arg(nDLPIndex + 1), 0);
 	QApplication::processEvents();
 
 	bool b3DCaliGaussionFilter = ui.checkBox_3DCaliGaussionFilter->isChecked();
@@ -281,7 +281,7 @@ void SysCalibrationView::on3DCali()
 		cv::FileStorage fs(strResultMatPath, cv::FileStorage::WRITE);
 		if (!fs.isOpened())
 		{
-			System->setTrackInfo(QStringLiteral("ÅäÖÃÎÄ¼şÂ·¾¶²»ÕıÈ·£¡"));
+			System->setTrackInfo(QStringLiteral("é…ç½®æ–‡ä»¶è·¯å¾„ä¸æ­£ç¡®ï¼"));
 			QSystem::closeMessage();
 			return;
 		}
@@ -294,8 +294,8 @@ void SysCalibrationView::on3DCali()
 		write(fs, "ReverseSeq", stRpy.bReverseSeq);
 		fs.release();		
 
-		//QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("±ê¶¨³É¹¦"));
-		System->setTrackInfo(QStringLiteral("±ê¶¨DLP%1µÄBase³É¹¦").arg(nDLPIndex + 1));
+		//QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ ‡å®šæˆåŠŸ"));
+		System->setTrackInfo(QStringLiteral("æ ‡å®šDLP%1çš„BaseæˆåŠŸ").arg(nDLPIndex + 1));
 	}
 	else
 	{
@@ -333,7 +333,7 @@ void SysCalibrationView::on3DDetectCaliOpen()
 	QString path = QApplication::applicationDirPath();
 	path += "/capture/";
 
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("´ò¿ªÍ¼Æ¬ÎÄ¼ş¼Ğ"), path);
+	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡æ–‡ä»¶å¤¹"), path);
 
 	if (!filePath.isEmpty())
 	{
@@ -352,7 +352,7 @@ void SysCalibrationView::on3DDetectCaliOpen()
 	else
 	{
 		ui.lineEdit_3DDetectCaliFile->setText("");
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÑ¡ÔñÎÄ¼ş¼Ğ"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·é€‰æ‹©æ–‡ä»¶å¤¹"));
 	}
 }
 
@@ -361,14 +361,14 @@ void SysCalibrationView::on3DDetectCali()
 	QString sz3DDetectCaliFile = ui.lineEdit_3DDetectCaliFile->text();
 	if (sz3DDetectCaliFile.isEmpty() && !m_bGuideCali)
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñÍ¼Æ¬"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©å›¾ç‰‡"));
 		return;
 	}
 
 	QString sz3DCaliRstFile = ui.lineEdit_3DCaliRstFile->text();
 	if (sz3DCaliRstFile.isEmpty())
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÇëÏÈÑ¡ÔñĞ£×¼Êä³öÎÄ¼ş"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯·å…ˆé€‰æ‹©æ ¡å‡†è¾“å‡ºæ–‡ä»¶"));
 		return;
 	}
 	
@@ -379,13 +379,13 @@ void SysCalibrationView::on3DDetectCali()
 	
 	if (!readImages(sz3DDetectCaliFile, stCmd.vecInputImgs))
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¶ÁÈ¡ÎÄ¼ş´íÎó"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¯»å–æ–‡ä»¶é”™è¯¯"));
 		return;
 	}
 
 	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
 	int nStepIndex = ui.comboBox_selectCaliType->currentIndex();
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("±ê¶¨DLP%1µÄH=%2mmÃæ...ÇëÄÍĞÄµÈ´ı...").arg(nDLPIndex + 1).arg(m_caliStepMap.value(nStepIndex)), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("æ ‡å®šDLP%1çš„H=%2mmé¢...è¯·è€å¿ƒç­‰å¾…...").arg(nDLPIndex + 1).arg(m_caliStepMap.value(nStepIndex)), 0);
 	QApplication::processEvents();
 
 	bool b3DDetectCaliUseThinPattern = ui.checkBox_3DCaliUseThinPattern->isChecked();
@@ -425,7 +425,7 @@ void SysCalibrationView::on3DDetectCali()
 		cv::FileStorage fsCalibData(strCalibDataFile, cv::FileStorage::WRITE);
 		if (!fsCalibData.isOpened())
 		{
-			System->setTrackInfo(QStringLiteral("ÅäÖÃÎÄ¼şÂ·¾¶²»ÕıÈ·£¡"));
+			System->setTrackInfo(QStringLiteral("é…ç½®æ–‡ä»¶è·¯å¾„ä¸æ­£ç¡®ï¼"));
 			QSystem::closeMessage();
 			return;
 		}
@@ -435,7 +435,7 @@ void SysCalibrationView::on3DDetectCali()
 		cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
 		getVisionUI()->displayImage(matHeightResultImg);
 
-		System->setTrackInfo(QStringLiteral("±ê¶¨DLP%1µÄH%2Ãæ³É¹¦").arg(nDLPIndex + 1).arg(nStepIndex + 1));
+		System->setTrackInfo(QStringLiteral("æ ‡å®šDLP%1çš„H%2é¢æˆåŠŸ").arg(nDLPIndex + 1).arg(nStepIndex + 1));
 	}
 	else
 	{
@@ -466,7 +466,7 @@ void SysCalibrationView::on3DDetectCaliComb()
 	path += "/3D/config/";
 
 	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("µ¼ÈëDLP%1µÄ±ê¶¨½á¹û...ÇëÄÍĞÄµÈ´ı...").arg(nDLPIndex + 1), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("å¯¼å…¥DLP%1çš„æ ‡å®šç»“æœ...è¯·è€å¿ƒç­‰å¾…...").arg(nDLPIndex + 1), 0);
 	QApplication::processEvents();
 
 	Vision::PR_MOTOR_CALIB_3D_CMD stCmd;
@@ -481,7 +481,7 @@ void SysCalibrationView::on3DDetectCaliComb()
 		cv::FileStorage fsCalibData(strCalibDataFile, cv::FileStorage::READ);
 		if (!fsCalibData.isOpened())
 		{
-			System->setTrackInfo(QStringLiteral("ÅäÖÃÎÄ¼şÂ·¾¶²»ÕıÈ·£¡"));
+			System->setTrackInfo(QStringLiteral("é…ç½®æ–‡ä»¶è·¯å¾„ä¸æ­£ç¡®ï¼"));
 			QSystem::closeMessage();
 			return;
 		}
@@ -497,7 +497,7 @@ void SysCalibrationView::on3DDetectCaliComb()
 
 	QSystem::closeMessage();
 
-	QSystem::showMessage(QStringLiteral("ÌáÊ¾"), QStringLiteral("ºÏ³ÉDLP%1µÄ±ê¶¨½á¹û...ÇëÄÍĞÄµÈ´ı...").arg(nDLPIndex + 1), 0);
+	QSystem::showMessage(QStringLiteral("æç¤º"), QStringLiteral("åˆæˆDLP%1çš„æ ‡å®šç»“æœ...è¯·è€å¿ƒç­‰å¾…...").arg(nDLPIndex + 1), 0);
 	QApplication::processEvents();
 
 	Vision::VisionStatus retStatus = Vision::PR_MotorCalib3D(&stCmd, &stRpy);
@@ -536,7 +536,7 @@ void SysCalibrationView::on3DDetectCaliComb()
 		cv::write(fsCalibResultData, "Order3CurveSurface", stRpy.matOrder3CurveSurface);
 		fsCalibResultData.release();
 
-		System->setTrackInfo(QStringLiteral("ºÏ³ÉDLP%1±ê¶¨³É¹¦").arg(nDLPIndex + 1));
+		System->setTrackInfo(QStringLiteral("åˆæˆDLP%1æ ‡å®šæˆåŠŸ").arg(nDLPIndex + 1));
 	}
 	else
 	{
@@ -565,14 +565,14 @@ bool SysCalibrationView::startCaliGuide()
 			if (!pCam->startUpCapture() || !pUI->startUpCapture())
 			{
 				QSystem::closeMessage();
-				QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Ïà»ú³õÊ¼»¯ÎÊÌâ¡£"));
+				QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("ç›¸æœºåˆå§‹åŒ–é—®é¢˜ã€‚"));
 				return false;
 			}
 		}
 		else
 		{
 			QSystem::closeMessage();
-			QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("Çë¼ì²éÏà»úÊÇ·ñÁ¬½Ó¡£"));
+			QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("è¯·æ£€æŸ¥ç›¸æœºæ˜¯å¦è¿æ¥ã€‚"));
 			return false;
 		}
 
@@ -584,14 +584,14 @@ bool SysCalibrationView::startCaliGuide()
 				if (!pDlp->startUpCapture(i))
 				{
 					QSystem::closeMessage();
-					QMessageBox::warning(NULL, QStringLiteral("¾¯¸æ"), QStringLiteral("DLPÆô¶¯Ê§°Ü£¡"));
+					QMessageBox::warning(NULL, QStringLiteral("è­¦å‘Š"), QStringLiteral("DLPå¯åŠ¨å¤±è´¥ï¼"));
 					return false;
 				}
 			}
 			else
 			{
 				QSystem::closeMessage();
-				System->setTrackInfo(QString(QStringLiteral("DLP%0Æô¶¯Ê§°Ü, Çë¼ì²éÓ²¼şÁ¬½Ó£¡")).arg(i + 1));
+				System->setTrackInfo(QString(QStringLiteral("DLP%0å¯åŠ¨å¤±è´¥, è¯·æ£€æŸ¥ç¡¬ä»¶è¿æ¥ï¼")).arg(i + 1));
 			}
 		}
 	}
@@ -601,7 +601,7 @@ bool SysCalibrationView::startCaliGuide()
 	ui.pushButton_CalibGuideNext->setEnabled(true);
 	ui.pushButton_CalibGuideSkip->setEnabled(true);
 	ui.pushButton_CalibGuidePrevious->setEnabled(true);
-	ui.pushButton_CalibGuide->setText(QStringLiteral("È¡Ïû±ê¶¨"));
+	ui.pushButton_CalibGuide->setText(QStringLiteral("å–æ¶ˆæ ‡å®š"));
 	m_bGuideCali = true;
 	m_nCaliGuideStep = 0;
 
@@ -678,7 +678,7 @@ void SysCalibrationView::stopCaliGuide()
 	ui.pushButton_CalibGuideNext->setEnabled(false);
 	ui.pushButton_CalibGuideSkip->setEnabled(false);
 	ui.pushButton_CalibGuidePrevious->setEnabled(false);
-	ui.pushButton_CalibGuide->setText(QStringLiteral("±ê¶¨Ïòµ¼"));
+	ui.pushButton_CalibGuide->setText(QStringLiteral("æ ‡å®šå‘å¯¼"));
 
 	m_nCaliGuideStep = 0;
 	m_bGuideCali = false;
@@ -860,11 +860,11 @@ void SysCalibrationView::onCaliGuide()
 
 		if (!startCaliGuide())
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("Æô¶¯±ê¶¨Ê§°Ü£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("å¯åŠ¨æ ‡å®šå¤±è´¥ï¼"));
 		}
 		else
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("¿ªÊ¼±ê¶¨..."));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("å¼€å§‹æ ‡å®š..."));
 		}
 	}
 }
@@ -880,7 +880,7 @@ void SysCalibrationView::onCaliGuideNext()
 	{
 		if (!pMotion->moveToPosGroup(MTR_READY_POS, true))// Ready Position
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÔË¶¯Âí´ï´íÎó£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¿åŠ¨é©¬è¾¾é”™è¯¯ï¼"));
 		}
 
 		m_nCaliGuideStep++;
@@ -891,12 +891,12 @@ void SysCalibrationView::onCaliGuideNext()
 		ui.toolBox_2->setCurrentIndex(0);	
 
 		startCameraCapturing();
-		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-			QStringLiteral("Çë·ÅÖÃDLPµÄBase±ê¶¨¿é£¬È·¶¨¿ªÊ¼²É¼¯Í¼Ïñ£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+		if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+			QStringLiteral("è¯·æ”¾ç½®DLPçš„Baseæ ‡å®šå—ï¼Œç¡®å®šå¼€å§‹é‡‡é›†å›¾åƒï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 		{
 			if (!stopCameraCaptureing())
 			{
-				QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Í£Ö¹ÊµÊ±Í¼Ïñ£¬ÇëÖØĞÂ²É¼¯£¡"));
+				QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•åœæ­¢å®æ—¶å›¾åƒï¼Œè¯·é‡æ–°é‡‡é›†ï¼"));
 				return;
 			}
 
@@ -911,56 +911,56 @@ void SysCalibrationView::onCaliGuideNext()
 			return;
 		}
 
-		//±ê¶¨DLP1
+		//æ ‡å®šDLP1
 		ui.comboBox_selectDLP->setCurrentIndex(0);
 		QString szFileName = ui.lineEdit_3DCaliRstFile->text();
 		QFile file(szFileName);
 		if (!file.exists())
 		{
-			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-				QStringLiteral("±ê¶¨ÎÄ¼şÂ·¾¶²»´æÔÚ£¬ÊÇ·ñÖØĞÂÑ¡ÔñÂ·¾¶£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+				QStringLiteral("æ ‡å®šæ–‡ä»¶è·¯å¾„ä¸å­˜åœ¨ï¼Œæ˜¯å¦é‡æ–°é€‰æ‹©è·¯å¾„ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 			{
 				on3DCaliRstOpen();
 			}
 		}
 		on3DCali();
 
-		//±ê¶¨DLP2
+		//æ ‡å®šDLP2
 		ui.comboBox_selectDLP->setCurrentIndex(1);
 		szFileName = ui.lineEdit_3DCaliRstFile->text();
 		file.setFileName(szFileName);
 		if (!file.exists())
 		{
-			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-				QStringLiteral("±ê¶¨ÎÄ¼şÂ·¾¶²»´æÔÚ£¬ÊÇ·ñÖØĞÂÑ¡ÔñÂ·¾¶£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+				QStringLiteral("æ ‡å®šæ–‡ä»¶è·¯å¾„ä¸å­˜åœ¨ï¼Œæ˜¯å¦é‡æ–°é€‰æ‹©è·¯å¾„ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 			{
 				on3DCaliRstOpen();
 			}
 		}
 		on3DCali();
 
-		//±ê¶¨DLP3
+		//æ ‡å®šDLP3
 		ui.comboBox_selectDLP->setCurrentIndex(2);
 		szFileName = ui.lineEdit_3DCaliRstFile->text();
 		file.setFileName(szFileName);
 		if (!file.exists())
 		{
-			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-				QStringLiteral("±ê¶¨ÎÄ¼şÂ·¾¶²»´æÔÚ£¬ÊÇ·ñÖØĞÂÑ¡ÔñÂ·¾¶£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+				QStringLiteral("æ ‡å®šæ–‡ä»¶è·¯å¾„ä¸å­˜åœ¨ï¼Œæ˜¯å¦é‡æ–°é€‰æ‹©è·¯å¾„ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 			{
 				on3DCaliRstOpen();
 			}
 		}
 		on3DCali();
 
-		//±ê¶¨DLP4
+		//æ ‡å®šDLP4
 		ui.comboBox_selectDLP->setCurrentIndex(3);
 		szFileName = ui.lineEdit_3DCaliRstFile->text();
 		file.setFileName(szFileName);
 		if (!file.exists())
 		{
-			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ĞÅÏ¢ÌáÊ¾"),
-				QStringLiteral("±ê¶¨ÎÄ¼şÂ·¾¶²»´æÔÚ£¬ÊÇ·ñÖØĞÂÑ¡ÔñÂ·¾¶£¿"), QMessageBox::Ok, QMessageBox::Cancel))
+			if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("ä¿¡æ¯æç¤º"),
+				QStringLiteral("æ ‡å®šæ–‡ä»¶è·¯å¾„ä¸å­˜åœ¨ï¼Œæ˜¯å¦é‡æ–°é€‰æ‹©è·¯å¾„ï¼Ÿ"), QMessageBox::Ok, QMessageBox::Cancel))
 			{
 				on3DCaliRstOpen();
 			}
@@ -977,7 +977,7 @@ void SysCalibrationView::onCaliGuideNext()
 		double zZeroPos = 0;		
 		if (!pMotion->getCurrentPos(AXIS_MOTOR_Z, &zZeroPos))
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("»ñÈ¡Âí´ïÎ»ÖÃ´íÎó£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è·å–é©¬è¾¾ä½ç½®é”™è¯¯ï¼"));
 		}
 
 		for (int i = 0; i < m_caliStepMap.size(); i++)
@@ -1037,10 +1037,10 @@ void SysCalibrationView::onCaliGuideNext()
 
 		if (!pMotion->moveToPosGroup(MTR_READY_POS, true))// Ready Position
 		{
-			QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÔË¶¯Âí´ï´íÎó£¡"));
+			QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è¿åŠ¨é©¬è¾¾é”™è¯¯ï¼"));
 		}
 
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("×Ô¶¯±ê¶¨Ïòµ¼Íê³É£¡"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("è‡ªåŠ¨æ ‡å®šå‘å¯¼å®Œæˆï¼"));
 	}
 	break;
 	}
@@ -1055,7 +1055,7 @@ void SysCalibrationView::onCaliGuideSkip()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨Ìø¹ıµ±Ç°±ê¶¨£¬ÇëÏÂÒ»²½²Ù×÷»òÕßÈ¡Ïû±ê¶¨£¡"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•è·³è¿‡å½“å‰æ ‡å®šï¼Œè¯·ä¸‹ä¸€æ­¥æ“ä½œæˆ–è€…å–æ¶ˆæ ‡å®šï¼"));
 	}
 }
 
@@ -1068,7 +1068,7 @@ void SysCalibrationView::onCaliGuidePrevious()
 	}
 	else
 	{
-		QMessageBox::warning(this, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÎŞ·¨¼ÌĞøÉÏÒ»²½±ê¶¨£¬ÇëÏÂÒ»²½²Ù×÷»òÕßÈ¡Ïû±ê¶¨£¡"));
+		QMessageBox::warning(this, QStringLiteral("æç¤º"), QStringLiteral("æ— æ³•ç»§ç»­ä¸Šä¸€æ­¥æ ‡å®šï¼Œè¯·ä¸‹ä¸€æ­¥æ“ä½œæˆ–è€…å–æ¶ˆæ ‡å®šï¼"));
 	}
 }
 
@@ -1077,7 +1077,7 @@ void SysCalibrationView::onDecryptImages()
 	QString path = QApplication::applicationDirPath();
 	path += "/capture/";
 
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("´ò¿ªÍ¼Æ¬ÎÄ¼ş¼Ğ"), path);
+	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("æ‰“å¼€å›¾ç‰‡æ–‡ä»¶å¤¹"), path);
 
 	if (!filePath.isEmpty())
 	{
@@ -1111,7 +1111,7 @@ double SysCalibrationView::convertToUm(double pixel)
 
 bool SysCalibrationView::convertToGrayImage(QString& szFilePath, cv::Mat &matGray)
 {
-	//ÅĞ¶ÏÂ·¾¶ÊÇ·ñ´æÔÚ
+	//åˆ¤æ–­è·¯å¾„æ˜¯å¦å­˜åœ¨
 	QDir dir(szFilePath);
 	if (!dir.exists())
 	{
@@ -1161,7 +1161,7 @@ bool SysCalibrationView::convertToGrayImage(QString& szFilePath, cv::Mat &matGra
 
 bool SysCalibrationView::decrptImages(QString& szFilePath)
 {
-	//ÅĞ¶ÏÂ·¾¶ÊÇ·ñ´æÔÚ
+	//åˆ¤æ–­è·¯å¾„æ˜¯å¦å­˜åœ¨
 	QDir dir(szFilePath);
 	if (!dir.exists())
 	{
@@ -1210,7 +1210,7 @@ bool SysCalibrationView::readImages(QString& szFilePath, AOI::Vision::VectorOfMa
 		return true;
 	}
 
-	//ÅĞ¶ÏÂ·¾¶ÊÇ·ñ´æÔÚ
+	//åˆ¤æ–­è·¯å¾„æ˜¯å¦å­˜åœ¨
 	QDir dir(szFilePath);
 	if (!dir.exists())
 	{
