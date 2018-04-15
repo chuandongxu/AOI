@@ -217,7 +217,7 @@ bool BaslerCameraDevice::getCameraScreenSize(int& nWidth, int& nHeight)
 			// Create an instant camera object with the first found camera device that matches the specified device class.
 			Camera_t camera(m_hv_AcqHandle);
 
-			nWidth = camera.SensorWidth.GetValue();
+			nWidth  = camera.SensorWidth.GetValue();
 			nHeight = camera.SensorHeight.GetValue();
 
 			return true;

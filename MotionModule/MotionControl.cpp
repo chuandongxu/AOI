@@ -71,8 +71,8 @@ void MotionControl::loadConfig()
 {
 	m_mapMtrID.clear();	
 	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Z, AXIS_MOTOR_Z);
-	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, AXIS_MOTOR_Y);	
-	//m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, AXIS_MOTOR_X);
+	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, AXIS_MOTOR_Y);
+	m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, AXIS_MOTOR_X);
 }
 
 bool MotionControl::init()
@@ -660,6 +660,11 @@ bool MotionControl::homeAll(bool bSyn)
 
 bool MotionControl::home(int AxisID, bool bSyn)
 {
+    if (System->isRunOffline()) {
+        m_dRunOfflinePos[AxisID] = 0.;
+        return true;
+    }
+
 	short sRtn = 0; // 指令返回值变量
 
 	int nHomeDir = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._dir == 0 ? 1 : -1;
@@ -852,7 +857,10 @@ bool MotionControl::home(int AxisID, bool bSyn)
 
 bool MotionControl::homeLimit(int AxisID, bool bSyn)
 {
-    if (System->isRunOffline()) return true;
+    if (System->isRunOffline()) {
+        m_dRunOfflinePos[AxisID] = 0.f;
+        return true;
+    }
 
 	short sRtn = 0; // 指令返回值变量
 
@@ -1250,6 +1258,11 @@ bool MotionControl::moveGroup(std::vector<int>& axis, std::vector<double>& dists
 
 bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int smooth, double dPos, bool bSyn)
 {
+    if (System->isRunOffline()) {
+        m_dRunOfflinePos[AxisID] = dPos;
+        return true;
+    }
+
 	short sRtn = 0; // 指令返回值变量
 
 	// 将AXIS轴设为点位模式
@@ -1306,7 +1319,6 @@ bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int sm
 			return false;
 		}
 	}
-	
 
 	return true;
 }
@@ -1433,6 +1445,11 @@ bool MotionControl::EmStop(int AxisID)
 
 bool MotionControl::getCurrentPos(int AxisID, double *pos)
 {
+    if (System->isRunOffline()) {
+        *pos = m_dRunOfflinePos[AxisID];
+        return true;
+    }
+
 	short sRtn = 0; // 指令返回值变量
 
 	double dMtrPos = 0;

@@ -31,12 +31,11 @@
 AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignments,
                              const Engine::WindowVector            &vecWindows,
                              const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr)
-	:m_vecAlignments  (vecAlignments),
+    :m_vecAlignments  (vecAlignments),
      m_vecWindows     (vecWindows),
      m_vecVecFrameCtr (vecVecFrameCtr),
      m_exit           (false)
 {
-	m_nImageIndex = 0;
 }
 
 AutoRunThread::~AutoRunThread()
@@ -141,65 +140,7 @@ bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
 
-	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
-	if (!pMotion) return false;
-
-	imageMats.clear();
-
-	if (!pCam->startCapturing())
-	{
-		System->setTrackInfo(QString("startCapturing error."));	
-		return false;
-	}
-	
-	if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true))
-	{
-		System->setTrackInfo(QString("triggerCapturing error."));	
-		return false;
-	}	
-
-	int nWaitTime = 10 * 100;
-	while (! pCam->isCaptureImageBufferDone() && nWaitTime-- > 0 && ! isExit())
-	{
-		QThread::msleep(10);
-	}
-
-	if (nWaitTime <= 0)
-	{
-		System->setTrackInfo(QString("CaptureImageBufferDone error."));		
-		return false;
-	}
-
-	int nCaptureNum = pCam->getImageBufferCaptureNum();
-	for (int i = 0; i < nCaptureNum; ++ i)
-	{
-		cv::Mat matImage = pCam->getImageItemBuffer(i);
-		imageMats.push_back(matImage);
-	}
-
-	if (nCaptureNum != pCam->getImageBufferNum())
-	{	
-		System->setTrackInfo(QString("System captureAllImages error, Image Num: %1").arg(nCaptureNum));
-
-		bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
-		if (! bCaptureImage)
-		{
-			QString capturePath = System->getParam("camera_cap_image_path").toString();
-
-			QDateTime dtm = QDateTime::currentDateTime();
-			QString fileDir = capturePath + "/" + dtm.toString("MMddhhmmss") + "/";
-			QDir dir; dir.mkdir(fileDir);
-
-			for (int i = 0; i < imageMats.size(); i++)
-			{
-				QString name = QString("%1").arg(i + 1, 2, 10, QChar('0')) + QStringLiteral(".bmp");
-				cv::imwrite((fileDir + name).toStdString().c_str(), imageMats[i]);
-			}
-		}
-		return false;
-	}
-
-	return true;
+	return pCam->captureAllImages(imageMats);
 }
 
 bool AutoRunThread::mergeImages(QString& szImagePath)
@@ -292,15 +233,6 @@ void AutoRunThread::saveCombineImages(const QString& szImagePath, const QVector<
 	}
 }
 
-cv::Rect AutoRunThread::_calcImageRect(float fImgCapPosUmX, float fImgCapPosUmY, float fRectPosUmX, float fRectPosUmY, float fRectWidthUm, float fRectHeightUm)
-{
-    float fRectCtrX = (fRectPosUmX - fImgCapPosUmX) / m_dResolutionX;
-    float fRectCtrY = (fRectPosUmY - fImgCapPosUmY) / m_dResolutionY;
-    float fRectWidth  = fRectWidthUm  / m_dResolutionX;
-    float fRectHeight = fRectHeightUm / m_dResolutionY;
-    return cv::Rect(fRectCtrX - fRectWidth / 2.f, fRectCtrY - fRectHeight / 2.f, fRectWidth, fRectHeight);
-}
-
 bool AutoRunThread::_feedBoard()
 {
     // Track motor on to drag the PCB board into the machine and put under camera.
@@ -338,7 +270,7 @@ bool AutoRunThread::_doAlignment()
         TimeLogInstance->addTimeLog("Capture all images.");
 
         cv::Mat matAlignmentImg = vecMatImages[m_nDLPCount * DLP_IMG_COUNT];
-        cv::Rect rectSrchWindow = _calcImageRect(alignment.tmplPosX, alignment.tmplPosY, alignment.tmplPosX, alignment.tmplPosY, alignment.srchWinWidth, alignment.srchWinHeight);
+        cv::Rect rectSrchWindow = DataUtils::convertWindowToFrameRect(cv::Point2f(alignment.tmplPosX, alignment.tmplPosY), alignment.srchWinWidth, alignment.srchWinHeight, cv::Point2f(alignment.tmplPosX, alignment.tmplPosY), m_nImageWidthPixel, m_nImageHeightPixel, m_dResolutionX, m_dResolutionY);
         auto pAlignmentRunnable = std::make_unique<AlignmentRunnable>(matAlignmentImg, alignment, rectSrchWindow);
         pAlignmentRunnable->setAutoDelete(false);
         QThreadPool::globalInstance()->start(pAlignmentRunnable.get());
@@ -399,7 +331,7 @@ bool AutoRunThread::_doInspection()
 {
     bool bGood = true;
     for (int row = 0; row < m_vecVecFrameCtr.size(); ++ row) {
-        for (int col = 0; col < m_vecVecFrameCtr.size(); ++ col) {
+        for (int col = 0; col < m_vecVecFrameCtr[0].size(); ++ col) {
             auto ptFrameCtr = m_vecVecFrameCtr[row][col];
             if (! moveToCapturePos(ptFrameCtr.x, ptFrameCtr.y)) {
                 bGood = false;

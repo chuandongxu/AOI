@@ -45,15 +45,30 @@ void BoardWidget::on_btnBtmRight_clicked() {
     pMotion->getCurrentPos(AXIS_MOTOR_X, &m_dRightX);
     pMotion->getCurrentPos(AXIS_MOTOR_Y, &m_dBottomY);
 
-    Engine::SetBigBoardCoords(m_dLeftX, m_dTopY, m_dRightX, m_dBottomY);
+    if ( m_dRightX <= m_dLeftX) {
+        System->showMessage(QStringLiteral("设置电路板"), QStringLiteral("电路板右边界坐标 (%1) 小于左边界坐标 (%2). 请重新设置.").arg(m_dRightX).arg(m_dLeftX));
+        return;
+    }
+
+    if ( m_dTopY <= m_dBottomY) {
+        System->showMessage(QStringLiteral("设置电路板"), QStringLiteral("电路板上边界坐标 (%1) 小于下边界坐标 (%2). 请重新设置.").arg(m_dRightX).arg(m_dLeftX));
+        return;
+    }
+
+    if (Engine::SetBigBoardCoords(m_dLeftX, m_dTopY, m_dRightX, m_dBottomY) != Engine::OK) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        System->showMessage(QStringLiteral("设置电路板"), QStringLiteral("Error at SetBigBoardCoords, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+        return;
+    }
     _displayResult();
 }
 
 void BoardWidget::_displayResult() {
     float left = 0.f, top = 0.f, right = 0.f, bottom = 0.f;
-    if (Engine::GetBigBoardCoords(left, top, right, bottom) != 0) {
+    if (Engine::GetBigBoardCoords(left, top, right, bottom) != Engine::OK) {
         String errorType, errorMessage;
-        Engine::GetErrorDetail ( errorType, errorMessage );
+        Engine::GetErrorDetail(errorType, errorMessage);
         System->showMessage(QStringLiteral("设置电路板"), QStringLiteral("Error at GetBigBoardCoords, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
         return;
     }

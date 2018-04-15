@@ -71,5 +71,4 @@ enum CAPTURE_2D_IMAGE_SEQUENCE
     TOTAL_COUNT,
 };
 
-
 #endif //_AOI_CONSTANTS_H_

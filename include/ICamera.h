@@ -52,7 +52,7 @@ public:
 	virtual bool lockCameraCapture() = 0;
 	virtual void unlockCameraCapture() = 0;
 	virtual bool isCameraCaptureAvaiable() = 0;
-	
+    virtual bool captureAllImages(QVector<cv::Mat>& imageMats) = 0;
 
 	/************************************************************************/
 	/*  ¸¨Öú¹¦ÄÜ   */

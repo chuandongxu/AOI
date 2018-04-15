@@ -1,7 +1,15 @@
-﻿#include "cameramodule.h"
+﻿#include <QList>
+#include <QThread>
+#include <QDir>
+#include <QDateTime>
+
+#include "cameramodule.h"
 #include "CameraCtrl.h"
 #include "../Common/SystemData.h"
-#include "qlist.h"
+#include "../Common/ModuleMgr.h"
+#include "../include/IdDefine.h"
+#include "../include/IMotion.h"
+
 #include "QMainProcess.h"
 #include "CameraSetting.h"
 
@@ -19,7 +27,6 @@ void CameraModule::setErrorMap()
 {
 	System->addErrorMap(ERROR_GRABIMAGE, MSG_ERROR_GRABIMAGE);
 }
-
 
 CameraModule::~CameraModule()
 {
@@ -156,8 +163,69 @@ bool CameraModule::isCameraCaptureAvaiable()
 	return m_pMainProcess->isCameraCaptureAvaiable();
 }
 
+bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
+{
+	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
+	if (!pMotion) return false;
+
+	imageMats.clear();
+
+	if (!startCapturing())
+	{
+		System->setTrackInfo(QString("startCapturing error."));	
+		return false;
+	}
+	
+	if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true))
+	{
+		System->setTrackInfo(QString("triggerCapturing error."));	
+		return false;
+	}	
+
+	int nWaitTime = 100;
+	while (! isCaptureImageBufferDone() && nWaitTime-- > 0)
+		QThread::msleep(10);
+
+	if (nWaitTime <= 0)
+	{
+		System->setTrackInfo(QString("CaptureImageBufferDone error."));
+		return false;
+	}
+
+	int nCaptureNum = getImageBufferCaptureNum();
+	for (int i = 0; i < nCaptureNum; ++ i)
+	{
+		cv::Mat matImage = getImageItemBuffer(i);
+		imageMats.push_back(matImage);
+	}
+
+	if (nCaptureNum != getImageBufferNum())
+	{	
+		System->setTrackInfo(QString("System captureAllImages error, Image Num: %1").arg(nCaptureNum));
+
+        QString capturePath = System->getParam("camera_cap_image_path").toString();
+        QDateTime dtm = QDateTime::currentDateTime();
+        QString fileDir = capturePath + "/" + dtm.toString("MMddhhmmss") + "/";
+        QDir dir; dir.mkdir(fileDir);
+
+        for (size_t i = 0; i < imageMats.size(); ++ i) {
+            QString name = QString("%1").arg(i + 1, 2, 10, QChar('0')) + QStringLiteral(".bmp");
+            cv::imwrite((fileDir + name).toStdString().c_str(), imageMats[i]);
+        }
+		return false;
+	}
+
+	return true;
+}
+
 bool CameraModule::getCameraScreenSize(int& nWidth, int& nHeight)
 {
+    if (System->isRunOffline()) {
+        nWidth  = 2040;
+        nHeight = 2048;
+        return true;
+    }
+
 	CameraCtrl * ctrlTmp = (CameraCtrl*)m_pCameraCtrl;
 	if (ctrlTmp)
 	{

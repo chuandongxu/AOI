@@ -37,12 +37,12 @@
     <attribute name="label">
      <string>Scan Image</string>
     </attribute>
-    <widget class="QLabel" name="labelFrameCountX_2">
+    <widget class="QLabel" name="labelFrameCountX">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>60</y>
-       <width>151</width>
+       <width>101</width>
        <height>16</height>
       </rect>
      </property>
@@ -63,7 +63,7 @@
       <string>4</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelOverlapY_2">
+    <widget class="QLabel" name="labelOverlapY">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -76,12 +76,12 @@
       <string>Y Overlap</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelRowImageCount_2">
+    <widget class="QLabel" name="labelRowImageCount">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>120</y>
-       <width>151</width>
+       <width>111</width>
        <height>16</height>
       </rect>
      </property>
@@ -115,7 +115,7 @@
       <string>4</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelFrameCountY_2">
+    <widget class="QLabel" name="labelFrameCountY">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -154,7 +154,7 @@
       <string>4</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelOverlapX_2">
+    <widget class="QLabel" name="labelOverlapX">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -180,7 +180,7 @@
       <string>0</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelCombinedImageZoomScale_2">
+    <widget class="QLabel" name="labelCombinedImageZoomScale">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -193,7 +193,7 @@
       <string>Combined Image Scale</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelFiducialMarkCount_2">
+    <widget class="QLabel" name="labelOneFrameImageCountScan">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -223,7 +223,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>310</y>
+       <y>300</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -245,12 +245,12 @@
       <string>um</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="labelOverlapUnitUmY">
      <property name="geometry">
       <rect>
        <x>230</x>
        <y>180</y>
-       <width>41</width>
+       <width>31</width>
        <height>16</height>
       </rect>
      </property>
@@ -292,6 +292,32 @@
      </property>
      <property name="text">
       <string>Scan Direction</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnPrepareScanImage">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>350</y>
+       <width>161</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>准备扫描电路板</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnScanImage">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>400</y>
+       <width>161</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>扫描电路板</string>
      </property>
     </widget>
    </widget>
