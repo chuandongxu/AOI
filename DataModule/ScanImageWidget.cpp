@@ -13,8 +13,10 @@
 using namespace NFG::AOI;
 using namespace AOI;
 
-ScanImageWidget::ScanImageWidget(QWidget *parent)
-: QWidget(parent) {
+ScanImageWidget::ScanImageWidget(DataCtrl *pDataCtrl, QWidget *parent)
+    : m_pDataCtrl(pDataCtrl),
+      QWidget(parent)
+{
     ui.setupUi(this);
 
     ui.lineEditOneFrameImageCountScan->setText(QString("%1").arg(System->getParam("scan_image_OneFrameImageCount").toInt()));
@@ -26,6 +28,7 @@ ScanImageWidget::ScanImageWidget(QWidget *parent)
     ui.lineEditCombinedImageZoomFactorScan->setText(QString("%1").arg(System->getParam("scan_image_ZoomFactor").toDouble()));
     ui.lineEditFrameImageFolder->setText(System->getParam("scan_image_Folder").toString());
     ui.comboBoxScanDirection->setCurrentIndex(System->getParam("scan_image_Direction").toInt());
+    ui.btnScanImage->setEnabled(false);
 }
 
 ScanImageWidget::~ScanImageWidget() {
@@ -84,19 +87,35 @@ void ScanImageWidget::on_btnPrepareScanImage_clicked() {
     ui.lineEditFrameCountYScan->setText(QString::number(frameCountY));
     ui.lineEditOverlapXScan->setText(QString::number(overlapX));
     ui.lineEditOverlapYScan->setText(QString::number(overlapY));
+
+    ui.btnScanImage->setEnabled(true);
 }
 
 void ScanImageWidget::on_btnScanImage_clicked() {
     System->showMessage(QStringLiteral("扫图"), QStringLiteral("正在扫图中，请等候..."), 1);
 
-    m_pScanImageThread = new ScanImageThread(m_vecVecFrameCtr);
+    float fOverlapX = ui.lineEditOverlapXScan->text().toFloat();
+    float fOverlapY = ui.lineEditOverlapYScan->text().toFloat();
+    
+    Vision::PR_SCAN_IMAGE_DIR enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(ui.comboBoxScanDirection->currentIndex());
+
+    m_pScanImageThread = new ScanImageThread(m_vecVecFrameCtr, fOverlapX, fOverlapY, enScanDir);
     connect(m_pScanImageThread, &ScanImageThread::finished, this, &ScanImageWidget::on_scanImage_done);
     m_pScanImageThread->start();
 }
 
 void ScanImageWidget::on_scanImage_done()
 {
+    if (m_pScanImageThread->isGood()) {
+        m_pDataCtrl->setCombinedBigResult(m_pScanImageThread->getCombinedBigImages(), m_pScanImageThread->getCombinedBigHeight());
+        auto pUI = getModule<IVisionUI>(UI_MODEL);
+        pUI->setImage(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]);
+    }
+
     System->closeMessage();
+
+    delete m_pScanImageThread;
+    m_pScanImageThread = NULL;
 }
 
 void ScanImageWidget::on_btnSelectFrameImages_clicked() {

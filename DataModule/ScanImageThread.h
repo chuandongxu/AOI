@@ -24,6 +24,9 @@ public:
 
 	void quit();
     static bool captureAllImages(QVector<cv::Mat>& imageMats);
+    Vision::VectorOfMat getCombinedBigImages() const { return m_vecCombinedBigImages; }
+    cv::Mat getCombinedBigHeight() const { return m_matCombinedBigHeight; }
+    bool isGood() const { return m_bGood; }
 
 protected:
     bool preRunning();
@@ -55,7 +58,7 @@ private:
     cv::Mat                         m_matTransform;
     Vision::VectorOfVectorOfPoint2f m_vecVecFrameCtr;
     QThreadPool                     m_threadPoolCalc3DHeight;
-    VectorOfMat                     m_vecCombinedBigImage;
+    VectorOfMat                     m_vecCombinedBigImages;
     cv::Mat                         m_matCombinedBigHeight;
     bool                            m_bGood = true;
 };

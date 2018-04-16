@@ -9,7 +9,6 @@
 #include "QProfileObj.h"
 #include "../Common/SystemData.h"
 
-#include "VisionAPI.h"
 #include "DataStoreAPI.h"
 #include "opencv2/highgui.hpp"
 #include "opencv2/video.hpp"
@@ -1402,4 +1401,9 @@ bool DataCtrl::doAlignment(const Vision::VectorOfMat &vecFrameImages)
     pUI->setDeviceWindows ( vecVisionViewDevices );
 
     return true;
+}
+
+void DataCtrl::setCombinedBigResult(const Vision::VectorOfMat &vecCombinedBigImages, const cv::Mat &matHeight) {
+    m_vecCombinedBigImages = vecCombinedBigImages;
+    m_matCombinedBigHeight = matHeight;
 }

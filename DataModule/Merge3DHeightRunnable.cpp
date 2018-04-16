@@ -16,7 +16,8 @@ Merge3DHeightRunnable::Merge3DHeightRunnable(
     m_pVec3DFrameImages       (pVec3DFrameImages),
     m_nRow                    (nRow),
     m_nCol                    (nCol),
-    m_nTotalRows              (nTotalRows)
+    m_nTotalRows              (nTotalRows),
+    m_nTotalCols              (nTotalCols)
 {
 }
 
@@ -38,5 +39,5 @@ void Merge3DHeightRunnable::run()
     cv::Mat matMerged3DHeight;
     pVision->merge3DHeight(vecMatHeight, matMerged3DHeight);
 
-    m_pVec3DFrameImages[m_nRow * m_nTotalCols + m_nCol] = matMerged3DHeight;
+    (*m_pVec3DFrameImages)[m_nRow * m_nTotalCols + m_nCol] = matMerged3DHeight;
 }

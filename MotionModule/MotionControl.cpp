@@ -1184,6 +1184,12 @@ bool MotionControl::moveToGroup(std::vector<int>& axis, std::vector<double>& pos
 {
 	if ((axis.size() != pos.size()) || (pos.size() != profiles.size())) return false;
 
+    if (System->isRunOffline()) {
+        for (int i = 0; i < axis.size(); ++ i)
+            m_dRunOfflinePos[axis[i]] = pos[i];
+        return true;
+    }
+
 	for (int i = 0; i < axis.size(); i++)
 	{
 		bool bRet = moveTo(axis[i], profiles[i], pos[i], false);

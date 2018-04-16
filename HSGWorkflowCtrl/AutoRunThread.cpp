@@ -349,7 +349,8 @@ bool AutoRunThread::_doInspection()
 
             std::vector<Calc3dHeightRunnablePtr> vecCalc3dHeightRunnable;
             for (int nDlpId = 0; nDlpId < m_nDLPCount; ++ nDlpId) {
-                auto pCalc3DHeightRunnable = std::make_shared<Calc3DHeightRunnable>(nDlpId, vecMatImages);
+                QVector<cv::Mat> vecDlpImage = vecMatImages.mid(nDlpId * DLP_IMG_COUNT, DLP_IMG_COUNT);
+                auto pCalc3DHeightRunnable = std::make_shared<Calc3DHeightRunnable>(nDlpId + 1, vecDlpImage);
                 pCalc3DHeightRunnable->setAutoDelete(false);
                 m_threadPoolCalc3DHeight.start(pCalc3DHeightRunnable.get());
                 vecCalc3dHeightRunnable.push_back(std::move(pCalc3DHeightRunnable));

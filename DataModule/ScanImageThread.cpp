@@ -62,11 +62,12 @@ void ScanImageThread::run()
     if (m_vecVecFrameCtr.empty())
         return;
 
-    VectorOfVectorOfMat vecVecFrameImages(5, VectorOfMat(m_vecVecFrameCtr.size() * m_vecVecFrameCtr[0].size(), cv::Mat()));
-	VectorOfMat vecFrame3DHeight(m_vecVecFrameCtr.size() * m_vecVecFrameCtr[0].size(), cv::Mat());
-
     int ROWS = m_vecVecFrameCtr.size();
     int COLS = m_vecVecFrameCtr[0].size();
+    int TOTAL = ROWS * COLS;
+    VectorOfVectorOfMat vecVecFrameImages(5, VectorOfMat(TOTAL, cv::Mat()));
+	VectorOfMat vecFrame3DHeight(TOTAL, cv::Mat());
+    
     m_bGood = true;
     for (int row = 0; row < ROWS; ++ row) {
         for (int col = 0; col < COLS; ++ col) {
@@ -76,21 +77,24 @@ void ScanImageThread::run()
                 break;
             }
 
-            QVector<cv::Mat> vecImages;
-            if (! captureAllImages(vecImages)) {
+            QVector<cv::Mat> vecMatImages;
+            if (! captureAllImages(vecMatImages)) {
                 m_bGood = false;
                 break;
             }
 
+            QThreadPool::globalInstance()->waitForDone();
+
             std::vector<Calc3dHeightRunnablePtr> vecCalc3dHeightRunnable;
             for (int nDlpId = 0; nDlpId < m_nDLPCount; ++ nDlpId) {
-                auto pCalc3DHeightRunnable = std::make_shared<Calc3DHeightRunnable>(nDlpId, vecImages);
+                QVector<cv::Mat> vecDlpImage = vecMatImages.mid(nDlpId * DLP_IMG_COUNT, DLP_IMG_COUNT);
+                auto pCalc3DHeightRunnable = std::make_shared<Calc3DHeightRunnable>(nDlpId + 1, vecDlpImage);
                 pCalc3DHeightRunnable->setAutoDelete(false);
                 m_threadPoolCalc3DHeight.start(pCalc3DHeightRunnable.get());
                 vecCalc3dHeightRunnable.push_back(std::move(pCalc3DHeightRunnable));
             }
 
-            Vision::VectorOfMat vec2DCaptureImages(vecImages.begin() + m_nDLPCount * DLP_IMG_COUNT, vecImages.end());
+            Vision::VectorOfMat vec2DCaptureImages(vecMatImages.begin() + m_nDLPCount * DLP_IMG_COUNT, vecMatImages.end());
             if (vec2DCaptureImages.size() != CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT) {
                 System->setTrackInfo(QString(QStringLiteral("2D image count %0 not correct.")).arg(vec2DCaptureImages.size()));
                 m_bGood = false;
@@ -125,7 +129,7 @@ void ScanImageThread::run()
     for (int i = 0; i < 4; ++ i) {        
         stCmd.vecInputImages = vecVecFrameImages[i];
         if ( Vision::VisionStatus::OK == Vision::PR_CombineImg(&stCmd, &stRpy))
-            m_vecCombinedBigImage.push_back(stRpy.vecResultImages[0]);
+            m_vecCombinedBigImages.push_back(stRpy.vecResultImages[0]);
         else {
             System->setTrackInfo(QString(QStringLiteral("合并大图失败.")));
             m_bGood = false;
@@ -147,7 +151,7 @@ void ScanImageThread::run()
 
         cv::Mat matHeightGrayImg;
         matNewPhase.convertTo(matHeightGrayImg, CV_8UC1);
-        m_vecCombinedBigImage.push_back(matHeightGrayImg);
+        m_vecCombinedBigImages.push_back(matHeightGrayImg);
     }else {
         System->setTrackInfo(QString(QStringLiteral("合并大图失败.")));
         m_bGood = false;
@@ -171,6 +175,18 @@ bool ScanImageThread::moveToCapturePos(float fPosX, float fPosY)
 
 bool ScanImageThread::captureAllImages(QVector<cv::Mat>& imageMats)
 {
+    if (System->isRunOffline()) {
+        imageMats.clear();
+        std::string strImagePath("D:/Data/20180203_TestImageOnKB/0203125013/");
+        char strfileName[100];
+        for (int i = 1; i <= 54; ++ i) {
+            _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
+            cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
+            imageMats.push_back(matImage);
+        }
+        return true;
+    }
+
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
 

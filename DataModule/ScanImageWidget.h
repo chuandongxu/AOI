@@ -4,6 +4,7 @@
 #include "ui_ScanImageWidget.h"
 #include "VisionAPI.h"
 #include "ScanImageThread.h"
+#include "DataCtrl.h"
 
 using namespace AOI;
 
@@ -12,7 +13,7 @@ class ScanImageWidget : public QWidget
     Q_OBJECT
 
 public:
-    ScanImageWidget(QWidget *parent = Q_NULLPTR);
+    ScanImageWidget(DataCtrl *pDataCtrl, QWidget *parent = Q_NULLPTR);
     ~ScanImageWidget();
 
 private slots:
@@ -35,4 +36,5 @@ private:
     Ui::ScanImageWidget              ui;
     Vision::VectorOfVectorOfPoint2f  m_vecVecFrameCtr;
     ScanImageThread                 *m_pScanImageThread;
+    DataCtrl                        *m_pDataCtrl;
 };
