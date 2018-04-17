@@ -320,6 +320,54 @@
       <string>扫描电路板</string>
      </property>
     </widget>
+    <widget class="QComboBox" name="comboBoxDisplayImage">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>460</y>
+       <width>121</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>白光</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>低角度光</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>锡形光</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>均匀光</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>高度灰阶</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="labelDisplayImage">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>460</y>
+       <width>55</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>显示图片</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="loadImage">
     <property name="geometry">

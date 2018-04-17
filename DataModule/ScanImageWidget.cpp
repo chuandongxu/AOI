@@ -29,6 +29,9 @@ ScanImageWidget::ScanImageWidget(DataCtrl *pDataCtrl, QWidget *parent)
     ui.lineEditFrameImageFolder->setText(System->getParam("scan_image_Folder").toString());
     ui.comboBoxScanDirection->setCurrentIndex(System->getParam("scan_image_Direction").toInt());
     ui.btnScanImage->setEnabled(false);
+    ui.comboBoxDisplayImage->setEnabled(false);
+
+    connect(ui.comboBoxDisplayImage, SIGNAL(currentIndexChanged(int)), SLOT(on_comboBoxDisplayImage_indexChanged(int)));
 }
 
 ScanImageWidget::~ScanImageWidget() {
@@ -109,13 +112,22 @@ void ScanImageWidget::on_scanImage_done()
     if (m_pScanImageThread->isGood()) {
         m_pDataCtrl->setCombinedBigResult(m_pScanImageThread->getCombinedBigImages(), m_pScanImageThread->getCombinedBigHeight());
         auto pUI = getModule<IVisionUI>(UI_MODEL);
-        pUI->setImage(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]);
+        pUI->setImage(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::WHITE_LIGHT]);
+        ui.comboBoxDisplayImage->setEnabled(true);
     }
 
     System->closeMessage();
 
     delete m_pScanImageThread;
     m_pScanImageThread = NULL;
+}
+
+void ScanImageWidget::on_comboBoxDisplayImage_indexChanged(int index)
+{
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    auto vecCombinedBigImage = m_pDataCtrl->getCombinedBigImages();
+    if (index >= 0 && index <= vecCombinedBigImage.size() && !vecCombinedBigImage[index].empty())
+        pUI->setImage(vecCombinedBigImage[index]);
 }
 
 void ScanImageWidget::on_btnSelectFrameImages_clicked() {

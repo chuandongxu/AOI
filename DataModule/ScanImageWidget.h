@@ -20,12 +20,11 @@ private slots:
 	void on_btnCombineImageParamsSave_clicked();
     void on_btnPrepareScanImage_clicked();
     void on_btnScanImage_clicked();
-
-    void on_btnCombineLoadImage_clicked();    
+    void on_btnCombineLoadImage_clicked();
     void on_btnSelectFrameImages_clicked();
     void on_btnSelectCombinedImage_clicked();
-
     void on_scanImage_done();
+    void on_comboBoxDisplayImage_indexChanged(int);
 
 private:
     cv::Mat combineImage(const QString &strFolder);
