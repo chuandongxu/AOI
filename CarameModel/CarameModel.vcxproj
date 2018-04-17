@@ -154,7 +154,7 @@
   <ItemGroup>
     <ClCompile Include="CameraCtrl.cpp" />
     <ClCompile Include="CameraDevice.cpp" />
-    <ClCompile Include="cameramodule.cpp" />
+    <ClCompile Include="CameraModule.cpp" />
     <ClCompile Include="CameraSetting.cpp" />
     <ClCompile Include="DalsaDevice.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_CameraSetting.cpp">
@@ -230,6 +230,8 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </Command>
     </CustomBuild>
+    <ClInclude Include="..\include\ICamera.h" />
+    <ClInclude Include="CameraModule.h" />
     <ClInclude Include="GeneratedFiles\ui_CameraSetting.h" />
     <CustomBuild Include="ImageDevice.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -297,7 +299,6 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="CameraCtrl.h" />
     <ClInclude Include="CameraDevice.h" />
-    <ClInclude Include="cameramodule.h" />
     <ClInclude Include="caramemodel_global.h" />
   </ItemGroup>
   <ItemGroup>

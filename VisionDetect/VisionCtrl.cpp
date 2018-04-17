@@ -181,7 +181,7 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
 		bool b3DDetectCaliUseThinPattern = System->getParam("3d_detect_cali_thin_pattern").toBool();
 		bool b3DDetectGaussionFilter = System->getParam("3d_detect_gaussion_filter").toBool();
 		//bool b3DDetectReverseSeq = System->getParam("3d_detect_reverse_seq").toBool();
-		double d3DDetectMinIntDiff = System->getParam("3d_detect_min_intensity_diff").toDouble();	
+		double d3DDetectMinIntDiff = System->getParam("3d_detect_min_intensity_diff").toDouble();
 		double d3DDetectPhaseShift = System->getParam("3d_detect_phase_shift").toDouble();
 		m_stCalcHeightCmds[nStation - 1].bEnableGaussianFilter = b3DDetectGaussionFilter;
 		//m_stCalcHeightCmds[nStation - 1].bReverseSeq = b3DDetectReverseSeq;
@@ -196,6 +196,11 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
 		QString sz3DCaliRstFile = path + System->getParam(QString("3d_cali_rst_filename_%1").arg(nStation)).toString();
 		std::string strResultMatPath = sz3DCaliRstFile.toStdString();
 		cv::FileStorage fs(strResultMatPath, cv::FileStorage::READ);
+        if (!fs.isOpened()) {
+            System->setTrackInfo(QString("Failed to open 3D calibration result file %1").arg(strResultMatPath.c_str()));
+            return false;
+        }
+
 		cv::FileNode fileNode = fs["K1"];
 		cv::read(fileNode, m_stCalcHeightCmds[nStation - 1].matThickToThinK, cv::Mat());
 		fileNode = fs["K2"];
@@ -247,10 +252,7 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
 
 	Vision::PR_CALC_3D_HEIGHT_RPY stRpy;
 	Vision::VisionStatus retStatus = PR_Calc3DHeight(&(m_stCalcHeightCmds[nStation - 1]), &stRpy);
-	QString path = QApplication::applicationDirPath();
-	path += "/Vision/";
-	Vision::PR_DumpTimeLog(path.toStdString() + "timelog.log");
-	if (retStatus == Vision::VisionStatus::OK)
+	if (Vision::VisionStatus::OK == retStatus)
 	{
 		heightMat = stRpy.matHeight;
 		//cv::patchNaNs(heightMat, 0.0);

@@ -50,6 +50,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Scriptd.lib;Qt5Sqld.lib;Qt5Widgetsd.lib;Qt5Xmld.lib;common.lib;extension.lib;Qt5PrintSupportd.lib;opencv_calib3d300d.lib;opencv_core300d.lib;opencv_features2d300d.lib;opencv_flann300d.lib;opencv_hal300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_line_descriptor300d.lib;opencv_ml300d.lib;opencv_objdetect300d.lib;opencv_photo300d.lib;opencv_shape300d.lib;opencv_stitching300d.lib;opencv_superres300d.lib;opencv_text300d.lib;opencv_ts300d.lib;opencv_video300d.lib;opencv_videoio300d.lib;opencv_videostab300d.lib;opencv_xfeatures2d300d.lib;VisionLibrary.lib;DataStoreApi.lib;dog_windows_x64_3152741.lib;libdog_cpp_windows_x64_MDd_msc10.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
+      <StackReserveSize>10000000</StackReserveSize>
     </Link>
     <CustomBuildStep>
       <Command>
@@ -80,6 +81,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\HSGWorkflowCtrl\Calc3DHeightRunnable.cpp" />
     <ClCompile Include="BoardWidget.cpp" />
     <ClCompile Include="DataCtrl.cpp" />
     <ClCompile Include="DataEditor.cpp" />
@@ -174,15 +176,19 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="ImportCADWidget.cpp" />
+    <ClCompile Include="Merge3DHeightRunnable.cpp" />
     <ClCompile Include="qcustomplot.cpp" />
     <ClCompile Include="QDataModule.cpp" />
     <ClCompile Include="QDetectObj.cpp" />
     <ClCompile Include="QProfileObj.cpp" />
     <ClCompile Include="QStatisticsWidget.cpp" />
+    <ClCompile Include="ScanImageThread.cpp" />
     <ClCompile Include="ScanImageWidget.cpp" />
     <ClCompile Include="SetFiducialMarkDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Merge3DHeightRunnable.h" />
+    <ClInclude Include="ScanImageThread.h" />
     <CustomBuild Include="SetFiducialMarkDialog.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing SetFiducialMarkDialog.h...</Message>
@@ -283,6 +289,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SCRIPT_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DQT_XML_LIB -DDATAMODULE_LIB -DQT_PRINTSUPPORT_LIB -D_WINDLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtScript" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtPrintSupport" "-I.\..\lib\VisionLibrary\include" "-I.\..\lib\VisionLibrary\include\opencv" "-I.\..\lib\VisionLibrary\include\opencv2" "-I.\..\lib\DataStoreAPI\include" "-I.\..\lib\Runtime" "-I.\..\include" "-I.\..\Common" "-I.\..\VisionUI"</Command>
     </CustomBuild>
+    <ClInclude Include="..\HSGWorkflowCtrl\Calc3DHeightRunnable.h" />
     <ClInclude Include="..\include\constants.h" />
     <CustomBuild Include="BoardWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

@@ -60,16 +60,31 @@ enum GRAY_WEIGHT_METHOD
 	EM_MODE_TWO_THRESHOLD
 };
 
-enum CAPTURE_2D_IMAGE_SEQUENCE
+class CAPTURE_2D_IMAGE_SEQUENCE
 {
-    WHITE_LIGHT,
-    LOW_ANGLE_LIGHT,
-    RED_LIGHT,
-    GREEN_LIGHT,
-    BLUE_LIGHT,
-    UNIFORM_LIGHT,
-    TOTAL_COUNT,
+public:
+    enum {
+        WHITE_LIGHT,
+        LOW_ANGLE_LIGHT,
+        RED_LIGHT,
+        GREEN_LIGHT,
+        BLUE_LIGHT,
+        UNIFORM_LIGHT,
+        TOTAL_COUNT
+    };
 };
 
+class PROCESSED_IMAGE_SEQUENCE
+{
+public:
+    enum {
+        WHITE_LIGHT,
+        LOW_ANGLE_LIGHT,
+        SOLDER_LIGHT,
+        UNIFORM_LIGHT,
+        HEIGHT_GRAY,
+        TOTAL_COUNT
+    };
+};
 
 #endif //_AOI_CONSTANTS_H_

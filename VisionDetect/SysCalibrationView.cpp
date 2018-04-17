@@ -24,13 +24,8 @@
 
 #include "CryptLib.h"
 
-#include "../lib/VisionLibrary/include/VisionAPI.h"
-#define ToInt(value)                (static_cast<int>(value))
+#define ToInt(value)        (static_cast<int>(value))
 #define ToFloat(param)      (static_cast<float>(param))
-
-#include "opencv2/opencv.hpp"
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
 
 #define MTR_READY_POS			0
 
@@ -1242,8 +1237,7 @@ bool SysCalibrationView::readImages(QString& szFilePath, AOI::Vision::VectorOfMa
 		}
 		else if (QString::compare(suffix, QString("bmp"), Qt::CaseInsensitive) == 0)
 		{
-			QString absolute_file_path = file_info.absoluteFilePath();
-			cv::Mat mat = cv::imread(absolute_file_path.toStdString(), cv::IMREAD_GRAYSCALE);
+			cv::Mat mat = _readImage(file_info.absoluteFilePath(), cv::IMREAD_GRAYSCALE);
 			matImgs.push_back(mat);
 		}
 		else
@@ -1384,4 +1378,18 @@ cv::Mat SysCalibrationView::drawHeightGrid2(const cv::Mat &matHeight, int nGridR
 	}
 
 	return matResultImg;
+}
+
+//This function to replace the cv::imread. Because cv::imread cannot read 中文路径.
+cv::Mat SysCalibrationView::_readImage(const QString &strFilePath, int flags)
+{
+    cv::Mat image;  
+    QFile file(strFilePath);  //strFilePath 路径  
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray byteArray = file.readAll();
+        std::vector<char> data(byteArray.data(), byteArray.data() + byteArray.size());
+        image = cv::imdecode(cv::Mat(data), flags);
+        file.close();
+    }
+    return image;
 }

@@ -18,6 +18,7 @@ public:
 	~AutoRunThread();
 
 	void quit();
+    static bool captureAllImages(QVector<cv::Mat>& imageMats);
 
 protected:
 	bool preRunning();
@@ -29,8 +30,7 @@ protected:
 	bool mergeImages(QString& szImagePath);
 	bool isExit();
 
-private:
-	bool captureAllImages(QVector<cv::Mat>& imageMats);
+private:	
 	void setResoultLight(bool isOk);
 	void resetResoultLight();
 
@@ -40,7 +40,6 @@ private:
 	void saveImages(const QString& szImagePath, int nRowIndex, int nColIndex, int nCountOfImgPerRow, const QVector<cv::Mat>& imageMats);
 	void saveCombineImages(const QString& szImagePath, const QVector<cv::Mat>& imageMats);
 
-    cv::Rect _calcImageRect(float fImgCapPosUmX, float fImgCapPosUmY, float fRectPosUmX, float fRectPosUmY, float fRectWidthUm, float fRectHeightUm);
     bool _feedBoard();
     bool _readBarcode();
     bool _doAlignment();
@@ -53,8 +52,6 @@ private:
 	std::atomic<bool> m_exit;
 	
 	cv::Mat m_3DMatHeight;
-
-	int m_nImageIndex;
 
     Engine::AlignmentVector         m_vecAlignments;
     Engine::WindowVector            m_vecWindows;

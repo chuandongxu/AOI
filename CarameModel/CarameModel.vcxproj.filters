@@ -41,9 +41,6 @@
     <ClCompile Include="CameraCtrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cameramodule.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_CameraSetting.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -77,6 +74,9 @@
     <ClCompile Include="QMainProcess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CameraModule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="caramemodel_global.h">
@@ -91,13 +91,16 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cameramodule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_CameraSetting.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="MatHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ICamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

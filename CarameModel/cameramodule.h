@@ -36,7 +36,8 @@ public:
 
 	bool lockCameraCapture();
 	void unlockCameraCapture();
-	bool isCameraCaptureAvaiable();
+	virtual bool isCameraCaptureAvaiable() override;
+    virtual bool captureAllImages(QVector<cv::Mat>& imageMats) override;
 
 	bool getCameraScreenSize(int& nWidth, int& nHeight);
 
@@ -54,8 +55,8 @@ private:
 	void setErrorMap();
 
 private: 
-	CameraCtrl*      m_pCameraCtrl;
-	CameraSetting* m_pSetting;
+	CameraCtrl                  *m_pCameraCtrl;
+	CameraSetting               *m_pSetting;
 	QSharedPointer<QMainProcess> m_pMainProcess;
 };
 

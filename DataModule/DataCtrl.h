@@ -5,6 +5,9 @@
 #include <QVector>
 
 #include "../include/IData.h"
+#include "VisionAPI.h"
+
+using namespace AOI;
 
 class QBoardObj;
 class QDetectObj;
@@ -17,7 +20,6 @@ public:
 	DataCtrl(QObject *parent = NULL);
 	~DataCtrl();
 
-public:
 	void setInfiniteCycles(bool bInfinite);
 	void incrementCycleTests();
 	void decrementCycleTests();
@@ -51,10 +53,12 @@ public:
 	bool loadProfDataBase(QString& szFilePath);
 	void clearProfDataBase();
     bool doAlignment(const Vision::VectorOfMat &vecFrameImages);
-private:
-	void clearFiles(const QString &folderFullPath);
+    void setCombinedBigResult(const Vision::VectorOfMat &vecCombinedBigImages, const cv::Mat &matHeight);
+    Vision::VectorOfMat getCombinedBigImages() const { return m_vecCombinedBigImages; }
+    cv::Mat getCombinedBigHeight() const { return m_matCombinedBigHeight; }
 
 private:
+	void clearFiles(const QString &folderFullPath);
 	QVector<QDetectObj*>& getCellType(DataTypeEnum emDataType);
 
 private:
@@ -65,7 +69,8 @@ private:
 	QBoardObj* m_boardObj;
 	QVector<QDetectObj*> m_cellTmpObjs;
 	QVector<QDetectObj*> m_cellTestObjs;
-
 	QVector<QProfileObj*> m_profileObjs;
 	int m_nProfileIndex;
+    Vision::VectorOfMat     m_vecCombinedBigImages;
+    cv::Mat                 m_matCombinedBigHeight;
 };

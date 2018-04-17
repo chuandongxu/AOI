@@ -2,7 +2,7 @@
 #include "../common/SystemData.h"
 #include "../include/IdDefine.h"
 #include "../Common/ThreadPrioc.h"
-
+#include "../include/constants.h"
 #include "MotionControl.h"
 
 #include <QDebug>
@@ -53,10 +53,7 @@ JoystickWidget::~JoystickWidget()
 {
 }
 
-void JoystickWidget::closeEvent(QCloseEvent *e){
-	//qDebug() << "¹Ø±ÕÊÂ¼þ";
-	//e->ignore();
-
+void JoystickWidget::closeEvent(QCloseEvent *e) {
 	clearJoystick();
 	this->hide();
 }
@@ -123,12 +120,11 @@ void JoystickWidget::updateMtrStatus()
 		if (m_AxisID_X > 0) m_pCtrl->getCurrentPos(m_AxisID_X, &dMtrPosX);
 		if (m_AxisID_Y > 0) m_pCtrl->getCurrentPos(m_AxisID_Y, &dMtrPosY);
 
+        dMtrPosX *= UM_TO_MM;
+        dMtrPosY *= UM_TO_MM;
+
 		ui.lineEdit_encX->setText(QString::number(dMtrPosX, 'f', 2));
 		ui.lineEdit_encY->setText(QString::number(dMtrPosY, 'f', 2));
-
-		//m_pEditX->setText(QString::number(dMtrPosX, 'f', 2));
-		//m_pEditY->setText(QString::number(dMtrPosY, 'f', 2));
-
 
 		ui.lineEdit_stepX->setText(QString::number(m_dStepX, 'f', 2));
 		ui.lineEdit_stepY->setText(QString::number(m_dStepY, 'f', 2));
@@ -201,7 +197,7 @@ void JoystickWidget::onLeft()
 
 	preMove(MOVE_DIR_LEFT);
 
-	m_pCtrl->move(m_AxisID_X, 1, -m_dStepX * m_nJoystick, false);	
+	m_pCtrl->move(m_AxisID_X, 1, -m_dStepX * MM_TO_UM * m_nJoystick, false);	
 
 	postMove(MOVE_DIR_LEFT);
 }
@@ -212,7 +208,7 @@ void JoystickWidget::onRight()
 
 	preMove(MOVE_DIR_RIGHT);
 
-	m_pCtrl->move(m_AxisID_X, 1, m_dStepX * m_nJoystick, false);	
+	m_pCtrl->move(m_AxisID_X, 1, m_dStepX * MM_TO_UM * m_nJoystick, false);	
 
 	postMove(MOVE_DIR_RIGHT);
 }
@@ -223,7 +219,7 @@ void JoystickWidget::onUp()
 
 	preMove(MOVE_DIR_UP);
 
-	m_pCtrl->move(m_AxisID_Y, 1, m_dStepY * m_nJoystick, false);
+	m_pCtrl->move(m_AxisID_Y, 1, m_dStepY * MM_TO_UM * m_nJoystick, false);
 
 	postMove(MOVE_DIR_UP);
 }
@@ -234,7 +230,7 @@ void JoystickWidget::onDown()
 
 	preMove(MOVE_DIR_DOWN);
 
-	m_pCtrl->move(m_AxisID_Y, 1, -m_dStepY * m_nJoystick, false);	
+	m_pCtrl->move(m_AxisID_Y, 1, -m_dStepY * MM_TO_UM * m_nJoystick, false);	
 
 	postMove(MOVE_DIR_DOWN);
 }
