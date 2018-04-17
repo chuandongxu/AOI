@@ -412,7 +412,7 @@ void QSystem::setTrackInfo(const QString &msg, bool bDisplayHM)
 	//if(this->getErrorDispLevel() == -1)return;
 
 	if(!bDisplayHM) return;
-	emit errorInfo(strdate,msg,0x90000000);
+	emit errorInfo(strdate, msg, 0x90000000);
 }
 
 void QSystem::setErrorCode(unsigned int code)
@@ -932,7 +932,7 @@ void QSystem::initConfig()
 static QSysMessageBox *g_box = NULL;
 static bool g_bShowed = false;
 
-void QSystem::showMessage(const QString &title,const QString &msg,int ErrorLevel)
+void QSystem::showMessage(const QString &title, const QString &msg, int ErrorLevel)
 {
 	if(NULL == g_box)
 	{
@@ -950,7 +950,7 @@ void QSystem::showMessage(const QString &title,const QString &msg,int ErrorLevel
 	{
 		g_box->setText(msg);
 		g_box->setTitle(title);
-		if(ErrorLevel > 3)g_box->enableCloseBtn(true);
+		if(ErrorLevel > 3) g_box->enableCloseBtn(true);
 		else g_box->enableCloseBtn(false);
 
 		g_box->show();
@@ -962,7 +962,7 @@ void QSystem::showMessage(const QString &title,const QString &msg,int ErrorLevel
 	{
 		g_box->setText(msg);
 		g_box->setTitle(title);
-		if(ErrorLevel > 3)g_box->enableCloseBtn(true);
+		if(ErrorLevel > 3) g_box->enableCloseBtn(true);
 		else g_box->enableCloseBtn(false);
 		
 		g_box->show();
@@ -985,7 +985,7 @@ bool QSystem::isMessageShowed()
 	return g_bShowed;
 }
 
-/*static*/ int QSystem::showInteractMessage(const QString &title,const QString &msg)
+/*static*/ int QSystem::showInteractMessage(const QString &title, const QString &msg)
 {
     QSysMessageBox msgBox(NULL, true);
     msgBox.setText(msg);

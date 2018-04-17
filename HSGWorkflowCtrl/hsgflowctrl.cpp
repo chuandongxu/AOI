@@ -90,50 +90,35 @@ void QFlowCtrl::home()
 		return ;
 	}
 
-	if (!m_isHome)
-	{
-		m_homeIng = true;
-		QEos::Notify(EVENT_GOHOMEING_STATE, GOHOMEING_STATE_OK);
+    QEos::Notify(EVENT_GOHOMEING_STATE, GOHOMEING_STATE_OK);
 
-		//急停判断
-		IMotion * p = getModule<IMotion>(MOTION_MODEL);
-		if (p)
-		{
-			int iState = 1;
-			//p->getExtDI(DI_IM_STOP, iState);
-			if (0 == iState)
-			{
-				QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备处于急停状态，请先排除急停。"));
-				return;
-			}
-		}
-		else
-		{
-			System->setTrackInfo(QStringLiteral("系统暂无控制系统，无法回零。"));			
-		}
+    //急停判断
+    IMotion * p = getModule<IMotion>(MOTION_MODEL);
+    if (p) {
+        int iState = 1;
+        //p->getExtDI(DI_IM_STOP, iState);
+        if (0 == iState) {
+            QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备处于急停状态，请先排除急停。"));
+            return;
+        }
+    }
+    else
+        System->setTrackInfo(QStringLiteral("系统暂无控制系统，无法回零。"));
 
-		QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在回零中..."), 0);
-		QApplication::processEvents();
+    QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在回零中..."), 0);
+    QApplication::processEvents();
 
-		if (p->homeAll(true))
-		{
-			m_isHome = true;
-			QEos::Notify(EVENT_GOHOME_STATE, GOHOME_STATE_OK);
-			QSystem::closeMessage();
-		}
-		else
-		{
-			m_isHome = false;
-			QEos::Notify(EVENT_GOHOME_STATE, GOHOME_STATE_NG);
-			System->setErrorCode(ERROR_HOME_MOTION_ALM);
-			QSystem::closeMessage();
-		}
-	}
-
-	//if (m_isHome)
-	//{
-		//this->start();
-	//}	
+    if (p->homeAll(true)) {
+        m_isHome = true;
+        QEos::Notify(EVENT_GOHOME_STATE, GOHOME_STATE_OK);
+        QSystem::closeMessage();
+    }
+    else {
+        m_isHome = false;
+        QEos::Notify(EVENT_GOHOME_STATE, GOHOME_STATE_NG);
+        System->setErrorCode(ERROR_HOME_MOTION_ALM);
+        QSystem::closeMessage();
+    }
 }
 
 void QFlowCtrl::startAutoRun()
@@ -293,7 +278,7 @@ void QFlowCtrl::start()
 	}
 
     m_pAutoRunThread = new AutoRunThread(vecAlignments, vecWindows, vecVecFrameCtr);
-    connect(m_pAutoRunThread, &AutoRunThread::finished, this, &QObject::deleteLater);
+    connect(m_pAutoRunThread, &AutoRunThread::finished, m_pAutoRunThread, &QObject::deleteLater);
     m_pAutoRunThread->start();
 
 	m_isStart = true;

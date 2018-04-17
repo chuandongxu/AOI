@@ -9,7 +9,7 @@ QDataModule::QDataModule(int id, const QString &name)
 {
 	m_pStatisticsWidget = new QStatisticsWidget(&m_ctrl);
 	m_pDataEditor = new DataEditor();
-    m_pDataWidget = new DataWidget();
+    m_pDataWidget = new DataWidget(&m_ctrl);
 }
 
 QDataModule::~QDataModule()

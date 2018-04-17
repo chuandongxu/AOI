@@ -98,11 +98,11 @@ public:
 
 	static QSystem * instance();
 
-	static void showMessage(const QString &title,const QString &msg,int ErrorLevel = 4);
+	static void showMessage(const QString &title, const QString &msg, int ErrorLevel = 4);
 	static void closeMessage();
 	static bool isMessageShowed();
 
-    static int showInteractMessage(const QString &title,const QString &msg);
+    static int showInteractMessage(const QString &title, const QString &msg);
 
 	static bool ChangeUser();
 	static void ManagerUser();

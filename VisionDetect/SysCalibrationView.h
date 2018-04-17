@@ -3,6 +3,8 @@
 #include <QWidget>
 #include "ui_SysCalibrationView.h"
 #include "VisionCtrl.h"
+#include "VisionAPI.h"
+#include "opencv2/highgui.hpp"
 
 class QCameraRunnable;
 class IVisionUI;
@@ -14,8 +16,8 @@ public:
 	SysCalibrationView(VisionCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
 	~SysCalibrationView();
 
-public:
 	QWidget* getTab();
+    void guideDisplayImages();
 
 private:
 	void initUI();
@@ -56,11 +58,8 @@ private:
 	cv::Mat drawHeightGrid(const cv::Mat &matHeight, int nGridRow, int nGridCol);
 	cv::Mat drawHeightGrid2(const cv::Mat &matHeight, int nGridRow, int nGridCol);
 	cv::Mat drawHeightGray(const cv::Mat &matHeight);
+    cv::Mat _readImage(const QString &strFilePath, int flags = cv::IMREAD_COLOR);
 
-public:
-	void guideDisplayImages();
-
-private:
 	bool startCaliGuide();
 	void stopCaliGuide();
 	bool guideReadImages(QVector<cv::Mat>& matImgs);
@@ -72,15 +71,13 @@ private:
 	bool m_bGuideCali;
 	int m_nCaliGuideStep;
 	QVector<cv::Mat> m_guideImgMats;
-	QCameraRunnable* m_pCameraRunnable;
+	QCameraRunnable* m_pCameraRunnable;    
 
-private:
 	Ui::SysCalibrationView ui;
 	VisionCtrl* m_pCtrl;
 	int m_nLevel;
 	QMap<int, int> m_caliStepMap;
 
-private:
 	QIntValidator *inputIntRangePos;
 	QIntValidator *inputIntRangeAll;
 	QDoubleValidator *inputDoubleRangePos;

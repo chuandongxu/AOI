@@ -40,7 +40,7 @@ void QSysMessageBox::setText(const QString &msg)
 
 void QSysMessageBox::enableCloseBtn(bool flag)
 {
-	if(flag)ui.pushButton->show();
+	if(flag) ui.pushButton->show();
 	else ui.pushButton->hide();
 }
 
