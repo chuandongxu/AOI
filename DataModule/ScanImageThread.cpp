@@ -71,6 +71,9 @@ void ScanImageThread::run()
     m_bGood = true;
     for (int row = 0; row < ROWS; ++ row) {
         for (int col = 0; col < COLS; ++ col) {
+
+            System->setTrackInfo(QStringLiteral("正在扫描行 (%1) 列 (%2)").arg(row).arg(col));
+
             auto ptFrameCtr = m_vecVecFrameCtr[row][col];
             if (! moveToCapturePos(ptFrameCtr.x, ptFrameCtr.y)) {
                 m_bGood = false;
