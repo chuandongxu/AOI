@@ -50,6 +50,7 @@ public:
 	virtual bool loadProfDataBase(QString& szFilePath);
 
     virtual bool doAlignment(const Vision::VectorOfMat &vecFrameImages) override;
+    virtual QString getDataStoreApiVersion() const override { return m_ctrl.getDataStoreApiVersion(); }
     
 private:
 	DataCtrl m_ctrl;

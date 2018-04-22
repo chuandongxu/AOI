@@ -52,6 +52,7 @@ public:
 
     virtual void setColorWidgetImage(const cv::Mat &matImg) override;
     virtual cv::Mat getColorWidgetProcessedImage() override;
+    virtual QString getVisionLibraryVersion() const { return m_ctrl.getVisionLibraryVersion(); }
 
 private:
 	VisionCtrl m_ctrl;

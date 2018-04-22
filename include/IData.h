@@ -53,6 +53,7 @@ public:
 	virtual bool loadProfDataBase(QString& szFilePath) = 0;
 
     virtual bool doAlignment(const Vision::VectorOfMat &vecFrameImages ) = 0;
+    virtual QString getDataStoreApiVersion() const = 0;
 };
 
 #endif

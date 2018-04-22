@@ -21,6 +21,7 @@ signals:
     void closeBtnclick();
 
 public slots:
+    void onAbout();
     void onNewProject();
     void onOpenProject();
 	void onAutoRun();
@@ -43,14 +44,15 @@ private:
     QPushButton * m_exitBtn;
 	int m_nTimerId;
 
+    QPushButton *m_toolBtnAbout;
     QPushButton *m_toolBtnNewProject;
-    QPushButton  m_toolBtnOpenProject;
-	QPushButton* m_toolBtnAutoRun;
-	QPushButton* m_toolBtnSys;
-	QPushButton* m_toolBtnHw;
-	QPushButton* m_toolBtnTools;
-	QPushButton* m_toolBtnSetting;
-	QPushButton* m_toolBtnData;
+    QPushButton *m_toolBtnOpenProject;
+	QPushButton *m_toolBtnAutoRun;
+	QPushButton *m_toolBtnSys;
+	QPushButton *m_toolBtnHw;
+	QPushButton *m_toolBtnTools;
+	QPushButton *m_toolBtnSetting;
+	QPushButton *m_toolBtnData;
 };
 
 #endif // TOPWIDGET_H

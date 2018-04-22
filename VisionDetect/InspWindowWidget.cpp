@@ -106,7 +106,7 @@ void InspWindowWidget::showEvent(QShowEvent *event) {
     for (const auto &window : vecWindow) {
         auto x = window.x / dResolutionX;
         auto y = window.y / dResolutionY;
-        auto width = window.width / dResolutionX;
+        auto width  = window.width  / dResolutionX;
         auto height = window.height / dResolutionY;
         cv::RotatedRect detectObjWin(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
         QDetectObj detectObj(window.Id, window.name.c_str());
@@ -157,6 +157,12 @@ void InspWindowWidget::on_btnAddWindow_clicked() {
     else {
         m_pColorWidget->hide();
     }
+
+    if (INSP_WIDGET_INDEX::HEIGHT_DETECT == m_enCurrentInspWidget)
+        m_pComboBoxLighting->setCurrentIndex(PROCESSED_IMAGE_SEQUENCE::HEIGHT_GRAY);
+    else
+        m_pComboBoxLighting->setCurrentIndex(PROCESSED_IMAGE_SEQUENCE::WHITE_LIGHT);
+
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setDefaultValue();
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
 }

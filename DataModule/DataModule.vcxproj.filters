@@ -244,6 +244,9 @@
     <ClInclude Include="Merge3DHeightRunnable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\IData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="datamodule_global.h">

@@ -806,8 +806,6 @@ void VisionViewWidget::mousePressEvent(QMouseEvent * event)
 		m_selectROI.height = 0;
 		m_pSelectView->setVisible(false);
 		m_mouseRightPressed = true;
-		setViewState(MODE_VIEW_NONE);
-		repaintAll();
 	}
 }
 
@@ -846,6 +844,8 @@ void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
 	}
 	else if (event->button() & Qt::RightButton)
 	{
+        if (VISION_VIEW_MODE::MODE_VIEW_MOVE == m_stateView)
+            setViewState(m_enPreviousState);
 	}
 
 	//repaintAll();
@@ -1057,9 +1057,7 @@ void VisionViewWidget::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 
 void VisionViewWidget::setViewState(VISION_VIEW_MODE state)
 {
-	m_stateView = state;
-
-	switch (m_stateView)
+	switch (state)
 	{
 	case MODE_VIEW_SELECT:
 		setCursor(Qt::CrossCursor);
@@ -1069,6 +1067,7 @@ void VisionViewWidget::setViewState(VISION_VIEW_MODE state)
 		break;
 	case MODE_VIEW_MOVE:
 		setCursor(Qt::OpenHandCursor);
+        m_enPreviousState = m_stateView;
 		break;
 	case MODE_VIEW_NONE:
 		setCursor(Qt::ArrowCursor);
@@ -1077,6 +1076,8 @@ void VisionViewWidget::setViewState(VISION_VIEW_MODE state)
 		setCursor(Qt::ArrowCursor);
 		break;
 	}
+
+    m_stateView = state;
 }
 
 void VisionViewWidget::displayImage(cv::Mat& image)

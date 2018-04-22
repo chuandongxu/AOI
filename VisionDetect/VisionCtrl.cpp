@@ -43,6 +43,7 @@ VisionCtrl::VisionCtrl(QObject *parent)
 	Vision::PR_GetVersion(&info);
 
 	System->setTrackInfo(QString("Vision Version:%1").arg(info.chArrVersion));
+    m_strVisionLibraryVersion = info.chArrVersion;
 
 	//cv::Mat matNan(3, 3, CV_32FC1, NAN);
 	//cv::Mat matCmpResult = cv::Mat(matNan == matNan);
