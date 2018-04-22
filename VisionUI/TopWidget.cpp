@@ -8,8 +8,10 @@
 #include "../Common/eos.h"
 #include "../include/IdDefine.h"
 #include "../include/IData.h"
+#include "../include/IVision.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/constants.h"
+#include "AboutDialog.h"
 
 #define HIDE_DEBUG_TOOL_BTN  0
 
@@ -56,6 +58,15 @@ QTopWidget::QTopWidget(QWidget *parent) :
 
     const QSize szBtn(50, 50);
 	QString stytleStr = "background-color: rgb(32, 105, 138);color:white;";
+
+    m_toolBtnAbout = new QPushButton();
+    m_toolBtnAbout->setFixedSize(szBtn);
+    QIcon iconAbout("./image/About.png");
+    m_toolBtnAbout->setIcon(iconAbout);
+    m_toolBtnAbout->setFixedSize(szBtn);
+    m_toolBtnAbout->setIconSize(szBtn);
+    m_toolBtnAbout->setToolTip(QStringLiteral("About"));
+
     m_toolBtnNewProject = new QPushButton();
     QIcon iconNewProject("./image/NewProject_32x32.png");
     m_toolBtnNewProject->setIcon(iconNewProject);
@@ -64,12 +75,13 @@ QTopWidget::QTopWidget(QWidget *parent) :
     m_toolBtnNewProject->setToolTip(QStringLiteral("New Project"));
     //m_toolBtnNewProject->setStyleSheet(stytleStr);
 
-    m_toolBtnOpenProject.setFixedSize(szBtn);
+    m_toolBtnOpenProject = new QPushButton();
+    m_toolBtnOpenProject->setFixedSize(szBtn);
     QIcon iconOpenProject("./image/OpenProject_32x32.png");
-    m_toolBtnOpenProject.setIcon(iconOpenProject);
-    m_toolBtnOpenProject.setFixedSize(szBtn);
-    m_toolBtnOpenProject.setIconSize(szBtn);
-    m_toolBtnOpenProject.setToolTip(QStringLiteral("Open Project"));
+    m_toolBtnOpenProject->setIcon(iconOpenProject);
+    m_toolBtnOpenProject->setFixedSize(szBtn);
+    m_toolBtnOpenProject->setIconSize(szBtn);
+    m_toolBtnOpenProject->setToolTip(QStringLiteral("Open Project"));
 
 	m_toolBtnAutoRun = new QPushButton();
 	m_toolBtnAutoRun->setFixedSize(100, 25);
@@ -96,9 +108,10 @@ QTopWidget::QTopWidget(QWidget *parent) :
 	m_toolBtnData->setText(QStringLiteral("元件资料"));
 	m_toolBtnData->setStyleSheet(stytleStr);
 
-	m_toolLayout->addSpacing(1000);
+    m_toolLayout->addWidget(m_toolBtnAbout, 0, Qt::AlignLeft | Qt::AlignBottom);
+	m_toolLayout->addSpacing(500);
     m_toolLayout->addWidget(m_toolBtnNewProject, 0, Qt::AlignLeft | Qt::AlignBottom);
-    m_toolLayout->addWidget(&m_toolBtnOpenProject, 0, Qt::AlignLeft | Qt::AlignBottom);
+    m_toolLayout->addWidget(m_toolBtnOpenProject, 0, Qt::AlignLeft | Qt::AlignBottom);
 	m_toolLayout->addWidget(m_toolBtnAutoRun, 0, Qt::AlignLeft | Qt::AlignBottom);
 	m_toolLayout->addWidget(m_toolBtnSys, 0, Qt::AlignLeft | Qt::AlignBottom);
 	m_toolLayout->addWidget(m_toolBtnHw, 0, Qt::AlignLeft | Qt::AlignBottom);
@@ -113,8 +126,9 @@ QTopWidget::QTopWidget(QWidget *parent) :
 	m_nTimerId = this->startTimer(100);
     connect(m_exitBtn,SIGNAL(clicked()),this,SIGNAL(closeBtnclick()));
 	
+    connect(m_toolBtnAbout, SIGNAL(clicked()), this, SLOT(onAbout()));
     connect(m_toolBtnNewProject, SIGNAL(clicked()), this, SLOT(onNewProject()));
-    connect(&m_toolBtnOpenProject, SIGNAL(clicked()), this, SLOT(onOpenProject()));
+    connect(m_toolBtnOpenProject, SIGNAL(clicked()), this, SLOT(onOpenProject()));
 	connect(m_toolBtnAutoRun, SIGNAL(clicked()), this, SLOT(onAutoRun()));
 	connect(m_toolBtnSys, SIGNAL(clicked()), this, SLOT(onSystem()));
 	connect(m_toolBtnHw, SIGNAL(clicked()), this, SLOT(onHardware()));
@@ -140,6 +154,19 @@ QString QTopWidget::getTitle()
 void QTopWidget::setTitle(const QString &title)
 {
 	m_titleLabel->setText(title);
+}
+
+void QTopWidget::onAbout()
+{
+    AboutDialog aboutDialog;
+
+    IData* pData = getModule<IData>(DATA_MODEL);
+    aboutDialog.setDataStoreApiVersion(pData->getDataStoreApiVersion());
+
+    auto pVision = getModule<IVision>(VISION_MODEL);
+    aboutDialog.setVisionLibraryVersion(pVision->getVisionLibraryVersion());
+
+    aboutDialog.exec();
 }
 
 void QTopWidget::onNewProject()

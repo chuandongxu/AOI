@@ -187,6 +187,7 @@
     <ClCompile Include="SetFiducialMarkDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\IData.h" />
     <ClInclude Include="Merge3DHeightRunnable.h" />
     <ClInclude Include="ScanImageThread.h" />
     <CustomBuild Include="SetFiducialMarkDialog.h">

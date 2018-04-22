@@ -132,46 +132,46 @@ private:
 	bool _checkSelectedDevice(const cv::Point &ptMousePos);	
 
 private:
-	VISION_VIEW_MODE    m_stateView;
-	bool                m_mouseLeftPressed;
-	bool                m_mouseRightPressed;
-	double              m_startX, m_startY;
-	double              m_preMoveX, m_preMoveY;
+    Ui::VisionViewWidget    ui;
 
-	int   m_windowWidth;
-	int   m_windowHeight;
-	int   m_imageWidth;
-	int   m_imageHeight;
+	VISION_VIEW_MODE        m_stateView;
+    VISION_VIEW_MODE        m_enPreviousState;
+	bool                    m_mouseLeftPressed;
+	bool                    m_mouseRightPressed;
+	double                  m_startX, m_startY;
+	double                  m_preMoveX, m_preMoveY;
 
-	double m_dScale;
-	double m_dMovedX;
-	double m_dMovedY;
+	int                     m_windowWidth;
+	int                     m_windowHeight;
+	int                     m_imageWidth;
+	int                     m_imageHeight;
 
-private:
-	Ui::VisionViewWidget        ui;
+	double                  m_dScale;
+	double                  m_dMovedX;
+	double                  m_dMovedY;	
 
-	QMutex                      m_mutex;
-	CameraOnLive               *m_pCameraOnLive;
+	QMutex                  m_mutex;
+	CameraOnLive           *m_pCameraOnLive;
 
-	cv::Mat	                    m_hoImage;
-	cv::Mat	                    m_dispImage;
-	cv::Mat                     m_3DMatHeight;
+	cv::Mat	                m_hoImage;
+	cv::Mat	                m_dispImage;
+	cv::Mat                 m_3DMatHeight;
 
-	DViewUtility               *m_pMainViewFull3D;
-	DViewUtility               *m_pView3D;
-	cv::Rect                    m_selectROI;
-	QDockWidget                *m_pSelectView;
-	bool                        m_bShow3DInitial;
-	bool                        m_bMainView3DInitial;
-	VisionViewDeviceVector      m_vecDevices;
-	VisionViewDevice            m_selectedDevice;
-    VisionViewFMVector          m_vecConfirmedFM;
-    VisionViewFM                m_currentFM;
-	cv::Size                    m_szCadOffset;
-	cv::Size                    m_szMoveRange;
-    bool                        m_bDisplayDetectObjs;
-    QVector<QDetectObj>         m_vecDetectObjs;
-    QDetectObj                  m_currentDetectObj;
+	DViewUtility           *m_pMainViewFull3D;
+	DViewUtility           *m_pView3D;
+	cv::Rect                m_selectROI;
+	QDockWidget            *m_pSelectView;
+	bool                    m_bShow3DInitial;
+	bool                    m_bMainView3DInitial;
+	VisionViewDeviceVector  m_vecDevices;
+	VisionViewDevice        m_selectedDevice;
+    VisionViewFMVector      m_vecConfirmedFM;
+    VisionViewFM            m_currentFM;
+	cv::Size                m_szCadOffset;
+	cv::Size                m_szMoveRange;
+    bool                    m_bDisplayDetectObjs;
+    QVector<QDetectObj>     m_vecDetectObjs;
+    QDetectObj              m_currentDetectObj;
 
 	static const cv::Scalar _constRedScalar;
 	static const cv::Scalar _constBlueScalar;

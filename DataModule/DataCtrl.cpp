@@ -181,6 +181,7 @@ DataCtrl::DataCtrl(QObject *parent)
 
 	String info;
 	Engine::GetVersion(info);
+    m_strDataStoreApiVersion = info.c_str();
 
 	System->setTrackInfo(QString("Database Version:%1").arg(info.c_str()));
 }

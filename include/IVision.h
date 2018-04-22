@@ -14,7 +14,7 @@ public:
 	virtual QWidget* getCaliView() = 0;
     virtual QWidget* getInspWindowView() = 0;
 	virtual QWidget* getColorWeightView() = 0;
-public:
+
 	virtual bool loadCmdData(int nStation) = 0;
 
 	virtual bool setHeightData(cv::Mat& matHeight) = 0;
@@ -38,6 +38,7 @@ public:
 	virtual cv::Mat generateColorImage(cv::Mat& img, cv::Point ptPos) = 0;
     virtual void setColorWidgetImage(const cv::Mat &matImg) = 0;
     virtual cv::Mat getColorWidgetProcessedImage() = 0;
+    virtual QString getVisionLibraryVersion() const = 0;
 };
 
 #endif

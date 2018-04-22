@@ -56,6 +56,7 @@ public:
     void setCombinedBigResult(const Vision::VectorOfMat &vecCombinedBigImages, const cv::Mat &matHeight);
     Vision::VectorOfMat getCombinedBigImages() const { return m_vecCombinedBigImages; }
     cv::Mat getCombinedBigHeight() const { return m_matCombinedBigHeight; }
+    QString getDataStoreApiVersion() const { return m_strDataStoreApiVersion; }
 
 private:
 	void clearFiles(const QString &folderFullPath);
@@ -73,4 +74,5 @@ private:
 	int m_nProfileIndex;
     Vision::VectorOfMat     m_vecCombinedBigImages;
     cv::Mat                 m_matCombinedBigHeight;
+    QString                 m_strDataStoreApiVersion;
 };
