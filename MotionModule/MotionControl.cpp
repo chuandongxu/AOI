@@ -72,7 +72,7 @@ void MotionControl::loadConfig()
 	m_mapMtrID.clear();	
 	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Z, AXIS_MOTOR_Z);
 	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, AXIS_MOTOR_Y);
-	m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, AXIS_MOTOR_X);
+	//m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, AXIS_MOTOR_X);
 }
 
 bool MotionControl::init()
@@ -435,7 +435,7 @@ void MotionControl::commandhandler(char *command, short error)
 double MotionControl::convertToUm(AxisEnum emAxis, long lPulse)
 {
 	double dRes = m_mtrParams[getMotorAxisIndex(changeToMtrID(emAxis))]._res;
-	return (double)lPulse / dRes;
+	return (double)lPulse / dRes * 1000.f;
 }
 
 long MotionControl::convertToPulse(AxisEnum emAxis, double dDist)

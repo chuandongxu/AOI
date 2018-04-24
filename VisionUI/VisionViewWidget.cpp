@@ -380,7 +380,6 @@ bool VisionViewWidget::onLive()
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
 
-
 	int nCaptureMode = System->getParam("camera_capture_mode").toInt();
 	if (2 == nCaptureMode)
 	{

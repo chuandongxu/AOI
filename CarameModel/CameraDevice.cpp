@@ -246,11 +246,9 @@ void BaslerCameraDevice::setHardwareTrigger(bool bOn)
 			CDeviceInfo info;
 			info.SetDeviceClass(Camera_t::DeviceClass());
 
-
 			m_camera->TriggerSelector.SetValue(TriggerSelector_AcquisitionStart);
 			m_camera->TriggerMode.SetValue(TriggerMode_Off);
 			m_camera->AcquisitionFrameRateEnable.SetValue(false);
-
 
 			m_camera->TriggerSelector.SetValue(TriggerSelector_FrameStart);
 			m_camera->TriggerMode.SetValue(bOn ? TriggerMode_On : TriggerMode_Off);
@@ -266,7 +264,6 @@ void BaslerCameraDevice::setHardwareTrigger(bool bOn)
 			m_camera->AcquisitionStatusSelector.SetValue(AcquisitionStatusSelector_FrameTriggerWait);
 
 			bool IsWaitingForFrameTrigger = m_camera->AcquisitionStatus.GetValue();
-
 		}
 		catch (GenICam::GenericException &e)
 		{
@@ -276,7 +273,6 @@ void BaslerCameraDevice::setHardwareTrigger(bool bOn)
 		}
 	}
 }
-
 
 bool BaslerCameraDevice::captureImage(cv::Mat &imageMat)
 {

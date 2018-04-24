@@ -925,7 +925,7 @@ void QSystem::initConfig()
 	path += "/config/runing.ini";
 	QSettings setttings(path, QSettings::IniFormat);
 
-	m_bRunOffline = setttings.value("General/RunOffLine","true").toBool();
+	m_bRunOffline = setttings.value("General/RunOffLine", "false").toBool();
 }
 
 //----------------------------------------------------------------------------------------------------

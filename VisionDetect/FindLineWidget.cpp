@@ -153,11 +153,11 @@ void FindLineWidget::tryInsp()
         return;
     }
 
-    stCmd.rectRotatedROI.center = cv::Point2f ( rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2 );
+    stCmd.rectRotatedROI.center = cv::Point2f(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2);
     stCmd.rectRotatedROI.size = rectROI.size();
-    Vision::PR_FindLine ( &stCmd, &stRpy );
+    Vision::PR_FindLine(&stCmd, &stRpy);
     QString strMsg;
-    strMsg.sprintf("Inspect Status %d, linearity %f pass %d, angle %f pass %d", Vision::ToInt32 ( stRpy.enStatus ), stRpy.fLinearity, stRpy.bLinearityCheckPass, stRpy.fAngle, stRpy.bAngleCheckPass );
+    strMsg.sprintf("Inspect Status %d, linearity %f pass %d, angle %f pass %d", Vision::ToInt32(stRpy.enStatus), stRpy.fLinearity, stRpy.bLinearityCheckPass, stRpy.fAngle, stRpy.bAngleCheckPass);
     QMessageBox::information(this, "Find Line", strMsg);
 }
 

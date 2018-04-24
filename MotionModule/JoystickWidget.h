@@ -66,6 +66,8 @@ private:
 	double m_dStepX;
 	double m_dStepY;
 
+    int m_nProfileId = 0;
+
 	QLineEdit *m_pEditX;
 	QLineEdit *m_pEditY;
 };
