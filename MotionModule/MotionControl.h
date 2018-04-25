@@ -124,10 +124,8 @@ public:
         MTR_AXIS_X
     };
 
-public:
     void loadConfig();
 
-public:
     // General Functions:
     bool init();
     void unInit();
@@ -179,41 +177,14 @@ public:
     bool stopMove(int AxisID);
     bool EmStop(int AxisID);
 
-    bool getCurrentPos(int AxisID, double *pos);
+    bool getCurrentPos(int AxisID, double *posUm);
 
     QString getCurrentStatus(int AxisID);
 
-private:
-    double convertToUm(AxisEnum emAxis, long lPulse);
-    long convertToPulse(AxisEnum emAxis, double dDist);
-
-    double convertVelToUm(AxisEnum emAxis, double dVelPulse);
-    double convertVelToPulse(AxisEnum emAxis, double dVelDist);
-
-    double convertAccToUm(AxisEnum emAxis, double dAccPulse);
-    double convertAccToPulse(AxisEnum emAxis, double dAccDist);
-
-    AxisEnum changeToMtrEnum(int AxisID);
-    int		 changeToMtrID(AxisEnum emAxis);
-
-public:
     int getMotorAxisNum();
     int getMotorAxisID(int nIndex);
     int getMotorAxisIndex(int AxisID);
 
-private:
-    bool m_bHome[AXIS_MOTOR_NUM];
-    double m_dRunOfflinePos[AXIS_MOTOR_NUM];
-
-    QMap<int, int> m_mapMtrID;
-
-    bool m_bSetupTriggerConfig;
-
-private:
-    void commandhandler(char *command, short error);
-    void setupTrigger(IMotion::TRIGGER emTrig);
-
-public:
     void clearMotorParams();
     void addMotorParam(QMotorParam& mtrParam);
     void updateMotorParam(int nID, QMotorParam& mtrParam);
@@ -251,12 +222,37 @@ public:
     int incrementMotorPointGroupID();
     void setMotorPointGroupID(int nID);
 
+    double convertToUm(AxisEnum emAxis, long lPulse);
+    long convertMmToPulse(AxisEnum emAxis, double dDist);
+
+    double convertVelToMm(AxisEnum emAxis, double dVelPulse);
+    double convertVelToPulse(AxisEnum emAxis, double dVelDist);
+
+    double convertAccToMm(AxisEnum emAxis, double dAccPulse);
+    double convertAccToPulse(AxisEnum emAxis, double dAccDist);
+
+    AxisEnum changeToMtrEnum(int AxisID);
+    int		 changeToMtrID(AxisEnum emAxis);
+
 private:
-    QVector<QMotorParam> m_mtrParams;
-    QVector<QMtrMoveProfile> m_mtrMoveProfs;
-    int m_nMoveProfID;
-    QVector<QMtrMovePoint> m_mtrMovePoints;
-    int m_nMovePointID;
+    void commandhandler(char *command, short error);
+    void setupTrigger(IMotion::TRIGGER emTrig);
+    double _getMotorRes(AxisEnum emAxis);
+
+private:
+    bool                        m_bHome[AXIS_MOTOR_NUM];
+    double                      m_dRunOfflinePos[AXIS_MOTOR_NUM];
+
+    QMap<int, int>              m_mapMtrID;
+
+    bool                        m_bSetupTriggerConfig;
+
+    QVector<QMotorParam>        m_mtrParams;
+    QVector<QMtrMoveProfile>    m_mtrMoveProfs;
+    int                         m_nMoveProfID;
+    QVector<QMtrMovePoint>      m_mtrMovePoints;
+    int                         m_nMovePointID;
     QVector<QMtrMovePointGroup> m_mtrMovePointGroups;
-    int m_nMovePointGroupID;
+    int                         m_nMovePointGroupID;
+    int                         m_nMotionControlFreq = 8000;       // Currently the motion controller frequency is 8000
 };

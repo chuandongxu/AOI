@@ -19,6 +19,8 @@ private slots:
     void on_btnBtmRight_clicked();
 
     void _displayResult();
+    void _showJoyStick();
+
 private:
     Ui::BoardWidget ui;
 

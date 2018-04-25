@@ -205,4 +205,9 @@ void MotionModule::setJoystickYMotor(int AxisID, double dStep, QLineEdit *pEdit)
 	m_pJoystickWidget->SetYMotor(AxisID, dStep, pEdit);
 }
 
+QWidget *MotionModule::getJoyStickWidget()
+{
+    return m_pJoystickWidget.get();
+}
+
 QMOUDLE_INSTANCE(MotionModule)

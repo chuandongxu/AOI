@@ -9,6 +9,7 @@
 #include "../Common/ModuleMgr.h"
 #include "../include/ILight.h"
 #include "../include/IVision.h"
+#include "../include/IMotion.h"
 #include <QMessageBox>
 #include <qdesktopwidget.h>
 #include <QDateTime.h>
@@ -136,6 +137,10 @@ void QAppMainWidget::onCloseBtnclick()
 	{
 		pVision->getColorWeightView()->close();
 	}
+
+    IMotion *pMotion = getModule<IMotion>(MOTION_MODEL);
+    if (pMotion)
+        pMotion->getJoyStickWidget()->close();
 
 	this->close();
 }

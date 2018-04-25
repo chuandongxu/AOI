@@ -718,6 +718,11 @@ void QSystem::setLangConfig(const QString & lang)
 	setttings.setValue("lang/langName",lang);
 }
 
+bool QSystem::isRunOffline() const
+{
+    return m_bRunOffline;
+}
+
 bool QSystem::readAuthData(QAuthData * data)
 {
 	char * p = (char*)data;
@@ -925,7 +930,8 @@ void QSystem::initConfig()
 	path += "/config/runing.ini";
 	QSettings setttings(path, QSettings::IniFormat);
 
-	m_bRunOffline = setttings.value("General/RunOffLine", "false").toBool();
+    //The general section no need General section name.
+	m_bRunOffline = setttings.value("RunOffline", 0).toBool();
 }
 
 //----------------------------------------------------------------------------------------------------

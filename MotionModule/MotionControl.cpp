@@ -5,7 +5,8 @@
 
 #include <QApplication>
 #include <QThread>
-#include <qdebug.h>
+#include <QDebug>
+#include "../include/constants.h"
 
 void setupTriggerConfig(TMPGenPara* pPara, int nDLP_ID)
 {
@@ -434,38 +435,62 @@ void MotionControl::commandhandler(char *command, short error)
 
 double MotionControl::convertToUm(AxisEnum emAxis, long lPulse)
 {
-	double dRes = m_mtrParams[getMotorAxisIndex(changeToMtrID(emAxis))]._res;
-	return (double)lPulse / dRes * 1000.f;
+	double dRes = _getMotorRes(emAxis);
+    if (dRes <= 0.f)
+        return 0.;
+	return (double)lPulse / dRes * MM_TO_UM;
 }
 
-long MotionControl::convertToPulse(AxisEnum emAxis, double dDist)
+long MotionControl::convertMmToPulse(AxisEnum emAxis, double dDist)
 {
-	double dRes = m_mtrParams[getMotorAxisIndex(changeToMtrID(emAxis))]._res;
+	double dRes = _getMotorRes(emAxis);
+    if (dRes <= 0.f)
+        return 0;
 	return (long)(dDist * dRes);
 }
 
-double MotionControl::convertVelToUm(AxisEnum emAxis, double dVelPulse)
+double MotionControl::convertVelToMm(AxisEnum emAxis, double dVelPulse)
 {
-	double dRes = m_mtrParams[getMotorAxisIndex(changeToMtrID(emAxis))]._res;
-	return dVelPulse / dRes * 1000.0; // 50 pulse/ms 
+	double dRes = _getMotorRes(emAxis);
+    if (dRes <= 0.f)
+        return 0.;
+
+	return dVelPulse / dRes * m_nMotionControlFreq; // pulse/sample -> mm/s
 }
 
 double MotionControl::convertVelToPulse(AxisEnum emAxis, double dVelDist)
 {
-	double dRes = m_mtrParams[getMotorAxisIndex(changeToMtrID(emAxis))]._res;
-	return dVelDist * dRes / 1000.0; // 50 mm/s
+	double dRes = _getMotorRes(emAxis);
+    if (dRes <= 0.f)
+        return 0.;
+	return dVelDist * dRes / m_nMotionControlFreq; // mm/s -> pulse/sample
 }
 
-double MotionControl::convertAccToUm(AxisEnum emAxis, double dAccPulse)
+double MotionControl::convertAccToMm(AxisEnum emAxis, double dAccPulse)
 {
-	double dRes = m_mtrParams[getMotorAxisIndex(changeToMtrID(emAxis))]._res;
-	return dAccPulse / dRes * 1000.0 * 1000.0; // 50 pulse/ms2
+	double dRes = _getMotorRes(emAxis);
+    if (dRes <= 0.f)
+        return 0.;
+	return dAccPulse / dRes * m_nMotionControlFreq * m_nMotionControlFreq; // pulse/sample^2 -> mm/s^2
 }
 
 double MotionControl::convertAccToPulse(AxisEnum emAxis, double dAccDist)
 {
-	double dRes = m_mtrParams[getMotorAxisIndex(changeToMtrID(emAxis))]._res;
-	return dAccDist  * dRes / 1000.0 / 1000.0; // 50 mm/s2
+	double dRes = _getMotorRes(emAxis);
+    if (dRes <= 0.f)
+        return 0.;
+	return dAccDist * dRes / m_nMotionControlFreq / m_nMotionControlFreq; // mm/s^2 -> pulse/sample^2
+}
+
+double MotionControl::_getMotorRes(AxisEnum emAxis)
+{
+    auto motorIndex = getMotorAxisIndex(changeToMtrID(emAxis));
+    if (motorIndex < 0) {
+        System->setTrackInfo(QStringLiteral("Motor index %1 not defined.").arg(emAxis));
+        return 0.f;
+    }
+
+    return m_mtrParams[motorIndex]._res;
 }
 
 MotionControl::AxisEnum MotionControl::changeToMtrEnum(int AxisID)
@@ -1094,6 +1119,8 @@ bool MotionControl::move(int AxisID, int nProfile, double dDist, bool bSyn)
 		return false;
 	}
 
+    dCurPos /= 1000.f;  //Convert to mm
+
 	return move(AxisID, dVec, acc, dec, smooth, dCurPos + dDist, bSyn);
 }
 
@@ -1265,7 +1292,7 @@ bool MotionControl::moveGroup(std::vector<int>& axis, std::vector<double>& dists
 bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int smooth, double dPos, bool bSyn)
 {
     if (System->isRunOffline()) {
-        m_dRunOfflinePos[AxisID] = dPos;
+        m_dRunOfflinePos[AxisID] = dPos * MM_TO_UM;
         return true;
     }
 
@@ -1292,7 +1319,7 @@ bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int sm
 	//qDebug() << "move to Pos: " << AxisID << " : " << lPulse;
 
 	// 设置AXIS轴的目标位置
-	sRtn = GT_SetPos(AxisID, convertToPulse(changeToMtrEnum(AxisID), dPos));
+	sRtn = GT_SetPos(AxisID, convertMmToPulse(changeToMtrEnum(AxisID), dPos));
 	commandhandler("GT_SetPos", sRtn);
 
 	// 设置AXIS轴的目标速度
@@ -1449,10 +1476,10 @@ bool MotionControl::EmStop(int AxisID)
 	return 0 == sRtn;
 }
 
-bool MotionControl::getCurrentPos(int AxisID, double *pos)
+bool MotionControl::getCurrentPos(int AxisID, double *posUm)
 {
     if (System->isRunOffline()) {
-        *pos = m_dRunOfflinePos[AxisID];
+        *posUm = m_dRunOfflinePos[AxisID];
         return true;
     }
 
@@ -1468,12 +1495,12 @@ bool MotionControl::getCurrentPos(int AxisID, double *pos)
 
 	if (sRtn)
 	{
-		*pos = 0;
+		*posUm = 0;
 		return false;
 	}
 	else
 	{
-		*pos = convertToUm(changeToMtrEnum(AxisID), dMtrPos) * 2;
+		*posUm = convertToUm(changeToMtrEnum(AxisID), dMtrPos);
 		return true;
 	}
 }

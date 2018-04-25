@@ -35,14 +35,13 @@ class MotionMotor : public QWidget
 public:
 	MotionMotor(MotionControl* pCtrl, QWidget *parent = Q_NULLPTR);
 	~MotionMotor();
+    void updataStatus();
 
 private:
 	void initUI();
 	void loadConfig();
 	void updateUI();
-	//void saveConfig();
 
-private:
 	void loadMotorConfig();
 	void updateMotorUI();
 	void saveMotorConfig();
@@ -60,8 +59,7 @@ private:
 	void updateMtrPointGroupListData(int nIndex);
 	void saveMtrPointGroupConfig();
 
-public:
-	void updataStatus();
+    void getAxisSelected(bool* axisIDs, int axisNum);
 
 private slots:
 	void onEnable();
@@ -94,8 +92,10 @@ private slots:
 	void onAddPointGroupPt();
 	void onDelPointGroupPt();
 
-private:
-	void getAxisSelected(bool* axisIDs, int axisNum);
+    void on_btnConvertVelocityToMotorUnit_clicked();
+    void on_btnConvertVelocityToStandardUnit_clicked();
+    void on_btnConvertAccelerationToMotorUnit_clicked();
+    void on_btnConvertAccelerationToStandardUnit_clicked();
 
 private:
 	Ui::MotionMotor ui;

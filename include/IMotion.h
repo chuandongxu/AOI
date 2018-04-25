@@ -88,7 +88,7 @@ public:
 	virtual void setJoystickYMotor(int AxisID, double dStep, QLineEdit *pEdit = NULL) = 0;
 	virtual void startJoystick() = 0;
 
-
+    virtual QWidget *getJoyStickWidget() = 0;
 	//virtual bool AxisAbsoluteMove_SafeCheck(int nAxisCount, int* nAxisID, int* nProfile, bool* bIsSafetyCheck, bool* bIsSignalInversion, bool bSynchronize) = 0;
 	//virtual bool isHomed(int nAxis,int *axis) = 0;
 	//virtual bool isZSafe(int AxisID) = 0;
