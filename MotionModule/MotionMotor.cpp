@@ -210,7 +210,7 @@ void MotionMotor::loadMotorConfig()
 		fileNode = fs[QString("acc_%1").arg(i).toStdString()];
 		cv::read(fileNode, mtrParam._homeProf._velPf._acc, 0);
 		fileNode = fs[QString("dec_%1").arg(i).toStdString()];
-		cv::read(fileNode, mtrParam._homeProf._velPf._dec, 0);		
+		cv::read(fileNode, mtrParam._homeProf._velPf._dec, 0);
 
 		m_pCtrl->addMotorParam(mtrParam);
 	}

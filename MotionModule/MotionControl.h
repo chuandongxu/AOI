@@ -119,9 +119,9 @@ public:
 public:
     enum AxisEnum
     {
-        MTR_AXIS_Z = 0,
+        MTR_AXIS_Z = 0,        
+        MTR_AXIS_X,
         MTR_AXIS_Y,
-        MTR_AXIS_X
     };
 
     void loadConfig();

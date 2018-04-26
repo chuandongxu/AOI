@@ -2305,12 +2305,12 @@
      </item>
      <item>
       <property name="text">
-       <string>Y</string>
+       <string>X</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>X</string>
+       <string>Y</string>
       </property>
      </item>
     </widget>

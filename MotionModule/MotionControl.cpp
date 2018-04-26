@@ -72,8 +72,8 @@ void MotionControl::loadConfig()
 {
 	m_mapMtrID.clear();	
 	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Z, AXIS_MOTOR_Z);
-	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, AXIS_MOTOR_Y);
-	//m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, AXIS_MOTOR_X);
+    m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, AXIS_MOTOR_X);
+	//m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, AXIS_MOTOR_Y);	
 }
 
 bool MotionControl::init()
@@ -690,9 +690,15 @@ bool MotionControl::home(int AxisID, bool bSyn)
         return true;
     }
 
+    auto nAxisIndex = getMotorAxisIndex(AxisID);
+    if (nAxisIndex < 0) {
+        System->setTrackInfo(QStringLiteral("Motor ID %1 not defined.").arg(AxisID));
+        return false;
+    }
+
 	short sRtn = 0; // 指令返回值变量
 
-	int nHomeDir = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._dir == 0 ? 1 : -1;
+	int nHomeDir = m_mtrParams[nAxisIndex]._homeProf._dir == 0 ? 1 : -1;
 
 	// 清状态
 	sRtn = GT_ClrSts(AxisID);
@@ -713,14 +719,14 @@ bool MotionControl::home(int AxisID, bool bSyn)
 	TTrapPrm trapPrm;
 	sRtn = GT_GetTrapPrm(AxisID, &trapPrm);
 	commandhandler("GT_GetTrapPrm", sRtn);
-	trapPrm.acc = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._velPf._acc;
-	trapPrm.dec = m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._velPf._dec;
+	trapPrm.acc = m_mtrParams[nAxisIndex]._homeProf._velPf._acc;
+	trapPrm.dec = m_mtrParams[nAxisIndex]._homeProf._velPf._dec;
 	trapPrm.smoothTime = 40;
 	// 设置点位运动参数
 	sRtn = GT_SetTrapPrm(AxisID, &trapPrm);
 	commandhandler("GT_SetTrapPrm", sRtn);
 	// 设置目标速度
-	sRtn = GT_SetVel(AxisID, m_mtrParams[getMotorAxisIndex(AxisID)]._homeProf._velPf._vel);
+	sRtn = GT_SetVel(AxisID, m_mtrParams[nAxisIndex]._homeProf._velPf._vel);
 	commandhandler("GT_SetVel", sRtn);
 	// 设置目标位置
 	sRtn = GT_SetPos(AxisID, SEARCH_HOME * nHomeDir);
@@ -875,7 +881,7 @@ bool MotionControl::home(int AxisID, bool bSyn)
 	sRtn = GT_SetPrfPos(AxisID, 0);
 	commandhandler("GT_SetPrfPos", sRtn);
 
-	m_bHome[changeToMtrEnum(AxisID)] = true;
+	m_bHome[nAxisIndex] = true;
 
 	return true;
 }
