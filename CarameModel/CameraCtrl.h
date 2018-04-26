@@ -4,7 +4,6 @@
 
 class CameraCtrl
 {
-
 public:
 	CameraCtrl(void);
 	~CameraCtrl(void);
@@ -17,7 +16,8 @@ public:
 	void unInit();
 
 	int  getCameraCount();
-	CameraDevice * getCamera( int n);	
+	CameraDevice *getCamera(int n);
+
 private:
 	CameraDeviceList	m_CameraList; 
 };

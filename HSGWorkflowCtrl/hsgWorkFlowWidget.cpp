@@ -33,14 +33,12 @@ QWorkFlowWidget::QWorkFlowWidget(QWidget *parent)
 	QWidget* pWidget = pUI->getVisionView();
 	m_subVLayout->addWidget(pWidget);;
 	pWidget->setFixedSize(1200, 800);
-	m_subVLayout->setAlignment(Qt::AlignTop);
-	
+	m_subVLayout->setAlignment(Qt::AlignTop);	
 	
 	m_mainLayout = new QVBoxLayout;
 	m_mainLayout->setContentsMargins(0, 0, 0, 0);
 	m_mainLayout->addLayout(m_subVLayout);
 	this->setLayout(m_mainLayout);
-
 	
 	QPalette Pal(palette());
 	// set black background
@@ -70,7 +68,7 @@ void QWorkFlowWidget::onCheckerStateChange(const QVariantList &vars)
 	int iState = vars[2].toInt();
 	double dValue1 = vars.size()>3 ? vars[3].toDouble():0;	
 
-	if (0 == iStation)setCheckerState1(iEvent, iState, dValue1);	
+	if (0 == iStation)setCheckerState1(iEvent, iState, dValue1);
 }
 
 void QWorkFlowWidget::onBarCodeChange(const QVariantList &vars)

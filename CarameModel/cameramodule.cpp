@@ -178,7 +178,7 @@ bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
 	
 	if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true))
 	{
-		System->setTrackInfo(QString("triggerCapturing error."));	
+		System->setTrackInfo(QString("triggerCapturing error."));
 		return false;
 	}	
 
@@ -289,11 +289,8 @@ void CameraModule::addSettingWiddget(QTabWidget *tabWidget)
 	//}		
 }
 
-
 void CameraModule::showSettingWidget()
 {
-
-
 }
 
 QMOUDLE_INSTANCE(CameraModule)

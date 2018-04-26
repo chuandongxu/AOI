@@ -57,7 +57,6 @@ void HSGWorkflowCtrl::InitResoultItemModel(QStandardItemModel * pModel)
 	}
 }
 
-
 QList<int> HSGWorkflowCtrl::getResoultItemHeaderWidth()
 {
 	QList<int> ls;

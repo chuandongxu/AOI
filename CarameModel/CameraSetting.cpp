@@ -513,8 +513,7 @@ void CameraSetting::onCaptureDLP()
 		break;
 	default:
 		break;
-	}
-	
+	}	
 }
 
 void CameraSetting::onCaptureLight()
@@ -577,7 +576,6 @@ void CameraSetting::onCaptureLight()
 		QThread::msleep(10);
 		pMotion->setDOs(nPorts, 0);
 	}
-
 }
 
 double CameraSetting::convertToPixel(double umValue)

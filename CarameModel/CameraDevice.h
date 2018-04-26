@@ -51,7 +51,7 @@ public:
 protected:	
 	double m_hv_expouserTime;
 	bool   m_bOpen ;
-	bool m_bSaveAsEncrypt;
+	bool   m_bSaveAsEncrypt;
 };
 
 typedef QList<CameraDevice*> CameraDeviceList;

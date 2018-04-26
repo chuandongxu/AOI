@@ -431,7 +431,6 @@ bool BaslerCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 				uint32_t width = ptrGrabResult->GetWidth();
 				uint32_t height = ptrGrabResult->GetHeight();
 
-
 				CImageFormatConverter fc;
 				fc.OutputPixelFormat = PixelType_BGR8packed;
 				fc.OutputBitAlignment = OutputBitAlignment_MsbAligned;
@@ -443,14 +442,12 @@ bool BaslerCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 
 				image.Release();
 
-				imageMats.push_back(imageNew);	
-
+				imageMats.push_back(imageNew);
 			}
 			else
 			{
 				qDebug() << "Error: " << ptrGrabResult->GetErrorCode() << " " << ptrGrabResult->GetErrorDescription() << endl;
-			}
-			
+			}			
 		}
 	}
 	catch (GenICam::GenericException &e)

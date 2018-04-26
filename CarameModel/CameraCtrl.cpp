@@ -50,7 +50,6 @@ bool CameraCtrl::isImage()
 	return 2 == nCaptureMode;
 }
 
-
 bool CameraCtrl::initial()
 {
 	// 相机设备模块初始化
