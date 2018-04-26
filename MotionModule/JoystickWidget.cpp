@@ -197,7 +197,7 @@ void JoystickWidget::onLeft()
 
 	preMove(MOVE_DIR_LEFT);
 
-	m_pCtrl->move(m_AxisID_X, m_nProfileId, -m_dStepX * m_nJoystick, false);
+	m_pCtrl->move(m_AxisID_X, m_nProfileId, -m_dStepX * m_nJoystick, m_bSyncMotion);
 
 	postMove(MOVE_DIR_LEFT);
 }
@@ -208,7 +208,7 @@ void JoystickWidget::onRight()
 
 	preMove(MOVE_DIR_RIGHT);
 
-	m_pCtrl->move(m_AxisID_X, m_nProfileId, m_dStepX * m_nJoystick, false);
+	m_pCtrl->move(m_AxisID_X, m_nProfileId, m_dStepX * m_nJoystick, m_bSyncMotion);
 
 	postMove(MOVE_DIR_RIGHT);
 }
@@ -219,7 +219,7 @@ void JoystickWidget::onUp()
 
 	preMove(MOVE_DIR_UP);
 
-	m_pCtrl->move(m_AxisID_Y, m_nProfileId, m_dStepY * m_nJoystick, false);
+	m_pCtrl->move(m_AxisID_Y, m_nProfileId, m_dStepY * m_nJoystick, m_bSyncMotion);
 
 	postMove(MOVE_DIR_UP);
 }
@@ -230,7 +230,7 @@ void JoystickWidget::onDown()
 
 	preMove(MOVE_DIR_DOWN);
 
-	m_pCtrl->move(m_AxisID_Y, m_nProfileId, -m_dStepY * m_nJoystick, false);
+	m_pCtrl->move(m_AxisID_Y, m_nProfileId, -m_dStepY * m_nJoystick, m_bSyncMotion);
 
 	postMove(MOVE_DIR_DOWN);
 }

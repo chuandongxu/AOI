@@ -54,8 +54,8 @@ void BoardWidget::on_btnBtmRight_clicked() {
         return;
     }
 
-    if ( m_dTopY <= m_dBottomY) {
-        System->showMessage(QStringLiteral("设置电路板"), QStringLiteral("电路板上边界坐标 (%1) 小于下边界坐标 (%2). 请重新设置.").arg(m_dRightX).arg(m_dLeftX));
+    if ( m_dTopY < m_dBottomY) {
+        System->showMessage(QStringLiteral("设置电路板"), QStringLiteral("电路板上边界坐标 (%1) 小于下边界坐标 (%2). 请重新设置.").arg(m_dTopY).arg(m_dBottomY));
         return;
     }
 

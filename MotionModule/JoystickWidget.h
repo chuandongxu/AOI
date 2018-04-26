@@ -70,4 +70,5 @@ private:
 
 	QLineEdit *m_pEditX;
 	QLineEdit *m_pEditY;
+    bool        m_bSyncMotion = true;
 };
