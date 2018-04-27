@@ -172,7 +172,7 @@ bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
 
 	if (!startCapturing())
 	{
-		System->setTrackInfo(QString("startCapturing error."));	
+		System->setTrackInfo(QString("startCapturing error."));
 		return false;
 	}
 	

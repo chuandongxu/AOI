@@ -436,10 +436,10 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 {
 	if (!m_bOpen) return false;	
 
-	int nWaitTime = 30*60*100;
+	int nWaitTime = 100;
 	while ((m_nGrabCount < m_nGrabNum) && (nWaitTime-- > 0) && !m_bStopFlag)
 	{
-		::Sleep(10);
+		QThread::msleep(10);
 	}
 
 	if (nWaitTime > 0)
