@@ -49,16 +49,16 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 	ui.lineEdit_imgDLP2->setText(imgDLP2Path);
 
 	bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
-	ui.checkBox->setChecked(bHardwareTrigger);
+	ui.checkBoxChangeHWTrig->setChecked(bHardwareTrigger);
 
 	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
 	ui.checkBoxRecordAllImage->setChecked(bCaptureImage);
 
 	bool bCaptureLightImage = System->getParam("camera_cap_image_light").toBool();
-	ui.checkBox_3->setChecked(bCaptureLightImage);
+	ui.checkBoxCaptureLight->setChecked(bCaptureLightImage);
 
 	bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
-	ui.checkBox_4->setChecked(bCaptureImageAsMatlab);	
+	ui.checkBoxCaptureAsMatlab->setChecked(bCaptureImageAsMatlab);
 	
 	QStringList ls;
 	ls << QStringLiteral("Baslar相机采集") << QStringLiteral("Dalsa采集卡采集") << QStringLiteral("手动导入图片");
@@ -75,10 +75,10 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 	ui.comboBox_captureNumMode->setCurrentIndex(nCaptureNumMode);	
 	connect(ui.comboBox_captureNumMode, SIGNAL(currentIndexChanged(int)), SLOT(onCaptureNumModeIndexChanged(int)));
 
-	connect(ui.checkBox, SIGNAL(stateChanged(int)), SLOT(onStateChangeHWTrig(int)));
+	connect(ui.checkBoxChangeHWTrig, SIGNAL(stateChanged(int)), SLOT(onStateChangeHWTrig(int)));
 	connect(ui.checkBoxRecordAllImage, SIGNAL(stateChanged(int)), SLOT(onStateChangeCapture(int)));
-	connect(ui.checkBox_3, SIGNAL(stateChanged(int)), SLOT(onStateChangeCaptureLight(int)));
-	connect(ui.checkBox_4, SIGNAL(stateChanged(int)), SLOT(onStateChangeCaptureAsMatlab(int)));	
+	connect(ui.checkBoxCaptureLight, SIGNAL(stateChanged(int)), SLOT(onStateChangeCaptureLight(int)));
+	connect(ui.checkBoxCaptureAsMatlab, SIGNAL(stateChanged(int)), SLOT(onStateChangeCaptureAsMatlab(int)));
 
 	bool bShowCross = System->getParam("camera_capture_cross_enable").toBool();
 	int nShowCrossWidth = System->getParam("camera_capture_cross_width").toInt();
@@ -138,7 +138,7 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 	System->getUser(user, level);
 	if (USER_LEVEL_TECH > level)
 	{
-		ui.checkBox_4->setEnabled(false);
+		ui.checkBoxCaptureAsMatlab->setEnabled(false);
 	}
 }
 
@@ -183,7 +183,7 @@ QWidget* CameraSetting::getCaliTab()
 void CameraSetting::onStateChangeHWTrig(int iState)
 {
 	int data = 0;
-	if (Qt::Checked == iState)data = 1;
+	if (Qt::Checked == iState) data = 1;
 
 	if (QMessageBox::Ok == QMessageBox::warning(NULL, QStringLiteral("提示"),
 		QStringLiteral("设置硬件触发方式？"), QMessageBox::Ok, QMessageBox::Cancel))
@@ -215,7 +215,7 @@ void CameraSetting::onStateChangeCapture(int iState)
 void CameraSetting::onStateChangeCaptureLight(int iState)
 {
 	int data = 0;
-	if (Qt::Checked == iState)data = 1;
+	if (Qt::Checked == iState) data = 1;
 
 	System->setParam("camera_cap_image_light", (bool)data);
 }
@@ -223,7 +223,7 @@ void CameraSetting::onStateChangeCaptureLight(int iState)
 void CameraSetting::onStateChangeCaptureAsMatlab(int iState)
 {
 	int data = 0;
-	if (Qt::Checked == iState)data = 1;
+	if (Qt::Checked == iState) data = 1;
 
 	System->setParam("camera_cap_image_matlab", (bool)data);
 }
@@ -231,16 +231,13 @@ void CameraSetting::onStateChangeCaptureAsMatlab(int iState)
 void CameraSetting::onStateChangeCrossEnable(int iState)
 {
 	int data = 0;
-	if (Qt::Checked == iState)data = 1;
+	if (Qt::Checked == iState) data = 1;
 
 	int nCrossGap = ui.lineEdit_crossGapWidth->text().toInt();
 
 	System->setParam("camera_capture_cross_enable", (bool)data);
 	System->setParam("camera_capture_cross_width", nCrossGap);
-
 }
-
-
 
 void CameraSetting::onCaptureModeIndexChanged(int iIndex)
 {
@@ -516,8 +513,7 @@ void CameraSetting::onCaptureDLP()
 		break;
 	default:
 		break;
-	}
-	
+	}	
 }
 
 void CameraSetting::onCaptureLight()
@@ -580,7 +576,6 @@ void CameraSetting::onCaptureLight()
 		QThread::msleep(10);
 		pMotion->setDOs(nPorts, 0);
 	}
-
 }
 
 double CameraSetting::convertToPixel(double umValue)

@@ -210,7 +210,7 @@ void MotionMotor::loadMotorConfig()
 		fileNode = fs[QString("acc_%1").arg(i).toStdString()];
 		cv::read(fileNode, mtrParam._homeProf._velPf._acc, 0);
 		fileNode = fs[QString("dec_%1").arg(i).toStdString()];
-		cv::read(fileNode, mtrParam._homeProf._velPf._dec, 0);		
+		cv::read(fileNode, mtrParam._homeProf._velPf._dec, 0);
 
 		m_pCtrl->addMotorParam(mtrParam);
 	}
@@ -1197,4 +1197,40 @@ void MotionMotor::onDelPointGroupPt()
 		m_pCtrl->updateMotorPointGroup(mtrPointGroup._ID, mtrPointGroup);
 		updateMtrPointGroupListData(nIndex);
 	}
+}
+
+void MotionMotor::on_btnConvertVelocityToMotorUnit_clicked()
+{
+    int nMotorIndex = ui.comboBoxSelectMotor->currentIndex();
+    auto enMotor = static_cast<MotionControl::AxisEnum>(nMotorIndex);
+    float fVelocityStandard = ui.lineEditVelocityStandard->text().toFloat();
+    auto fVelocityMotor = m_pCtrl->convertVelToPulse(enMotor, fVelocityStandard);
+    ui.lineEditVelocityMotor->setText(QString::number(fVelocityMotor));
+}
+
+void MotionMotor::on_btnConvertVelocityToStandardUnit_clicked()
+{
+    int nMotorIndex = ui.comboBoxSelectMotor->currentIndex();
+    auto enMotor = static_cast<MotionControl::AxisEnum>(nMotorIndex);
+    float fVelocityMotor = ui.lineEditVelocityMotor->text().toFloat();
+    auto fStandardVelocity = m_pCtrl->convertVelToMm(enMotor, fVelocityMotor);
+    ui.lineEditVelocityStandard->setText(QString::number(fStandardVelocity));
+}
+
+void MotionMotor::on_btnConvertAccelerationToMotorUnit_clicked()
+{
+    int nMotorIndex = ui.comboBoxSelectMotor->currentIndex();
+    auto enMotor = static_cast<MotionControl::AxisEnum>(nMotorIndex);
+    float fAccelerationStandard = ui.lineEditAccelerationStandard->text().toFloat();
+    auto fAccelerationMotor = m_pCtrl->convertAccToPulse(enMotor, fAccelerationStandard);
+    ui.lineEditAccelerationMotor->setText(QString::number(fAccelerationMotor));
+}
+
+void MotionMotor::on_btnConvertAccelerationToStandardUnit_clicked()
+{
+    int nMotorIndex = ui.comboBoxSelectMotor->currentIndex();
+    auto enMotor = static_cast<MotionControl::AxisEnum>(nMotorIndex);
+    float fAccelerationMotor = ui.lineEditAccelerationMotor->text().toFloat();
+    auto fAccelerationStandard = m_pCtrl->convertAccToMm(enMotor, fAccelerationMotor);
+    ui.lineEditAccelerationStandard->setText(QString::number(fAccelerationStandard));
 }

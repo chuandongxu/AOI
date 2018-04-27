@@ -57,7 +57,7 @@ void ScanImageWidget::on_btnPrepareScanImage_clicked() {
         return;
     }
 
-    if (right <= left || top <= bottom) {
+    if (right <= left || top < bottom) {
         System->showMessage(QStringLiteral("设置电路板"), QStringLiteral("电路板参数不正确."));
         return;
     }
@@ -73,14 +73,30 @@ void ScanImageWidget::on_btnPrepareScanImage_clicked() {
 
     int frameCountX = static_cast<int>((right - left) / fovWidth ) + 1;
     int frameCountY = static_cast<int>((top - bottom) / fovHeight) + 1;
-    float overlapX = (frameCountX * fovWidth  - (right - left)) / (frameCountX - 1);
-    float overlapY = (frameCountY * fovHeight - (top - bottom)) / (frameCountY - 1);
+    float overlapX = 0.f, overlapY = 0.f;
+    if (frameCountX > 1)
+        overlapX = (frameCountX * fovWidth  - (right - left)) / (frameCountX - 1);
+    else
+        overlapX = 0.f;
+    if (frameCountY > 1)
+        overlapY = (frameCountY * fovHeight - (top - bottom)) / (frameCountY - 1);
+    else
+        overlapY = 0.f;
+
     for (int row = 0; row < frameCountY; ++ row) {
         Vision::VectorOfPoint2f vecFrameCtr;
         for (int col = 0; col < frameCountX; ++ col)
         {
-            float frameCtrX = left + (col * (fovWidth  - overlapX) + fovWidth  / 2.f);
-            float frameCtrY = top  - (row * (fovHeight - overlapY) + fovHeight / 2.f);
+            float frameCtrX = 0.f, frameCtrY = 0.f;
+            if (frameCountX > 1)
+                frameCtrX = left + (col * (fovWidth  - overlapX) + fovWidth  / 2.f);
+            else
+                frameCtrX = (right + left) / 2.f;
+
+            if (frameCountY > 1)
+                frameCtrY = top  - (row * (fovHeight - overlapY) + fovHeight / 2.f);
+            else
+                frameCtrY = (top + bottom) / 2.f;
             vecFrameCtr.emplace_back(frameCtrX, frameCtrY);
         }
         m_vecVecFrameCtr.push_back(vecFrameCtr);

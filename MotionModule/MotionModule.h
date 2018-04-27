@@ -17,7 +17,6 @@ public:
 
 	virtual void addSettingWiddget(QTabWidget * tabWidget);
 
-public:
 	// General Functions:
 	virtual bool init();
 	virtual void unInit();
@@ -66,10 +65,10 @@ public:
 
 	virtual bool getCurrentPos(int AxisID, double *pos);
 
-	virtual void startJoystick();
-	virtual void setJoystickXMotor(int AxisID, double dStep, QLineEdit *pEdit);
-	virtual void setJoystickYMotor(int AxisID, double dStep, QLineEdit *pEdit);
-
+	virtual void startJoystick() override;
+	virtual void setJoystickXMotor(int AxisID, double dStep, QLineEdit *pEdit) override;
+	virtual void setJoystickYMotor(int AxisID, double dStep, QLineEdit *pEdit) override;
+    virtual QWidget *getJoyStickWidget() override;
 private:
 	MotionControl m_ctrl;
 	std::unique_ptr<JoystickWidget> m_pJoystickWidget;

@@ -57,7 +57,7 @@ void MainCameraOnLive::run()
 	{
 		if (m_pMainProcess->isCaptureImageBufferDone() && !m_bQuit)//debug functions
 		{
-			QThread::msleep(1);			
+			QThread::msleep(1);
 			continue;
 		}		
 		
@@ -66,12 +66,12 @@ void MainCameraOnLive::run()
 			System->setTrackInfo("startGrabing error!");
 			QThread::msleep(100);
 			continue;
-		}		
+		}
 
 		QVector<cv::Mat> buffers;
 		if (m_pCameraTmp->captureImageByFrameTrig(buffers))
 		{
-			m_pCameraTmp->stopGrabing();			
+			m_pCameraTmp->stopGrabing();
 			m_pMainProcess->setImageBuffer(buffers);
 			m_pMainProcess->setCaptureImageBufferDone();
 
@@ -88,12 +88,12 @@ void MainCameraOnLive::run()
 
 		m_pCameraTmp->clearGrabing();
 
-		if (m_bQuit)break;
+		if (m_bQuit) break;
 
 		QThread::msleep(1);
 	}
 
-	postProcess();	
+	postProcess();
 }
 
 void MainCameraOnLive::postProcess()

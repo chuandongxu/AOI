@@ -168,7 +168,7 @@ public:
 
 	QString getLangConfig();
 	void setLangConfig(const QString & lang);
-    inline bool isRunOffline() const { return m_bRunOffline; };
+    bool isRunOffline() const;
 
 public:
 	void userGoHome();

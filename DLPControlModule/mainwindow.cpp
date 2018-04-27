@@ -740,7 +740,6 @@ void MainWindow::SetDLPC350InPatternMode()
     return;
 }
 
-
 void MainWindow::timerTimeout(void)
 {
 	if (m_dlpUSB->DLPC350_USB_IsConnected())
@@ -1539,7 +1538,6 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
                 ui->radioButton_SLMode->setChecked(false);
                 ui->radioButton_VariableExpSLMode->click();
             }
-
         }
 
         break;

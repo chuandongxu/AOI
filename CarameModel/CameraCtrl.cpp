@@ -23,7 +23,6 @@ CameraCtrl::CameraCtrl(void)
 	PylonInitialize();
 }
 
-
 CameraCtrl::~CameraCtrl(void)
 {
 	PylonTerminate();
@@ -51,11 +50,10 @@ bool CameraCtrl::isImage()
 	return 2 == nCaptureMode;
 }
 
-
 bool CameraCtrl::initial()
 {
 	// 相机设备模块初始化
-	if ( !m_CameraList.isEmpty() )
+	if ( !m_CameraList.isEmpty())
 	{
 		for ( int nC = 0 ; nC < m_CameraList.length(); nC++)
 		{

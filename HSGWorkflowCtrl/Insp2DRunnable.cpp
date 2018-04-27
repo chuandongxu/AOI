@@ -149,4 +149,51 @@ void Insp2DRunnable::_inspHole(const Engine::Window &window)
 }
 
 void Insp2DRunnable::_findLine(const Engine::Window &window) {
+    QJsonParseError json_error;
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+	if (json_error.error != QJsonParseError::NoError) {
+        m_mapWindowStatus[window.Id] = Vision::VisionStatus::INVALID_PARAM;
+		return;
+    }
+    QJsonObject jsonValue = parse_doucment.object();
+
+    Vision::PR_FIND_LINE_CMD stCmd;
+    Vision::PR_FIND_LINE_RPY stRpy;
+
+    stCmd.enAlgorithm = Vision::PR_FIND_LINE_ALGORITHM::CALIPER;
+    stCmd.bFindPair = jsonValue["FindPair"].toBool();
+    stCmd.enDetectDir = static_cast<Vision::PR_CALIPER_DIR>(jsonValue["DetectDir"].toInt());
+    stCmd.nCaliperCount = jsonValue["CaliperCount"].toInt();
+    stCmd.fCaliperWidth = jsonValue["CaliperWidth"].toDouble();
+    stCmd.nEdgeThreshold = jsonValue["EdgeThreshold"].toInt();
+    stCmd.enSelectEdge = static_cast<Vision::PR_CALIPER_SELECT_EDGE>(jsonValue["SelectEdge"].toInt());
+    stCmd.fRmStrayPointRatio = jsonValue["RmStrayPointRatio"].toDouble();
+    stCmd.nDiffFilterHalfW = jsonValue["DiffFilterHalfW"].toInt();
+    stCmd.fDiffFilterSigma = jsonValue["DiffFilterSigma"].toDouble();
+    stCmd.bCheckLinearity = jsonValue["CheckLinerity"].toBool();
+    stCmd.fPointMaxOffset = jsonValue["PointMaxOffset"].toDouble() / m_dResolutionX;
+    stCmd.fMinLinearity = jsonValue["MinLinearity"].toDouble();
+    stCmd.bCheckAngle = jsonValue["CheckAngle"].toBool();
+    stCmd.fExpectedAngle = jsonValue["ExpectedAngle"].toDouble();
+    stCmd.fAngleDiffTolerance = jsonValue["AngleDiffTolerance"].toDouble();
+
+    int nImageIndex = window.lightId - 1;
+    if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
+        m_mapWindowStatus[window.Id] = Vision::VisionStatus::INVALID_PARAM;
+        return;
+    }
+
+    stCmd.matInputImg = m_vec2DImages[nImageIndex];
+    auto rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
+        window.width,
+        window.height,
+        m_ptFramePos,
+        m_nImageWidthPixel,
+        m_nImageHeightPixel,
+        m_dResolutionX,
+        m_dResolutionY);
+
+    stCmd.rectRotatedROI.center = cv::Point2f(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2);
+    stCmd.rectRotatedROI.size = rectROI.size();
+    m_mapWindowStatus[window.Id] = Vision::PR_FindLine(&stCmd, &stRpy);
 }

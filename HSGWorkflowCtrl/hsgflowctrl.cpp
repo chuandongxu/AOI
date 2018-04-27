@@ -41,8 +41,8 @@ QFlowCtrl::QFlowCtrl(QObject *parent)
 
 	this->initStationParam();
 
-	QSystem * p = QSystem::instance();
-	bool s = connect(p,SIGNAL(goHome()),this,SLOT(home()));
+	QSystem *p = QSystem::instance();
+	bool s = connect(p, SIGNAL(goHome()), this, SLOT(home()));
 	s = connect(p, SIGNAL(start()), this, SLOT(startAutoRun()));
 	s = connect(p, SIGNAL(stop()), this, SLOT(stopAutoRun()));
 

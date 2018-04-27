@@ -194,7 +194,7 @@ bool QMainProcess::selectCaptureMode(ICamera::TRIGGER emCaptureMode)
 	if (bMotionCardTrigger)
 	{
 		int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-		m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;		
+		m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;
 		switch (emCaptureMode)
 		{
 		case  ICamera::TRIGGER_ALL:
@@ -210,7 +210,7 @@ bool QMainProcess::selectCaptureMode(ICamera::TRIGGER emCaptureMode)
 			m_nCaptureNum = 1;			
 			break;
 		case  ICamera::TRIGGER_LIGHT:
-			m_nCaptureNum = nLightCaptureNum; 			
+			m_nCaptureNum = nLightCaptureNum;
 			break;
 		default:
 			break;

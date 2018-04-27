@@ -25,6 +25,8 @@ void BoardWidget::showEvent(QShowEvent *event) {
 }
 
 void BoardWidget::on_btnTopLeft_clicked() {
+    _showJoyStick();
+
     auto nReturn = System->showInteractMessage(QStringLiteral("设置电路板"), QStringLiteral("请移动XY Table直到相机中心对准电路板左上角"));
     if (nReturn != QDialog::Accepted)
         return;
@@ -37,6 +39,8 @@ void BoardWidget::on_btnTopLeft_clicked() {
 }
 
 void BoardWidget::on_btnBtmRight_clicked() {
+    _showJoyStick();
+
     auto nReturn = System->showInteractMessage(QStringLiteral("设置电路板"), QStringLiteral("请移动XY Table直到相机中心对准电路板右下角"));
     if (nReturn != QDialog::Accepted)
         return;
@@ -50,8 +54,8 @@ void BoardWidget::on_btnBtmRight_clicked() {
         return;
     }
 
-    if ( m_dTopY <= m_dBottomY) {
-        System->showMessage(QStringLiteral("设置电路板"), QStringLiteral("电路板上边界坐标 (%1) 小于下边界坐标 (%2). 请重新设置.").arg(m_dRightX).arg(m_dLeftX));
+    if ( m_dTopY < m_dBottomY) {
+        System->showMessage(QStringLiteral("设置电路板"), QStringLiteral("电路板上边界坐标 (%1) 小于下边界坐标 (%2). 请重新设置.").arg(m_dTopY).arg(m_dBottomY));
         return;
     }
 
@@ -80,4 +84,15 @@ void BoardWidget::_displayResult() {
     ui.lineEditBoardRightBtm->setText(strBoardRightBtm);
     ui.lineEditBoardWidth->setText(QString::number(right - left));
     ui.lineEditBoardHeight->setText(QString::number(top - bottom));
+}
+
+void BoardWidget::_showJoyStick() {
+    IMotion *pMotion = getModule<IMotion>(MOTION_MODEL);
+    if (!pMotion)
+        return;
+
+    pMotion->setJoystickXMotor(AXIS_MOTOR_X, 1., NULL);
+    pMotion->setJoystickYMotor(AXIS_MOTOR_Y, 1., NULL);
+
+    pMotion->startJoystick();
 }

@@ -30,7 +30,6 @@ public:
 	DalsaCameraDevice(SapLocation* loc, QString cameraName, QString cameraID);
 	~DalsaCameraDevice(void);
 
-public:
 	void setCamera(IPylonDevice* dev);
 	void openCamera();
 	void closeCamera();

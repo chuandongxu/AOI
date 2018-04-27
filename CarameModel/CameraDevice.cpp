@@ -246,11 +246,9 @@ void BaslerCameraDevice::setHardwareTrigger(bool bOn)
 			CDeviceInfo info;
 			info.SetDeviceClass(Camera_t::DeviceClass());
 
-
 			m_camera->TriggerSelector.SetValue(TriggerSelector_AcquisitionStart);
 			m_camera->TriggerMode.SetValue(TriggerMode_Off);
 			m_camera->AcquisitionFrameRateEnable.SetValue(false);
-
 
 			m_camera->TriggerSelector.SetValue(TriggerSelector_FrameStart);
 			m_camera->TriggerMode.SetValue(bOn ? TriggerMode_On : TriggerMode_Off);
@@ -266,7 +264,6 @@ void BaslerCameraDevice::setHardwareTrigger(bool bOn)
 			m_camera->AcquisitionStatusSelector.SetValue(AcquisitionStatusSelector_FrameTriggerWait);
 
 			bool IsWaitingForFrameTrigger = m_camera->AcquisitionStatus.GetValue();
-
 		}
 		catch (GenICam::GenericException &e)
 		{
@@ -276,7 +273,6 @@ void BaslerCameraDevice::setHardwareTrigger(bool bOn)
 		}
 	}
 }
-
 
 bool BaslerCameraDevice::captureImage(cv::Mat &imageMat)
 {
@@ -435,7 +431,6 @@ bool BaslerCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 				uint32_t width = ptrGrabResult->GetWidth();
 				uint32_t height = ptrGrabResult->GetHeight();
 
-
 				CImageFormatConverter fc;
 				fc.OutputPixelFormat = PixelType_BGR8packed;
 				fc.OutputBitAlignment = OutputBitAlignment_MsbAligned;
@@ -447,14 +442,12 @@ bool BaslerCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 
 				image.Release();
 
-				imageMats.push_back(imageNew);	
-
+				imageMats.push_back(imageNew);
 			}
 			else
 			{
 				qDebug() << "Error: " << ptrGrabResult->GetErrorCode() << " " << ptrGrabResult->GetErrorDescription() << endl;
-			}
-			
+			}			
 		}
 	}
 	catch (GenICam::GenericException &e)
