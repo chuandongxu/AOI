@@ -288,8 +288,8 @@ bool DalsaCameraDevice::getCameraScreenSize(int& nWidth, int& nHeight)
 				CDeviceInfo info;
 				info.SetDeviceClass(Camera_t::DeviceClass());			
 
-				nWidth = m_camera->SensorWidth.GetValue();
-				nHeight = m_camera->SensorWidth.GetValue();
+				nWidth = m_camera->Width.GetValue();
+				nHeight = m_camera->Height.GetValue();
 				return true;
 			}
 			catch (GenICam::GenericException &e)
