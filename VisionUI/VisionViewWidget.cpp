@@ -44,8 +44,8 @@ const int LABEL_IMAGE_HEIGHT = 800;
 /*static*/ const cv::Scalar VisionViewWidget::_constYellowScalar(0, 255, 255);
 /*static*/ const cv::Scalar VisionViewWidget::_constOrchidScalar(214, 112, 218);
 
-CameraOnLive::CameraOnLive(VisionViewWidget* pView)
-	:m_pView(pView)
+CameraOnLive::CameraOnLive(VisionViewWidget* pView, bool bHWTrigger)
+	:m_pView(pView), m_bHWTrigger(bHWTrigger)
 {
 	m_bQuit = false;
 	m_bRuning = false;
@@ -60,15 +60,14 @@ void CameraOnLive::run()
 
 	IVision* pVision = getModule<IVision>(VISION_MODEL);
 	if (!pVision) return;
-
-	bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
+	
 	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
 
 	cv::Mat image;
 	QVector<cv::Mat> imageMats;
 	while (!m_bQuit)
 	{
-		if (bHardwareTrigger)
+		if (m_bHWTrigger)
 		{
 			imageMats.clear();
 
@@ -387,7 +386,13 @@ bool VisionViewWidget::onLive()
 		return false;
 	}
 
-	bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
+	bool bHardwareTrigger = false;
+	if (QMessageBox::Ok == QMessageBox::warning(NULL, QStringLiteral("提示"),
+		QStringLiteral("采用硬触发采集模式？"), QMessageBox::Ok, QMessageBox::Cancel))
+	{
+		bHardwareTrigger = true;
+	}
+
 	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
 	if (!bHardwareTrigger && bCaptureImage)
 	{
@@ -410,7 +415,7 @@ bool VisionViewWidget::onLive()
 
 	if (pCam->getCameraNum() > 0)
 	{
-		if (!pCam->startUpCapture())
+		if (!pCam->startUpCapture(bHardwareTrigger))
 		{
 			QSystem::closeMessage();
 			QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));
@@ -430,7 +435,7 @@ bool VisionViewWidget::onLive()
 
 		zoomImage(0.25);
 
-		m_pCameraOnLive = new CameraOnLive(this);
+		m_pCameraOnLive = new CameraOnLive(this, bHardwareTrigger);
 		m_pCameraOnLive->start();
 	}
 

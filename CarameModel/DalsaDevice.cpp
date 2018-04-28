@@ -377,9 +377,8 @@ bool DalsaCameraDevice::captureImage(cv::Mat &imageMat)
 
 	m_bCapturedImage = false;
 	BOOL success = m_Xfer->Snap();	
-
-	bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
-	if (bHardwareTrigger)
+	
+	if (m_camera && (m_camera->TriggerMode.GetValue() == Basler_CLCameraParams::TriggerMode_On))
 	{
 		m_Acq->SoftwareTrigger(SapAcquisition::SoftwareTriggerExtFrame);
 	}
@@ -436,7 +435,7 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 {
 	if (!m_bOpen) return false;	
 
-	int nWaitTime = 100;
+	int nWaitTime = 30*60*100;
 	while ((m_nGrabCount < m_nGrabNum) && (nWaitTime-- > 0) && !m_bStopFlag)
 	{
 		QThread::msleep(10);

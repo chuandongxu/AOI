@@ -127,8 +127,7 @@ void ScanImageWidget::on_scanImage_done()
 {
     if (m_pScanImageThread->isGood()) {
         m_pDataCtrl->setCombinedBigResult(m_pScanImageThread->getCombinedBigImages(), m_pScanImageThread->getCombinedBigHeight());
-        auto pUI = getModule<IVisionUI>(UI_MODEL);
-        pUI->setImage(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::WHITE_LIGHT]);
+		updateImageDeviceWindows(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]);
         ui.comboBoxDisplayImage->setEnabled(true);
     }
 

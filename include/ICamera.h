@@ -34,10 +34,12 @@ public:
 	virtual bool grabCamImage(int nCamera, cv::Mat& image, bool bSyns = true) = 0;  // 抓取相机图像
 	virtual void setExposureTime(int nCamera, double exposureTime) = 0;             // 设置曝光时间
 
+
 	/************************************************************************/
 	/*  主流程相关函数，涉及图像采集，交互操作功能   */
 	/************************************************************************/
-	virtual bool startUpCapture() = 0;
+	virtual bool startUpCapture(bool bHWTrigger) = 0;
+	virtual bool isHWTrigger() = 0;
 	virtual bool endUpCapture() = 0;
 	virtual bool selectCaptureMode(TRIGGER emCaptureMode) = 0; 
 	

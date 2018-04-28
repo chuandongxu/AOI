@@ -12,7 +12,7 @@ class MainCameraOnLive : public QThread
 	Q_OBJECT
 
 public:
-	MainCameraOnLive(QMainProcess* pMainProcess, CameraDevice *pCameraTmp);
+	MainCameraOnLive(QMainProcess* pMainProcess, CameraDevice *pCameraTmp, bool bHWTrigger);
 	~MainCameraOnLive(){};
 
 public:
@@ -31,6 +31,7 @@ private:
 private:
 	QMainProcess*		m_pMainProcess;
 	CameraDevice *m_pCameraTmp;
+	bool		  m_bHWTrigger;
 	bool          m_bQuit;
 	bool          m_bRuning;
 	bool		  m_bPreCondition;

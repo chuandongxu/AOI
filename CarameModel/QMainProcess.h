@@ -33,7 +33,8 @@ public:
 	void unlockCameraCapture();
 	bool isCameraCaptureAvaiable();
 
-	bool startUpCapture();
+	bool startUpCapture(bool bHWTrigger);
+	bool isHWTrigger();
 	bool endUpCapture();
 	bool selectCaptureMode(ICamera::TRIGGER emCaptureMode);
 
@@ -47,6 +48,7 @@ private:
 	MainCameraOnLive * m_pCameraOnLive;
 	QVector<cv::Mat> m_bufferImages;
 	int m_nCaptureNum;
+	bool m_bHWTrigger;
 	bool m_bCaptureDone;
 	bool m_bCaptureLocker;
 	QMutex m_mutex;

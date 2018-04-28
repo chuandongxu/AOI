@@ -198,13 +198,7 @@ bool CameraCtrl::initial()
 						QString szModuleName = cameras[i].GetDeviceInfo().GetModelName();
 						cameras[i].DetachDevice();
 
-						((DalsaCameraDevice*)(m_CameraList[i]))->setCamera(dev);
-
-						//bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
-						//if (!bHardwareTrigger)
-						//{
-						//	((DalsaCameraDevice*)(m_CameraList[i]))->setHardwareTrigger(bHardwareTrigger);
-						//}
+						((DalsaCameraDevice*)(m_CameraList[i]))->setCamera(dev);						
 					}
 				}
 			}

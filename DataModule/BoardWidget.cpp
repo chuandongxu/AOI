@@ -5,6 +5,7 @@
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../include/IMotion.h"
+#include "../include/constants.h"
 #include "DataStoreAPI.h"
 
 using namespace NFG::AOI;
@@ -34,8 +35,11 @@ void BoardWidget::on_btnTopLeft_clicked() {
     ui.btnBtmRight->setEnabled(true);
 
     auto pMotion = getModule<IMotion>(MOTION_MODEL);
-    pMotion->getCurrentPos(AXIS_MOTOR_X, &m_dLeftX);
+    pMotion->getCurrentPos(AXIS_MOTOR_X, &m_dLeftX);	
     pMotion->getCurrentPos(AXIS_MOTOR_Y, &m_dTopY);
+
+	m_dLeftX *= MM_TO_UM;
+	m_dTopY *= MM_TO_UM;
 }
 
 void BoardWidget::on_btnBtmRight_clicked() {
@@ -48,6 +52,9 @@ void BoardWidget::on_btnBtmRight_clicked() {
     auto pMotion = getModule<IMotion>(MOTION_MODEL);
     pMotion->getCurrentPos(AXIS_MOTOR_X, &m_dRightX);
     pMotion->getCurrentPos(AXIS_MOTOR_Y, &m_dBottomY);
+
+	m_dRightX *= MM_TO_UM;
+	m_dBottomY *= MM_TO_UM;
 
     if ( m_dRightX <= m_dLeftX) {
         System->showMessage(QStringLiteral("设置电路板"), QStringLiteral("电路板右边界坐标 (%1) 小于左边界坐标 (%2). 请重新设置.").arg(m_dRightX).arg(m_dLeftX));
@@ -91,8 +98,8 @@ void BoardWidget::_showJoyStick() {
     if (!pMotion)
         return;
 
-    pMotion->setJoystickXMotor(AXIS_MOTOR_X, 1., NULL);
-    pMotion->setJoystickYMotor(AXIS_MOTOR_Y, 1., NULL);
+    pMotion->setJoystickXMotor(AXIS_MOTOR_X, 0.2, NULL);
+    pMotion->setJoystickYMotor(AXIS_MOTOR_Y, 0.2, NULL);
 
     pMotion->startJoystick();
 }

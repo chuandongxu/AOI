@@ -150,7 +150,7 @@ void LightCalibrationView::onStart()
 
 	if (pCam->getCameraNum() > 0)
 	{
-		if (!pCam->startUpCapture() || !pUI->startUpCapture())
+		if (!pCam->startUpCapture(true) || !pUI->startUpCapture())
 		{
 			QSystem::closeMessage();
 			QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));

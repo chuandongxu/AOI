@@ -28,6 +28,7 @@ QMainProcess::QMainProcess(CameraCtrl* pCameraCtrl, QObject *parent)
 	: m_pCameraCtrl(pCameraCtrl), QObject(parent)
 {
 	m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM;
+	m_bHWTrigger = true;
 	m_bCaptureDone = false;
 	m_bCaptureLocker = false;
 
@@ -138,7 +139,7 @@ bool QMainProcess::isCameraCaptureAvaiable()
 	return !m_bCaptureLocker;
 }
 
-bool QMainProcess::startUpCapture()
+bool QMainProcess::startUpCapture(bool bHWTrigger)
 {
 	if (m_pCameraCtrl->getCameraCount() <= 0)
 	{
@@ -147,16 +148,30 @@ bool QMainProcess::startUpCapture()
 
 	if (!m_pCameraOnLive)
 	{
+
+		CameraDevice* pDev = m_pCameraCtrl->getCamera(0);
+		if (pDev)
+		{
+			pDev->setHardwareTrigger(bHWTrigger);
+		}		
+
 		int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
 		selectCaptureMode(static_cast<ICamera::TRIGGER>(nCaptureNumMode));	
 
 		//System->setParam("camera_cap_image_sw_enable", true);
 
-		m_pCameraOnLive = new MainCameraOnLive(this, m_pCameraCtrl->getCamera(0));
+		m_pCameraOnLive = new MainCameraOnLive(this, m_pCameraCtrl->getCamera(0), bHWTrigger);
 		m_pCameraOnLive->start();
 	}
 
+	m_bHWTrigger = bHWTrigger;
+
 	return true;
+}
+
+bool QMainProcess::isHWTrigger()
+{
+	return m_bHWTrigger;
 }
 
 bool QMainProcess::endUpCapture()

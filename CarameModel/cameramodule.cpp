@@ -46,8 +46,6 @@ void CameraModule::initial(int nWindow)
 
 	// 错误码
 	setErrorMap();
-
-	System->setParam("camera_hw_tri_enable", true);
 }
 
 void CameraModule::unInit()
@@ -85,11 +83,21 @@ int CameraModule::getCameraNum()
 	return 0;
 }
 
-bool CameraModule::startUpCapture()
+bool CameraModule::startUpCapture(bool bHWTrigger)
 {
 	if (m_pMainProcess)
 	{
-		return m_pMainProcess->startUpCapture();
+		return m_pMainProcess->startUpCapture(bHWTrigger);
+	}
+
+	return false;
+}
+
+bool CameraModule::isHWTrigger()
+{
+	if (m_pMainProcess)
+	{
+		return m_pMainProcess->isHWTrigger();
 	}
 
 	return false;

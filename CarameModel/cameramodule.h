@@ -22,7 +22,8 @@ public:
 public:
 	QWidget* getCalibrationView();
 
-	bool startUpCapture();
+	bool startUpCapture(bool bHWTrigger);
+	bool isHWTrigger();
 	bool endUpCapture();
 	bool selectCaptureMode(TRIGGER emCaptureMode);
 

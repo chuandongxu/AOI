@@ -13,8 +13,8 @@
 
 #define ToInt(value)                (static_cast<int>(value))
 
-MainCameraOnLive::MainCameraOnLive(QMainProcess* pMainProcess, CameraDevice *pCameraTmp)
-	:m_pMainProcess(pMainProcess), m_pCameraTmp(pCameraTmp)
+MainCameraOnLive::MainCameraOnLive(QMainProcess* pMainProcess, CameraDevice *pCameraTmp, bool bHWTrigger)
+	:m_pMainProcess(pMainProcess), m_pCameraTmp(pCameraTmp), m_bHWTrigger(bHWTrigger)
 {
 	m_bQuit = false;
 	m_bRuning = false;
@@ -125,9 +125,8 @@ void MainCameraOnLive::saveImages(QVector<cv::Mat>& images)
 }
 
 void MainCameraOnLive::setQuitFlag()
-{
-	bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
-	if (bHardwareTrigger)
+{	
+	if (m_bHWTrigger)
 	{
 		m_pCameraTmp->stopGrabing();
 	}
