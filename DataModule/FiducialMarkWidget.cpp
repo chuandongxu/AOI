@@ -83,10 +83,8 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
     int nOverlapX = static_cast<int> (dOverlapUmX / dResolutionX + 0.5);
     int nOverlapY = static_cast<int> (dOverlapUmY / dResolutionY + 0.5);
 
-    auto nCountOfImgPerRow = System->getParam("scan_image_RowImageCount").toInt();
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
     auto nScanDirection = System->getParam("scan_image_Direction").toInt();
-    auto strImageFolder = System->getParam("scan_image_Folder").toString();
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     auto pCamera = getModule<ICamera>(CAMERA_MODEL);
@@ -135,6 +133,11 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
     DataUtils::getFrameFromCombinedImage(nBigImgWidth, nBigImgHeight, nImageWidth, nImageHeight,
         nOverlapX, nOverlapY, nSelectPtX, nSelectPtY, nFrameX, nFrameY, nPtInFrameX, nPtInFrameY,
         static_cast<Vision::PR_SCAN_IMAGE_DIR>(nScanDirection));
+
+    if (nFrameX < 0 || nFrameX >= nCountOfFrameX || nFrameY < 0 || nFrameY >= nCountOfFrameY) {
+        System->showMessage(QStringLiteral("Fiducial Mark"), QStringLiteral("Frame计算错误, 请联系软件工程师!"));
+        return;
+    }
 
     cv::Mat matFrameImg;
     if (System->isRunOffline())

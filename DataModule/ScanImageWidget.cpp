@@ -107,6 +107,11 @@ void ScanImageWidget::on_btnPrepareScanImage_clicked() {
     ui.lineEditOverlapXScan->setText(QString::number(overlapX));
     ui.lineEditOverlapYScan->setText(QString::number(overlapY));
 
+    System->setParam("scan_image_FrameCountX", frameCountX);
+    System->setParam("scan_image_FrameCountY", frameCountY);
+    System->setParam("scan_image_OverlapX", overlapX);
+    System->setParam("scan_image_OverlapY", overlapY);
+
     ui.btnScanImage->setEnabled(true);
 }
 
