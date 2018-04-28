@@ -15,6 +15,8 @@ FiducialMarkWidget::FiducialMarkWidget(DataCtrl *pDataCtrl, QWidget *parent)
 :   m_pDataCtrl(pDataCtrl), 
     QWidget(parent) {
     ui.setupUi(this);
+
+    connect(ui.comboBoxChooseImage, SIGNAL(currentIndexChanged(int)), SLOT(on_comboBoxChooseImage_indexChanged(int)));
 }
 
 FiducialMarkWidget::~FiducialMarkWidget() {
@@ -33,12 +35,21 @@ FiducialMarkWidget::~FiducialMarkWidget() {
 }
 
 void FiducialMarkWidget::showEvent(QShowEvent *event) {
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
 
-    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-    auto matImage = pUI->getImage();
-    m_nBigImageWidth  = matImage.cols / dCombinedImageScale;
-    m_nBigImageHeight = matImage.rows / dCombinedImageScale;
+    if (!System->isRunOffline()) {
+        auto vecCombinedBigImage = m_pDataCtrl->getCombinedBigImages();
+        int index = ui.comboBoxChooseImage->currentIndex();
+        if (index >= 0 && index < vecCombinedBigImage.size() && !vecCombinedBigImage[index].empty())
+            pUI->setImage(vecCombinedBigImage[index]);
+        m_nBigImageWidth  = vecCombinedBigImage[index].cols;
+        m_nBigImageHeight = vecCombinedBigImage[index].rows;
+    }else {
+        auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+        auto matImage = pUI->getImage();
+        m_nBigImageWidth  = matImage.cols / dCombinedImageScale;
+        m_nBigImageHeight = matImage.rows / dCombinedImageScale;
+    }
 
     m_vecFMBigImagePos.clear();
     refreshFMWindow();
@@ -130,7 +141,12 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
         matFrameImg = _readFrameImageFromFolder(nFrameX, nFrameY);
     else {
         auto vecBigImages = m_pDataCtrl->getCombinedBigImages();
-        matFrameImg = _getFrameImageFromBigImage(vecBigImages[PROCESSED_IMAGE_SEQUENCE::WHITE_LIGHT],
+        if (vecBigImages.empty()) {
+            System->showMessage(QStringLiteral("Fiducial Mark"), QStringLiteral("请先扫描电路板!"));
+            return;
+        }
+        int nImageIndex = ui.comboBoxChooseImage->currentIndex();
+        matFrameImg = _getFrameImageFromBigImage(vecBigImages[nImageIndex],
             nFrameX, nFrameY, nImageWidth, nImageHeight, nOverlapX, nOverlapY);
     }
 
@@ -280,7 +296,12 @@ int FiducialMarkWidget::srchFiducialMark() {
             matFrameImg = _readFrameImageFromFolder(nFrameX, nFrameY);
         else {
             auto vecBigImages = m_pDataCtrl->getCombinedBigImages();
-            matFrameImg = _getFrameImageFromBigImage(vecBigImages[PROCESSED_IMAGE_SEQUENCE::WHITE_LIGHT],
+            if (vecBigImages.empty()) {
+                System->showMessage(QStringLiteral("Fiducial Mark"), QStringLiteral("请先扫描电路板!"));
+                return NOK;
+            }
+            int nImageIndex = ui.comboBoxChooseImage->currentIndex();
+            matFrameImg = _getFrameImageFromBigImage(vecBigImages[nImageIndex],
                 nFrameX, nFrameY, nImageWidth, nImageHeight, nOverlapX, nOverlapY);
         }
 
@@ -575,4 +596,12 @@ void FiducialMarkWidget::on_btnRemoveFM_clicked() {
         if (index < m_vecFMBigImagePos.size())
             m_vecFMBigImagePos.erase(m_vecFMBigImagePos.begin() + index);
     }
+}
+
+void FiducialMarkWidget::on_comboBoxChooseImage_indexChanged(int index)
+{
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    auto vecCombinedBigImage = m_pDataCtrl->getCombinedBigImages();
+    if (index >= 0 && index < vecCombinedBigImage.size() && !vecCombinedBigImage[index].empty())
+        pUI->setImage(vecCombinedBigImage[index]);
 }

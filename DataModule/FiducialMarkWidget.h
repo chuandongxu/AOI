@@ -31,6 +31,7 @@ private slots:
     void on_btnConfirmFiducialMark_clicked();
     void on_btnDoAlignment_clicked();
     void on_btnRemoveFM_clicked();
+    void on_comboBoxChooseImage_indexChanged(int);
     
 private:
     Ui::FiducialMarkWidget      ui;
