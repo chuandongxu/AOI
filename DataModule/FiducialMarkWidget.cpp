@@ -1,6 +1,7 @@
 ﻿#include <QMessageBox>
 #include "FiducialMarkWidget.h"
 #include "../include/IVisionUI.h"
+#include "../include/ICamera.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../Common/SystemData.h"
@@ -10,8 +11,9 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/video.hpp"
 
-FiducialMarkWidget::FiducialMarkWidget(QWidget *parent)
-: QWidget(parent) {
+FiducialMarkWidget::FiducialMarkWidget(DataCtrl *pDataCtrl, QWidget *parent)
+:   m_pDataCtrl(pDataCtrl), 
+    QWidget(parent) {
     ui.setupUi(this);
 }
 
@@ -35,7 +37,7 @@ void FiducialMarkWidget::showEvent(QShowEvent *event) {
 
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     auto matImage = pUI->getImage();
-    m_nBigImageWidth = matImage.cols / dCombinedImageScale;
+    m_nBigImageWidth  = matImage.cols / dCombinedImageScale;
     m_nBigImageHeight = matImage.rows / dCombinedImageScale;
 
     m_vecFMBigImagePos.clear();
@@ -75,19 +77,21 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
     auto nScanDirection = System->getParam("scan_image_Direction").toInt();
     auto strImageFolder = System->getParam("scan_image_Folder").toString();
 
-    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    auto pCamera = getModule<ICamera>(CAMERA_MODEL);
+
     cv::RotatedRect rrectCadWindow, rrectImageWindow;
     pUI->getSelectDeviceWindow(rrectCadWindow, rrectImageWindow);
 
     cv::Rect rectCadFMWindow = rrectCadWindow.boundingRect();
     cv::RotatedRect rrSrchWindow(rrectCadWindow);
-    rrSrchWindow.size.width *= 4;
+    rrSrchWindow.size.width  *= 4;
     rrSrchWindow.size.height *= 4;
     cv::Rect rectFMSrchWindow = rrSrchWindow.boundingRect();
 
     rrectCadWindow.center.x /= dCombinedImageScale;
     rrectCadWindow.center.y /= dCombinedImageScale;
-    rrectCadWindow.size.width /= dCombinedImageScale;
+    rrectCadWindow.size.width  /= dCombinedImageScale;
     rrectCadWindow.size.height /= dCombinedImageScale;
 
     bool bFound = false;
@@ -107,35 +111,28 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
     }
 
     auto matImage = pUI->getImage();
-    int nBigImgWidth = matImage.cols / dCombinedImageScale;
+    int nBigImgWidth  = matImage.cols / dCombinedImageScale;
     int nBigImgHeight = matImage.rows / dCombinedImageScale;
-    auto matFirstImg = cv::imread(strImageFolder.toStdString() + "/F1-1-1.bmp");
-    if (matFirstImg.empty()) {
-        QString strMsg = QString("Failed to read frame image from: ") + strImageFolder;
-        QMessageBox::critical(nullptr, QStringLiteral("Fiducial Mark"), strMsg, QStringLiteral("Quit"));
-        return;
-    }
+
+    int nImageWidth = 0, nImageHeight = 0;
+    pCamera->getCameraScreenSize(nImageWidth, nImageHeight);
 
     int nSelectPtX = rrectImageWindow.center.x / dCombinedImageScale;
     int nSelectPtY = rrectImageWindow.center.y / dCombinedImageScale;
 
     int nFrameX, nFrameY, nPtInFrameX, nPtInFrameY;
-    DataUtils::getFrameFromCombinedImage(nBigImgWidth, nBigImgHeight, matFirstImg.cols, matFirstImg.rows,
+    DataUtils::getFrameFromCombinedImage(nBigImgWidth, nBigImgHeight, nImageWidth, nImageHeight,
         nOverlapX, nOverlapY, nSelectPtX, nSelectPtY, nFrameX, nFrameY, nPtInFrameX, nPtInFrameY,
-        static_cast<Vision::PR_SCAN_IMAGE_DIR> (nScanDirection));
+        static_cast<Vision::PR_SCAN_IMAGE_DIR>(nScanDirection));
 
-    char arrCharFileName[100];
-    int nImageIndex = nFrameX * nCountOfImgPerFrame + nFrameY * nCountOfImgPerRow + 1;
-    _snprintf(arrCharFileName, sizeof(arrCharFileName), "/F%d-%d-1.bmp", nFrameY + 1, nImageIndex);
-
-    auto strFrameImagePath = strImageFolder + arrCharFileName;
-    auto matFrameImg = cv::imread(strFrameImagePath.toStdString(), cv::IMREAD_GRAYSCALE);
-    if (matFrameImg.empty()) {
-        QString strMsg = QString("Failed to read frame image: ") + strFrameImagePath;
-        QMessageBox::critical(nullptr, QStringLiteral("Fiducial Mark"), strMsg, QStringLiteral("Quit"));
-        return;
+    cv::Mat matFrameImg;
+    if (System->isRunOffline())
+        matFrameImg = _readFrameImageFromFolder(nFrameX, nFrameY);
+    else {
+        auto vecBigImages = m_pDataCtrl->getCombinedBigImages();
+        matFrameImg = _getFrameImageFromBigImage(vecBigImages[PROCESSED_IMAGE_SEQUENCE::WHITE_LIGHT],
+            nFrameX, nFrameY, nImageWidth, nImageHeight, nOverlapX, nOverlapY);
     }
-    cv::cvtColor(matFrameImg, matFrameImg, CV_BayerGR2BGR);
 
     SetFiducialMarkDialog dialogSetFM;
     dialogSetFM.setWindowFlags(Qt::WindowStaysOnTopHint);
@@ -158,7 +155,7 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
             return;
 
         rectFMSrchWindow = pUI->getCurrentFM().getSrchWindow();
-        rectFMSrchWindow.width /= dCombinedImageScale;
+        rectFMSrchWindow.width  /= dCombinedImageScale;
         rectFMSrchWindow.height /= dCombinedImageScale;
         Vision::PR_SRCH_FIDUCIAL_MARK_CMD stCmd;
         Vision::PR_SRCH_FIDUCIAL_MARK_RPY stRpy;
@@ -187,7 +184,7 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
         System->setTrackInfo(qstrMsg);
 
         int nPosInCombineImageX, nPosInCombineImageY;
-        DataUtils::getCombinedImagePosFromFramePos(nBigImgWidth, nBigImgHeight, matFirstImg.cols, matFirstImg.rows,
+        DataUtils::getCombinedImagePosFromFramePos(nBigImgWidth, nBigImgHeight, nImageWidth, nImageHeight,
             nOverlapX, nOverlapY, nFrameX, nFrameY, stRpy.ptPos.x, stRpy.ptPos.y, nPosInCombineImageX, nPosInCombineImageY,
             static_cast<Vision::PR_SCAN_IMAGE_DIR>(nScanDirection));
 
@@ -203,7 +200,7 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
             alignment.tmplPosY = (nBigImgHeight - rrectCadWindow.center.y) * dResolutionY;
         }
 
-        alignment.tmplWidth = dialogSetFM.getFiducialMarkSize() * MM_TO_UM;
+        alignment.tmplWidth  = dialogSetFM.getFiducialMarkSize() * MM_TO_UM;
         alignment.tmplHeight = dialogSetFM.getFiducialMarkSize() * MM_TO_UM;
         alignment.srchWinWidth = rectFMSrchWindow.width  * dResolutionX;
         alignment.srchWinHeight = rectFMSrchWindow.height * dResolutionY;
@@ -257,16 +254,15 @@ int FiducialMarkWidget::srchFiducialMark() {
         return NOK;
     }
 
-    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    auto pCamera = getModule<ICamera>(CAMERA_MODEL);
+
     auto matImage = pUI->getImage();
-    int nBigImgWidth = matImage.cols / dCombinedImageScale;
+    int nBigImgWidth  = matImage.cols / dCombinedImageScale;
     int nBigImgHeight = matImage.rows / dCombinedImageScale;
-    auto matFirstImg = cv::imread(strImageFolder.toStdString() + "/F1-1-1.bmp");
-    if (matFirstImg.empty()) {
-        QString strMsg = QString("Failed to read frame image from ") + strImageFolder;
-        QMessageBox::critical(nullptr, QStringLiteral("Fiducial Mark"), strMsg, QStringLiteral("Quit"));
-        return NOK;
-    }
+
+    int nImageWidth = 0, nImageHeight = 0;
+    pCamera->getCameraScreenSize(nImageWidth, nImageHeight);
 
     //Research for the fiducial mark again to do alignment. There is one problem here, the fiducial shape is not remembered.
     for (size_t i = 0; i < m_vecFMCadWindow.size(); ++ i) {
@@ -275,22 +271,18 @@ int FiducialMarkWidget::srchFiducialMark() {
         int nSelectPtY = rrectCadWindow.center.y;
 
         int nFrameX, nFrameY, nPtInFrameX, nPtInFrameY;
-        DataUtils::getFrameFromCombinedImage(nBigImgWidth, nBigImgHeight, matFirstImg.cols, matFirstImg.rows,
+        DataUtils::getFrameFromCombinedImage(nBigImgWidth, nBigImgHeight, nImageWidth, nImageHeight,
             nOverlapX, nOverlapY, nSelectPtX, nSelectPtY, nFrameX, nFrameY, nPtInFrameX, nPtInFrameY,
             static_cast<Vision::PR_SCAN_IMAGE_DIR> (nScanDirection));
 
-        char arrCharFileName[100];
-        int nImageIndex = nFrameX * nCountOfImgPerFrame + nFrameY * nCountOfImgPerRow + 1;
-        _snprintf(arrCharFileName, sizeof(arrCharFileName), "/F%d-%d-1.bmp", nFrameY + 1, nImageIndex);
-
-        auto strFrameImagePath = strImageFolder + arrCharFileName;
-        auto matFrameImg = cv::imread(strFrameImagePath.toStdString(), cv::IMREAD_GRAYSCALE);
-        if (matFrameImg.empty()) {
-            QString strMsg = QString("Failed to read frame image ") + strFrameImagePath;
-            QMessageBox::critical(nullptr, QStringLiteral("Fiducial Mark"), strMsg, QStringLiteral("Quit"));
-            return NOK;
+        cv::Mat matFrameImg;
+        if (System->isRunOffline())
+            matFrameImg = _readFrameImageFromFolder(nFrameX, nFrameY);
+        else {
+            auto vecBigImages = m_pDataCtrl->getCombinedBigImages();
+            matFrameImg = _getFrameImageFromBigImage(vecBigImages[PROCESSED_IMAGE_SEQUENCE::WHITE_LIGHT],
+                nFrameX, nFrameY, nImageWidth, nImageHeight, nOverlapX, nOverlapY);
         }
-        cv::cvtColor(matFrameImg, matFrameImg, CV_BayerGR2BGR);
 
         Vision::PR_SRCH_FIDUCIAL_MARK_CMD stCmd;
         Vision::PR_SRCH_FIDUCIAL_MARK_RPY stRpy;
@@ -298,7 +290,7 @@ int FiducialMarkWidget::srchFiducialMark() {
         stCmd.enType = static_cast<Vision::PR_FIDUCIAL_MARK_TYPE> (m_vecAlignmentDB[i].fmShape);
         stCmd.fSize = m_vecAlignmentDB[i].tmplWidth / System->getSysParam("CAM_RESOLUTION_X").toDouble();
         stCmd.fMargin = stCmd.fSize / 2.f;
-        int nSrchWinWidth = m_vecAlignmentDB[i].srchWinWidth / dResolutionX;
+        int nSrchWinWidth  = m_vecAlignmentDB[i].srchWinWidth / dResolutionX;
         int nSrchWinHeight = m_vecAlignmentDB[i].srchWinHeight / dResolutionY;
         stCmd.rectSrchWindow = cv::Rect(nPtInFrameX - nSrchWinWidth / 2, nPtInFrameY - nSrchWinHeight / 2,
             nSrchWinWidth, nSrchWinHeight);
@@ -321,7 +313,7 @@ int FiducialMarkWidget::srchFiducialMark() {
         System->setTrackInfo(qstrMsg);
 
         int nPosInCombineImageX, nPosInCombineImageY;
-        DataUtils::getCombinedImagePosFromFramePos(nBigImgWidth, nBigImgHeight, matFirstImg.cols, matFirstImg.rows,
+        DataUtils::getCombinedImagePosFromFramePos(nBigImgWidth, nBigImgHeight, nImageWidth, nImageHeight,
             nOverlapX, nOverlapY, nFrameX, nFrameY, stRpy.ptPos.x, stRpy.ptPos.y, nPosInCombineImageX, nPosInCombineImageY,
             static_cast<Vision::PR_SCAN_IMAGE_DIR> (nScanDirection));
         m_vecFMBigImagePos.push_back(cv::Point(nPosInCombineImageX, nPosInCombineImageY));
@@ -385,6 +377,41 @@ int FiducialMarkWidget::refreshFMWindow() {
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     pUI->setConfirmedFM(vecFM);
     return OK;
+}
+
+cv::Mat FiducialMarkWidget::_readFrameImageFromFolder(int nFrameX, int nFrameY) {
+    auto nCountOfImgPerFrame = System->getParam("scan_image_OneFrameImageCount").toInt();
+    auto nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
+    auto nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
+
+    auto nCountOfImgPerRow = System->getParam("scan_image_RowImageCount").toInt();
+    auto strImageFolder = System->getParam("scan_image_Folder").toString();
+
+    char arrCharFileName[100];
+    int nImageIndex = nFrameX * nCountOfImgPerFrame + nFrameY * nCountOfImgPerRow + 1;
+    _snprintf(arrCharFileName, sizeof(arrCharFileName), "/F%d-%d-1.bmp", nFrameY + 1, nImageIndex);
+
+    auto strFrameImagePath = strImageFolder + arrCharFileName;
+    auto matFrameImg = cv::imread(strFrameImagePath.toStdString(), cv::IMREAD_GRAYSCALE);
+    if (matFrameImg.empty()) {
+        QString strMsg = QString("Failed to read frame image: ") + strFrameImagePath;
+        QMessageBox::critical(nullptr, QStringLiteral("Fiducial Mark"), strMsg, QStringLiteral("Quit"));
+        return cv::Mat();
+    }
+    cv::cvtColor(matFrameImg, matFrameImg, CV_BayerGR2BGR);
+    return matFrameImg;
+}
+
+cv::Mat FiducialMarkWidget::_getFrameImageFromBigImage(const cv::Mat &matBigImage, int nFrameX, int nFrameY, int nImageWidth, int nImageHeight, int nOverlapX, int nOverlapY) {
+    if (matBigImage.empty())
+        return cv::Mat();
+
+    float frameLeftX = nFrameX * (nImageWidth  - nOverlapX);
+    float frameTopY  = nFrameY * (nImageHeight - nOverlapY);
+    cv::Mat matFrame(nImageHeight, nImageWidth, matBigImage.type());
+    cv::Mat matROI(matBigImage, cv::Rect(frameLeftX, frameTopY, nImageWidth, nImageHeight));
+    matROI.copyTo(matFrame);
+    return matFrame;
 }
 
 void FiducialMarkWidget::on_btnDoAlignment_clicked() {
@@ -486,7 +513,7 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked() {
             x = matDestPos.at<float>(0) * dCombinedImageScale;
             y = matDestPos.at<float>(1) * dCombinedImageScale;
 
-            auto width = device.width / dResolutionX * dCombinedImageScale;
+            auto width  = device.width  / dResolutionX * dCombinedImageScale;
             auto height = device.height / dResolutionY * dCombinedImageScale;
             cv::RotatedRect deviceWindow(cv::Point2f(x, y), cv::Size2f(width, height), device.angle);
             vecVisionViewDevices.emplace_back(device.Id, device.name, deviceWindow);
