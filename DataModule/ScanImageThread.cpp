@@ -150,7 +150,7 @@ void ScanImageThread::run()
         cv::Mat matNewPhase = m_matCombinedBigHeight - dMinValue;
 
         float dRatio = 255.f / ToFloat(dMaxValue - dMinValue);
-        matNewPhase = m_matCombinedBigHeight * dRatio;
+		matNewPhase = matNewPhase * dRatio;
 
         cv::Mat matHeightGrayImg;
         matNewPhase.convertTo(matHeightGrayImg, CV_8UC1);

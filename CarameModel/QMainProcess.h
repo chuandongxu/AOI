@@ -9,7 +9,6 @@
 #include "opencv/cv.h"
 
 class CameraCtrl;
-class MainCameraOnLive;
 class QMainProcess : public QObject
 {
 	Q_OBJECT
@@ -19,16 +18,6 @@ public:
 	~QMainProcess();
 
 public:
-	void pushImageBuffer(cv::Mat& matImage);
-	void setImageBuffer(QVector<cv::Mat>& matImages);
-	const QVector<cv::Mat>& getImageBuffer();
-	const cv::Mat& getImageItemBuffer(int nIndex);
-	int getImageBufferNum();
-	int getImageBufferCaptureNum();
-	void clearImageBuffer();
-	bool startCapturing();
-	void setCaptureImageBufferDone();
-	bool isCaptureImageBufferDone();
 	bool lockCameraCapture();
 	void unlockCameraCapture();
 	bool isCameraCaptureAvaiable();
@@ -36,7 +25,16 @@ public:
 	bool startUpCapture(bool bHWTrigger);
 	bool isHWTrigger();
 	bool endUpCapture();
-	bool selectCaptureMode(ICamera::TRIGGER emCaptureMode);
+	bool selectCaptureMode(ICamera::TRIGGER emCaptureMode, bool reStartUp);
+
+	bool startCapturing();
+	bool getImages(QVector<cv::Mat>& imageMats);
+	bool getLastImages(QVector<cv::Mat>& imageMats);
+	bool stopCapturing();
+	bool isStartCapturing();
+
+private:
+	void saveImages(QVector<cv::Mat>& images);
 
 private:
 	CameraCtrl* m_pCameraCtrl;
@@ -45,8 +43,8 @@ private:
 	cv::Mat	m_dispImage;
 
 private:
-	MainCameraOnLive * m_pCameraOnLive;
 	QVector<cv::Mat> m_bufferImages;
+	ICamera::TRIGGER m_emCaptureMode;
 	int m_nCaptureNum;
 	bool m_bHWTrigger;
 	bool m_bCaptureDone;

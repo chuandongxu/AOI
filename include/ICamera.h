@@ -41,15 +41,12 @@ public:
 	virtual bool startUpCapture(bool bHWTrigger) = 0;
 	virtual bool isHWTrigger() = 0;
 	virtual bool endUpCapture() = 0;
-	virtual bool selectCaptureMode(TRIGGER emCaptureMode) = 0; 
+	virtual bool selectCaptureMode(TRIGGER emCaptureMode, bool reStartUp = false) = 0; 
 	
-	virtual const QVector<cv::Mat>& getImageBuffer() = 0;
-	virtual const cv::Mat& getImageItemBuffer(int nIndex) = 0;
-	virtual int getImageBufferNum() = 0;
-	virtual int getImageBufferCaptureNum() = 0;
 	virtual bool startCapturing() = 0;
-	virtual void clearImageBuffer() = 0;
-	virtual bool isCaptureImageBufferDone() = 0;
+	virtual bool getImages(QVector<cv::Mat>& imageMats) = 0;
+	virtual bool getLastImages(QVector<cv::Mat>& imageMats) = 0;
+	virtual bool stopCapturing() = 0;
 
 	virtual bool lockCameraCapture() = 0;
 	virtual void unlockCameraCapture() = 0;

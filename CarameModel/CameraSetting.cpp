@@ -68,9 +68,8 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 
 	ls.clear();
 	ls << QStringLiteral("全部图像(DLP + Light)采集") << QStringLiteral("全部图像(12帧×DLP Num)采集") << QStringLiteral("标准图像(12帧)采集") << QStringLiteral("单帧采集") << QStringLiteral("灯光图像(6帧)采集");
-	ui.comboBox_captureNumMode->addItems(ls);	
-	int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
-	ui.comboBox_captureNumMode->setCurrentIndex(nCaptureNumMode);
+	ui.comboBox_captureNumMode->addItems(ls);
+	ui.comboBox_captureNumMode->setCurrentIndex(0);
 	connect(ui.comboBox_captureNumMode, SIGNAL(currentIndexChanged(int)), SLOT(onCaptureNumModeIndexChanged(int)));
 
 	updateUI();
@@ -227,19 +226,11 @@ void CameraSetting::onCaptureModeIndexChanged(int iIndex)
 
 void CameraSetting::onCaptureNumModeIndexChanged(int iIndex)
 {
-	if (QMessageBox::Ok != QMessageBox::warning(NULL, QStringLiteral("提示"),
-		QStringLiteral("需要重新启动实时采集图像，应用新的采集模式？"), QMessageBox::Ok, QMessageBox::Cancel))
+	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	if (pCam)
 	{
-		return;
-	}
-
-	int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
-	System->setParam("camera_capture_num_mode", nCaptureNumMode);
-
-	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-	if (pUI)
-	{
-		pUI->endUpCapture();		
+		int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
+		pCam->selectCaptureMode((ICamera::TRIGGER)nCaptureNumMode, true);
 	}
 
 	updateUI();	
@@ -487,7 +478,7 @@ void CameraSetting::onCaptureDLP()
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return;
 
-	int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
+	int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
 	int nSelectDLP = ui.comboBox_selectDLP->currentIndex();
 
 	switch (nCaptureNumMode)
@@ -513,6 +504,17 @@ void CameraSetting::onCaptureDLP()
 	default:
 		break;
 	}	
+
+	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	if (pCam)
+	{
+		QVector<cv::Mat> matImgs;
+		if (!pCam->getLastImages(matImgs))
+		{
+			System->setTrackInfo(QString("getImages error"));
+			return;
+		}
+	}	
 }
 
 void CameraSetting::onCaptureLight()
@@ -520,7 +522,7 @@ void CameraSetting::onCaptureLight()
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return;
 
-	int nCaptureNumMode = System->getParam("camera_capture_num_mode").toInt();
+	int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
 	int nSelectLight = ui.comboBox_selectLight->currentIndex();
 
 	switch (nCaptureNumMode)
@@ -566,7 +568,18 @@ void CameraSetting::onCaptureLight()
 		break;
 	default:
 		break;
-	}	
+	}
+
+	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	if (pCam)
+	{
+		QVector<cv::Mat> matImgs;
+		if (!pCam->getLastImages(matImgs))
+		{
+			System->setTrackInfo(QString("getImages error"));
+			return;
+		}
+	}
 }
 
 double CameraSetting::convertToPixel(double umValue)

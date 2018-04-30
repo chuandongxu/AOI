@@ -43,5 +43,4 @@ private:
 
 	int m_nGrabNum;
 	int m_nGrabCount;
-	bool m_bStopFlag;
 };
