@@ -73,30 +73,20 @@ void CameraOnLive::run()
 
 			if (!pCam->startCapturing())
 			{
+				if (m_bQuit) break;
 				System->setTrackInfo(QString("startCapturing error"));
-				continue;
-			}
-
-			int nWaitTime = 5 * 60 * 100;
-			while (!pCam->isCaptureImageBufferDone() && nWaitTime-- > 0 && !m_bQuit)
-			{
-				QThread::msleep(10);
-			}
-
-			if (nWaitTime <= 0)
-			{
-				System->setTrackInfo(QString("CaptureImageBufferDone error"));
 				continue;
 			}
 
 			if (m_bQuit) break;
 
-			int nCaptureNum = pCam->getImageBufferCaptureNum();
-			for (int i = 0; i < nCaptureNum; i++)
+			if (!pCam->getImages(imageMats))
 			{
-				cv::Mat matImage = pCam->getImageItemBuffer(i);
-				imageMats.push_back(matImage);
-			}
+				System->setTrackInfo(QString("getImages error"));
+				continue;
+			}			
+
+			if (m_bQuit) break;
 
 			bool bShowImageToScreen = System->getParam("camera_show_image_toScreen_enable").toBool();
 			if (bShowImageToScreen)
@@ -114,7 +104,7 @@ void CameraOnLive::run()
 				}
 			}			
 
-			System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));
+			System->setTrackInfo(QString("System captureImages Image Num: %1").arg(imageMats.size()));
 
 			if (m_bQuit) break;
 		}
@@ -393,13 +383,14 @@ bool VisionViewWidget::onLive()
 		bHardwareTrigger = true;
 	}
 
-	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
-	if (!bHardwareTrigger && bCaptureImage)
-	{
-		QMessageBox::warning(this, "", QStringLiteral("实时图像不支持【非硬触发】保存图像，取消保存图像或者启用硬触发模式"));
-		return false;
-	}
+	//bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
+	//if (!bHardwareTrigger && bCaptureImage)
+	//{
+	//	QMessageBox::warning(this, "", QStringLiteral("实时图像不支持【非硬触发】保存图像，取消保存图像或者启用硬触发模式"));
+	//	return false;
+	//}
 
+	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
 	QString capturePath = System->getParam("camera_cap_image_path").toString();
 	if (bHardwareTrigger && bCaptureImage)
 	{

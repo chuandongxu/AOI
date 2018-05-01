@@ -25,15 +25,12 @@ public:
 	bool startUpCapture(bool bHWTrigger);
 	bool isHWTrigger();
 	bool endUpCapture();
-	bool selectCaptureMode(TRIGGER emCaptureMode);
+	bool selectCaptureMode(TRIGGER emCaptureMode, bool reStartUp);
 
-	const QVector<cv::Mat>& getImageBuffer();
-	const cv::Mat& getImageItemBuffer(int nIndex);
-	int getImageBufferNum();
-	int getImageBufferCaptureNum();
 	bool startCapturing();
-	void clearImageBuffer();
-	bool isCaptureImageBufferDone();
+	bool getImages(QVector<cv::Mat>& imageMats);
+	bool getLastImages(QVector<cv::Mat>& imageMats);
+	bool stopCapturing();
 
 	bool lockCameraCapture();
 	void unlockCameraCapture();

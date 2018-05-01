@@ -252,14 +252,13 @@ void QFlowCtrl::start()
 	}
 
 	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在启动中..."), 0);
-	QApplication::processEvents();
-
-	System->setParam("camera_capture_num_mode", 0);// all capturing images
+	QApplication::processEvents();	
 
     if (! System->isRunOffline()) {
+		pCam->selectCaptureMode(ICamera::TRIGGER_ALL);
 	    if (pCam->getCameraNum() > 0)
 	    {
-		    if (!pCam->startUpCapture(true) || !pUI->startUpCapture())
+		    if (!pUI->startUpCapture())
 		    {
 			    QSystem::closeMessage();
 			    QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));
@@ -316,11 +315,7 @@ void QFlowCtrl::stop()
 	if (m_pAutoRunThread) m_pAutoRunThread->quit();
 
 	QThreadPool::globalInstance()->waitForDone();
-
-	if (pCam->getCameraNum() > 0)
-	{
-		pCam->endUpCapture();
-	}
+	
 	pUI->endUpCapture();
 	
     int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;

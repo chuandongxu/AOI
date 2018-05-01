@@ -112,33 +112,13 @@ bool CameraModule::endUpCapture()
 	return false;
 }
 
-bool CameraModule::selectCaptureMode(TRIGGER emCaptureMode)
+bool CameraModule::selectCaptureMode(TRIGGER emCaptureMode, bool reStartUp)
 {
 	if (m_pMainProcess)
 	{
-		return m_pMainProcess->selectCaptureMode(emCaptureMode);
+		return m_pMainProcess->selectCaptureMode(emCaptureMode, reStartUp);
 	}
 	return false;
-}
-
-const QVector<cv::Mat>& CameraModule::getImageBuffer()
-{
-	return m_pMainProcess->getImageBuffer();
-}
-
-const cv::Mat& CameraModule::getImageItemBuffer(int nIndex)
-{
-	return m_pMainProcess->getImageItemBuffer(nIndex);
-}
-
-int CameraModule::getImageBufferNum()
-{	
-	return m_pMainProcess->getImageBufferNum();
-}
-
-int CameraModule::getImageBufferCaptureNum()
-{
-	return m_pMainProcess->getImageBufferCaptureNum();
 }
 
 bool CameraModule::startCapturing()
@@ -146,14 +126,19 @@ bool CameraModule::startCapturing()
 	return m_pMainProcess->startCapturing();
 }
 
-void CameraModule::clearImageBuffer()
+bool CameraModule::getImages(QVector<cv::Mat>& imageMats)
 {
-	m_pMainProcess->clearImageBuffer();
+	return m_pMainProcess->getImages(imageMats);
 }
 
-bool CameraModule::isCaptureImageBufferDone()
+bool CameraModule::getLastImages(QVector<cv::Mat>& imageMats)
 {
-	return m_pMainProcess->isCaptureImageBufferDone();
+	return m_pMainProcess->getLastImages(imageMats);
+}
+
+bool CameraModule::stopCapturing()
+{
+	return m_pMainProcess->stopCapturing();
 }
 
 bool CameraModule::lockCameraCapture()
@@ -178,11 +163,11 @@ bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
 
 	imageMats.clear();
 
-	if (!startCapturing())
-	{
-		System->setTrackInfo(QString("startCapturing error."));
-		return false;
-	}
+	//if (!startCapturing())
+	//{
+	//	System->setTrackInfo(QString("startCapturing error."));
+	//	return false;
+	//}
 	
 	if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true))
 	{
@@ -190,36 +175,8 @@ bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
 		return false;
 	}	
 
-	int nWaitTime = 100;
-	while (! isCaptureImageBufferDone() && nWaitTime-- > 0)
-		QThread::msleep(10);
-
-	if (nWaitTime <= 0)
+	if (!getLastImages(imageMats))
 	{
-		System->setTrackInfo(QString("CaptureImageBufferDone error."));
-		return false;
-	}
-
-	int nCaptureNum = getImageBufferCaptureNum();
-	for (int i = 0; i < nCaptureNum; ++ i)
-	{
-		cv::Mat matImage = getImageItemBuffer(i);
-		imageMats.push_back(matImage);
-	}
-
-	if (nCaptureNum != getImageBufferNum())
-	{	
-		System->setTrackInfo(QString("System captureAllImages error, Image Num: %1").arg(nCaptureNum));
-
-        QString capturePath = System->getParam("camera_cap_image_path").toString();
-        QDateTime dtm = QDateTime::currentDateTime();
-        QString fileDir = capturePath + "/" + dtm.toString("MMddhhmmss") + "/";
-        QDir dir; dir.mkdir(fileDir);
-
-        for (size_t i = 0; i < imageMats.size(); ++ i) {
-            QString name = QString("%1").arg(i + 1, 2, 10, QChar('0')) + QStringLiteral(".bmp");
-            cv::imwrite((fileDir + name).toStdString().c_str(), imageMats[i]);
-        }
 		return false;
 	}
 
