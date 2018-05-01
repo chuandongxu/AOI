@@ -21,3 +21,8 @@ void AboutDialog::setDataStoreApiVersion(const QString &strVersion)
 {
     ui.lineEditDataStoreApiVersion->setText(strVersion);
 }
+
+void AboutDialog::setCurrentProject(const QString &strProject)
+{
+    ui.lineEditCurrentProject->setText(strProject);
+}

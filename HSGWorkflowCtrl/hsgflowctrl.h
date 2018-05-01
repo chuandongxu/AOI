@@ -30,6 +30,7 @@ protected slots:
 	void home();
 	void startAutoRun();
 	void stopAutoRun();
+    void onError(const QString &strMsg);
 
 protected:
 	void readbarCode();

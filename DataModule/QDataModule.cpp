@@ -90,12 +90,18 @@ void QDataModule::clearObjs(DataTypeEnum emDataType)
 
 bool QDataModule::createProject(QString& szFilePath)
 {
-    return m_ctrl.createProject ( szFilePath );
+    bool bResult = m_ctrl.createProject(szFilePath);
+    if (bResult)
+        m_strCurrentProject = szFilePath;
+    return bResult;
 }
 
 bool QDataModule::openProject(QString& szFilePath)
 {
-    return m_ctrl.openProject ( szFilePath );
+    bool bResult = m_ctrl.openProject(szFilePath);
+    if (bResult)
+        m_strCurrentProject = szFilePath;
+    return bResult;
 }
 
 bool QDataModule::saveDataBase(QString& szFilePath, DataTypeEnum emDataType)

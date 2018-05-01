@@ -35,10 +35,12 @@ public:
     void UpdateInspWindowList();
     int getSelectedLighting() const;
     QColorWeight *getColorWidget() const;
+
 protected:
     virtual void showEvent(QShowEvent *event) override;
     void _showWidgets();
     void _hideWidgets();
+
 private slots:
     void on_btnAddWindow_clicked();
     void on_btnRemoveWindow_clicked();
@@ -47,6 +49,7 @@ private slots:
 
     void onInspWindowState(const QVariantList &data);
     void onSelectedWindowChanged(int index);
+    void on_comboBoxLighting_indexChanged(int index);
 
 private:
     Ui::InspWindowWidget ui;

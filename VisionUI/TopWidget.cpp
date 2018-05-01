@@ -162,6 +162,7 @@ void QTopWidget::onAbout()
 
     IData* pData = getModule<IData>(DATA_MODEL);
     aboutDialog.setDataStoreApiVersion(pData->getDataStoreApiVersion());
+    aboutDialog.setCurrentProject(pData->getCurrentProject());
 
     auto pVision = getModule<IVision>(VISION_MODEL);
     aboutDialog.setVisionLibraryVersion(pVision->getVisionLibraryVersion());

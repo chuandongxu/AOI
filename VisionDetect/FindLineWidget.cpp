@@ -221,13 +221,13 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
             System->setTrackInfo(QString("Success to Create Window: %1.").arg ( window.name.c_str() ) );
         }
 
-        QDetectObj detectObj ( window.Id, window.name.c_str() );
-        cv::Point2f ptCenter ( window.x / dResolutionX, window.y / dResolutionY );
-        cv::Size2f szROI ( window.width / dResolutionX, window.height / dResolutionY );
-        detectObj.setFrame ( cv::RotatedRect ( ptCenter, szROI, window.angle ) );
+        QDetectObj detectObj(window.Id, window.name.c_str());
+        cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
+        cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
+        detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
         auto vecDetectObjs = pUI->getDetectObjs();
-        vecDetectObjs.push_back ( detectObj );
-        pUI->setDetectObjs ( vecDetectObjs );        
+        vecDetectObjs.push_back(detectObj);
+        pUI->setDetectObjs(vecDetectObjs);
     }else {
         window.Id = m_currentWindow.Id;
         window.name = m_currentWindow.name;

@@ -12,13 +12,15 @@ using namespace AOI;
 class AutoRunThread : public QThread
 {
 public:
-	AutoRunThread(const Engine::AlignmentVector         &vecAlignments,
+	AutoRunThread(const Engine::AlignmentVector        &vecAlignments,
                  const Engine::WindowVector            &vecWindows,
                  const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr);
 	~AutoRunThread();
 
 	void quit();
     static bool captureAllImages(QVector<cv::Mat>& imageMats);
+    inline void setImageSize(int nImgWidth, int nImgHeight) { m_nImageWidthPixel = nImgWidth; m_nImageHeightPixel = nImgHeight; }
+    inline void setBoardStartPos(float fBoardLeftPos, float fBoardBtmPos) { m_fBoardLeftPos = fBoardLeftPos; m_fBoardBtmPos = fBoardBtmPos; }
 
 protected:
 	bool preRunning();
@@ -49,10 +51,8 @@ private:
     Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
 
 private:
-	std::atomic<bool> m_exit;
-	
-	cv::Mat m_3DMatHeight;
-
+	std::atomic<bool>               m_exit;	
+	cv::Mat                         m_3DMatHeight;
     Engine::AlignmentVector         m_vecAlignments;
     Engine::WindowVector            m_vecWindows;
     Engine::WindowVector            m_vecAlignedWindows;
@@ -66,6 +66,10 @@ private:
     float                           m_fFovHeightUm;
     int                             m_nImageWidthPixel;
     int                             m_nImageHeightPixel;
+    Vision::VectorOfMat             m_vecCombinedBigImages;
+    cv::Mat                         m_matCombinedBigHeight;
+    float                           m_fBoardLeftPos;
+    float                           m_fBoardBtmPos;
 };
 
 

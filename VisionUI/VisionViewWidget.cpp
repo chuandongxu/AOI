@@ -743,6 +743,17 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
 			m_szCadOffset.height += (mouseY - m_preMoveY) / m_dScale;
 			repaintAll();
 			break;
+        case MODE_VIEW_EDIT_FIDUCIAL_MARK:
+            {
+                double dSizeOnImgX = motionX / m_dScale;
+                double dSizeOnImgY = motionY / m_dScale;
+                cv::Rect rectFM = m_currentFM.getFM();
+
+                rectFM = CalcUtils::resizeRect<int>(rectFM, cv::Size(dSizeOnImgX, dSizeOnImgY));
+                m_currentFM.setFM(rectFM);
+                repaintAll();
+            }
+            break;
         case MODE_VIEW_EDIT_SRCH_WINDOW:
             {
                 double dSizeOnImgX = motionX / m_dScale;

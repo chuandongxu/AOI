@@ -1483,7 +1483,7 @@ bool MotionControl::EmStop(int AxisID)
 bool MotionControl::getCurrentPos(int AxisID, double *posMm)
 {
     if (System->isRunOffline()) {
-		*posMm = m_dRunOfflinePos[AxisID];
+		*posMm = m_dRunOfflinePos[AxisID] * UM_TO_MM;
         return true;
     }
 

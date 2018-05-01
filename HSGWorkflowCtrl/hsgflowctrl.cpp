@@ -131,6 +131,11 @@ void QFlowCtrl::stopAutoRun()
 	if (m_isStart) stop();
 }
 
+void QFlowCtrl::onError(const QString &strMsg)
+{
+    QSystem::showMessage(QStringLiteral("警告"), strMsg);
+}
+
 void QFlowCtrl::readbarCode()
 {	
 }
@@ -182,6 +187,15 @@ void QFlowCtrl::reset()
 	
 void QFlowCtrl::start()
 {
+	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+	if (!pCam) return;
+
+	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
+	if (!pDlp) return;
+
+	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+	if (!pUI) return;
+
     Engine::AlignmentVector vecAlignments;
     int nResult = Engine::GetAllAlignments(vecAlignments);
     if (Engine::OK != nResult) {
@@ -219,18 +233,11 @@ void QFlowCtrl::start()
 
     auto fResolutionX = System->getSysParam("CAM_RESOLUTION_X").toFloat();
     auto fResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toFloat();
-    float fovWidth = 2032 * fResolutionX, fovHeight = 2032 * fResolutionY;  // 2032 is the camera resolution, later need to get from elsewhere.
+    int nImgWidth = 0, nImgHeight = 0;
+    pCam->getCameraScreenSize(nImgWidth, nImgHeight);
+    float fovWidth = nImgWidth * fResolutionX, fovHeight = nImgHeight * fResolutionY;  // 2032 is the camera resolution, later need to get from elsewhere.
     Vision::VectorOfVectorOfPoint2f vecVecFrameCtr;
     nResult = DataUtils::assignFrames(left, top, right, bottom, fovWidth, fovHeight, vecVecFrameCtr);
-
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return;
-
-	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
-	if (!pDlp) return;
-
-	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-	if (!pUI) return;
 
 	if(!m_isHome)
 	{		
@@ -263,22 +270,22 @@ void QFlowCtrl::start()
 		    QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("请检查相机是否连接。"));
 		    return;
 	    }
-    }
 
-	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-    for (int i = 0; i < nStationNum; ++ i)
-	{
-		if (pDlp->isConnected(i))
-		{
-			if (! pDlp->startUpCapture(i))
-                continue;
+        int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+        for (int i = 0; i < nStationNum; ++ i) {
+            if (pDlp->isConnected(i)) {
+                if (! pDlp->startUpCapture(i))
+                    continue;
+            }
+            else
+                System->setTrackInfo(QString(QStringLiteral("工位%0启动失败, 请检查DLP硬件！")).arg(i + 1));
         }
-		else
-			System->setTrackInfo(QString(QStringLiteral("工位%0启动失败, 请检查DLP硬件！")).arg(i + 1));
-	}
+    }
 
     m_pAutoRunThread = new AutoRunThread(vecAlignments, vecWindows, vecVecFrameCtr);
     connect(m_pAutoRunThread, &AutoRunThread::finished, m_pAutoRunThread, &QObject::deleteLater);
+    m_pAutoRunThread->setImageSize(nImgWidth, nImgHeight);
+    m_pAutoRunThread->setBoardStartPos(left, bottom);
     m_pAutoRunThread->start();
 
 	m_isStart = true;

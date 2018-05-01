@@ -67,20 +67,22 @@ void AutoRunThread::run()
 	double dtime_start = 0, dtime_movePos = 0;
 	while (! isExit())
 	{
-		if (! waitStartBtn()) continue;
+		//if (! waitStartBtn()) continue;
 		if (isExit()) break;
 
         _feedBoard();
         _readBarcode();
 
-		if (! _doAlignment()) continue;
+        QThreadPool::globalInstance()->waitForDone();
+
+		if (! _doAlignment()) break;
 		if (isExit()) break;
 		TimeLogInstance->addTimeLog("Finished do alignment.");
 
         if (m_vecVecFrameCtr.empty())
             break;
 
-        if(! _doInspection()) continue;
+        if(! _doInspection()) break;
         if (isExit()) break;
 	}
 
@@ -140,6 +142,18 @@ bool AutoRunThread::moveToCapturePos(float fPosX, float fPosY)
 
 bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
 {
+    if (System->isRunOffline()) {
+        imageMats.clear();
+        std::string strImagePath("D:/Data/20180203_TestImageOnKB/0203125013/");
+        char strfileName[100];
+        for (int i = 1; i <= 54; ++ i) {
+            _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
+            cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
+            imageMats.push_back(matImage);
+        }
+        return true;
+    }
+
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
 
@@ -256,6 +270,7 @@ bool AutoRunThread::_doAlignment()
     std::vector<AlignmentRunnablePtr> vecAlignmentRunnable;
     Vision::VectorOfPoint2f vecCadPoint, vecSrchPoint;
 
+    int index = 0;
     for (const auto &alignment : m_vecAlignments) {
         vecCadPoint.push_back(cv::Point2f(alignment.tmplPosX, alignment.tmplPosY));
 
@@ -273,20 +288,45 @@ bool AutoRunThread::_doAlignment()
         TimeLogInstance->addTimeLog("Capture all images.");
 
         cv::Mat matAlignmentImg = vecMatImages[m_nDLPCount * DLP_IMG_COUNT];
-        cv::Rect rectSrchWindow = DataUtils::convertWindowToFrameRect(cv::Point2f(alignment.tmplPosX, alignment.tmplPosY), alignment.srchWinWidth, alignment.srchWinHeight, cv::Point2f(alignment.tmplPosX, alignment.tmplPosY), m_nImageWidthPixel, m_nImageHeightPixel, m_dResolutionX, m_dResolutionY);
+        cv::Point2f ptFrameCtr(alignment.tmplPosX, alignment.tmplPosY), ptAlignment(alignment.tmplPosX, alignment.tmplPosY);
+        if (System->isRunOffline()) {
+            //Here is just for offline test.
+            if ( 0 == index)
+                ptFrameCtr = m_vecVecFrameCtr[0][0];
+            else
+                ptFrameCtr = m_vecVecFrameCtr[0].back();            
+        }
+
+        // Only has frame in X direction. It should only happen when there is only X axis can move.
+        if (fabs(ptFrameCtr.y) <= 0.01f)
+            ptFrameCtr.y = m_nImageHeightPixel * m_dResolutionY / 2.f;
+
+        ptAlignment.x += m_fBoardLeftPos;
+        ptAlignment.y += m_fBoardBtmPos;
+
+        cv::Rect rectSrchWindow = DataUtils::convertWindowToFrameRect(ptAlignment, alignment.srchWinWidth, alignment.srchWinHeight, ptFrameCtr, m_nImageWidthPixel, m_nImageHeightPixel, m_dResolutionX, m_dResolutionY);
         auto pAlignmentRunnable = std::make_unique<AlignmentRunnable>(matAlignmentImg, alignment, rectSrchWindow);
         pAlignmentRunnable->setAutoDelete(false);
+        pAlignmentRunnable->setResolution(m_dResolutionX, m_dResolutionY);
         QThreadPool::globalInstance()->start(pAlignmentRunnable.get());
         vecAlignmentRunnable.push_back(std::move(pAlignmentRunnable));
+        ++ index;
     }
 
     QThreadPool::globalInstance()->waitForDone();
     TimeLogInstance->addTimeLog("Search for alignment point done.");
     
-    for (size_t i = 0; i < m_vecAlignments.size(); ++ i) {        
-        auto ptOffset = vecAlignmentRunnable[i]->getResultCtrOffset();
-        cv::Point2f ptResult(m_vecAlignments[i].tmplPosX + ptOffset.x, m_vecAlignments[i].tmplPosY + ptOffset.y);
-        vecSrchPoint.push_back(ptResult);
+    for (size_t i = 0; i < m_vecAlignments.size(); ++ i) {
+        if (Vision::VisionStatus::OK != vecAlignmentRunnable[i]->getStatus())
+            return false;
+
+        if (System->isRunOffline())
+            vecSrchPoint.push_back(cv::Point(m_vecAlignments[i].tmplPosX, m_vecAlignments[i].tmplPosY));
+        else {
+            auto ptOffset = vecAlignmentRunnable[i]->getResultCtrOffset();
+            cv::Point2f ptResult(m_vecAlignments[i].tmplPosX + ptOffset.x, m_vecAlignments[i].tmplPosY + ptOffset.y);
+            vecSrchPoint.push_back(ptResult);
+        }
     }
 
     float fRotationInRadian, Tx, Ty, fScale;
@@ -306,11 +346,13 @@ bool AutoRunThread::_doAlignment()
 
         cv::Point2f ptCtr(vecCadPoint[0].x / 2.f + vecCadPoint[1].x / 2.f,  vecCadPoint[0].y / 2.f + vecCadPoint[1].y / 2.f);
         double fDegree = fRotationInRadian * 180. / CV_PI;
-        m_matTransform = cv::getRotationMatrix2D ( ptCtr, fDegree, fScale );
+        m_matTransform = cv::getRotationMatrix2D(ptCtr, fDegree, fScale);
         m_matTransform.at<double>(0, 2) += Tx;
         m_matTransform.at<double>(1, 2) += Ty;
         m_matTransform.convertTo(m_matTransform, CV_32FC1);
     }
+
+    _alignWindows();
     return bResult;
 }
 
@@ -340,6 +382,10 @@ bool AutoRunThread::_doInspection()
                 bGood = false;
                 break;
             }
+
+            // Only has frame in X direction. It should only happen when there is only X axis can move.
+            if (fabs(ptFrameCtr.y) <= 0.01f)
+                ptFrameCtr.y = m_nImageHeightPixel * m_dResolutionY / 2.f;
 
             TimeLogInstance->addTimeLog("Move to capture position.");
         
@@ -371,10 +417,12 @@ bool AutoRunThread::_doInspection()
             }
 
             auto vec2DImages = _generate2DImages(vec2DCaptureImages);
-            auto pInsp2DRunnable = new Insp2DRunnable(vec2DImages, vecWindows, ptFrameCtr);
-            pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
-            pInsp2DRunnable->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
-            QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
+            if (!vecWindows.empty()) {
+                auto pInsp2DRunnable = new Insp2DRunnable(vec2DImages, vecWindows, ptFrameCtr);
+                pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
+                pInsp2DRunnable->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
+                QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
+            }
         }
 
         if (! bGood)

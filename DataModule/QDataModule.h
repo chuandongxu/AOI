@@ -51,10 +51,13 @@ public:
 
     virtual bool doAlignment(const Vision::VectorOfMat &vecFrameImages) override;
     virtual QString getDataStoreApiVersion() const override { return m_ctrl.getDataStoreApiVersion(); }
-    
+    virtual Vision::VectorOfMat getCombinedBigImages() const override { return m_ctrl.getCombinedBigImages(); }
+    virtual cv::Mat getCombinedBigHeight() const override { return m_ctrl.getCombinedBigHeight(); }
+    virtual QString getCurrentProject() const override { return m_strCurrentProject; }
 private:
 	DataCtrl m_ctrl;
-	QWidget* m_pStatisticsWidget;
-	QWidget* m_pDataEditor;
-    QWidget* m_pDataWidget;
+	QWidget *m_pStatisticsWidget;
+	QWidget *m_pDataEditor;
+    QWidget *m_pDataWidget;
+    QString  m_strCurrentProject;
 };

@@ -11,9 +11,6 @@ using namespace AOI;
 
 class ScanImageThread : public QThread
 {
-    using VectorOfMat = std::vector<cv::Mat>;
-    using VectorOfVectorOfMat = std::vector<VectorOfMat>;
-
 public:
 	ScanImageThread(
         const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr,
@@ -36,7 +33,6 @@ protected:
 	bool isExit();
 
 private:
-    Engine::WindowVector _getWindowInFrame(const cv::Point2f &ptFrameCtr);
     Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
 
     QString generateImagePath();
@@ -58,7 +54,7 @@ private:
     cv::Mat                         m_matTransform;
     Vision::VectorOfVectorOfPoint2f m_vecVecFrameCtr;
     QThreadPool                     m_threadPoolCalc3DHeight;
-    VectorOfMat                     m_vecCombinedBigImages;
+    Vision::VectorOfMat             m_vecCombinedBigImages;
     cv::Mat                         m_matCombinedBigHeight;
     bool                            m_bGood = true;
 };

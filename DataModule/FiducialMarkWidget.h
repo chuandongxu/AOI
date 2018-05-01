@@ -25,6 +25,30 @@ protected:
     int refreshFMWindow();
     cv::Mat _readFrameImageFromFolder(int nFrameX, int nFrameY);
     cv::Mat _getFrameImageFromBigImage(const cv::Mat &matBigImage, int nFrameX, int nFrameY, int nImageWidth, int nImageHeight, int nOverlapX, int nOverlapY);
+    int _learnStandardFM(float                          fFMSizeMM,
+                         Vision::PR_FIDUCIAL_MARK_TYPE  enType,
+                         bool                           bDark,
+                         const cv::Mat                 &matFrameImg,
+                         const cv::RotatedRect         &rrectCadWindow,
+                         int                            nFrameX,
+                         int                            nFrameY,
+                         const cv::Point               &ptInFrame);
+
+    int _learnRealImageFM(const cv::Mat                 &matFrameImg,
+                          const cv::RotatedRect         &rrectCadWindow,
+                          int                            nFrameX,
+                          int                            nFrameY,
+                          const cv::Point               &ptInFrame);
+
+    int _srchStandardFM(const cv::Mat           &matFrameImg,
+                        const Engine::Alignment &alignment,
+                        const cv::Point         &ptInFrame,
+                        cv::Point2f             &ptResult);
+
+    int _srchRealImageFM(const cv::Mat           &matFrameImg,
+                        const Engine::Alignment &alignment,
+                        const cv::Point         &ptInFrame,
+                        cv::Point2f             &ptResult);
 
 private slots:    
     void on_btnSelectFiducialMark_clicked();

@@ -364,6 +364,22 @@ void TestAssignFrames() {
     
     DataUtils::assignFrames(12435, 13224, 22678, 6543, 600, 600, vecVecFrameCtr);
     printResult(vecVecFrameCtr);
+
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST assignFrames case 3";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+    
+    DataUtils::assignFrames(12435, 0, 22678, 0, 600, 600, vecVecFrameCtr);
+    printResult(vecVecFrameCtr);
+
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl << "TEST assignFrames case 4";
+    std::cout << std::endl << "----------------------------------------------";
+    std::cout << std::endl;
+    
+    DataUtils::assignFrames(12435, 300, 12689, 0, 600, 600, vecVecFrameCtr);
+    printResult(vecVecFrameCtr);
 }
 
 void TestIsWindowInFrame() {
