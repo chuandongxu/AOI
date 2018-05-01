@@ -29,8 +29,6 @@ DalsaCameraDevice::DalsaCameraDevice(SapLocation* loc, QString cameraName, QStri
 	m_nGrabNum = 0;
 	m_nGrabCount = 0;
 
-	m_bStopFlag = true;
-
 	m_bCapturedImage = false;
 
 	m_hv_AcqHandle = NULL;
@@ -288,8 +286,8 @@ bool DalsaCameraDevice::getCameraScreenSize(int& nWidth, int& nHeight)
 				CDeviceInfo info;
 				info.SetDeviceClass(Camera_t::DeviceClass());			
 
-				nWidth = m_camera->SensorWidth.GetValue();
-				nHeight = m_camera->SensorWidth.GetValue();
+				nWidth = m_camera->Width.GetValue();
+				nHeight = m_camera->Height.GetValue();
 				return true;
 			}
 			catch (GenICam::GenericException &e)
@@ -377,9 +375,8 @@ bool DalsaCameraDevice::captureImage(cv::Mat &imageMat)
 
 	m_bCapturedImage = false;
 	BOOL success = m_Xfer->Snap();	
-
-	bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
-	if (bHardwareTrigger)
+	
+	if (m_camera && (m_camera->TriggerMode.GetValue() == Basler_CLCameraParams::TriggerMode_On))
 	{
 		m_Acq->SoftwareTrigger(SapAcquisition::SoftwareTriggerExtFrame);
 	}
@@ -436,8 +433,9 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 {
 	if (!m_bOpen) return false;	
 
-	int nWaitTime = 100;
-	while ((m_nGrabCount < m_nGrabNum) && (nWaitTime-- > 0) && !m_bStopFlag)
+	int nWaitTime = 30*60*100;
+	while ((m_nGrabCount < m_nGrabNum) && (nWaitTime-- > 0) && !
+		m_bStopFlag)
 	{
 		QThread::msleep(10);
 	}
@@ -447,6 +445,7 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 		bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
 		int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
 
+		imageMats.clear();
 		for (int i = 0; i < m_imageMats.size(); i++)
 		{
 			int nIndex = i;
@@ -468,7 +467,7 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 			imageMats.push_back(m_imageMats[nIndex]);
 		}
 
-		return true;
+		return m_bStopFlag ? false : true;
 	}
 	else
 	{
@@ -480,7 +479,7 @@ void DalsaCameraDevice::stopGrabing()
 {
 	if (!m_bOpen) return;
 
-	BOOL success = m_Xfer->Freeze();
+	BOOL success = m_Xfer->Freeze();	
 	success = m_Xfer->Wait(1000);
 
 	m_bStopFlag = true;
@@ -491,6 +490,9 @@ void DalsaCameraDevice::clearGrabing()
 	m_imageMats.clear();
 	m_nGrabNum = 0;
 	m_nGrabCount = 0;
+
+	m_Buffers->Clear();
+	m_Buffers->ResetIndex();
 }
 
 bool DalsaCameraDevice::isGrabing()

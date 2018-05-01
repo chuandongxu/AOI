@@ -177,7 +177,7 @@ public:
     bool stopMove(int AxisID);
     bool EmStop(int AxisID);
 
-    bool getCurrentPos(int AxisID, double *posUm);
+    bool getCurrentPos(int AxisID, double *posMm);
 
     QString getCurrentStatus(int AxisID);
 
@@ -222,7 +222,7 @@ public:
     int incrementMotorPointGroupID();
     void setMotorPointGroupID(int nID);
 
-    double convertToUm(AxisEnum emAxis, long lPulse);
+    double convertToMm(AxisEnum emAxis, long lPulse);
     long convertMmToPulse(AxisEnum emAxis, double dDist);
 
     double convertVelToMm(AxisEnum emAxis, double dVelPulse);
@@ -254,5 +254,5 @@ private:
     int                         m_nMovePointID;
     QVector<QMtrMovePointGroup> m_mtrMovePointGroups;
     int                         m_nMovePointGroupID;
-    int                         m_nMotionControlFreq = 8000;       // Currently the motion controller frequency is 8000
+    int                         m_nMotionControlFreq = 1000;       // Currently the motion controller frequency is 8000
 };

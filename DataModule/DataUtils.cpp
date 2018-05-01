@@ -437,19 +437,34 @@ matTransform = [ cos(a) -sina(a) Tx ]
         Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr)
 {
     vecVecFrameCtr.clear();
-    if (right <= left || top <= bottom)
+    if (right <= left || top < bottom)
         return -1;
 
-    int frameCountX = static_cast<int>((right - left) / fovWidth ) + 1;
+    int frameCountX = static_cast<int>((right - left) / fovWidth) + 1;
     int frameCountY = static_cast<int>((top - bottom) / fovHeight) + 1;
-    float overlapX = (frameCountX * fovWidth  - (right - left)) / (frameCountX - 1);
-    float overlapY = (frameCountY * fovHeight - (top - bottom)) / (frameCountY - 1);
+    float overlapX = 0.f, overlapY = 0.f;
+    if (frameCountX > 1)
+        overlapX = (frameCountX * fovWidth - (right - left)) / (frameCountX - 1);
+    else
+        overlapX = 0.f;
+    if (frameCountY > 1)
+        overlapY = (frameCountY * fovHeight - (top - bottom)) / (frameCountY - 1);
+    else
+        overlapY = 0.f;
+
     for (int row = 0; row < frameCountY; ++ row) {
         Vision::VectorOfPoint2f vecFrameCtr;
-        for (int col = 0; col < frameCountX; ++ col)
-        {
-            float frameCtrX = left + (col * (fovWidth  - overlapX) + fovWidth  / 2.f);
-            float frameCtrY = top  - (row * (fovHeight - overlapY) + fovHeight / 2.f);
+        for (int col = 0; col < frameCountX; ++ col) {
+            float frameCtrX = 0.f, frameCtrY = 0.f;
+            if (frameCountX > 1)
+                frameCtrX = left + (col * (fovWidth - overlapX) + fovWidth / 2.f);
+            else
+                frameCtrX = (right + left) / 2.f;
+
+            if (frameCountY > 1)
+                frameCtrY = top - (row * (fovHeight - overlapY) + fovHeight / 2.f);
+            else
+                frameCtrY = (top + bottom) / 2.f;
             vecFrameCtr.emplace_back(frameCtrX, frameCtrY);
         }
         vecVecFrameCtr.push_back(vecFrameCtr);
@@ -489,10 +504,10 @@ matTransform = [ cos(a) -sina(a) Tx ]
         float              fResolutionY
         )
 {
-    cv::Point2f ptImageCtr;
-    ptImageCtr.x = imageWidth  / 2 + (ptWindowCtr.x - ptFrameCtr.x) / fResolutionX;
-    ptImageCtr.y = imageHeight / 2 - (ptWindowCtr.y - ptFrameCtr.y) / fResolutionY; //The image Y and CAD Y positive direction is inverse.
+    cv::Point2f ptRectCtr;
+    ptRectCtr.x = imageWidth  / 2 + (ptWindowCtr.x - ptFrameCtr.x) / fResolutionX;
+    ptRectCtr.y = imageHeight / 2 - (ptWindowCtr.y - ptFrameCtr.y) / fResolutionY; //The image Y and CAD Y positive direction is inverse.
     int winWidthPixel  = static_cast<int>(winWidth  / fResolutionX);
     int winHeightPixel = static_cast<int>(winHeight / fResolutionY);
-    return cv::Rect(static_cast<int>(ptImageCtr.x) - winWidthPixel / 2, static_cast<int>(ptImageCtr.y) - winHeightPixel / 2, winWidthPixel, winHeightPixel);
+    return cv::Rect(static_cast<int>(ptRectCtr.x) - winWidthPixel / 2, static_cast<int>(ptRectCtr.y) - winHeightPixel / 2, winWidthPixel, winHeightPixel);
 }

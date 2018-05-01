@@ -24,8 +24,7 @@ ImageDevice::ImageDevice(QString cameraName, QString  cameraID)
 	openDevice(cameraName, cameraID);
 
 	m_nGrabNum = 0;
-	m_nGrabCount = 0;
-	m_bStopFlag = true;
+	m_nGrabCount = 0;	
 }
 
 ImageDevice::~ImageDevice()

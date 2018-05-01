@@ -21,7 +21,7 @@ class CameraOnLive :public QThread
 	Q_OBJECT
 
 public:
-	CameraOnLive(VisionViewWidget* pView);
+	CameraOnLive(VisionViewWidget* pView, bool bHWTrigger);
 	~CameraOnLive(){};
 
 public:
@@ -34,6 +34,7 @@ private:
 	void showImageToScreen(cv::Mat& image);
 private:
 	VisionViewWidget       *m_pView;
+	bool					m_bHWTrigger;
 	bool                    m_bQuit;
 	bool                    m_bRuning;
 };

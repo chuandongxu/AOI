@@ -120,9 +120,6 @@ void JoystickWidget::updateMtrStatus()
 		if (m_AxisID_X > 0) m_pCtrl->getCurrentPos(m_AxisID_X, &dMtrPosX);
 		if (m_AxisID_Y > 0) m_pCtrl->getCurrentPos(m_AxisID_Y, &dMtrPosY);
 
-        dMtrPosX *= UM_TO_MM;
-        dMtrPosY *= UM_TO_MM;
-
 		ui.lineEdit_encX->setText(QString::number(dMtrPosX, 'f', 2));
 		ui.lineEdit_encY->setText(QString::number(dMtrPosY, 'f', 2));
 
@@ -149,7 +146,7 @@ void JoystickWidget::preMove(MoveDir dir)
 		if (m_AxisID_Y > 0) m_pCtrl->stopMove(m_AxisID_Y);
 		m_nJoystick = 0;
 	}
-	if (m_nJoystick < 10) m_nJoystick += 1;
+	if (m_nJoystick < 100) m_nJoystick += 1;
 }
 
 void JoystickWidget::postMove(MoveDir dir)

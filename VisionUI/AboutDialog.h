@@ -13,6 +13,7 @@ public:
 
     void setVisionLibraryVersion(const QString &strVersion);
     void setDataStoreApiVersion(const QString &strVersion);
+    void setCurrentProject(const QString &strProject);
 
 private:
     Ui::AboutDialog ui;

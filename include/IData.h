@@ -54,6 +54,9 @@ public:
 
     virtual bool doAlignment(const Vision::VectorOfMat &vecFrameImages ) = 0;
     virtual QString getDataStoreApiVersion() const = 0;
+    virtual Vision::VectorOfMat getCombinedBigImages() const = 0;
+    virtual cv::Mat getCombinedBigHeight() const = 0;
+    virtual QString getCurrentProject() const = 0;
 };
 
 #endif

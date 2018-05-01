@@ -169,7 +169,7 @@ void FindCircleWidget::confirmWindow(OPERATION enOperation)
 	window.lightId = m_pParent->getSelectedLighting() + 1;
 	window.usage = Engine::Window::Usage::FIND_CIRCLE;
 	window.inspParams = byte_array;
-	window.x = (rectROI.x + rectROI.width / 2.f) * dResolutionX;
+	window.x = (rectROI.x + rectROI.width  / 2.f) * dResolutionX;
 	window.y = (rectROI.y + rectROI.height / 2.f) * dResolutionY;
 	window.width = rectROI.width  * dResolutionX;
 	window.height = rectROI.height * dResolutionY;

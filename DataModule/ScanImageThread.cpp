@@ -65,8 +65,8 @@ void ScanImageThread::run()
     int ROWS = m_vecVecFrameCtr.size();
     int COLS = m_vecVecFrameCtr[0].size();
     int TOTAL = ROWS * COLS;
-    VectorOfVectorOfMat vecVecFrameImages(5, VectorOfMat(TOTAL, cv::Mat()));
-	VectorOfMat vecFrame3DHeight(TOTAL, cv::Mat());
+    Vision::VectorOfVectorOfMat vecVecFrameImages(5, Vision::VectorOfMat(TOTAL, cv::Mat()));
+	Vision::VectorOfMat vecFrame3DHeight(TOTAL, cv::Mat());
     
     m_bGood = true;
     for (int row = 0; row < ROWS; ++ row) {
@@ -150,7 +150,7 @@ void ScanImageThread::run()
         cv::Mat matNewPhase = m_matCombinedBigHeight - dMinValue;
 
         float dRatio = 255.f / ToFloat(dMaxValue - dMinValue);
-        matNewPhase = m_matCombinedBigHeight * dRatio;
+		matNewPhase = matNewPhase * dRatio;
 
         cv::Mat matHeightGrayImg;
         matNewPhase.convertTo(matHeightGrayImg, CV_8UC1);

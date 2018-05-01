@@ -2,6 +2,7 @@
 
 #include "InspWindowWidget.h"
 #include "../include/IVisionUI.h"
+#include "../include/IData.h"
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../Common/SystemData.h"
@@ -48,6 +49,7 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     ls << QStringLiteral("白光") << QStringLiteral("低角度光") << QStringLiteral("彩色光") << QStringLiteral("均匀光") << QStringLiteral("3D灰阶图");
     m_pComboBoxLighting->addItems(ls);
     ui.tableWidgetHardware->setCellWidget(0, DATA_COLUMN, m_pComboBoxLighting.get());
+    connect(m_pComboBoxLighting.get(), SIGNAL(currentIndexChanged(int)), SLOT(on_comboBoxLighting_indexChanged(int)));
 
     _hideWidgets();
 }
@@ -260,4 +262,12 @@ void InspWindowWidget::onSelectedWindowChanged(int index) {
         m_pColorWidget->show();
     }else
         m_pColorWidget->hide();
+}
+
+void InspWindowWidget::on_comboBoxLighting_indexChanged(int index) {
+    auto pData = getModule<IData>(DATA_MODEL);
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    auto vecCombinedBigImage = pData->getCombinedBigImages();
+    if (index >= 0 && index < vecCombinedBigImage.size() && !vecCombinedBigImage[index].empty())
+        pUI->setImage(vecCombinedBigImage[index]);
 }

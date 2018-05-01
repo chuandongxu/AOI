@@ -30,6 +30,7 @@ public:
     inline __int64          getId()         const   { return m_nId; }
     inline const cv::Rect  &getFM()         const   { return m_rectFM; }
     inline const cv::Rect  &getSrchWindow() const   { return m_rectSrchWindow; }
+    inline void setFM(const cv::Rect &rect)         { m_rectFM = rect; }
     inline void setSrchWindow(const cv::Rect &rect) { m_rectSrchWindow = rect; }
 private:
     __int64         m_nId;

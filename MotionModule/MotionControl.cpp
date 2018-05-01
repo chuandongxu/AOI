@@ -433,12 +433,12 @@ void MotionControl::commandhandler(char *command, short error)
 	}
 }
 
-double MotionControl::convertToUm(AxisEnum emAxis, long lPulse)
+double MotionControl::convertToMm(AxisEnum emAxis, long lPulse)
 {
 	double dRes = _getMotorRes(emAxis);
     if (dRes <= 0.f)
         return 0.;
-	return (double)lPulse / dRes * MM_TO_UM;
+	return (double)lPulse / dRes;
 }
 
 long MotionControl::convertMmToPulse(AxisEnum emAxis, double dDist)
@@ -455,7 +455,7 @@ double MotionControl::convertVelToMm(AxisEnum emAxis, double dVelPulse)
     if (dRes <= 0.f)
         return 0.;
 
-	return dVelPulse / dRes * m_nMotionControlFreq; // pulse/sample -> mm/s
+	return dVelPulse / dRes *m_nMotionControlFreq; // pulse/sample -> mm/s
 }
 
 double MotionControl::convertVelToPulse(AxisEnum emAxis, double dVelDist)
@@ -1124,9 +1124,7 @@ bool MotionControl::move(int AxisID, int nProfile, double dDist, bool bSyn)
 	{
 		return false;
 	}
-
-    dCurPos /= 1000.f;  //Convert to mm
-
+  
 	return move(AxisID, dVec, acc, dec, smooth, dCurPos + dDist, bSyn);
 }
 
@@ -1482,10 +1480,10 @@ bool MotionControl::EmStop(int AxisID)
 	return 0 == sRtn;
 }
 
-bool MotionControl::getCurrentPos(int AxisID, double *posUm)
+bool MotionControl::getCurrentPos(int AxisID, double *posMm)
 {
     if (System->isRunOffline()) {
-        *posUm = m_dRunOfflinePos[AxisID];
+		*posMm = m_dRunOfflinePos[AxisID] * UM_TO_MM;
         return true;
     }
 
@@ -1501,12 +1499,12 @@ bool MotionControl::getCurrentPos(int AxisID, double *posUm)
 
 	if (sRtn)
 	{
-		*posUm = 0;
+		*posMm = 0;
 		return false;
 	}
 	else
 	{
-		*posUm = convertToUm(changeToMtrEnum(AxisID), dMtrPos);
+		*posMm = convertToMm(changeToMtrEnum(AxisID), dMtrPos) * 2.0; // Unknow GT issue, that encoder position is less double times then real one.
 		return true;
 	}
 }

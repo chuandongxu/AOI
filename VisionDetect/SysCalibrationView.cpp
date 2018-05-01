@@ -555,9 +555,10 @@ bool SysCalibrationView::startCaliGuide()
 
 	if (m_nCaliGuideStep <= 0)
 	{
+		pCam->selectCaptureMode(ICamera::TRIGGER_ONE);
 		if (pCam->getCameraNum() > 0)
 		{
-			if (!pCam->startUpCapture() || !pUI->startUpCapture())
+			if (!pUI->startUpCapture())
 			{
 				QSystem::closeMessage();
 				QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));
@@ -651,10 +652,6 @@ void SysCalibrationView::stopCaliGuide()
 	//delete m_pCameraRunnable;
 	//m_pCameraRunnable = NULL;
 
-	if (pCam->getCameraNum() > 0)
-	{
-		pCam->endUpCapture();
-	}
 	pUI->endUpCapture();
 
 	int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
@@ -692,13 +689,10 @@ void SysCalibrationView::guideDisplayImages()
 void SysCalibrationView::startCameraCapturing()
 {
 	if (m_pCameraRunnable) m_pCameraRunnable->startCapture();
-	//System->setParam("camera_cap_image_sw_enable", false);
 }
 
 bool SysCalibrationView::stopCameraCaptureing()
 {
-	//System->setParam("camera_cap_image_sw_enable", true);
-
 	if (m_pCameraRunnable)
 	{
 		m_pCameraRunnable->stopCapture();
@@ -734,15 +728,9 @@ bool SysCalibrationView::guideReadImages(QVector<cv::Mat>& matImgs)
 
 	matImgs.clear();
 
-	if (!pCam->selectCaptureMode(ICamera::TRIGGER_DLP_ALL))// all images
+	if (!pCam->selectCaptureMode(ICamera::TRIGGER_DLP_ALL, true))// all images
 	{
-		System->setTrackInfo(QString("startCapturing error"));
-		return false;
-	}
-
-	if (!pCam->startCapturing())
-	{
-		System->setTrackInfo(QString("startCapturing error"));
+		System->setTrackInfo(QString("selectCaptureMode error"));
 		return false;
 	}
 
@@ -752,31 +740,9 @@ bool SysCalibrationView::guideReadImages(QVector<cv::Mat>& matImgs)
 		return false;
 	}
 
-	int nWaitTime = 10 * 100;
-	while (!pCam->isCaptureImageBufferDone() && nWaitTime-- > 0)
+	if (!pCam->getLastImages(matImgs))
 	{
-		QThread::msleep(10);
-	}
-
-	if (nWaitTime <= 0)
-	{
-		System->setTrackInfo(QString("CaptureImageBufferDone error"));
-		return false;
-	}
-
-	int nCaptureNum = pCam->getImageBufferCaptureNum();
-	for (int i = 0; i < nCaptureNum; i++)
-	{
-		cv::Mat matImage = pCam->getImageItemBuffer(i);
-
-		matImgs.push_back(matImage);
-	}
-
-	System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));
-
-	if (nCaptureNum != pCam->getImageBufferNum())
-	{
-		System->setTrackInfo(QString("System captureImages Image Num error: %1").arg(nCaptureNum));
+		System->setTrackInfo(QString("getImages error"));
 		return false;
 	}
 
@@ -791,17 +757,17 @@ bool SysCalibrationView::guideReadImage(cv::Mat& matImg)
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return false;
 
-	if (!pCam->selectCaptureMode(ICamera::TRIGGER_ONE))// 1 image
+	if (!pCam->selectCaptureMode(ICamera::TRIGGER_ONE, true))// 1 image
 	{
-		System->setTrackInfo(QString("startCapturing error"));
+		System->setTrackInfo(QString("selectCaptureMode error"));
 		return false;
 	}
 
-	if (!pCam->startCapturing())
-	{
-		System->setTrackInfo(QString("startCapturing error"));
-		return false;
-	}
+	//if (!pCam->startCapturing())
+	//{
+	//	System->setTrackInfo(QString("startCapturing error"));
+	//	return false;
+	//}
 
 	QVector<int> nPorts;
 
@@ -813,26 +779,15 @@ bool SysCalibrationView::guideReadImage(cv::Mat& matImg)
 	QThread::msleep(10);
 	pMotion->setDOs(nPorts, 0);
 
-	int nWaitTime = 10 * 100;
-	while (!pCam->isCaptureImageBufferDone() && nWaitTime-- > 0)
+	QVector<cv::Mat> matImgs;
+	if (!pCam->getLastImages(matImgs))
 	{
-		QThread::msleep(10);
-	}
-
-	if (nWaitTime <= 0)
-	{
-		System->setTrackInfo(QString("CaptureImageBufferDone error"));
+		System->setTrackInfo(QString("getImages error"));
 		return false;
 	}
 
-	int nCaptureNum = pCam->getImageBufferCaptureNum();
-	for (int i = 0; i < nCaptureNum; i++)
-	{
-		cv::Mat matImage = pCam->getImageItemBuffer(i);
-		matImg = matImage;
-	}
-
-	System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));
+	if (matImgs.size() > 0)
+		matImg = matImgs[0];	
 
 	return true;
 }
@@ -845,8 +800,6 @@ void SysCalibrationView::onCaliGuide()
 	}
 	else
 	{
-		System->setParam("camera_hw_tri_enable", true);
-
 		QCaliGuideDialog dlg;
 		if (QDialog::Rejected == dlg.exec())
 		{

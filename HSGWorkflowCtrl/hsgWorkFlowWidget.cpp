@@ -46,7 +46,7 @@ QWorkFlowWidget::QWorkFlowWidget(QWidget *parent)
 	setAutoFillBackground(true);
 	setPalette(Pal);
 
-	m_nTimerID = this->startTimer(800);	
+	m_nTimerID = this->startTimer(800);
 
 	if(USER_LEVEL_TECH > System->getUserLevel())
 	{

@@ -19,7 +19,6 @@ public:
 	QWidget* getCaliTab();
 
 protected slots:
-	void onStateChangeHWTrig(int iState);
 	void onStateChangeCapture(int iState);
 	void onStateChangeCaptureLight(int iState);
 	void onStateChangeCaptureAsMatlab(int iState);
@@ -44,6 +43,8 @@ private:
 	double convertToPixel(double umValue);
 	double convertToUm(double pixel);
 
+private:
+	void updateUI();
 
 private:
 	QIntValidator *inputIntRangePos;

@@ -20,6 +20,7 @@ CameraDevice::CameraDevice(QString cameraName, QString  cameraID)
 {	
 	m_bOpen  = false;	
 	m_bSaveAsEncrypt = false;
+	m_bStopFlag = true;
 	//openDevice(cameraName, cameraID);
 
 	QString user;
@@ -84,8 +85,6 @@ BaslerCameraDevice::BaslerCameraDevice(IPylonDevice* dev, QString cameraName, QS
 {
 	m_hv_AcqHandle = dev;
 	openDevice(cameraName, cameraID);
-
-	m_bStopFlag = true;
 }
 
 BaslerCameraDevice::~BaslerCameraDevice(void)

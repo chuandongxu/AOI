@@ -23,7 +23,6 @@ QStartupWidget::QStartupWidget(QWidget *parent)
 
 QStartupWidget::~QStartupWidget()
 {
-
 }
 
 void QStartupWidget::onOk()

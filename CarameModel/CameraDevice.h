@@ -40,6 +40,7 @@ public:
 	virtual void stopGrabing() = 0;	
 	virtual void clearGrabing() = 0;
 	virtual bool isGrabing() = 0;
+	virtual bool isStopped(){ return m_bStopFlag; }
 	
 	virtual void openDevice(QString cameraName, QString cameraID, bool bHWTrigger = true) = 0;
 	virtual void closeDevice() = 0;
@@ -52,6 +53,7 @@ protected:
 	double m_hv_expouserTime;
 	bool   m_bOpen ;
 	bool   m_bSaveAsEncrypt;
+	bool m_bStopFlag;
 };
 
 typedef QList<CameraDevice*> CameraDeviceList;
@@ -76,13 +78,12 @@ public:
 	virtual bool captureImageByFrameTrig(QVector<cv::Mat>& imageMats);
 	virtual void stopGrabing();
 	virtual void clearGrabing(){}
-	virtual bool isGrabing();
+	virtual bool isGrabing();	
 
 	virtual void openDevice(QString cameraName, QString cameraID, bool bHWTrigger = true);
 	virtual void closeDevice();
 
 private:
 	IPylonDevice* m_hv_AcqHandle;
-	Pylon::CBaslerGigEInstantCamera* m_camera;
-	bool m_bStopFlag;
+	Pylon::CBaslerGigEInstantCamera* m_camera;	
 };

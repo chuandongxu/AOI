@@ -44,8 +44,8 @@ const int LABEL_IMAGE_HEIGHT = 800;
 /*static*/ const cv::Scalar VisionViewWidget::_constYellowScalar(0, 255, 255);
 /*static*/ const cv::Scalar VisionViewWidget::_constOrchidScalar(214, 112, 218);
 
-CameraOnLive::CameraOnLive(VisionViewWidget* pView)
-	:m_pView(pView)
+CameraOnLive::CameraOnLive(VisionViewWidget* pView, bool bHWTrigger)
+	:m_pView(pView), m_bHWTrigger(bHWTrigger)
 {
 	m_bQuit = false;
 	m_bRuning = false;
@@ -60,44 +60,33 @@ void CameraOnLive::run()
 
 	IVision* pVision = getModule<IVision>(VISION_MODEL);
 	if (!pVision) return;
-
-	bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
+	
 	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
 
 	cv::Mat image;
 	QVector<cv::Mat> imageMats;
 	while (!m_bQuit)
 	{
-		if (bHardwareTrigger)
+		if (m_bHWTrigger)
 		{
 			imageMats.clear();
 
 			if (!pCam->startCapturing())
 			{
+				if (m_bQuit) break;
 				System->setTrackInfo(QString("startCapturing error"));
-				continue;
-			}
-
-			int nWaitTime = 5 * 60 * 100;
-			while (!pCam->isCaptureImageBufferDone() && nWaitTime-- > 0 && !m_bQuit)
-			{
-				QThread::msleep(10);
-			}
-
-			if (nWaitTime <= 0)
-			{
-				System->setTrackInfo(QString("CaptureImageBufferDone error"));
 				continue;
 			}
 
 			if (m_bQuit) break;
 
-			int nCaptureNum = pCam->getImageBufferCaptureNum();
-			for (int i = 0; i < nCaptureNum; i++)
+			if (!pCam->getImages(imageMats))
 			{
-				cv::Mat matImage = pCam->getImageItemBuffer(i);
-				imageMats.push_back(matImage);
-			}
+				System->setTrackInfo(QString("getImages error"));
+				continue;
+			}			
+
+			if (m_bQuit) break;
 
 			bool bShowImageToScreen = System->getParam("camera_show_image_toScreen_enable").toBool();
 			if (bShowImageToScreen)
@@ -115,7 +104,7 @@ void CameraOnLive::run()
 				}
 			}			
 
-			System->setTrackInfo(QString("System captureImages Image Num: %1").arg(nCaptureNum));
+			System->setTrackInfo(QString("System captureImages Image Num: %1").arg(imageMats.size()));
 
 			if (m_bQuit) break;
 		}
@@ -387,14 +376,21 @@ bool VisionViewWidget::onLive()
 		return false;
 	}
 
-	bool bHardwareTrigger = System->getParam("camera_hw_tri_enable").toBool();
-	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
-	if (!bHardwareTrigger && bCaptureImage)
+	bool bHardwareTrigger = false;
+	if (QMessageBox::Ok == QMessageBox::warning(NULL, QStringLiteral("提示"),
+		QStringLiteral("采用硬触发采集模式？"), QMessageBox::Ok, QMessageBox::Cancel))
 	{
-		QMessageBox::warning(this, "", QStringLiteral("实时图像不支持【非硬触发】保存图像，取消保存图像或者启用硬触发模式"));
-		return false;
+		bHardwareTrigger = true;
 	}
 
+	//bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
+	//if (!bHardwareTrigger && bCaptureImage)
+	//{
+	//	QMessageBox::warning(this, "", QStringLiteral("实时图像不支持【非硬触发】保存图像，取消保存图像或者启用硬触发模式"));
+	//	return false;
+	//}
+
+	bool bCaptureImage = System->getParam("camera_cap_image_enable").toBool();
 	QString capturePath = System->getParam("camera_cap_image_path").toString();
 	if (bHardwareTrigger && bCaptureImage)
 	{
@@ -410,7 +406,7 @@ bool VisionViewWidget::onLive()
 
 	if (pCam->getCameraNum() > 0)
 	{
-		if (!pCam->startUpCapture())
+		if (!pCam->startUpCapture(bHardwareTrigger))
 		{
 			QSystem::closeMessage();
 			QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));
@@ -430,7 +426,7 @@ bool VisionViewWidget::onLive()
 
 		zoomImage(0.25);
 
-		m_pCameraOnLive = new CameraOnLive(this);
+		m_pCameraOnLive = new CameraOnLive(this, bHardwareTrigger);
 		m_pCameraOnLive->start();
 	}
 
@@ -738,6 +734,17 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
 			m_szCadOffset.height += (mouseY - m_preMoveY) / m_dScale;
 			repaintAll();
 			break;
+        case MODE_VIEW_EDIT_FIDUCIAL_MARK:
+            {
+                double dSizeOnImgX = motionX / m_dScale;
+                double dSizeOnImgY = motionY / m_dScale;
+                cv::Rect rectFM = m_currentFM.getFM();
+
+                rectFM = CalcUtils::resizeRect<int>(rectFM, cv::Size(dSizeOnImgX, dSizeOnImgY));
+                m_currentFM.setFM(rectFM);
+                repaintAll();
+            }
+            break;
         case MODE_VIEW_EDIT_SRCH_WINDOW:
             {
                 double dSizeOnImgX = motionX / m_dScale;
@@ -1246,18 +1253,18 @@ void VisionViewWidget::setDeviceWindows(const VisionViewDeviceVector &vecWindows
     m_szCadOffset.width = 0;
 	m_szCadOffset.height = 0;
 
-    if ( ! m_hoImage.empty() ) {
+    if (! m_hoImage.empty()) {
         //Calculate the centroid of all device windows.
         double dSumX = 0., dSumY = 0.;
-        for ( const auto &vvDevice : m_vecDevices ) {
+        for (const auto &vvDevice : m_vecDevices) {
             dSumX += vvDevice.getWindow().center.x;
             dSumY += vvDevice.getWindow().center.y;
         }
-        cv::Point ptCentroid( dSumX / m_vecDevices.size(), dSumY / m_vecDevices.size() );
-	    //If the CAD offset is too big, then set the default CAD offset to make CAD windows can display on the screen.
-        if ( abs ( m_hoImage.cols / 2 - ptCentroid.x ) > m_hoImage.cols / 2 || abs ( m_hoImage.rows / 2 - ptCentroid.y ) > m_hoImage.rows / 2 ) {
-	        m_szCadOffset.width =  m_hoImage.cols / 2 - ptCentroid.x;
-	        m_szCadOffset.height = m_hoImage.rows / 2 - ptCentroid.y;
+        cv::Point ptCentroid(dSumX / m_vecDevices.size(), dSumY / m_vecDevices.size());
+        //If the CAD offset is too big, then set the default CAD offset to make CAD windows can display on the screen.
+        if (abs(m_hoImage.cols / 2 - ptCentroid.x) > m_hoImage.cols / 2 || abs(m_hoImage.rows / 2 - ptCentroid.y) > m_hoImage.rows / 2) {
+            m_szCadOffset.width  = m_hoImage.cols / 2 - ptCentroid.x;
+            m_szCadOffset.height = m_hoImage.rows / 2 - ptCentroid.y;
         }
     }
     m_selectedDevice = VisionViewDevice();

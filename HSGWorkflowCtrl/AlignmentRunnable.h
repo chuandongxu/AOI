@@ -16,11 +16,17 @@ public:
     ~AlignmentRunnable();
     void setResolution(double dResolutionX, double dResolutionY) { m_dResolutionX = dResolutionX; m_dResolutionY = dResolutionY; }
     void run() override;
-    cv::Point2f getResultCtrOffset() const { return m_ptResultCtrOffset; }
+    inline cv::Point2f getResultCtrOffset() const { return m_ptResultCtrOffset; }
+    inline Vision::VisionStatus getStatus() const { return m_enVisionStatus; }
+
+protected:
+    void _srchStandardFM();
+    void _srchRealImageFM();
 
 private:
     cv::Mat                 m_matImage;
     Engine::Alignment       m_alignment;
+    cv::Rect                m_rectTmplWindow;
     cv::Rect                m_rectSrchWindow;
     cv::Point2f             m_ptResultCtrOffset;
     double                  m_dResolutionX;

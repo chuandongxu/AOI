@@ -107,6 +107,11 @@ void ScanImageWidget::on_btnPrepareScanImage_clicked() {
     ui.lineEditOverlapXScan->setText(QString::number(overlapX));
     ui.lineEditOverlapYScan->setText(QString::number(overlapY));
 
+    System->setParam("scan_image_FrameCountX", frameCountX);
+    System->setParam("scan_image_FrameCountY", frameCountY);
+    System->setParam("scan_image_OverlapX", overlapX);
+    System->setParam("scan_image_OverlapY", overlapY);
+
     ui.btnScanImage->setEnabled(true);
 }
 
@@ -127,8 +132,7 @@ void ScanImageWidget::on_scanImage_done()
 {
     if (m_pScanImageThread->isGood()) {
         m_pDataCtrl->setCombinedBigResult(m_pScanImageThread->getCombinedBigImages(), m_pScanImageThread->getCombinedBigHeight());
-        auto pUI = getModule<IVisionUI>(UI_MODEL);
-        pUI->setImage(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::WHITE_LIGHT]);
+		updateImageDeviceWindows(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]);
         ui.comboBoxDisplayImage->setEnabled(true);
     }
 

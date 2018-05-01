@@ -44,13 +44,14 @@ const int OK  =                                     0;
 const int NOK =                                     -1;
 
 enum VISION_VIEW_MODE {
-    MODE_VIEW_NONE              = 1,
-    MODE_VIEW_SELECT            = 2,
-    MODE_VIEW_SELECT_ROI        = 3,
-    MODE_VIEW_MOVE              = 4,
-    MODE_VIEW_SET_FIDUCIAL_MARK = 5,
-    MODE_VIEW_EDIT_SRCH_WINDOW  = 6,
-    MODE_VIEW_EDIT_INSP_WINDOW  = 7,
+    MODE_VIEW_NONE                  = 1,
+    MODE_VIEW_SELECT                = 2,
+    MODE_VIEW_SELECT_ROI            = 3,
+    MODE_VIEW_MOVE                  = 4,
+    MODE_VIEW_SET_FIDUCIAL_MARK     = 5,
+    MODE_VIEW_EDIT_FIDUCIAL_MARK    = 6,
+    MODE_VIEW_EDIT_SRCH_WINDOW      = 7,
+    MODE_VIEW_EDIT_INSP_WINDOW      = 8,
 };
 
 enum GRAY_WEIGHT_METHOD

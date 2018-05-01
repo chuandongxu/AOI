@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>30</y>
+     <y>75</y>
      <width>141</width>
      <height>28</height>
     </rect>
@@ -30,7 +30,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>80</y>
+     <y>125</y>
      <width>141</width>
      <height>28</height>
     </rect>
@@ -56,7 +56,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>140</y>
+     <y>185</y>
      <width>141</width>
      <height>28</height>
     </rect>
@@ -89,7 +89,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>./Image/Remove.png</normaloff>./Image/Remove.png</iconset>
+     <normaloff>Image/Remove.png</normaloff>Image/Remove.png</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -97,6 +97,52 @@
      <height>50</height>
     </size>
    </property>
+  </widget>
+  <widget class="QLabel" name="labelDisplayImage">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>55</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>选择图片</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBoxChooseImage">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>40</y>
+     <width>81</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <item>
+    <property name="text">
+     <string>白光</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>低角度光</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>锡形光</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>均匀光</string>
+    </property>
+   </item>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

@@ -379,8 +379,8 @@ void VisionView::showJoystickWidget()
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (pMotion)
 	{
-		pMotion->setJoystickXMotor(AXIS_MOTOR_X, 1.2, NULL);
-		pMotion->setJoystickYMotor(AXIS_MOTOR_Y, 1.2, NULL);
+		pMotion->setJoystickXMotor(AXIS_MOTOR_X, 0.1, NULL);
+		pMotion->setJoystickYMotor(AXIS_MOTOR_Y, 0.1, NULL);
 
 		pMotion->startJoystick();
 	}
