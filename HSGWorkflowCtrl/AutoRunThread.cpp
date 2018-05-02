@@ -294,12 +294,18 @@ bool AutoRunThread::_doAlignment()
             if ( 0 == index)
                 ptFrameCtr = m_vecVecFrameCtr[0][0];
             else
-                ptFrameCtr = m_vecVecFrameCtr[0].back();            
+                ptFrameCtr = m_vecVecFrameCtr[0].back();
+        }else {
+            auto pMotion = getModule<IMotion>(MOTION_MODEL);
+            double dPosX = 0., dPosY = 0.;
+	        pMotion->getCurrentPos(AXIS_MOTOR_X, &dPosX);
+            pMotion->getCurrentPos(AXIS_MOTOR_Y, &dPosY);
+            ptFrameCtr = cv::Point2f(dPosX * MM_TO_UM, dPosY * MM_TO_UM);
         }
 
         // Only has frame in X direction. It should only happen when there is only X axis can move.
         if (fabs(ptFrameCtr.y) <= 0.01f)
-            ptFrameCtr.y = m_nImageHeightPixel * m_dResolutionY / 2.f;        
+            ptFrameCtr.y = m_nImageHeightPixel * m_dResolutionY / 2.f;
 
         cv::Rect rectSrchWindow = DataUtils::convertWindowToFrameRect(ptAlignment, alignment.srchWinWidth, alignment.srchWinHeight, ptFrameCtr, m_nImageWidthPixel, m_nImageHeightPixel, m_dResolutionX, m_dResolutionY);
         auto pAlignmentRunnable = std::make_unique<AlignmentRunnable>(matAlignmentImg, alignment, rectSrchWindow);
@@ -378,9 +384,17 @@ bool AutoRunThread::_doInspection()
             if (! moveToCapturePos(ptFrameCtr.x, ptFrameCtr.y)) {
                 bGood = false;
                 break;
+            }           
+
+            if (!System->isRunOffline()) {
+                auto pMotion = getModule<IMotion>(MOTION_MODEL);
+                double dPosX = 0., dPosY = 0.;
+                pMotion->getCurrentPos(AXIS_MOTOR_X, &dPosX);
+                pMotion->getCurrentPos(AXIS_MOTOR_Y, &dPosY);
+                ptFrameCtr = cv::Point2f(dPosX * MM_TO_UM, dPosY * MM_TO_UM);
             }
 
-            // Only has frame in X direction. It should only happen when there is only X axis can move.
+             // Only has frame in X direction. It should only happen when there is only X axis can move.
             if (fabs(ptFrameCtr.y) <= 0.01f)
                 ptFrameCtr.y = m_nImageHeightPixel * m_dResolutionY / 2.f;
 

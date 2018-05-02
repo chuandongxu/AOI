@@ -140,6 +140,7 @@
   <ItemGroup>
     <ClCompile Include="..\DataModule\DataUtils.cpp" />
     <ClCompile Include="AlignmentRunnable.cpp" />
+    <ClCompile Include="BoardInspResult.cpp" />
     <ClCompile Include="Calc3DHeightRunnable.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_hsgworksetting.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -186,6 +187,7 @@
   <ItemGroup>
     <ClInclude Include="..\DataModule\DataUtils.h" />
     <ClInclude Include="AlignmentRunnable.h" />
+    <ClInclude Include="BoardInspResult.h" />
     <ClInclude Include="Calc3DHeightRunnable.h" />
     <ClInclude Include="GeneratedFiles\ui_WorkflowDiagions.h" />
     <ClInclude Include="GeneratedFiles\ui_WorkFlowWidget.h" />

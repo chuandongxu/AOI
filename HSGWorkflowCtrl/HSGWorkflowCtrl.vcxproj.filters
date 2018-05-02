@@ -95,6 +95,9 @@
     <ClCompile Include="Insp2DRunnable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BoardInspResult.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hsgworkflowctrl.h">
@@ -134,6 +137,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Insp2DRunnable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BoardInspResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
