@@ -1018,17 +1018,24 @@ void VisionViewWidget::repaintAll()
 {
 	cv::Mat matImage = m_hoImage.clone();
 
-	if (m_selectROI.width > 0 && m_selectROI.height > 0)
+	if (!matImage.empty() && matImage.rows > 0 && matImage.cols > 0)
 	{
-		cv::Mat matRect = matImage(m_selectROI);
-		//rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
-		cv::Mat imgLayer(m_selectROI.height, m_selectROI.width, matImage.type()/*CV_8UC3*/, cv::Scalar(255, 128, 0));
+		if (m_selectROI.width > 0 && m_selectROI.height > 0)
+		{
+			if (((m_selectROI.x + m_selectROI.width) < matImage.cols)
+				&& ((m_selectROI.y + m_selectROI.height) < matImage.rows))
+			{
+				cv::Mat matRect = matImage(m_selectROI);
+				//rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
+				cv::Mat imgLayer(m_selectROI.height, m_selectROI.width, matImage.type()/*CV_8UC3*/, cv::Scalar(255, 128, 0));
 
-		double alpha = 0.3;
-		addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
+				double alpha = 0.3;
+				addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
 
-		cv::rectangle(matImage, m_selectROI, cv::Scalar(128, 64, 0), 1, 8, 0);
-	}
+				cv::rectangle(matImage, m_selectROI, cv::Scalar(128, 64, 0), 1, 8, 0);
+			}			
+		}
+	}	
 
 	displayImage(matImage);
 }
