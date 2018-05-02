@@ -196,29 +196,34 @@ void QFlowCtrl::start()
 	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
 	if (!pUI) return;
 
-    Engine::AlignmentVector vecAlignments;
-    int nResult = Engine::GetAllAlignments(vecAlignments);
-    if (Engine::OK != nResult) {
-        String errorType, errorMessage;
-        Engine::GetErrorDetail(errorType, errorMessage);
-        errorMessage = "Failed to get alignment from data base, error message " + errorMessage;
-        System->showMessage(QStringLiteral("Prepare auto run"), errorMessage.c_str());
-        return;
-    }
-
-    if (vecAlignments.size() <= 1) {
-        System->showMessage(QStringLiteral("Prepare auto run"), QStringLiteral("Please set at least 2 alignment point!"));
-        return;
-    }
-
     float left = 0, top = 0, right = 0, bottom = 0;
-    nResult = Engine::GetBigBoardCoords(left, top, right, bottom);
+    int nResult = Engine::GetBigBoardCoords(left, top, right, bottom);
     if (Engine::OK != nResult) {
         String errorType, errorMessage;
         Engine::GetErrorDetail(errorType, errorMessage);
         errorMessage = "Failed to get big board coordinates from data base, error message " + errorMessage;
         System->showMessage(QStringLiteral("Prepare auto run"), errorMessage.c_str());
         return;
+    }
+
+    Engine::AlignmentVector vecAlignments;
+    nResult = Engine::GetAllAlignments(vecAlignments);
+    if (Engine::OK != nResult) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        errorMessage = "Failed to get alignment from data base, error message " + errorMessage;
+        System->showMessage(QStringLiteral("Prepare auto run"), errorMessage.c_str());
+        return;
+    }   
+
+    if (vecAlignments.size() <= 1) {
+        System->showMessage(QStringLiteral("Prepare auto run"), QStringLiteral("Please set at least 2 alignment point!"));
+        return;
+    }
+
+    for (auto &alignment : vecAlignments) {
+        alignment.tmplPosX += left;
+        alignment.tmplPosY += bottom;
     }
 
     Engine::WindowVector vecWindows;
@@ -229,6 +234,11 @@ void QFlowCtrl::start()
         errorMessage = "Failed to get inspection windows from data base, error message " + errorMessage;
         System->showMessage(QStringLiteral("Prepare auto run"), errorMessage.c_str());
         return;
+    }
+
+    for ( auto &window : vecWindows) {
+        window.x += left;
+        window.y += bottom;
     }
 
     auto fResolutionX = System->getSysParam("CAM_RESOLUTION_X").toFloat();

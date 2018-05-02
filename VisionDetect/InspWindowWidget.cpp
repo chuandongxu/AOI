@@ -100,14 +100,24 @@ void InspWindowWidget::showEvent(QShowEvent *event) {
         QMessageBox::critical(nullptr, QStringLiteral("Inspect Window"), errorMessage.c_str(), QStringLiteral("Quit"));
     }
 
-    double dResolutionX, dResolutionY;
-    dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-    dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+
+    auto matImage = pUI->getImage();
+    m_nBigImgWidth  = matImage.cols / dCombinedImageScale;
+    m_nBigImgHeight = matImage.rows / dCombinedImageScale;
 
     QVector<QDetectObj> vecDetectObjs;
     for (const auto &window : vecWindow) {
         auto x = window.x / dResolutionX;
         auto y = window.y / dResolutionY;
+        if (bBoardRotated)
+            x = m_nBigImgWidth  - x;
+        else
+            y = m_nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
+
         auto width  = window.width  / dResolutionX;
         auto height = window.height / dResolutionY;
         cv::RotatedRect detectObjWin(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
@@ -241,8 +251,15 @@ void InspWindowWidget::onSelectedWindowChanged(int index) {
     double dResolutionX, dResolutionY;
     dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+
     auto x = window.x / dResolutionX;
     auto y = window.y / dResolutionY;
+    if (bBoardRotated)
+        x = m_nBigImgWidth  - x;
+    else
+        y = m_nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
+
     auto width = window.width / dResolutionX;
     auto height = window.height / dResolutionY;
     cv::RotatedRect detectObjWin(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);

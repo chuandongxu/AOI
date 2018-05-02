@@ -581,6 +581,7 @@ int FiducialMarkWidget::_srchRealImageFM(const cv::Mat           &matFrameImg,
 
     Vision::PR_MATCH_TEMPLATE_CMD stCmd;
     Vision::PR_MATCH_TEMPLATE_RPY stRpy;
+    stCmd.matInputImg = matFrameImg;
     stCmd.nRecordId = alignment.recordId;
     int nSrchWinWidth  = alignment.srchWinWidth  / dResolutionX;
     int nSrchWinHeight = alignment.srchWinHeight / dResolutionY;

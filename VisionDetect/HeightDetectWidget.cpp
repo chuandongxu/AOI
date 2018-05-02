@@ -101,6 +101,8 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation)
 {
 	auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
 
 	QJsonObject json;
 	json.insert("MinRange", m_pEditMinRange->text().toFloat());
@@ -136,8 +138,19 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation)
 	window.lightId = m_pParent->getSelectedLighting() + 1;
 	window.usage = m_pCheckBoxMeasure->isChecked() ? Engine::Window::Usage::HEIGHT_MEASURE : Engine::Window::Usage::HEIGHT_BASE;
 	window.inspParams = byte_array;
-	window.x = (rectROI.x + rectROI.width / 2.f) * dResolutionX;
-	window.y = (rectROI.y + rectROI.height / 2.f) * dResolutionY;
+	
+    cv::Point2f ptWindowCtr(rectROI.x + rectROI.width  / 2.f, rectROI.y + rectROI.height / 2.f);
+    auto matBigImage = pUI->getImage();
+    int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;
+    int nBigImgHeight = matBigImage.rows / dCombinedImageScale;
+    if (bBoardRotated) {
+        window.x = (nBigImgWidth - ptWindowCtr.x)  * dResolutionX;
+        window.y = ptWindowCtr.y * dResolutionY;
+    }
+    else {
+        window.x = ptWindowCtr.x * dResolutionX;
+        window.y = (nBigImgHeight - ptWindowCtr.y) * dResolutionY;
+    }
 	window.width = rectROI.width  * dResolutionX;
 	window.height = rectROI.height * dResolutionY;
 	window.deviceId = pUI->getSelectedDevice().getId();
@@ -162,6 +175,10 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation)
 
 		QDetectObj detectObj(window.Id, window.name.c_str());
 		cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
+        if (bBoardRotated)
+            ptCenter.x = nBigImgWidth  - ptCenter.x;
+        else
+            ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
 		cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
 		detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
 		auto vecDetectObjs = pUI->getDetectObjs();
