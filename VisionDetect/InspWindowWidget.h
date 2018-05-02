@@ -52,11 +52,13 @@ private slots:
     void on_comboBoxLighting_indexChanged(int index);
 
 private:
-    Ui::InspWindowWidget ui;
+    Ui::InspWindowWidget        ui;
     QColorWeight               *m_pColorWidget;
     std::unique_ptr<QComboBox>  m_pComboBoxLighting;
     InspWindowBaseWidgetPtr     m_arrInspWindowWidget[INSP_WIDGET_INDEX_SIZE];
     Engine::WindowVector        m_vecCurrentDeviceWindows;
     OPERATION                   m_enOperation;
     INSP_WIDGET_INDEX           m_enCurrentInspWidget = INSP_WIDGET_INDEX::UNDEFINED;
+    int                         m_nBigImgWidth;
+    int                         m_nBigImgHeight;
 };

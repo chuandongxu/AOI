@@ -53,8 +53,8 @@ bool AutoRunThread::preRunning()
     m_dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     m_dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     m_nDLPCount = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-    m_nImageWidthPixel =  2032; //This value temporarily hard code here, later it should get from config file for camera API.
-    m_nImageHeightPixel = 2032;
+    m_fFovWidthUm  = m_nImageWidthPixel  * m_dResolutionX;
+    m_fFovHeightUm = m_nImageHeightPixel * m_dResolutionY;
 	return true;
 }
 
@@ -294,15 +294,18 @@ bool AutoRunThread::_doAlignment()
             if ( 0 == index)
                 ptFrameCtr = m_vecVecFrameCtr[0][0];
             else
-                ptFrameCtr = m_vecVecFrameCtr[0].back();            
+                ptFrameCtr = m_vecVecFrameCtr[0].back();
+        }else {
+            auto pMotion = getModule<IMotion>(MOTION_MODEL);
+            double dPosX = 0., dPosY = 0.;
+	        pMotion->getCurrentPos(AXIS_MOTOR_X, &dPosX);
+            pMotion->getCurrentPos(AXIS_MOTOR_Y, &dPosY);
+            ptFrameCtr = cv::Point2f(dPosX * MM_TO_UM, dPosY * MM_TO_UM);
         }
 
         // Only has frame in X direction. It should only happen when there is only X axis can move.
         if (fabs(ptFrameCtr.y) <= 0.01f)
             ptFrameCtr.y = m_nImageHeightPixel * m_dResolutionY / 2.f;
-
-        ptAlignment.x += m_fBoardLeftPos;
-        ptAlignment.y += m_fBoardBtmPos;
 
         cv::Rect rectSrchWindow = DataUtils::convertWindowToFrameRect(ptAlignment, alignment.srchWinWidth, alignment.srchWinHeight, ptFrameCtr, m_nImageWidthPixel, m_nImageHeightPixel, m_dResolutionX, m_dResolutionY);
         auto pAlignmentRunnable = std::make_unique<AlignmentRunnable>(matAlignmentImg, alignment, rectSrchWindow);
@@ -381,9 +384,17 @@ bool AutoRunThread::_doInspection()
             if (! moveToCapturePos(ptFrameCtr.x, ptFrameCtr.y)) {
                 bGood = false;
                 break;
+            }           
+
+            if (!System->isRunOffline()) {
+                auto pMotion = getModule<IMotion>(MOTION_MODEL);
+                double dPosX = 0., dPosY = 0.;
+                pMotion->getCurrentPos(AXIS_MOTOR_X, &dPosX);
+                pMotion->getCurrentPos(AXIS_MOTOR_Y, &dPosY);
+                ptFrameCtr = cv::Point2f(dPosX * MM_TO_UM, dPosY * MM_TO_UM);
             }
 
-            // Only has frame in X direction. It should only happen when there is only X axis can move.
+             // Only has frame in X direction. It should only happen when there is only X axis can move.
             if (fabs(ptFrameCtr.y) <= 0.01f)
                 ptFrameCtr.y = m_nImageHeightPixel * m_dResolutionY / 2.f;
 
@@ -405,8 +416,10 @@ bool AutoRunThread::_doInspection()
                 vecCalc3dHeightRunnable.push_back(std::move(pCalc3DHeightRunnable));
             }
 
-            auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolCalc3DHeight, vecCalc3dHeightRunnable);
-            QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
+            {
+                auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolCalc3DHeight, vecCalc3dHeightRunnable);
+                QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
+            }
 
             Engine::WindowVector vecWindows = _getWindowInFrame(ptFrameCtr);
             Vision::VectorOfMat vec2DCaptureImages(vecMatImages.begin() + m_nDLPCount * DLP_IMG_COUNT, vecMatImages.end());
@@ -421,7 +434,7 @@ bool AutoRunThread::_doInspection()
                 auto pInsp2DRunnable = new Insp2DRunnable(vec2DImages, vecWindows, ptFrameCtr);
                 pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
                 pInsp2DRunnable->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
-                QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
+                QThreadPool::globalInstance()->start(pInsp2DRunnable);
             }
         }
 

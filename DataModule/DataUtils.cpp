@@ -358,17 +358,25 @@ DataUtils::~DataUtils()
     int &nPtInFrameY,
     Vision::PR_SCAN_IMAGE_DIR enDir)
 {
-    if ( Vision::PR_SCAN_IMAGE_DIR::RIGHT_TO_LEFT == enDir ) {
+    if (Vision::PR_SCAN_IMAGE_DIR::RIGHT_TO_LEFT == enDir) {
         //X frame start from right to left.
-        nFrameX = ( nBigImgWidth - nSelectPtX ) / ( nFrameImgWidth - nOverlapX );
-        nFrameY = nSelectPtY / ( nFrameImgHeight - nOverlapY );
-        nPtInFrameX = nFrameImgWidth - ( ( nBigImgWidth - nSelectPtX ) - nFrameX * ( nFrameImgWidth - nOverlapX ) );
-        nPtInFrameY = nSelectPtY - nFrameY * ( nFrameImgHeight - nOverlapY );
-    }else {
-        nFrameX = nSelectPtX / ( nFrameImgWidth  - nOverlapX );
-        nFrameY = nSelectPtY / ( nFrameImgHeight - nOverlapY );
-        nPtInFrameX = nSelectPtX - nFrameX * ( nFrameImgWidth - nOverlapX );
-        nPtInFrameY = nSelectPtY - nFrameY * ( nFrameImgHeight - nOverlapY );
+        nFrameX = (nBigImgWidth - nSelectPtX) / (nFrameImgWidth - nOverlapX);
+        nFrameY = nSelectPtY / (nFrameImgHeight - nOverlapY);
+        nPtInFrameX = nFrameImgWidth - ((nBigImgWidth - nSelectPtX) - nFrameX * (nFrameImgWidth - nOverlapX));
+        nPtInFrameY = nSelectPtY - nFrameY * (nFrameImgHeight - nOverlapY);
+    }
+    else {
+        if (nSelectPtX < nFrameImgWidth)
+            nFrameX = 0;
+        else
+            nFrameX = 1 + (nSelectPtX - nFrameImgWidth)  / (nFrameImgWidth  - nOverlapX);
+
+        if (nSelectPtY < nFrameImgHeight)
+            nFrameY = 0;
+        else
+            nFrameY = 1 + (nSelectPtY - nFrameImgHeight) / (nFrameImgHeight - nOverlapY);
+        nPtInFrameX = nSelectPtX - nFrameX * (nFrameImgWidth - nOverlapX);
+        nPtInFrameY = nSelectPtY - nFrameY * (nFrameImgHeight - nOverlapY);
     }
 
     return 0;
