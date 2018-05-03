@@ -5,6 +5,7 @@
 #include "../include/ICamera.h"
 
 #include <QMutex>
+#include <qwaitcondition.h>
 
 #include "opencv/cv.h"
 
@@ -18,10 +19,6 @@ public:
 	~QMainProcess();
 
 public:
-	bool lockCameraCapture();
-	void unlockCameraCapture();
-	bool isCameraCaptureAvaiable();
-
 	bool startUpCapture(bool bHWTrigger);
 	bool isHWTrigger();
 	bool endUpCapture();
@@ -35,6 +32,7 @@ public:
 
 private:
 	void saveImages(QVector<cv::Mat>& images);
+	void bufferImages();
 
 private:
 	CameraCtrl* m_pCameraCtrl;
@@ -43,11 +41,12 @@ private:
 	cv::Mat	m_dispImage;
 
 private:
+	QVector<cv::Mat> m_imageMats;
 	QVector<cv::Mat> m_bufferImages;
 	ICamera::TRIGGER m_emCaptureMode;
 	int m_nCaptureNum;
 	bool m_bHWTrigger;
-	bool m_bCaptureDone;
-	bool m_bCaptureLocker;
-	QMutex m_mutex;
+
+	QWaitCondition m_waitCon;
+	QMutex m_waitMutex;
 };

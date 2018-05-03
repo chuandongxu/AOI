@@ -8,6 +8,8 @@
 #include <core/mat.hpp> 
 
 #include <QVector>
+#include <QMutex>
+#include <qwaitcondition.h>
 
 // Include files to use the PYLON API.
 #include <pylon/PylonIncludes.h>
@@ -55,6 +57,8 @@ private:
 	static void XferCallback(SapXferCallbackInfo *pInfo);
 	static int _sXferIndex;
 
+	void updateGrabCount(cv::Mat& imgMat);
+
 private:
 	QString m_cameraName;
 	QString m_cameraID;
@@ -75,4 +79,7 @@ private:
 	int m_nGrabCount;
 
 	bool m_bCapturedImage;
+
+	QWaitCondition m_waitCon;
+	QMutex m_waitMutex;
 };

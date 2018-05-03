@@ -141,21 +141,6 @@ bool CameraModule::stopCapturing()
 	return m_pMainProcess->stopCapturing();
 }
 
-bool CameraModule::lockCameraCapture()
-{
-	return m_pMainProcess->lockCameraCapture();
-}
-
-void CameraModule::unlockCameraCapture()
-{
-	m_pMainProcess->unlockCameraCapture();
-}
-
-bool CameraModule::isCameraCaptureAvaiable()
-{
-	return m_pMainProcess->isCameraCaptureAvaiable();
-}
-
 bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
 {
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
