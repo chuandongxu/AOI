@@ -254,5 +254,5 @@ private:
     int                         m_nMovePointID;
     QVector<QMtrMovePointGroup> m_mtrMovePointGroups;
     int                         m_nMovePointGroupID;
-    int                         m_nMotionControlFreq = 1000;       // Currently the motion controller frequency is 8000
+    int                         m_nMotionControlFreq = 1000;       // Currently the motion controller frequency is 1000
 };

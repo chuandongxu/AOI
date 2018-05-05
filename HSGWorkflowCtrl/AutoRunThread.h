@@ -5,6 +5,7 @@
 
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
+#include "BoardInspResult.h"
 
 using namespace NFG::AOI;
 using namespace AOI;
@@ -12,9 +13,10 @@ using namespace AOI;
 class AutoRunThread : public QThread
 {
 public:
-	AutoRunThread(const Engine::AlignmentVector        &vecAlignments,
-                 const Engine::WindowVector            &vecWindows,
-                 const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr);
+	AutoRunThread(const Engine::AlignmentVector         &vecAlignments,
+                  const Engine::WindowVector            &vecWindows,
+                  const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr,
+                  MapBoardInspResult                    *pMapBoardInspResult);
 	~AutoRunThread();
 
 	void quit();
@@ -46,7 +48,7 @@ private:
     bool _readBarcode();
     bool _doAlignment();
     bool _alignWindows();
-    bool _doInspection();
+    bool _doInspection(BoardInspResultPtr ptrBoardInspResult);
     Engine::WindowVector _getWindowInFrame(const cv::Point2f &ptFrameCtr);
     Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
 
@@ -70,6 +72,8 @@ private:
     cv::Mat                         m_matCombinedBigHeight;
     float                           m_fBoardLeftPos;
     float                           m_fBoardBtmPos;
+    MapBoardInspResult             *m_pMapBoardInspResult;
+    QString                         m_boardName;
 };
 
 

@@ -541,7 +541,7 @@ void VisionViewWidget::show3D()
 
 void VisionViewWidget::showSelectROI3D()
 {
-	setViewState(MODE_VIEW_SELECT);
+	setViewState(MODE_VIEW_SELECT_3D_ROI);
 }
 
 void VisionViewWidget::setImage(const cv::Mat& matImage, bool bDisplay)
@@ -691,7 +691,7 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
 	{
 		switch (m_stateView)
 		{
-		case MODE_VIEW_SELECT:
+		case MODE_VIEW_SELECT_3D_ROI:
 		case MODE_VIEW_SELECT_ROI:
         case MODE_VIEW_EDIT_INSP_WINDOW:
 			if ((0 != (int)motionX) || (0 != (int)motionY))
@@ -699,11 +699,11 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
 				if ((int)motionX >= 0 && (int)motionY >= 0)
 				{
 					cv::Point ptStartPos = convertToImgPos(cv::Point(m_startX, m_startY));
-					cv::Point ptEndPos = convertToImgPos(cv::Point(mouseX, mouseY));
+					cv::Point ptEndPos   = convertToImgPos(cv::Point(mouseX, mouseY));
 					cv::Rect select;
 					select.x = ptStartPos.x;
 					select.y = ptStartPos.y;
-					select.width = ptEndPos.x - ptStartPos.x;
+					select.width  = ptEndPos.x - ptStartPos.x;
 					select.height = ptEndPos.y - ptStartPos.y;
 					//cv::rectangle(matImage, select, Scalar(0, 255, 0), 1, 8, 0);
 
@@ -711,12 +711,12 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
 					{
 						if (select.x < 0) select.x = 0;
 						if (select.y < 0) select.y = 0;
-						select.width = (select.x + select.width) > m_hoImage.size().width ? (m_hoImage.size().width - select.x) : select.width;
+						select.width  = (select.x + select.width)  > m_hoImage.size().width  ? (m_hoImage.size().width  - select.x) : select.width;
 						select.height = (select.y + select.height) > m_hoImage.size().height ? (m_hoImage.size().height - select.y) : select.height;
 					}
 
-					if (MODE_VIEW_SELECT == m_stateView && select.width > 500) select.width = 500;
-					if (MODE_VIEW_SELECT == m_stateView && select.height > 500) select.height = 500;
+					if (MODE_VIEW_SELECT_3D_ROI == m_stateView && select.width  > 500) select.width  = 500;
+					if (MODE_VIEW_SELECT_3D_ROI == m_stateView && select.height > 500) select.height = 500;
 
 					m_selectROI = select;
 
@@ -745,18 +745,28 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
                 repaintAll();
             }
             break;
-        case MODE_VIEW_EDIT_SRCH_WINDOW:
+        case MODE_VIEW_EDIT_FM_SRCH_WINDOW:
             {
-                double dSizeOnImgX = motionX / m_dScale;
-                double dSizeOnImgY = motionY / m_dScale;
-                cv::Rect rectFMSrchWindow = m_currentFM.getSrchWindow();
+                double dSizeOnImgX = motionX / m_dScale * 2.; // Multiply 2 is because dragging half width will draw full width of window.
+                double dSizeOnImgY = motionY / m_dScale * 2.;
                 if (dSizeOnImgX > m_currentFM.getFM().width && dSizeOnImgY > m_currentFM.getFM().height) {
+                    cv::Rect rectFMSrchWindow = m_currentFM.getSrchWindow();
                     rectFMSrchWindow  = CalcUtils::resizeRect<int>(rectFMSrchWindow, cv::Size(dSizeOnImgX, dSizeOnImgY));
                     m_currentFM.setSrchWindow(rectFMSrchWindow);
                     repaintAll();
                 }
             }
             break;
+        case MODE_VIEW_EDIT_SRCH_WINDOW:
+            {
+                double dSizeOnImgX = motionX / m_dScale * 2.; // Multiply 2 is because dragging half width will draw full width of window.
+                double dSizeOnImgY = motionY / m_dScale * 2.;
+                cv::Rect rectSrchWindow = m_rectSrchWindow;
+                if (dSizeOnImgX > m_selectROI.width && dSizeOnImgY > m_selectROI.height) {
+                    m_rectSrchWindow  = CalcUtils::resizeRect<int>(m_rectSrchWindow, cv::Size(dSizeOnImgX, dSizeOnImgY));
+                    repaintAll();
+                }
+            }
 		case MODE_VIEW_NONE:
 			break;
 		default:
@@ -786,7 +796,7 @@ void VisionViewWidget::mousePressEvent(QMouseEvent * event)
 
 		switch (m_stateView)
 		{
-		case MODE_VIEW_SELECT:
+		case MODE_VIEW_SELECT_3D_ROI:
 		case MODE_VIEW_SELECT_ROI:
 			break;
 		case MODE_VIEW_NONE:
@@ -799,7 +809,7 @@ void VisionViewWidget::mousePressEvent(QMouseEvent * event)
 	{
 		switch (m_stateView)
 		{
-		case MODE_VIEW_SELECT:
+		case MODE_VIEW_SELECT_3D_ROI:
 			break;
 		case MODE_VIEW_SELECT_ROI:
 			break;
@@ -822,7 +832,7 @@ void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
 		const QPoint pos = event->pos();
 		switch (m_stateView)
 		{
-		case MODE_VIEW_SELECT:
+		case MODE_VIEW_SELECT_3D_ROI:
 			if (m_selectROI.width > 0 && m_selectROI.height > 0)
 			{
 				show3DView(m_selectROI);
@@ -1016,33 +1026,39 @@ void VisionViewWidget::loadImage(QString& fileName)
 
 void VisionViewWidget::repaintAll()
 {
-	cv::Mat matImage = m_hoImage.clone();
+    cv::Mat matImage = m_hoImage.clone();
 
-	if (!matImage.empty() && matImage.rows > 0 && matImage.cols > 0)
-	{
-		if (m_selectROI.width > 0 && m_selectROI.height > 0)
-		{
-			if (((m_selectROI.x + m_selectROI.width) < matImage.cols)
-				&& ((m_selectROI.y + m_selectROI.height) < matImage.rows))
-			{
-				cv::Mat matRect = matImage(m_selectROI);
-				//rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
-				cv::Mat imgLayer(m_selectROI.height, m_selectROI.width, matImage.type()/*CV_8UC3*/, cv::Scalar(255, 128, 0));
+    _drawSelectedROI(matImage);
 
-				double alpha = 0.3;
-				addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
+    displayImage(matImage);
+}
 
-				cv::rectangle(matImage, m_selectROI, cv::Scalar(128, 64, 0), 1, 8, 0);
-			}			
-		}
-	}	
+void VisionViewWidget::_drawSelectedROI(cv::Mat &matImage)
+{
+    if (!matImage.empty() && matImage.rows > 0 && matImage.cols > 0) {
+        if (m_selectROI.width > 0 && m_selectROI.height > 0) {
+            if (((m_selectROI.x + m_selectROI.width) < matImage.cols)
+                && ((m_selectROI.y + m_selectROI.height) < matImage.rows)) {
+                cv::Mat matRect = matImage(m_selectROI);
+                //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
+                cv::Mat imgLayer(m_selectROI.height, m_selectROI.width, matImage.type()/*CV_8UC3*/, cv::Scalar(255, 128, 0));
 
-	displayImage(matImage);
+                double alpha = 0.3;
+                addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
+
+                cv::rectangle(matImage, m_selectROI, cv::Scalar(128, 64, 0), 1);
+            }
+        }
+    }
+
+    if (MODE_VIEW_EDIT_SRCH_WINDOW == m_stateView) {
+        cv::rectangle(matImage, m_rectSrchWindow, _constOrchidScalar, 2);
+    }
 }
 
 void VisionViewWidget::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 {
-	CV_Assert(src.depth() == CV_8U);//CV_Assert（）若括号中的表达式值为false，则返回一个错误信息。  
+	CV_Assert(src.depth() == CV_8U);//CV_Assert() 若括号中的表达式值为false，则返回一个错误信息。  
 	const int rows = src.rows;
 	const int cols = src.cols;
 	dst.create(rows, cols, src.type());
@@ -1072,7 +1088,7 @@ void VisionViewWidget::setViewState(VISION_VIEW_MODE state)
 {
 	switch (state)
 	{
-	case MODE_VIEW_SELECT:
+	case MODE_VIEW_SELECT_3D_ROI:
 		setCursor(Qt::CrossCursor);
 		break;
 	case MODE_VIEW_SELECT_ROI:
@@ -1153,6 +1169,12 @@ cv::Rect2f VisionViewWidget::getSelectedROI()
 	//scale.height = m_selectROI.height / m_imageHeight;
 
 	return m_selectROI;
+}
+
+void VisionViewWidget::setSrchWindow(const cv::Rect &rectSrchWindow)
+{
+    m_rectSrchWindow = rectSrchWindow;
+    repaintAll();
 }
 
 void VisionViewWidget::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
@@ -1243,9 +1265,9 @@ void VisionViewWidget::setDetectObjs(const QVector<QDetectObj> &vecDetectObjs)
 void VisionViewWidget::setCurrentDetectObj(const QDetectObj &detectObj)
 {
     m_currentDetectObj = detectObj;
-    m_selectROI = cv::Rect ( detectObj.getFrame().center.x - detectObj.getFrame().size.width  / 2, 
-                             detectObj.getFrame().center.y - detectObj.getFrame().size.height / 2,
-                             detectObj.getFrame().size.width, detectObj.getFrame().size.height );
+    m_selectROI = cv::Rect(detectObj.getFrame().center.x - detectObj.getFrame().size.width  / 2,
+                           detectObj.getFrame().center.y - detectObj.getFrame().size.height / 2,
+                           detectObj.getFrame().size.width, detectObj.getFrame().size.height);
     repaintAll();
 }
 
@@ -1634,10 +1656,9 @@ void VisionViewWidget::_drawDetectObjs()
     cv::Scalar scalarNormalWindowColor(128, 255, 255);      //Yellow
     cv::Scalar scalarSelectedWindowColor(255, 128, 255);    //Pink
 
-    for (const auto &obj : m_vecDetectObjs )
-    {
-        cv::Scalar scalarWindowColor ( scalarNormalWindowColor );
-        if ( obj.getID() == m_currentDetectObj.getID() )
+    for (const auto &obj : m_vecDetectObjs) {
+        cv::Scalar scalarWindowColor(scalarNormalWindowColor);
+        if (obj.getID() == m_currentDetectObj.getID())
             scalarWindowColor = scalarSelectedWindowColor;
 
         cv::Point2f vertices[4];
@@ -1645,14 +1666,14 @@ void VisionViewWidget::_drawDetectObjs()
 
         for (int i = 0; i < 4; i++)
         {
-            cv::line( m_dispImage, vertices[i], vertices[(i + 1) % 4], scalarWindowColor, 5);
+            cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], scalarWindowColor, 5);
         }
 
         obj.getLoc().points(vertices);
 
         for (int i = 0; i < 4; i++)
         {
-            cv::line( m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 255, 0), 5);
+            cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 255, 0), 5);
         }
 
         for (int j = 0; j < obj.getHeightBaseNum(); j++)
@@ -1671,12 +1692,12 @@ void VisionViewWidget::_drawDetectObjs()
                 cv::String text = QString("%1").arg(j + 1).toStdString();
 
                 double fontScale = dScaleFactor*2.0f;
-                cv::putText( m_dispImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
+                cv::putText(m_dispImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
             }
 
             for (int i = 0; i < 4; i++)
             {
-                cv::line( m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 0, 0), 5);
+                cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 0, 0), 5);
             }
         }
 
@@ -1696,12 +1717,12 @@ void VisionViewWidget::_drawDetectObjs()
                 cv::String text = QString("%1").arg(j + 1).toStdString();
 
                 double fontScale = dScaleFactor*2.0f;
-                cv::putText( m_dispImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
+                cv::putText(m_dispImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
             }
 
             for (int i = 0; i < 4; i++)
             {
-                cv::line( m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(0, 255, 0), 5);
+                cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(0, 255, 0), 5);
             }
         }
     }

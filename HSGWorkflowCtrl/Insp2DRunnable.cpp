@@ -5,10 +5,14 @@
 #include "../include/constants.h"
 #include "../DataModule/DataUtils.h"
 
-Insp2DRunnable::Insp2DRunnable(const Vision::VectorOfMat &vec2DImages, const Engine::WindowVector &vecWindows, const cv::Point2f &ptFramePos) :
-    m_vec2DImages(vec2DImages),
-    m_vecWindows(vecWindows),
-    m_ptFramePos(ptFramePos)
+Insp2DRunnable::Insp2DRunnable(const Vision::VectorOfMat    &vec2DImages,
+                               const Engine::WindowVector   &vecWindows,
+                               const cv::Point2f            &ptFramePos,
+                               BoardInspResultPtr           &ptrBoardInsResult) :
+    m_vec2DImages           (vec2DImages),
+    m_vecWindows            (vecWindows),
+    m_ptFramePos            (ptFramePos),
+    m_ptrBoardInspResult    (ptrBoardInsResult)
 {
 }
 
@@ -29,6 +33,14 @@ void Insp2DRunnable::run()
             _findLine(window);
             break;
 
+        case Engine::Window::Usage::FIND_CIRCLE:
+            _findCircle(window);
+            break;
+
+        case Engine::Window::Usage::ALIGNMENT:
+            _alignment(window);
+            break;
+
         default:
             break;
         }
@@ -41,18 +53,18 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
     QJsonParseError json_error;
 	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.colorParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
-        m_mapWindowStatus[window.Id] = Vision::VisionStatus::INVALID_PARAM;
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
         return false;
     }
 
     if (! parse_doucment.isObject()) {
-        m_mapWindowStatus[window.Id] = Vision::VisionStatus::INVALID_PARAM;
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
         return false;
     }
 
     int nImageIndex = window.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        m_mapWindowStatus[window.Id] = Vision::VisionStatus::INVALID_PARAM;
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
         return false;
     }
 
@@ -88,7 +100,7 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
 
     Vision::PR_ColorToGray(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {
-        m_mapWindowStatus[window.Id] = stRpy.enStatus;
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
         return false;
     }
 
@@ -117,7 +129,7 @@ void Insp2DRunnable::_inspHole(const Engine::Window &window)
     QJsonParseError json_error;
 	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
 	if (json_error.error != QJsonParseError::NoError) {
-        m_mapWindowStatus[window.Id] = Vision::VisionStatus::INVALID_PARAM;
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
 		return;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -145,14 +157,15 @@ void Insp2DRunnable::_inspHole(const Engine::Window &window)
         stCmd.stBlobModeCriteria.fMinArea = jsonBlobMode["MinHoleArea"].toDouble();
     }
 
-    m_mapWindowStatus[window.Id] = Vision::PR_InspHole(&stCmd, &stRpy);
+    Vision::PR_InspHole(&stCmd, &stRpy);
+    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }
 
 void Insp2DRunnable::_findLine(const Engine::Window &window) {
     QJsonParseError json_error;
 	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
 	if (json_error.error != QJsonParseError::NoError) {
-        m_mapWindowStatus[window.Id] = Vision::VisionStatus::INVALID_PARAM;
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
 		return;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -179,7 +192,7 @@ void Insp2DRunnable::_findLine(const Engine::Window &window) {
 
     int nImageIndex = window.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        m_mapWindowStatus[window.Id] = Vision::VisionStatus::INVALID_PARAM;
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
         return;
     }
 
@@ -195,5 +208,102 @@ void Insp2DRunnable::_findLine(const Engine::Window &window) {
 
     stCmd.rectRotatedROI.center = cv::Point2f(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2);
     stCmd.rectRotatedROI.size = rectROI.size();
-    m_mapWindowStatus[window.Id] = Vision::PR_FindLine(&stCmd, &stRpy);
+    Vision::PR_FindLine(&stCmd, &stRpy);
+    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+}
+
+void Insp2DRunnable::_findCircle(const Engine::Window &window) {
+    QJsonParseError json_error;
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+	if (json_error.error != QJsonParseError::NoError) {
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+		return;
+    }
+    QJsonObject jsonValue = parse_doucment.object();
+
+    Vision::PR_FIND_CIRCLE_CMD stCmd;
+    Vision::PR_FIND_CIRCLE_RPY stRpy;
+
+    stCmd.enInnerAttribute = static_cast<Vision::PR_OBJECT_ATTRIBUTE>(jsonValue["InnerAttri"].toInt());
+	stCmd.bFindCirclePair = jsonValue["FindPair"].toBool();
+	stCmd.fStartSrchAngle = jsonValue["SearchStartAngle"].toDouble();
+	stCmd.fEndSrchAngle = jsonValue["SearchEndAngle"].toDouble();
+	stCmd.nCaliperCount = jsonValue["CaliperCount"].toInt();
+	stCmd.fCaliperWidth = jsonValue["CaliperWidth"].toDouble();
+	stCmd.nEdgeThreshold = jsonValue["EdgeThreshold"].toInt();
+	stCmd.enSelectEdge = static_cast<Vision::PR_CALIPER_SELECT_EDGE>(jsonValue["SelectEdge"].toInt());
+	stCmd.fRmStrayPointRatio = jsonValue["RmStrayPointRatio"].toDouble();
+	stCmd.nDiffFilterHalfW = jsonValue["DiffFilterHalfW"].toInt();
+	stCmd.fDiffFilterSigma = jsonValue["DiffFilterSigma"].toDouble();
+
+    int nImageIndex = window.lightId - 1;
+    if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        return;
+    }
+
+    stCmd.matInputImg = m_vec2DImages[nImageIndex];
+    auto rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
+        window.width,
+        window.height,
+        m_ptFramePos,
+        m_nImageWidthPixel,
+        m_nImageHeightPixel,
+        m_dResolutionX,
+        m_dResolutionY);
+
+    stCmd.ptExpectedCircleCtr = cv::Point2f(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2);
+    stCmd.fMaxSrchRadius = qMin(rectROI.width / 2.0f, rectROI.height / 2.0f);
+	stCmd.fMinSrchRadius = qMin(rectROI.width / 2.0f, rectROI.height / 2.0f) / 3.0f;
+
+    Vision::PR_FindCircle(&stCmd, &stRpy);
+    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+}
+
+void Insp2DRunnable::_alignment(const Engine::Window &window) {
+    QJsonParseError json_error;
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+	if (json_error.error != QJsonParseError::NoError) {
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+		return;
+    }
+    QJsonObject jsonValue = parse_doucment.object();
+
+    Vision::PR_MATCH_TEMPLATE_CMD stCmd;
+    Vision::PR_MATCH_TEMPLATE_RPY stRpy;
+
+    stCmd.enAlgorithm = static_cast<Vision::PR_MATCH_TMPL_ALGORITHM>(jsonValue["Algorithm"].toInt());
+    stCmd.bSubPixelRefine = jsonValue["SubPixel"].toBool();
+    stCmd.enMotion = static_cast<Vision::PR_OBJECT_MOTION>(jsonValue["Motion"].toInt());
+    stCmd.fMinMatchScore = jsonValue["MinScore"].toDouble();
+    stCmd.nRecordId = window.recordId;
+
+    int nImageIndex = window.lightId - 1;
+    if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        return;
+    }
+
+    stCmd.matInputImg = m_vec2DImages[nImageIndex];
+    stCmd.rectSrchWindow = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
+        jsonValue["SrchWinWidth"].toDouble(),
+        jsonValue["SrchWinHeight"].toDouble(),
+        m_ptFramePos,
+        m_nImageWidthPixel,
+        m_nImageHeightPixel,
+        m_dResolutionX,
+        m_dResolutionY);
+
+    if (stCmd.rectSrchWindow.x < 0) stCmd.rectSrchWindow.x = 0;
+    if (stCmd.rectSrchWindow.y < 0) stCmd.rectSrchWindow.y = 0;
+    if ((stCmd.rectSrchWindow.x + stCmd.rectSrchWindow.width) > stCmd.matInputImg.cols)
+        stCmd.rectSrchWindow.width = stCmd.matInputImg.cols - stCmd.rectSrchWindow.x;
+    if ((stCmd.rectSrchWindow.y + stCmd.rectSrchWindow.height) > stCmd.matInputImg.rows)
+        stCmd.rectSrchWindow.height = stCmd.matInputImg.rows - stCmd.rectSrchWindow.y;
+
+    Vision::PR_MatchTmpl(&stCmd, &stRpy);
+    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+    if (Vision::VisionStatus::OK == stRpy.enStatus) {
+        //Update all device's window offset.
+    }
 }

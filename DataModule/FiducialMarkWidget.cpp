@@ -228,7 +228,7 @@ int FiducialMarkWidget::_learnStandardFM(float                          fFMSizeM
     VisionViewFM fm(0, rectCadFMWindow, rectFMSrchWindow);
     
     pUI->setCurrentFM(fm);
-    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_SRCH_WINDOW);
+    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_FM_SRCH_WINDOW);
     int nReturn = System->showInteractMessage(QStringLiteral("Fiducial Mark"), QStringLiteral("Please select the search window of the fiducial mark"));
     if (nReturn != QDialog::Accepted)
         return NOK;
@@ -328,8 +328,8 @@ int FiducialMarkWidget::_learnRealImageFM(const cv::Mat                 &matFram
 
     cv::Rect rectCadFMWindow = rrectCadWindow.boundingRect();
     cv::RotatedRect rrSrchWindow(rrectCadWindow);
-    rrSrchWindow.size.width  *= 4;
-    rrSrchWindow.size.height *= 4;
+    rrSrchWindow.size.width  *= 2;
+    rrSrchWindow.size.height *= 2;
     cv::Rect rectFMSrchWindow = rrSrchWindow.boundingRect();
 
     VisionViewFM fm(0, rectCadFMWindow, rectFMSrchWindow);
@@ -340,18 +340,20 @@ int FiducialMarkWidget::_learnRealImageFM(const cv::Mat                 &matFram
     if (nReturn != QDialog::Accepted)
         return NOK;
 
-    //Get FM here
+    // Get FM here
     fm = pUI->getCurrentFM();
     cv::Rect rectFM = fm.getFM();
-    cv::Rect rectSrchWindow = CalcUtils::resizeRect(rectFM, cv::Size(rectFM.width * 1.2, rectFM.height * 1.2));
+    cv::Rect rectSrchWindow = CalcUtils::resizeRect(rectFM, cv::Size(rectFM.width * 2, rectFM.height * 2));
     fm.setSrchWindow(rectSrchWindow);
     pUI->setCurrentFM(fm);
 
-    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_SRCH_WINDOW);
+    // Ask user to select the search window
+    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_FM_SRCH_WINDOW);
     nReturn = System->showInteractMessage(QStringLiteral("Fiducial Mark"), QStringLiteral("Please select the search window of the fiducial mark"));
     if (nReturn != QDialog::Accepted)
         return NOK;
 
+    // Get the search window
     fm = pUI->getCurrentFM();
     rectFM = fm.getFM();
     rectFMSrchWindow = fm.getSrchWindow();

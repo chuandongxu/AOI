@@ -4,15 +4,14 @@
 #include "visionui_global.h"
 #include "../include/IVisionUI.h"
 #include "../Common/modulebase.h"
+#include "VisionView.h"
 
-class VisionView;
 class QVisionUIModule : public IVisionUI, public QModuleBase
 {
 public:
 	QVisionUIModule(int id,const QString &name);
 	~QVisionUIModule();
 
-public:
 	virtual void init();
 	virtual void Show();
 	virtual void unInit();
@@ -38,6 +37,8 @@ public:
 	virtual cv::Mat getSelectImage();
 	virtual void clearSelect() override;
 	virtual cv::Rect2f getSelectedROI() override;
+    cv::Rect getSrchWindow() const override { return m_pVisionView->getSrchWindow(); }
+    void setSrchWindow(const cv::Rect &rectSrchWindow) override { m_pVisionView->setSrchWindow(rectSrchWindow); }
 
 	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber) override;
     virtual void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs) override;
@@ -50,6 +51,7 @@ public:
     virtual void setConfirmedFM(const VisionViewFMVector &vecFM) override;
     virtual void setCurrentFM(const VisionViewFM &fm) override;
     virtual VisionViewFM getCurrentFM() const override;
+
 private:
 	void * m_mainWidget;
 	VisionView* m_pVisionView;

@@ -20,6 +20,7 @@ public:
         return cv::Rect_<T> (rectInput.x + rectInput.width / 2.f - szNew.width / 2, rectInput.y + rectInput.height / 2.f  - szNew.height / 2,
             szNew.width, szNew.height );
     }
+
 private:
     CalcUtils();
     CalcUtils(CalcUtils const &);

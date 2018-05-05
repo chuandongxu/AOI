@@ -26,7 +26,6 @@ public:
 	VisionView(QWidget *parent = Q_NULLPTR);
 	~VisionView();
 
-public:
     void setViewState(VISION_VIEW_MODE state);
 	void setImage(const cv::Mat& matImage, bool bDisplay);
 	cv::Mat getImage();
@@ -40,6 +39,8 @@ public:
 	cv::Mat getSelectImage();
 	void clearSelect();
 	cv::Rect2f getSelectedROI();
+    cv::Rect getSrchWindow() const { return m_pViewWidget->getSrchWindow(); }
+    void setSrchWindow(const cv::Rect &rectSrchWindow) { m_pViewWidget->setSrchWindow(rectSrchWindow); }
 
 	void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
     void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs);

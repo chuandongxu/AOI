@@ -30,11 +30,13 @@
 
 AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignments,
                              const Engine::WindowVector            &vecWindows,
-                             const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr)
-    :m_vecAlignments  (vecAlignments),
-     m_vecWindows     (vecWindows),
-     m_vecVecFrameCtr (vecVecFrameCtr),
-     m_exit           (false)
+                             const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr,
+                             MapBoardInspResult                    *pMapBoardInspResult)
+    :m_vecAlignments        (vecAlignments),
+     m_vecWindows           (vecWindows),
+     m_vecVecFrameCtr       (vecVecFrameCtr),
+     m_pMapBoardInspResult  (pMapBoardInspResult),
+     m_exit                 (false)
 {
 }
 
@@ -63,6 +65,7 @@ void AutoRunThread::run()
 	if (! preRunning()) return;
 
 	System->setTrackInfo(QString(QStringLiteral("主流程启动成功!")));
+    m_boardName.clear();
 
 	double dtime_start = 0, dtime_movePos = 0;
 	while (! isExit())
@@ -71,9 +74,15 @@ void AutoRunThread::run()
 		if (isExit()) break;
 
         _feedBoard();
-        _readBarcode();
-
+        
         QThreadPool::globalInstance()->waitForDone();
+
+        if(!m_boardName.isEmpty())
+            System->setTrackInfo(QStringLiteral("电路板: ") + m_boardName + QStringLiteral(" 检测完毕."));
+
+        _readBarcode();
+        BoardInspResultPtr ptrBoardInspResult = std::make_shared<BoardInspResult>(m_boardName);
+        m_pMapBoardInspResult->insert(m_boardName, ptrBoardInspResult);
 
 		if (! _doAlignment()) break;
 		if (isExit()) break;
@@ -82,7 +91,7 @@ void AutoRunThread::run()
         if (m_vecVecFrameCtr.empty())
             break;
 
-        if(! _doInspection()) break;
+        if(! _doInspection(ptrBoardInspResult)) break;
         if (isExit()) break;
 	}
 
@@ -261,6 +270,7 @@ bool AutoRunThread::_readBarcode()
 {
     // Read the bard code.
     // Need to implement later.
+    m_boardName = "Board_" + QDateTime::currentDateTime().toString();
     return true;
 }
 
@@ -361,6 +371,7 @@ bool AutoRunThread::_doAlignment()
 
 bool AutoRunThread::_alignWindows()
 {
+    m_vecAlignedWindows.clear();
     for (auto window : m_vecWindows) {
         std::vector<float> vecSrcPos;
         vecSrcPos.push_back(window.x);
@@ -375,7 +386,7 @@ bool AutoRunThread::_alignWindows()
     return true;
 }
 
-bool AutoRunThread::_doInspection()
+bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
 {
     bool bGood = true;
     for (int row = 0; row < m_vecVecFrameCtr.size(); ++ row) {
@@ -384,7 +395,7 @@ bool AutoRunThread::_doInspection()
             if (! moveToCapturePos(ptFrameCtr.x, ptFrameCtr.y)) {
                 bGood = false;
                 break;
-            }           
+            }
 
             if (!System->isRunOffline()) {
                 auto pMotion = getModule<IMotion>(MOTION_MODEL);
@@ -431,7 +442,7 @@ bool AutoRunThread::_doInspection()
 
             auto vec2DImages = _generate2DImages(vec2DCaptureImages);
             if (!vecWindows.empty()) {
-                auto pInsp2DRunnable = new Insp2DRunnable(vec2DImages, vecWindows, ptFrameCtr);
+                auto pInsp2DRunnable = new Insp2DRunnable(vec2DImages, vecWindows, ptFrameCtr, ptrBoardInspResult);
                 pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
                 pInsp2DRunnable->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
                 QThreadPool::globalInstance()->start(pInsp2DRunnable);
