@@ -48,11 +48,7 @@ public:
 	VisionViewWidget(QWidget *parent = Q_NULLPTR);
 	~VisionViewWidget();
 
-private:
-	void init();
-
-public:
-	void setViewState(VISION_VIEW_MODE state);
+    void setViewState(VISION_VIEW_MODE state);
 	void setImage(const cv::Mat& matImage, bool bDisplay);
 	cv::Mat getImage();
 	void clearImage();
@@ -65,6 +61,8 @@ public:
 	cv::Mat getSelectImage();
 	void clearSelect();
 	cv::Rect2f getSelectedROI();
+    cv::Rect getSrchWindow() const { return m_rectSrchWindow; }
+    void setSrchWindow(const cv::Rect &rectSrchWindow);
 
 	void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber);
     void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs);
@@ -79,10 +77,6 @@ public:
     void setHeightData(cv::Mat& matHeight);
 	cv::Mat getHeightData();
 
-private slots:
-	void onResultEvent(const QVariantList &data);
-
-public:
 	void openFile();
 	void cameraFile();
 	void saveAsFile();
@@ -108,7 +102,11 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *event);
 	void wheelEvent(QWheelEvent * event);
 
+private slots:
+	void onResultEvent(const QVariantList &data);
+
 private:
+	void init();	
 	void addNodeByDrag(int nType, int nObjID, QPoint ptPos);
 	void displayAllObjs();
 
@@ -125,12 +123,13 @@ private:
 	void zoomImage(double scale);
 	void moveImage(double motionX, double motionY);
 	
+    void _drawSelectedROI(cv::Mat &matImage);
 	void _zoomImageForDisplay(const cv::Mat &matInputImg, cv::Mat &matOutput);
 	void _cutImageForDisplay(const cv::Mat &matInputImg, cv::Mat &matOutput);
 	void _drawDeviceWindows(cv::Mat &matImg);
     void _drawDetectObjs();
 	void _calcMoveRange();
-	bool _checkSelectedDevice(const cv::Point &ptMousePos);	
+	bool _checkSelectedDevice(const cv::Point &ptMousePos);
 
 private:
     Ui::VisionViewWidget    ui;
@@ -161,6 +160,7 @@ private:
 	DViewUtility           *m_pMainViewFull3D;
 	DViewUtility           *m_pView3D;
 	cv::Rect                m_selectROI;
+    cv::Rect                m_rectSrchWindow;
 	QDockWidget            *m_pSelectView;
 	bool                    m_bShow3DInitial;
 	bool                    m_bMainView3DInitial;

@@ -38,6 +38,8 @@ public:
 	virtual cv::Mat getSelectImage() = 0;
 	virtual void clearSelect() = 0;
 	virtual cv::Rect2f getSelectedROI() = 0;
+    virtual cv::Rect getSrchWindow() const = 0;
+    virtual void setSrchWindow(const cv::Rect &rectSrchWindow) = 0;
 
 	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber = false) = 0;
     virtual void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs) = 0;

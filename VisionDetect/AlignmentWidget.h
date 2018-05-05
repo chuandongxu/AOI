@@ -22,11 +22,16 @@ public:
 	virtual void confirmWindow(OPERATION enOperation) override;
 
 private:
-	Ui::AlignmentWidget ui;
+    bool _learnTemplate(int &recordId);
+    bool _srchTemplate(int recordId, bool bShowResult = true);
+
+private:
+	Ui::AlignmentWidget         ui;
 
 	std::unique_ptr<QComboBox>	m_pComboBoxAlgorithm;
 	std::unique_ptr<QLineEdit>  m_pEditRecordID;
 	std::unique_ptr<QCheckBox>  m_pCheckBoxSubPixel;
 	std::unique_ptr<QComboBox>	m_pComboBoxMotion;
 	std::unique_ptr<QLineEdit>  m_pEditMinScore;
+    bool                        m_bIsTryInspected = false;
 };

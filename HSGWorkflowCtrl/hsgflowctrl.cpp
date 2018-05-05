@@ -291,7 +291,7 @@ void QFlowCtrl::start()
         }
     }
 
-    m_pAutoRunThread = new AutoRunThread(vecAlignments, vecWindows, vecVecFrameCtr);
+    m_pAutoRunThread = new AutoRunThread(vecAlignments, vecWindows, vecVecFrameCtr, &m_mapBoardInspResult);
     connect(m_pAutoRunThread, &AutoRunThread::finished, m_pAutoRunThread, &QObject::deleteLater);
     m_pAutoRunThread->setImageSize(nImgWidth, nImgHeight);
     m_pAutoRunThread->setBoardStartPos(left, bottom);
