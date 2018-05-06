@@ -29,7 +29,7 @@ public:
 
 	virtual void setHeightData(cv::Mat& matHeight) = 0;
 	virtual cv::Mat getHeightData() = 0;
-	virtual bool startUpCapture() = 0;
+	virtual bool startUpCapture(bool bPromptSelect = true) = 0;
 	virtual bool endUpCapture() = 0;
 
 	virtual void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues) = 0;

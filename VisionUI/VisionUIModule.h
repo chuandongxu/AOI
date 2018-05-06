@@ -23,7 +23,7 @@ public:
 	virtual void setImage(const cv::Mat& matImage, bool bDisplay);
 	virtual void setHeightData(cv::Mat& matHeight);
 	virtual cv::Mat getHeightData();
-	virtual bool startUpCapture();
+	virtual bool startUpCapture(bool bPromptSelect);
 	virtual bool endUpCapture();
 
 	virtual cv::Mat getImage();

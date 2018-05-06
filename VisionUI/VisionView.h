@@ -53,7 +53,7 @@ public:
     void setCurrentFM(const VisionViewFM &fm);
     VisionViewFM getCurrentFM() const;
 
-	bool startUpCapture();
+	bool startUpCapture(bool bPromptSelect);
 	bool endUpCapture();
 
 	void setHeightData(cv::Mat& matHeight);
@@ -118,9 +118,12 @@ private:
 	void setButtonsEnable(bool flag);
 	void setLiveButtonEnable(bool flag);
 
+	bool onLive(bool bPromptSelect);
+	void onStopLive();
+
 private:
 	Ui::VisionView ui;	
-	VisionViewWidget* m_pViewWidget;
+	VisionViewWidget* m_pViewWidget;	
 
 	QWidget* m_pLightWidget;
 	QWidget* m_pColorWidget;

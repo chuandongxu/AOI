@@ -55,6 +55,14 @@ protected slots:
 	void onClearAllRecords();
 	void onAutoClearRecord(int iState);
 
+	void onCheckStartUpHome(int iState);
+	void onCheckStartZReady(int iState);
+	void onCheckStartLoadDB(int iState);
+	void onCheckStartDLPInit(int iState);
+	void onSaveZReady();
+	void onSelectDBPath();
+	void onSaveDBPath();
+
 private:
 	Ui::QWorkSetting ui;
 	QFlowCtrl * m_ctrl;

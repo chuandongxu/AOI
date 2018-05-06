@@ -219,6 +219,18 @@ void QWorkSetting::initUI()
 	connect(ui.pushButton_PRRelease, SIGNAL(clicked()), SLOT(onUninitPRSystem()));
 	connect(ui.pushButton_PRClearRecord, SIGNAL(clicked()), SLOT(onClearAllRecords()));
 	connect(ui.checkBox_AutoClearRecord, SIGNAL(stateChanged(int)), SLOT(onAutoClearRecord(int)));
+
+	int nZReadyID = System->getParam("auto_startup_zready_id").toInt();
+	ui.lineEdit_zReady->setText(QString("%1").arg(nZReadyID));
+
+	connect(ui.checkBox_startUpHome, SIGNAL(stateChanged(int)), SLOT(onCheckStartUpHome(int)));
+	connect(ui.checkBox_startUpZReady, SIGNAL(stateChanged(int)), SLOT(onCheckStartZReady(int)));
+	connect(ui.checkBox_startUpLoadDB, SIGNAL(stateChanged(int)), SLOT(onCheckStartLoadDB(int)));
+	connect(ui.checkBox_startUpDLPInit, SIGNAL(stateChanged(int)), SLOT(onCheckStartDLPInit(int)));
+	connect(ui.pushButton_saveZReady, SIGNAL(clicked()), SLOT(onSaveZReady()));
+	connect(ui.pushButton_selectDBPath, SIGNAL(clicked()), SLOT(onSelectDBPath()));
+	connect(ui.pushButton_saveDBPath, SIGNAL(clicked()), SLOT(onSaveDBPath()));
+
 }
 
 void QWorkSetting::onClickFullSpeed(bool s)
@@ -497,4 +509,66 @@ void QWorkSetting::onAutoClearRecord(int iState)
 	if (Qt::Checked == iState)data = 1;
 
 	System->setParam("vision_record_auto_clear", (bool)data);
+}
+
+void QWorkSetting::onCheckStartUpHome(int iState)
+{
+	int data = 0;
+	if (Qt::Checked == iState)data = 1;
+
+	System->setParam("auto_startup_home_enable", (bool)data);
+}
+
+void QWorkSetting::onCheckStartZReady(int iState)
+{
+	int data = 0;
+	if (Qt::Checked == iState)data = 1;
+
+	System->setParam("auto_startup_zready_enable", (bool)data);
+}
+
+void QWorkSetting::onCheckStartLoadDB(int iState)
+{
+	int data = 0;
+	if (Qt::Checked == iState)data = 1;
+
+	System->setParam("auto_startup_loaddb_enable", (bool)data);
+}
+
+void QWorkSetting::onCheckStartDLPInit(int iState)
+{
+	int data = 0;
+	if (Qt::Checked == iState)data = 1;
+
+	System->setParam("auto_startup_dlp_enable", (bool)data);
+}
+
+void QWorkSetting::onSaveZReady()
+{
+	int nZReadyID = ui.lineEdit_zReady->text().toInt();
+	System->setParam("auto_startup_zready_id", nZReadyID);
+}
+
+void QWorkSetting::onSelectDBPath()
+{
+	QFileDialog dialog(this);
+	dialog.setFileMode(QFileDialog::ExistingFile);
+	dialog.setAcceptMode(QFileDialog::AcceptOpen);
+	dialog.setNameFilter(tr("Project Files (*.aoi)"));
+	dialog.setViewMode(QFileDialog::Detail);
+	QStringList fileNames;
+	if (dialog.exec())  {
+		fileNames = dialog.selectedFiles();
+	}
+	else
+		return;
+
+	QString str = fileNames[0];
+	if (!str.isEmpty())ui.lineEdit_DBPath->setText(str);
+}
+
+void QWorkSetting::onSaveDBPath()
+{
+	QString str = ui.lineEdit_DBPath->text();
+	if (!str.isEmpty()) System->setParam("auto_startup_db_path", str);
 }
