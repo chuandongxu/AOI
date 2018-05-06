@@ -1,4 +1,4 @@
-#include "AlignmentWidget.h"
+﻿#include "AlignmentWidget.h"
 #include <QMessageBox>
 #include <qjsonobject.h>
 #include <qjsondocument.h>
@@ -12,6 +12,7 @@
 #include "../Common/CommonFunc.h"
 #include "../DataModule/QDetectObj.h"
 #include "InspWindowWidget.h"
+#include "../DataModule/CalcUtils.hpp"
 
 using namespace NFG::AOI;
 using namespace AOI;
@@ -67,6 +68,67 @@ void AlignmentWidget::setDefaultValue()
 	m_pCheckBoxSubPixel->setChecked(false);
 	m_pComboBoxMotion->setCurrentIndex(0);
 	m_pEditMinScore->setText("60");
+
+    m_bIsTryInspected = false;
+}
+
+bool AlignmentWidget::_learnTemplate(int &recordId)
+{
+    Vision::PR_LRN_TEMPLATE_CMD stCmd;
+    Vision::PR_LRN_TEMPLATE_RPY stRpy;
+
+    stCmd.enAlgorithm = static_cast<Vision::PR_MATCH_TMPL_ALGORITHM>(m_pComboBoxAlgorithm->currentIndex());
+
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    stCmd.matInputImg = pUI->getImage();
+    cv::Rect rectROI = pUI->getSelectedROI();
+    if (rectROI.width <= 0 || rectROI.height <= 0) {
+        QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Please select a ROI to do inspection."));
+        return false;
+    }
+
+    stCmd.rectROI = rectROI;
+
+    Vision::PR_LrnTmpl(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        System->showMessage(QStringLiteral("定位框"), QStringLiteral("学习模板失败"));
+        recordId = 0;
+        return false;
+    }
+
+    recordId = stRpy.nRecordId;
+    return true;
+}
+
+bool AlignmentWidget::_srchTemplate(int recordId, bool bShowResult)
+{
+    Vision::PR_MATCH_TEMPLATE_CMD stCmd;
+    Vision::PR_MATCH_TEMPLATE_RPY stRpy;
+
+    stCmd.enAlgorithm = static_cast<Vision::PR_MATCH_TMPL_ALGORITHM>(m_pComboBoxAlgorithm->currentIndex());
+    stCmd.bSubPixelRefine = m_pCheckBoxSubPixel->isChecked();
+    stCmd.enMotion = static_cast<Vision::PR_OBJECT_MOTION>(m_pComboBoxMotion->currentIndex());
+    stCmd.fMinMatchScore = m_pEditMinScore->text().toFloat();
+    stCmd.nRecordId = recordId;
+
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    stCmd.matInputImg = pUI->getImage();
+    cv::Rect rectROI = pUI->getSelectedROI();
+    if (rectROI.width <= 0 || rectROI.height <= 0) {
+        QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Please select a ROI to do inspection."));
+        return false;
+    }
+
+    stCmd.rectSrchWindow = pUI->getSrchWindow();
+
+    Vision::PR_MatchTmpl(&stCmd, &stRpy);
+    if (bShowResult) {
+        QString strMsg;
+        strMsg.sprintf("Inspect Status %d, center(%f, %f), rotation(%f), score(%f)", Vision::ToInt32(stRpy.enStatus), stRpy.ptObjPos.x, stRpy.ptObjPos.y, stRpy.fRotation, stRpy.fMatchScore);
+        QMessageBox::information(this, "Alignment", strMsg);
+    }
+
+    return Vision::VisionStatus::OK == stRpy.enStatus;
 }
 
 void AlignmentWidget::tryInsp()
@@ -74,61 +136,27 @@ void AlignmentWidget::tryInsp()
 	auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-	int nRecordID = m_pEditRecordID->text().toInt();
+    // Ask user to select the search window
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    auto rectROI = pUI->getSelectedROI();
+    cv::Rect rectDefaultSrchWindow = CalcUtils::resizeRect(rectROI, cv::Size2f(rectROI.width * 1.5f, rectROI.height * 1.5f));
+    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_SRCH_WINDOW);
+    pUI->setSrchWindow(rectDefaultSrchWindow);    
+    auto nReturn = System->showInteractMessage(QStringLiteral("定位框"), QStringLiteral("请拖动鼠标选择搜寻窗口"));
+    if (nReturn != QDialog::Accepted)
+        return;
 
-	if (nRecordID <= 0)
-	{
-		Vision::PR_LRN_TEMPLATE_CMD stCmd;
-		Vision::PR_LRN_TEMPLATE_RPY stRpy;
+	int nRecordId = 0;
+    if (!_learnTemplate(nRecordId)) {
+        return;
+    }
 
-		stCmd.enAlgorithm = static_cast<Vision::PR_MATCH_TMPL_ALGORITHM>(m_pComboBoxAlgorithm->currentIndex());
-
-		auto pUI = getModule<IVisionUI>(UI_MODEL);
-		stCmd.matInputImg = pUI->getImage();
-		cv::Rect rectROI = pUI->getSelectedROI();
-		if (rectROI.width <= 0 || rectROI.height <= 0) {
-			QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Please select a ROI to do inspection."));
-			return;
-		}
-
-		stCmd.rectROI = rectROI;
-
-		Vision::PR_LrnTmpl(&stCmd, &stRpy);
-		QString strMsg;
-		strMsg.sprintf("Inspect Status %d, recordID(%d)", Vision::ToInt32(stRpy.enStatus), stRpy.nRecordId);
-		m_pEditRecordID->setText(QString::number(stRpy.nRecordId));
-		QMessageBox::information(this, "Alignment", strMsg);
-	}
-	else
-	{
-		Vision::PR_MATCH_TEMPLATE_CMD stCmd;
-		Vision::PR_MATCH_TEMPLATE_RPY stRpy;
-
-		stCmd.enAlgorithm = static_cast<Vision::PR_MATCH_TMPL_ALGORITHM>(m_pComboBoxAlgorithm->currentIndex());
-		stCmd.bSubPixelRefine = m_pCheckBoxSubPixel->isChecked();
-		stCmd.enMotion = static_cast<Vision::PR_OBJECT_MOTION>(m_pComboBoxMotion->currentIndex());
-		stCmd.fMinMatchScore = m_pEditMinScore->text().toFloat();
-		stCmd.nRecordId = nRecordID;	
-
-		auto pUI = getModule<IVisionUI>(UI_MODEL);
-		stCmd.matInputImg = pUI->getImage();
-		cv::Rect rectROI = pUI->getSelectedROI();
-		if (rectROI.width <= 0 || rectROI.height <= 0) {
-			QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Please select a ROI to do inspection."));
-			return;
-		}
-
-		stCmd.rectSrchWindow = rectROI;
-		stCmd.rectSrchWindow.x -= stCmd.rectSrchWindow.width  * 0.1;
-		stCmd.rectSrchWindow.y -= stCmd.rectSrchWindow.height * 0.1;
-		stCmd.rectSrchWindow.width  *= 1.2;
-		stCmd.rectSrchWindow.height *= 1.2;
-
-		Vision::PR_MatchTmpl(&stCmd, &stRpy);
-		QString strMsg;
-		strMsg.sprintf("Inspect Status %d, center(%f, %f), rotation(%f), score(%f)", Vision::ToInt32(stRpy.enStatus), stRpy.ptObjPos.x, stRpy.ptObjPos.y, stRpy.fRotation, stRpy.fMatchScore);
-		QMessageBox::information(this, "Alignment", strMsg);
-	}
+    if (_srchTemplate(nRecordId))
+        m_bIsTryInspected = true;
+    else
+        m_bIsTryInspected = false;
+	
+	Vision::PR_FreeRecord(nRecordId);
 }
 
 void AlignmentWidget::confirmWindow(OPERATION enOperation)
@@ -136,17 +164,7 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation)
 	auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
-
-	QJsonObject json;
-	json.insert("Algorithm", m_pComboBoxAlgorithm->currentIndex());
-	json.insert("SubPixel", m_pCheckBoxSubPixel->isChecked());
-	json.insert("Motion", m_pComboBoxMotion->currentIndex());
-	json.insert("MinScore", m_pEditMinScore->text().toFloat());
-
-	QJsonDocument document;
-	document.setObject(json);
-	QByteArray byte_array = document.toJson(QJsonDocument::Compact);
+    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();	
 
 	auto pUI = getModule<IVisionUI>(UI_MODEL);
 	auto rectROI = pUI->getSelectedROI();
@@ -155,12 +173,46 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation)
 		return;
 	}
 
+    if (!m_bIsTryInspected) {
+        // Ask user to select the search window
+        cv::Rect rectDefaultSrchWindow = CalcUtils::resizeRect(rectROI, cv::Size2f(rectROI.width * 1.5f, rectROI.height * 1.5f));
+        pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_SRCH_WINDOW);
+        pUI->setSrchWindow(rectDefaultSrchWindow);    
+        auto nReturn = System->showInteractMessage(QStringLiteral("定位框"), QStringLiteral("请拖动鼠标选择搜寻窗口"));
+        if (nReturn != QDialog::Accepted)
+            return;
+    }
+
+    int nRecordId = 0;
+    if (!_learnTemplate(nRecordId)) {
+        return;
+    }
+
+    if (!_srchTemplate(nRecordId, false)) {
+        System->showInteractMessage(QStringLiteral("定位框"), QStringLiteral("搜寻模板失败"));
+        return;
+    }
+
+    auto rectSrchWindow = pUI->getSrchWindow();
+
+    QJsonObject json;
+	json.insert("Algorithm", m_pComboBoxAlgorithm->currentIndex());
+	json.insert("SubPixel", m_pCheckBoxSubPixel->isChecked());
+	json.insert("Motion", m_pComboBoxMotion->currentIndex());
+	json.insert("MinScore", m_pEditMinScore->text().toFloat());
+    json.insert("SrchWinWidth",  rectSrchWindow.width  * dResolutionX);
+    json.insert("SrchWinHeight", rectSrchWindow.height * dResolutionX);
+
+	QJsonDocument document;
+	document.setObject(json);
+	QByteArray byte_array = document.toJson(QJsonDocument::Compact);
+
 	Engine::Window window;
 	window.lightId = m_pParent->getSelectedLighting() + 1;
 	window.usage = Engine::Window::Usage::ALIGNMENT;
 	window.inspParams = byte_array;
 	
-    cv::Point2f ptWindowCtr(rectROI.x + rectROI.width  / 2.f, rectROI.y + rectROI.height / 2.f);
+    cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();
     int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;
     int nBigImgHeight = matBigImage.rows / dCombinedImageScale;
@@ -176,7 +228,8 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation)
 	window.height = rectROI.height * dResolutionY;
 	window.deviceId = pUI->getSelectedDevice().getId();
 	window.angle = 0;
-	window.recordId = m_pEditRecordID->text().toInt();
+	window.recordId = nRecordId;
+    m_pEditRecordID->setText(QString::number(nRecordId));
 
     if (ReadBinaryFile(FormatRecordName(window.recordId), window.recordData) != 0) {
         QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Failed to read record data."));

@@ -14,6 +14,7 @@
 
 #include "AutoRunThread.h"
 #include "opencv/cv.h"
+#include "BoardInspResult.h"
 
 class QFlowCtrl : public QObject
 {
@@ -47,15 +48,16 @@ protected:
 	void stop();
 
 private:
-	int m_timerId;
-	bool m_isHome;
-	bool m_homeIng;
-	bool m_isStart;
+	int                 m_timerId;
+	bool                m_isHome;
+	bool                m_homeIng;
+	bool                m_isStart;
 
-	AutoRunThread *m_pAutoRunThread;
+	AutoRunThread      *m_pAutoRunThread;
 
-	QDateTime m_dateTime;
-	int m_errorCode;
+	QDateTime           m_dateTime;
+	int                 m_errorCode;
+    MapBoardInspResult  m_mapBoardInspResult;
 };
 
 #endif // FLOWCTRL_H

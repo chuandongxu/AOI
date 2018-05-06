@@ -32,8 +32,8 @@ QRightWidget::QRightWidget(QWidget *parent)
 
     IData * pData = getModule<IData>(DATA_MODEL);	
 	if (pData) {
-        ui.stackedWidget->addWidget( pData->getDataWidget() );
-		ui.stackedWidget->addWidget(pData->getStatisticsWidget());
+        ui.stackedWidget->addWidget(pData->getDataWidget());
+        ui.stackedWidget->addWidget(pData->getStatisticsWidget());
     }
 	ui.stackedWidget->setCurrentIndex(0);	
 

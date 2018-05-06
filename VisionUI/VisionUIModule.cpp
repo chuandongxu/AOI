@@ -190,12 +190,12 @@ void QVisionUIModule::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
 
 void QVisionUIModule::setDetectObjs(const QVector<QDetectObj> &vecDetectObjs)
 {
-    m_pVisionView->setDetectObjs ( vecDetectObjs );
+    m_pVisionView->setDetectObjs(vecDetectObjs);
 }
 
 void QVisionUIModule::setCurrentDetectObj(const QDetectObj &detectObj)
 {
-    m_pVisionView->setCurrentDetectObj ( detectObj );
+    m_pVisionView->setCurrentDetectObj(detectObj);
 }
 
 QVector<QDetectObj> QVisionUIModule::getDetectObjs() const
