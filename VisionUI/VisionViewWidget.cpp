@@ -77,16 +77,21 @@ void CameraOnLive::run()
 				System->setTrackInfo(QString("startCapturing error"));
 				continue;
 			}
-
 			if (m_bQuit) break;
 
 			if (!pCam->getImages(imageMats))
 			{
 				System->setTrackInfo(QString("getImages error"));
 				continue;
-			}			
-
+			}
 			if (m_bQuit) break;
+
+			//if (!pCam->stopCapturing())
+			//{
+			//	System->setTrackInfo(QString("stopCapturing error"));
+			//	continue;
+			//}
+			//if (m_bQuit) break;
 
 			bool bShowImageToScreen = System->getParam("camera_show_image_toScreen_enable").toBool();
 			if (bShowImageToScreen)

@@ -57,9 +57,7 @@ QFlowCtrl::QFlowCtrl(QObject *parent)
 	//	pMotion->setExtDO(DO_GREEN_LIGHT,0);
 	//	pMotion->setExtDO(DO_RED_LIGHT,0);
 	//	pMotion->setExtDO(DO_BUZZER,0);
-	//}
-
-	initStartUp();
+	//}	
 }
 
 QFlowCtrl::~QFlowCtrl()
@@ -426,8 +424,13 @@ void QFlowCtrl::initStartUp()
 		bool bStartUpEnable = System->getParam("auto_startup_loaddb_enable").toBool();
 		if (bStartUpEnable)
 		{
+			QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在导入数据中..."), 0);
+			QApplication::processEvents();
+
 			QString szDBPath = System->getParam("auto_startup_db_path").toString();
 			pData->openProject(szDBPath);
+
+			QSystem::closeMessage();
 		}
 	}
 	
@@ -438,6 +441,9 @@ void QFlowCtrl::initStartUp()
 		bool bStartUpEnable = System->getParam("auto_startup_dlp_enable").toBool();
 		if (bStartUpEnable)
 		{
+			QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在初始化模块中..."), 0);
+			QApplication::processEvents();
+
 			int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
 			for (int i = 0; i < nStationNum; ++i) {
 				if (pDlp->isConnected(i)) {
@@ -447,6 +453,11 @@ void QFlowCtrl::initStartUp()
 				else
 					System->setTrackInfo(QString(QStringLiteral("工位%0启动失败, 请检查DLP硬件！")).arg(i + 1));
 			}
+
+			QSystem::closeMessage();
 		}		
-	}	
+	}
+
+	QApplication::processEvents();
+	QSystem::closeMessage();
 }

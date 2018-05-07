@@ -16,6 +16,8 @@ public:
 
 	void addSettingWiddget(QTabWidget *tabWidget);
 	void addDiagonseWidget(QTabWidget * tabWidget);
+
+	void preStartUp();
 	
 	virtual bool isRuning();
 

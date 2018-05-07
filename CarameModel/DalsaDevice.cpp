@@ -431,7 +431,12 @@ bool DalsaCameraDevice::startGrabing(int nNum)
 	m_nGrabCount = 0;
 	m_waitMutex.unlock();	
 
-	return m_Xfer->Grab();
+	BOOL success = m_Xfer->Grab();
+	if (success)
+	{
+		m_bStopFlag = false;
+	}
+	return success;
 }
 
 bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)

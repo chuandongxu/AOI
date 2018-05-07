@@ -220,8 +220,23 @@ void QWorkSetting::initUI()
 	connect(ui.pushButton_PRClearRecord, SIGNAL(clicked()), SLOT(onClearAllRecords()));
 	connect(ui.checkBox_AutoClearRecord, SIGNAL(stateChanged(int)), SLOT(onAutoClearRecord(int)));
 
+	bool bStartUpHomeEnable = System->getParam("auto_startup_home_enable").toBool();
+	ui.checkBox_startUpHome->setChecked(bStartUpHomeEnable);
+
+	bool bStartUpZReadyEnable = System->getParam("auto_startup_zready_enable").toBool();
+	ui.checkBox_startUpZReady->setChecked(bStartUpZReadyEnable);
+
+	bool bStartUpLoadDBEnable = System->getParam("auto_startup_loaddb_enable").toBool();
+	ui.checkBox_startUpLoadDB->setChecked(bStartUpLoadDBEnable);
+
+	bool bStartUpDLPEnable = System->getParam("auto_startup_dlp_enable").toBool();
+	ui.checkBox_startUpDLPInit->setChecked(bStartUpDLPEnable);
+
 	int nZReadyID = System->getParam("auto_startup_zready_id").toInt();
 	ui.lineEdit_zReady->setText(QString("%1").arg(nZReadyID));
+
+	QString szDBPath = System->getParam("auto_startup_db_path").toString();
+	ui.lineEdit_DBPath->setText(QString("%1").arg(szDBPath));
 
 	connect(ui.checkBox_startUpHome, SIGNAL(stateChanged(int)), SLOT(onCheckStartUpHome(int)));
 	connect(ui.checkBox_startUpZReady, SIGNAL(stateChanged(int)), SLOT(onCheckStartZReady(int)));

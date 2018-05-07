@@ -25,6 +25,8 @@ public:
 
 	bool isRuning();
 
+	void initStartUp();
+
 protected slots:
 	void onImageEvent(const QVariantList &data);
 
@@ -41,8 +43,6 @@ protected:
 
 	void initStationParam();
 	void initErrorCode();
-
-	void initStartUp();
 
 	void imStop();
 	void reset();

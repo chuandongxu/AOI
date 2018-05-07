@@ -162,6 +162,7 @@ bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
 
 	if (!getLastImages(imageMats))
 	{
+		System->setTrackInfo(QString("getLastImages error."));
 		return false;
 	}
 

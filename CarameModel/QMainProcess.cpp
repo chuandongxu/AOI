@@ -49,16 +49,16 @@ bool QMainProcess::startCapturing()
 		return false;
 	}
 
-	//int nWaitTime = 2 * 1000;
-	//while (!m_pCameraCtrl->getCamera(0)->isGrabing() && (nWaitTime-- > 0))
-	//{
-	//	QThread::msleep(1);
-	//}
+	int nWaitTime = 2 * 1000;
+	while (!m_pCameraCtrl->getCamera(0)->isGrabing() && (nWaitTime-- > 0))
+	{
+		QThread::msleep(1);
+	}
 
-	//if (nWaitTime > 0)
-	//{
-	//	return true;
-	//}
+	if (nWaitTime <= 0)
+	{
+		return false;
+	}
 
 	return true;
 }

@@ -37,6 +37,8 @@ public:
     virtual void addDiagonseWidget(QTabWidget * tabWidget) = 0;
     virtual void freeDiagonseWidget(QTabWidget * tabWidget) = 0;
 
+	virtual void preStartUp() = 0;
+
     virtual void insertEventObserver(QHalEventObserver * pObs) = 0;
     virtual void sendNotifyHalEvent(const QHalEvent &ev) = 0;
 };
