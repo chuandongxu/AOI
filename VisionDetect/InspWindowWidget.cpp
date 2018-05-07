@@ -10,11 +10,13 @@
 #include "../DataModule/QDetectObj.h"
 #include "../Common/eos.h"
 #include "InspWindowSelectDialog.h"
+#include "DialogCreateGroup.h"
 #include "FindLineWidget.h"
 #include "FindCircleWidget.h"
 #include "InspVoidWidget.h"
 #include "AlignmentWidget.h"
 #include "HeightDetectWidget.h"
+#include "TreeWidgetInspWindow.h"
 
 static const QString DEFAULT_WINDOW_NAME[] =
 {
@@ -42,7 +44,8 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
 
     QEos::Attach(EVENT_INSP_WINDOW_STATE, this, SLOT(onInspWindowState(const QVariantList &)));
 
-    connect(ui.listWindowWidget, SIGNAL(currentRowChanged(int)), this, SLOT(onSelectedWindowChanged(int)));
+    connect(ui.treeWidget, SIGNAL(regrouped()), this, SLOT(on_regrouped()));
+    connect(ui.treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectedWindowChanged()));    
 
     m_pComboBoxLighting = std::make_unique<QComboBox>(this);
     QStringList ls;
@@ -63,19 +66,65 @@ void InspWindowWidget::setCurrentIndex(int index) {
 
 void InspWindowWidget::UpdateInspWindowList() {
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    auto deviceId = pUI->getSelectedDevice().getId();
 
-    auto result = Engine::GetDeviceWindows(pUI->getSelectedDevice().getId(), m_vecCurrentDeviceWindows);
+    Int64Vector vecGroupId;
+    auto result = Engine::GetDeviceWindowGroups(deviceId, vecGroupId);
     if (result != Engine::OK) {
         String errorType, errorMessage;
         Engine::GetErrorDetail(errorType, errorMessage);
-        errorMessage = "Failed to get inspect windows from database, error message " + errorMessage;
-        QMessageBox::critical(nullptr, QStringLiteral("Inspect Window"), errorMessage.c_str(), QStringLiteral("Quit"));
+        QString msg(QStringLiteral("Failed to get device groups from database, error message "));
+        msg += errorMessage.c_str();
+        System->showMessage(QStringLiteral("检测框"), msg);
+        return;
     }
 
-    ui.listWindowWidget->clear();
-    for (const auto &window : m_vecCurrentDeviceWindows)
-        ui.listWindowWidget->addItem(window.name.c_str());
+    ui.treeWidget->clear();
+    m_vecWindowGroup.clear();
+    for (const auto groupId : vecGroupId) {
+        Engine::WindowGroup windowGroup;
+        auto result = Engine::GetGroupWindows(groupId, windowGroup);
+        if (result != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString msg(QStringLiteral("Failed to get group windows from database, error message "));
+            msg += errorMessage.c_str();
+            System->showMessage(QStringLiteral("检测框"), msg);
+            return;
+        }
+        m_vecWindowGroup.push_back(windowGroup);
 
+        QTreeWidgetItem *pGroupItem = new QTreeWidgetItem(QStringList{windowGroup.name.c_str()}, TREE_ITEM_GROUP);
+        pGroupItem->setData(0, Qt::UserRole, windowGroup.Id);
+        pGroupItem->setIcon(0, QIcon("./Image/Group.png"));
+        ui.treeWidget->addTopLevelItem(pGroupItem);
+        for (auto const &window : windowGroup.vecWindows) {
+            QTreeWidgetItem *pItem = new QTreeWidgetItem(QStringList{window.name.c_str()}, TREE_ITEM_WINDOW);
+            pItem->setData(0, Qt::UserRole, window.Id);
+            pGroupItem->addChild(pItem);
+        }
+    }
+
+    Engine::WindowVector vecCurrentDeviceWindows;
+    result = Engine::GetDeviceUngroupedWindows(deviceId, vecCurrentDeviceWindows);
+    if (result != Engine::OK) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString msg(QStringLiteral("Failed to get inspect windows from database, error message "));
+        msg += errorMessage.c_str();
+        System->showMessage(QStringLiteral("检测框"), msg);
+        return;
+    }
+
+    m_mapIdWindow.clear();
+    for(const auto &window : vecCurrentDeviceWindows)
+        m_mapIdWindow.insert(std::pair<Int64, Engine::Window>(window.Id, window));
+    for (const auto &window : vecCurrentDeviceWindows) {
+        QTreeWidgetItem *pItem = new QTreeWidgetItem(QStringList{window.name.c_str()}, TREE_ITEM_WINDOW);
+        pItem->setData(0, Qt::UserRole, window.Id);
+        ui.treeWidget->addTopLevelItem(pItem);
+    }
+    ui.treeWidget->expandAll();
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
 }
 
@@ -180,20 +229,97 @@ void InspWindowWidget::on_btnAddWindow_clicked() {
 }
 
 void InspWindowWidget::on_btnRemoveWindow_clicked() {
-    auto index = ui.listWindowWidget->currentRow();
-    if (index >= 0) {
-        auto windowId = m_vecCurrentDeviceWindows[index].Id;
-        Engine::DeleteWindow(windowId);
-        ui.listWindowWidget->takeItem(index);
+    auto selectedItems = ui.treeWidget->selectedItems();
+    if (selectedItems.size() <= 0)
+        return;
 
-        UpdateInspWindowList();
+    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    auto vecDetectObjs = pUI->getDetectObjs();
 
-        IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-        auto vecDetectObjs = pUI->getDetectObjs();
-        auto it = std::remove_if(vecDetectObjs.begin(), vecDetectObjs.end(), [windowId](QDetectObj &detectObj) { return detectObj.getID() == windowId; });
-        vecDetectObjs.erase(it);
-        pUI->setDetectObjs(vecDetectObjs);
+    for (const auto &pItem : selectedItems) {
+        if (TREE_ITEM_WINDOW == pItem->type()) {
+            auto windowId = pItem->data(0, Qt::UserRole).toInt();
+            auto windowName = pItem->text(0);
+            QString msg = "Are you sure to delete the inspection window: " + windowName;
+            int result = QMessageBox::warning(this, "删除检测框", msg, QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::Cancel);
+            if (result != QMessageBox::StandardButton::Ok)
+                return;
+
+            result = Engine::DeleteWindow(windowId);
+            if (result != Engine::OK) {
+                String errorType, errorMessage;
+                Engine::GetErrorDetail(errorType, errorMessage);
+                QString msg(QStringLiteral("删除检测框失败, 错误消息: "));
+                msg += errorMessage.c_str();
+                System->showMessage(QStringLiteral("检测框"), msg);
+                return;
+            }
+            auto pParent = pItem->parent();
+            if (NULL == pParent)
+                ui.treeWidget->takeTopLevelItem(ui.treeWidget->indexOfTopLevelItem(pItem));
+            else {
+                int index = pParent->indexOfChild(pItem);
+                pParent->takeChild(index);
+            }
+
+            auto it = std::remove_if(vecDetectObjs.begin(), vecDetectObjs.end(), [windowId](QDetectObj &detectObj) { return detectObj.getID() == windowId; });
+            vecDetectObjs.erase(it);
+            pUI->setDetectObjs(vecDetectObjs);
+        }else {
+            auto groupwId = pItem->data(0, Qt::UserRole).toInt();
+            auto groupName = pItem->text(0);
+            QString msg = "Are you sure to delete the group: " + groupName;
+            int result = QMessageBox::warning(this, "删除检测框", msg, QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::Cancel);
+            if (result != QMessageBox::StandardButton::Ok)
+                return;
+
+            result = Engine::DeleteWindowGroup(groupwId);
+            if (result != Engine::OK) {
+                String errorType, errorMessage;
+                Engine::GetErrorDetail(errorType, errorMessage);
+                QString msg(QStringLiteral("删除检测框组失败, 错误消息: "));
+                msg += errorMessage.c_str();
+                System->showMessage(QStringLiteral("检测框组"), msg);
+                return;
+            }
+
+            ui.treeWidget->takeTopLevelItem(ui.treeWidget->indexOfTopLevelItem(pItem));
+        }        
     }
+
+    UpdateInspWindowList();    
+}
+
+void InspWindowWidget::on_btnCreateGroup_clicked()
+{
+    auto listOfItems = ui.treeWidget->selectedItems();
+    if (listOfItems.count() < 2) {
+        System->showMessage(QStringLiteral("创建检测组"), QStringLiteral("请选择至少两个窗口!"));
+        return;
+    }
+
+    DialogCreateGroup dialog;
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+
+    Engine::WindowGroup windowGroup;
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    windowGroup.deviceId = pUI->getSelectedDevice().getId();
+    windowGroup.name = dialog.getGroupName().toStdString();
+    for (const auto &pItem : listOfItems) {
+        auto windowId = pItem->data(0, Qt::UserRole).toInt();
+        windowGroup.vecWindows.push_back(m_mapIdWindow[windowId]);
+    }
+    auto result = Engine::CreateWindowGroup(windowGroup);
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString strMsg(QStringLiteral("创建检测框组失败, 错误消息: "));
+        strMsg += errorMessage.c_str();
+        System->showMessage(QStringLiteral("创建检测框组"), strMsg);
+        return;
+    }
+    UpdateInspWindowList();
 }
 
 void InspWindowWidget::on_btnTryInsp_clicked() {
@@ -212,21 +338,62 @@ void InspWindowWidget::on_btnConfirmWindow_clicked() {
 
 void InspWindowWidget::onInspWindowState(const QVariantList &data) {
     UpdateInspWindowList();
-    if (ui.listWindowWidget->count() > 0) {
-        ui.listWindowWidget->item(0)->setSelected(true);
-        ui.listWindowWidget->setCurrentRow(0);
+    if (ui.treeWidget->topLevelItemCount() > 0) {
+        ui.treeWidget->topLevelItem(ui.treeWidget->topLevelItemCount() - 1)->setSelected(true);
     }
 }
 
-void InspWindowWidget::onSelectedWindowChanged(int index) {
-    if (index < 0) {
+void InspWindowWidget::onSelectedWindowChanged() {
+    auto selectedItems = ui.treeWidget->selectedItems();
+    if (selectedItems.size() <= 0) {
         _hideWidgets();
         return;
     }
 
     _showWidgets();
 
-    auto window = m_vecCurrentDeviceWindows[index];
+    auto modifiers = QApplication::keyboardModifiers();
+    if (!modifiers.testFlag(Qt::ControlModifier) && selectedItems.size() > 1)
+        ui.treeWidget->selectionModel()->clearSelection();
+
+    Engine::Window window;
+    auto pItem = ui.treeWidget->currentItem();
+    if (NULL == pItem)
+        pItem = selectedItems[0];
+
+    if (pItem->type() == TREE_ITEM_WINDOW) {
+        auto windowName = pItem->text(0).toStdString();
+        auto windowId = pItem->data(0, Qt::UserRole).toInt();
+        auto pParentItem = pItem->parent();
+        if (NULL == pParentItem) {
+            if (m_mapIdWindow.find(windowId) == m_mapIdWindow.end())
+                return;
+            window = m_mapIdWindow[windowId];
+        }else {
+            int index = ui.treeWidget->indexOfTopLevelItem(pParentItem);
+            if (index < 0)
+                return;
+
+            int childIndex = pParentItem->indexOfChild(pItem);
+            window = m_vecWindowGroup[index].vecWindows[childIndex];
+        }        
+    }
+    else {
+        int index = ui.treeWidget->indexOfTopLevelItem(pItem);
+        if (index < 0)
+            return;
+
+        if (m_vecWindowGroup[index].vecWindows.size() <= 0)
+            return;
+
+        window = m_vecWindowGroup[index].vecWindows[0];
+        //auto pChindItem = pItem->child(0);
+        //pChindItem->setSelected(true);
+        //pItem->setSelected(false);
+    }
+
+    if (pItem)
+        pItem->setSelected(true);
 
     if (Engine::Window::Usage::FIND_LINE == window.usage)
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::FIND_LINE;
@@ -243,7 +410,7 @@ void InspWindowWidget::onSelectedWindowChanged(int index) {
 
     ui.labelWindowName->setText(window.name.c_str());
 
-    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setCurrentWindow(m_vecCurrentDeviceWindows[index]);
+    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setCurrentWindow(window);
     ui.stackedWidget->setCurrentIndex(static_cast<int>(m_enCurrentInspWidget));
 
     m_pComboBoxLighting->setCurrentIndex(window.lightId - 1);
@@ -287,4 +454,8 @@ void InspWindowWidget::on_comboBoxLighting_indexChanged(int index) {
     auto vecCombinedBigImage = pData->getCombinedBigImages();
     if (index >= 0 && index < vecCombinedBigImage.size() && !vecCombinedBigImage[index].empty())
         pUI->setImage(vecCombinedBigImage[index]);
+}
+
+void InspWindowWidget::on_regrouped() {
+    UpdateInspWindowList();
 }
