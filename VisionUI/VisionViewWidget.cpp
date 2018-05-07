@@ -77,16 +77,21 @@ void CameraOnLive::run()
 				System->setTrackInfo(QString("startCapturing error"));
 				continue;
 			}
-
 			if (m_bQuit) break;
 
 			if (!pCam->getImages(imageMats))
 			{
 				System->setTrackInfo(QString("getImages error"));
 				continue;
-			}			
-
+			}
 			if (m_bQuit) break;
+
+			//if (!pCam->stopCapturing())
+			//{
+			//	System->setTrackInfo(QString("stopCapturing error"));
+			//	continue;
+			//}
+			//if (m_bQuit) break;
 
 			bool bShowImageToScreen = System->getParam("camera_show_image_toScreen_enable").toBool();
 			if (bShowImageToScreen)
@@ -362,7 +367,7 @@ bool VisionViewWidget::isLiving()
 	return NULL != m_pCameraOnLive;
 }
 
-bool VisionViewWidget::onLive()
+bool VisionViewWidget::onLive(bool bPromptSelect)
 {
 	QAutoLocker loacker(&m_mutex);
 
@@ -377,8 +382,15 @@ bool VisionViewWidget::onLive()
 	}
 
 	bool bHardwareTrigger = false;
-	if (QMessageBox::Ok == QMessageBox::warning(NULL, QStringLiteral("提示"),
-		QStringLiteral("采用硬触发采集模式？"), QMessageBox::Ok, QMessageBox::Cancel))
+	if (bPromptSelect)
+	{
+		if (QMessageBox::Ok == QMessageBox::warning(NULL, QStringLiteral("提示"),
+			QStringLiteral("采用硬触发采集模式？"), QMessageBox::Ok, QMessageBox::Cancel))
+		{
+			bHardwareTrigger = true;
+		}
+	}
+	else
 	{
 		bHardwareTrigger = true;
 	}

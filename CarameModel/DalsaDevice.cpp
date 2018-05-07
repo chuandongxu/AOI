@@ -135,28 +135,35 @@ void DalsaCameraDevice::XferCallback(SapXferCallbackInfo *pInfo)
 		Mat imageNew = Mat::zeros(cv::Size(width, height), CV_8U);
 		memcpy(imageNew.data, pDataAddr, width*height);
 
-		//Mat imageNew(height, width, CV_8UC3);
-		//memcpy(imageNew.ptr(), pDataAddr, 3 * width*height);
+		pDalsaCam->updateGrabCount(imageNew);	
 
 		if (0 == pDalsaCam->_sXferIndex)
-		{
-			pDalsaCam->m_imageMats.push_back(imageNew);
+		{			
 			pDalsaCam->_sXferIndex = 1;
 		}
 		else if (1 == pDalsaCam->_sXferIndex)
-		{
-			pDalsaCam->m_imageMats.push_back(imageNew);
+		{			
 			pDalsaCam->_sXferIndex = 0;
 		}		
 
-		success = pDalsaCam->m_Buffers->ReleaseAddress(pDataAddr);
-
-		pDalsaCam->m_nGrabCount++;
+		success = pDalsaCam->m_Buffers->ReleaseAddress(pDataAddr);		
 
 		pDalsaCam->m_bCapturedImage = true;
 	}
 	double dtime_movePos = double(clock());
 	//qDebug() << "Transfer Image Time: " << dtime_movePos - dtime_start << " ms";
+}
+
+void DalsaCameraDevice::updateGrabCount(cv::Mat& imgMat)
+{
+	m_waitMutex.lock();
+	m_imageMats.push_back(imgMat);
+	m_nGrabCount += 1;
+	if (m_nGrabCount >= m_nGrabNum)
+	{
+		m_waitCon.wakeAll();		
+	}
+	m_waitMutex.unlock();
 }
 
 void DalsaCameraDevice::setCamera(IPylonDevice* dev)
@@ -369,9 +376,11 @@ bool DalsaCameraDevice::captureImage(cv::Mat &imageMat)
 {
 	if (!m_bOpen) return false;
 
+	m_waitMutex.lock();
 	m_imageMats.clear();
 	m_nGrabNum = 1;
 	m_nGrabCount = 0;
+	m_waitMutex.unlock();
 
 	m_bCapturedImage = false;
 	BOOL success = m_Xfer->Snap();	
@@ -416,63 +425,60 @@ bool DalsaCameraDevice::startGrabing(int nNum)
 	
 	m_bCapturedImage = false;
 
+	m_waitMutex.lock();
 	m_imageMats.clear();
 	m_nGrabNum = nNum;
 	m_nGrabCount = 0;
-	BOOL success = m_Xfer->Grab();	
+	m_waitMutex.unlock();	
 
+	BOOL success = m_Xfer->Grab();
 	if (success)
 	{
 		m_bStopFlag = false;
 	}
-
 	return success;
 }
 
 bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 {
-	if (!m_bOpen) return false;	
+	if (!m_bOpen) return false;
 
-	int nWaitTime = 30*60*100;
-	while ((m_nGrabCount < m_nGrabNum) && (nWaitTime-- > 0) && !
-		m_bStopFlag)
+	m_waitMutex.lock();
+	bool bWaitDone = m_waitCon.wait(&m_waitMutex);
+	if (!bWaitDone)
 	{
-		QThread::msleep(10);
+		m_waitMutex.unlock();
+		return false;
 	}
+	m_waitMutex.unlock();
 
-	if (nWaitTime > 0)
+	bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
+	int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+
+	imageMats.clear();
+	for (int i = 0; i < m_imageMats.size(); i++)
 	{
-		bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
-		int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-
-		imageMats.clear();
-		for (int i = 0; i < m_imageMats.size(); i++)
+		int nIndex = i;
+		if (bCaptureImageAsMatlab && m_imageMats.size() >= DLP_SEQ_PATTERN_IMG_NUM)
 		{
-			int nIndex = i;
-			if (bCaptureImageAsMatlab && m_imageMats.size() >= DLP_SEQ_PATTERN_IMG_NUM)
+			if (m_imageMats.size() <= DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
 			{
-				if (m_imageMats.size() <= DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
+				if (5 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 5 Pattern Sequence Special Index
 				{
-					if (5 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 5 Pattern Sequence Special Index
-					{
-						nIndex += 1;
-					}
-					else if (6 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 6 Pattern Sequence Special Index
-					{
-						nIndex -= 1;
-					}
-				}			
+					nIndex += 1;
+				}
+				else if (6 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 6 Pattern Sequence Special Index
+				{
+					nIndex -= 1;
+				}
 			}
-
-			imageMats.push_back(m_imageMats[nIndex]);
 		}
 
-		return m_bStopFlag ? false : true;
+		imageMats.push_back(m_imageMats[nIndex]);
 	}
-	else
-	{
-		return false;
-	}	
+
+	return m_bStopFlag ? false : true;
+
 }
 
 void DalsaCameraDevice::stopGrabing()
@@ -480,19 +486,25 @@ void DalsaCameraDevice::stopGrabing()
 	if (!m_bOpen) return;
 
 	BOOL success = m_Xfer->Freeze();	
-	success = m_Xfer->Wait(1000);
+	success = m_Xfer->Wait(1000);	
 
+	m_waitMutex.lock();
 	m_bStopFlag = true;
+	m_waitCon.wakeAll();
+	m_waitMutex.unlock();
 }
 
 void DalsaCameraDevice::clearGrabing()
 {
+	m_waitMutex.lock();
 	m_imageMats.clear();
 	m_nGrabNum = 0;
 	m_nGrabCount = 0;
+	m_waitMutex.unlock();
 
 	m_Buffers->Clear();
 	m_Buffers->ResetIndex();
+	_sXferIndex = 0;
 }
 
 bool DalsaCameraDevice::isGrabing()

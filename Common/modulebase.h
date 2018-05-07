@@ -28,6 +28,8 @@ public:
     virtual void addDiagonseWidget(QTabWidget * tabWidget){};
     virtual void freeDiagonseWidget(QTabWidget * tabWidget){};
 
+	virtual void preStartUp(){};
+
 private:
     int m_id;
     QString m_name;

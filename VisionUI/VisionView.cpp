@@ -236,28 +236,12 @@ void VisionView::moveScreen()
 
 void VisionView::onClickPushbutton_onLive()
 {
-	if (m_pViewWidget && !m_pViewWidget->isLiving())
-	{
-		setLiveButtonEnable(false);
-		if (m_pViewWidget->onLive())
-		{
-			setButtonsEnable(false);
-		}
-		else
-		{
-			setLiveButtonEnable(true);
-		}		
-	}
+	onLive(true);
 }
 
 void VisionView::onClickPushbutton_stopLive()
 {
-	if (m_pViewWidget && m_pViewWidget->isLiving())
-	{
-		setLiveButtonEnable(true);
-		m_pViewWidget->onStopLive();
-		setButtonsEnable(true);
-	}
+	onStopLive();
 }
 
 void VisionView::show3D()
@@ -487,14 +471,41 @@ void VisionView::setLiveButtonEnable(bool flag)
 	onStopAct->setEnabled(!flag);
 }
 
-bool VisionView::startUpCapture()
+bool VisionView::onLive(bool bPromptSelect)
+{
+	if (m_pViewWidget && !m_pViewWidget->isLiving())
+	{
+		setLiveButtonEnable(false);
+		if (m_pViewWidget->onLive(bPromptSelect))
+		{
+			setButtonsEnable(false);
+		}
+		else
+		{
+			setLiveButtonEnable(true);
+		}
+	}
+
+	return true;
+}
+
+void VisionView::onStopLive()
 {
 	if (m_pViewWidget && m_pViewWidget->isLiving())
 	{
-		onClickPushbutton_stopLive();
+		setLiveButtonEnable(true);
+		m_pViewWidget->onStopLive();
+		setButtonsEnable(true);
 	}
+}
 
-	onClickPushbutton_onLive();
+bool VisionView::startUpCapture(bool bPromptSelect)
+{
+	if (m_pViewWidget && m_pViewWidget->isLiving())
+	{
+		onStopLive();
+	}	
+	onLive(bPromptSelect);
 	return true;
 }
 
@@ -502,7 +513,7 @@ bool VisionView::endUpCapture()
 {
 	if (m_pViewWidget && m_pViewWidget->isLiving())
 	{
-		onClickPushbutton_stopLive();		
+		onStopLive();
 	}
 
 	return true;

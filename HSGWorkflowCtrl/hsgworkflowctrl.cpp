@@ -32,6 +32,11 @@ void HSGWorkflowCtrl::addDiagonseWidget(QTabWidget * tabWidget)
 	tabWidget->addTab(new QWorkflowDiagions,QStringLiteral("工艺调试"));
 }
 
+void HSGWorkflowCtrl::preStartUp()
+{
+	if (m_ctrl) m_ctrl->initStartUp();
+}
+
 bool HSGWorkflowCtrl::isRuning()
 {
 	return m_ctrl->isRuning();

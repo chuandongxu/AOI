@@ -31,10 +31,7 @@ public:
 	bool getImages(QVector<cv::Mat>& imageMats);
 	bool getLastImages(QVector<cv::Mat>& imageMats);
 	bool stopCapturing();
-
-	bool lockCameraCapture();
-	void unlockCameraCapture();
-	virtual bool isCameraCaptureAvaiable() override;
+	
     virtual bool captureAllImages(QVector<cv::Mat>& imageMats) override;
 
 	bool getCameraScreenSize(int& nWidth, int& nHeight);

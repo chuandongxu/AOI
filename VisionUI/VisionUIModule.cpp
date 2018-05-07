@@ -82,11 +82,11 @@ cv::Mat QVisionUIModule::getHeightData()
 	return cv::Mat();
 }
 
-bool QVisionUIModule::startUpCapture()
+bool QVisionUIModule::startUpCapture(bool bPromptSelect)
 {
 	if (m_pVisionView)
 	{
-		return m_pVisionView->startUpCapture();
+		return m_pVisionView->startUpCapture(bPromptSelect);
 	}
 
 	return false;

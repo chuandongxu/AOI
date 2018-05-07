@@ -48,9 +48,6 @@ public:
 	virtual bool getLastImages(QVector<cv::Mat>& imageMats) = 0;
 	virtual bool stopCapturing() = 0;
 
-	virtual bool lockCameraCapture() = 0;
-	virtual void unlockCameraCapture() = 0;
-	virtual bool isCameraCaptureAvaiable() = 0;
     virtual bool captureAllImages(QVector<cv::Mat>& imageMats) = 0;
 
 	/************************************************************************/

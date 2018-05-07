@@ -32,8 +32,6 @@ QMainProcess::QMainProcess(CameraCtrl* pCameraCtrl, QObject *parent)
 	m_emCaptureMode = ICamera::TRIGGER_ALL;
 	m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM;
 	m_bHWTrigger = true;
-	m_bCaptureDone = false;
-	m_bCaptureLocker = false;
 }
 
 QMainProcess::~QMainProcess()
@@ -43,59 +41,44 @@ QMainProcess::~QMainProcess()
 bool QMainProcess::startCapturing()
 {
 	if (m_pCameraCtrl->getCameraCount() <= 0) return false;
-
-	//m_pCameraCtrl->getCamera(0)->startGrabing(getImageBufferNum());
-
-	int nWaitTime = 30 * 60 * 100;
-	while (m_bCaptureDone && (nWaitTime-- > 0) && !m_pCameraCtrl->getCamera(0)->isStopped())
-	{
-		QThread::msleep(10);
-	}
-
-	if (nWaitTime <= 0)
-	{	
-		System->setTrackInfo("wait get image timeout error!");
-		return false;
-	}
-
-	m_bufferImages.clear();
+	
+	m_imageMats.clear();
 	if (!m_pCameraCtrl->getCamera(0)->startGrabing(m_nCaptureNum))
 	{
-		System->setTrackInfo("startGrabing error!");
+		System->setTrackInfo("startGrabing error!");		
 		return false;
 	}
 
-	nWaitTime = 2 * 1000;
+	int nWaitTime = 2 * 1000;
 	while (!m_pCameraCtrl->getCamera(0)->isGrabing() && (nWaitTime-- > 0))
 	{
 		QThread::msleep(1);
 	}
 
-	if (nWaitTime > 0)
+	if (nWaitTime <= 0)
 	{
-		return true;
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
 bool QMainProcess::getImages(QVector<cv::Mat>& imageMats)
 {
-	bool bRet = true;
-
-	if (m_pCameraCtrl->getCamera(0)->captureImageByFrameTrig(m_bufferImages))
+	if (m_pCameraCtrl->getCamera(0)->captureImageByFrameTrig(m_imageMats))
 	{
-		saveImages(m_bufferImages);
+		bufferImages();
+		saveImages(m_imageMats);		
 	}
 	else
-	{
-		bRet = false;
+	{		
 		System->setTrackInfo("Capture Images Stopped or Time Out.");
+		return false;
 	}
 
-	QAutoLocker loacker(&m_mutex);
-
-	m_bCaptureDone = true;
+	m_waitMutex.lock();
+	m_waitCon.wakeAll();
+	m_waitMutex.unlock();
 
 	int nCaptureNum = m_bufferImages.size();
 	if (!m_pCameraCtrl->getCamera(0)->isStopped() && (m_nCaptureNum != nCaptureNum))
@@ -111,48 +94,34 @@ bool QMainProcess::getImages(QVector<cv::Mat>& imageMats)
 			QString name = QString("%1").arg(i + 1, 2, 10, QChar('0')) + QStringLiteral(".bmp");
 			cv::imwrite((fileDir + name).toStdString().c_str(), m_bufferImages[i]);
 		}
-		bRet = false;
+		
+		return false;
 	}
 
-	for (int i = 0; i < nCaptureNum; i++)
-	{
-		imageMats.push_back(m_bufferImages[i]);
-	}
+	imageMats = m_bufferImages;
 
 	m_pCameraCtrl->getCamera(0)->stopGrabing();
 	m_pCameraCtrl->getCamera(0)->clearGrabing();
 
-	return bRet;
+	return true;
 }
 
 bool QMainProcess::getLastImages(QVector<cv::Mat>& imageMats)
 {
 	bool bRet = true;
 
-	int nWaitTime = 10 * 100;
-	while (!m_bCaptureDone && (nWaitTime-- > 0) && !m_pCameraCtrl->getCamera(0)->isStopped())
+	m_waitMutex.lock();
+	bool bWaitDone = m_waitCon.wait(&m_waitMutex, 10 * 1000);
+	if (bWaitDone)
 	{
-		QThread::msleep(10);
-	}
-
-	QAutoLocker loacker(&m_mutex);
-
-	if (nWaitTime > 0)
-	{
-		int nCaptureNum = m_bufferImages.size();
-		for (int i = 0; i < nCaptureNum; i++)
-		{
-			imageMats.push_back(m_bufferImages[i]);
-		}
-
-		if (m_nCaptureNum != nCaptureNum) bRet = false;
+		imageMats = m_bufferImages;
+		if (m_nCaptureNum != m_bufferImages.size()) bRet = false;
 	}
 	else
 	{
 		bRet = false;
-	}
-
-	m_bCaptureDone = false;
+	}	
+	m_waitMutex.unlock();
 
 	return bRet;
 }
@@ -162,7 +131,9 @@ bool QMainProcess::stopCapturing()
 	m_pCameraCtrl->getCamera(0)->stopGrabing();
 	m_pCameraCtrl->getCamera(0)->clearGrabing();
 
-	m_bCaptureDone = false;
+	m_waitMutex.lock();
+	m_waitCon.wakeAll();
+	m_waitMutex.unlock();
 
 	return true;
 }
@@ -170,35 +141,6 @@ bool QMainProcess::stopCapturing()
 bool QMainProcess::isStartCapturing()
 {
 	return m_pCameraCtrl->getCamera(0)->isGrabing();
-}
-
-bool QMainProcess::lockCameraCapture()
-{
-	QAutoLocker loacker(&m_mutex);
-
-	if (m_bCaptureLocker)
-	{
-		return false;
-	}
-	else
-	{
-		m_bCaptureLocker = true;
-		return true;
-	}
-}
-
-void QMainProcess::unlockCameraCapture()
-{
-	QAutoLocker loacker(&m_mutex);
-
-	m_bCaptureLocker = false;
-}
-
-bool QMainProcess::isCameraCaptureAvaiable()
-{
-	QAutoLocker loacker(&m_mutex);
-
-	return !m_bCaptureLocker;
 }
 
 bool QMainProcess::startUpCapture(bool bHWTrigger)
@@ -216,7 +158,7 @@ bool QMainProcess::startUpCapture(bool bHWTrigger)
 
 	selectCaptureMode(m_emCaptureMode, false);
 
-	m_bHWTrigger = bHWTrigger;
+	m_bHWTrigger = bHWTrigger;	
 
 	return true;
 }
@@ -313,4 +255,10 @@ void QMainProcess::saveImages(QVector<cv::Mat>& images)
 			m_pCameraCtrl->getCamera(0)->saveImage(image, name, fileDir);
 		}
 	}
+}
+
+void QMainProcess::bufferImages()
+{
+	m_bufferImages.clear();
+	m_bufferImages = m_imageMats;	
 }

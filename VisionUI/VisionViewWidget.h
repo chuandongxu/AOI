@@ -86,7 +86,7 @@ public:
 	void moveScreen();
 
 	bool isLiving();
-	bool onLive();
+	bool onLive(bool bPromptSelect);
 	void onStopLive();
 
 	void show3D();

@@ -57,7 +57,7 @@ QFlowCtrl::QFlowCtrl(QObject *parent)
 	//	pMotion->setExtDO(DO_GREEN_LIGHT,0);
 	//	pMotion->setExtDO(DO_RED_LIGHT,0);
 	//	pMotion->setExtDO(DO_BUZZER,0);
-	//}
+	//}	
 }
 
 QFlowCtrl::~QFlowCtrl()
@@ -268,7 +268,7 @@ void QFlowCtrl::start()
 		pCam->selectCaptureMode(ICamera::TRIGGER_ALL);
 	    if (pCam->getCameraNum() > 0)
 	    {
-		    if (!pUI->startUpCapture())
+		    if (!pUI->startUpCapture(false))
 		    {
 			    QSystem::closeMessage();
 			    QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));
@@ -391,4 +391,73 @@ void QFlowCtrl::initErrorCode()
 	//System->addErrorMap(ERROR_Z_POS_WARRING,MSG_Z_POS_WARRING);
 	System->addErrorMap(ERROR_MOTION_POS_WARRING,MSG_MOTION_POS_WARRING);
 	System->addErrorMap(ERROR_STATION_SAFE_GRATING_ALRM,MSG_STTATION_SAFE_GRATING_ALRM);
+}
+
+void QFlowCtrl::initStartUp()
+{
+	if (System->isRunOffline()) return;
+
+	IMotion * pMotion = getModule<IMotion>(MOTION_MODEL);
+	if(pMotion)
+	{
+		bool bStartUpEnable = System->getParam("auto_startup_home_enable").toBool();
+		if (bStartUpEnable)
+		{
+			home();
+		}
+
+		bStartUpEnable = System->getParam("auto_startup_zready_enable").toBool();
+		if (bStartUpEnable)
+		{
+			int nZReadyID = System->getParam("auto_startup_zready_id").toInt();
+			if (!pMotion->moveToPos(nZReadyID, true))
+			{
+				System->setTrackInfo("move to Z Ready position error");
+				return;
+			}
+		}
+	}
+
+	IData* pData = getModule<IData>(DATA_MODEL);
+	if (pData)
+	{
+		bool bStartUpEnable = System->getParam("auto_startup_loaddb_enable").toBool();
+		if (bStartUpEnable)
+		{
+			QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在导入数据中..."), 0);
+			QApplication::processEvents();
+
+			QString szDBPath = System->getParam("auto_startup_db_path").toString();
+			pData->openProject(szDBPath);
+
+			QSystem::closeMessage();
+		}
+	}
+	
+
+	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
+	if (pDlp)
+	{
+		bool bStartUpEnable = System->getParam("auto_startup_dlp_enable").toBool();
+		if (bStartUpEnable)
+		{
+			QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在初始化模块中..."), 0);
+			QApplication::processEvents();
+
+			int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+			for (int i = 0; i < nStationNum; ++i) {
+				if (pDlp->isConnected(i)) {
+					if (!pDlp->startUpCapture(i))
+						continue;
+				}
+				else
+					System->setTrackInfo(QString(QStringLiteral("工位%0启动失败, 请检查DLP硬件！")).arg(i + 1));
+			}
+
+			QSystem::closeMessage();
+		}		
+	}
+
+	QApplication::processEvents();
+	QSystem::closeMessage();
 }
