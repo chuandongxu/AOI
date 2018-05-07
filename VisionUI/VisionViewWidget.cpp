@@ -1108,7 +1108,8 @@ void VisionViewWidget::setViewState(VISION_VIEW_MODE state)
 		break;
 	case MODE_VIEW_MOVE:
 		setCursor(Qt::OpenHandCursor);
-        m_enPreviousState = m_stateView;
+        if (MODE_VIEW_MOVE != m_stateView)
+            m_enPreviousState = m_stateView;
 		break;
 	case MODE_VIEW_NONE:
 		setCursor(Qt::ArrowCursor);

@@ -9,6 +9,8 @@ InspWindowSelectDialog::InspWindowSelectDialog(QWidget *parent)
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     m_enInspWidgetIndex = INSP_WIDGET_INDEX::UNDEFINED;
     connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(on_accept()));
+
+    setFixedSize(size());
 }
 
 InspWindowSelectDialog::~InspWindowSelectDialog()

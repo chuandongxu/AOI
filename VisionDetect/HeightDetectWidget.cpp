@@ -160,7 +160,11 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation)
 	if (OPERATION::ADD == enOperation) {
 		window.deviceId = pUI->getSelectedDevice().getId();
 		char windowName[100];
-		_snprintf(windowName, sizeof(windowName), "Height Detect [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
+        if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage)
+		    _snprintf(windowName, sizeof(windowName), "Height Detect [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
+        else
+            _snprintf(windowName, sizeof(windowName), "Height Detect Base [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
+
 		window.name = windowName;
 		result = Engine::CreateWindow(window);
 		if (result != Engine::OK) {
