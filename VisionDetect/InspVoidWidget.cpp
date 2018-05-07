@@ -60,8 +60,7 @@ InspVoidWidget::InspVoidWidget(InspWindowWidget *parent)
     ui.tableWidget->setCellWidget(MIN_HOLE_AREA, DATA_COLUMN, m_pEditMinHoleArea.get());
 }
 
-InspVoidWidget::~InspVoidWidget()
-{
+InspVoidWidget::~InspVoidWidget() {
 }
 
 void InspVoidWidget::on_inspModeChanged(int index)
@@ -107,10 +106,10 @@ void InspVoidWidget::setCurrentWindow(const Engine::Window &window)
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error != QJsonParseError::NoError) {
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
         System->setTrackInfo(QString("Invalid inspection parameter encounted."));
-		return;
+        return;
     }
     QJsonObject jsonValue = parse_doucment.object();
 
@@ -201,8 +200,8 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
         jsonValue["BlobMode"] = jsonBlobMode;
     }
     QJsonDocument document;
-	document.setObject(jsonValue);
-	QByteArray byteArray = document.toJson(QJsonDocument::Compact);
+	  document.setObject(jsonValue);
+	  QByteArray byteArray = document.toJson(QJsonDocument::Compact);
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);  
     auto rectROI = pUI->getSelectedROI();
@@ -234,24 +233,24 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
     window.angle = 0;
     window.colorParams = m_pParent->getColorWidget()->getJsonFormattedParams();
     int result = Engine::OK;
-    if ( OPERATION::ADD == enOperation ) {
+    if (OPERATION::ADD == enOperation) {
         window.deviceId = pUI->getSelectedDevice().getId();
         char windowName[100];
         _snprintf(windowName, sizeof(windowName), "InspHole [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
         window.name = windowName;
-        result = Engine::CreateWindow ( window );
+        result = Engine::CreateWindow(window);
         if (result != Engine::OK) {
-		    String errorType, errorMessage;
-		    Engine::GetErrorDetail(errorType, errorMessage);
-		    System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-		    return;
-	    }else
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+            return;
+        }else
             System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
 
         QDetectObj detectObj(window.Id, window.name.c_str());
         cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
         if (bBoardRotated)
-            ptCenter.x = nBigImgWidth  - ptCenter.x;
+            ptCenter.x = nBigImgWidth - ptCenter.x;
         else
             ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
         cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
@@ -264,11 +263,11 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
         window.name = m_currentWindow.name;
         result = Engine::UpdateWindow(window);
         if (result != Engine::OK) {
-		    String errorType, errorMessage;
-		    Engine::GetErrorDetail(errorType, errorMessage);
-		    System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-		    return;
-	    }else
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+            return;
+        }else
             System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
     }
 

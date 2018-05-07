@@ -357,10 +357,10 @@ std::string QColorWeight::getJsonFormattedParams() const
 void QColorWeight::setJsonFormattedParams(const std::string &jsonParams)
 {
     GrayWeightParams stGrayParams;
-	ColorSpaceParams stColorParams;
+    ColorSpaceParams stColorParams;
 
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(jsonParams.c_str(), &json_error);
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(jsonParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
         QMessageBox::critical(this, QStringLiteral("Color Weight"), QStringLiteral("Json data is invalid."), QStringLiteral("Quit"));
         return;
