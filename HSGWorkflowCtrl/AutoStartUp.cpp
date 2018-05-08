@@ -2,6 +2,7 @@
 
 #include <QDir>
 #include <QApplication>
+#include <qthread.h>
 
 #include "../Common/ModuleMgr.h"
 #include "../Common/SystemData.h"
@@ -149,5 +150,6 @@ void AutoStartUp::showProgress()
         }
     }
     
+    QThread::msleep(1000);
     this->hide();
 }
