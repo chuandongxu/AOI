@@ -22,6 +22,9 @@
      <height>350</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
   </widget>
   <widget class="QProgressBar" name="progressBar_loading">
    <property name="geometry">
