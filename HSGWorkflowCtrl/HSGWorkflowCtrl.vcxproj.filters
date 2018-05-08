@@ -98,6 +98,15 @@
     <ClCompile Include="BoardInspResult.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AutoStartUp.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AutoStartUp.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoStartUp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hsgworkflowctrl.h">
@@ -142,6 +151,9 @@
     <ClInclude Include="BoardInspResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_AutoStartUp.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="WorkflowDiagions.ui">
@@ -164,6 +176,12 @@
     </CustomBuild>
     <CustomBuild Include="hsgworksetting.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AutoStartUp.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AutoStartUp.ui">
+      <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
