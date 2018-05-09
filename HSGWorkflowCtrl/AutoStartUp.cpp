@@ -25,6 +25,7 @@ AutoStartUp::AutoStartUp(QWidget *parent)
     ui.tableView_Loading->setColumnWidth(1, 80);
     ui.tableView_Loading->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);   
     ui.tableView_Loading->horizontalHeader()->setStretchLastSection(false);
+    ui.tableView_Loading->setStyleSheet("background-color:rgba(244,244,244,200)");
 
     connect(&m_dataModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)),
         this, SLOT(onDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));
