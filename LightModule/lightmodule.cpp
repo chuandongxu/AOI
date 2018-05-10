@@ -29,14 +29,11 @@ void QLightModule::init()
 	{
 		ctrl->init();
 	}
-}
 
-void QLightModule::setLight(int nLight)
-{
-	if (m_pLightWidget)
-	{
-		m_pLightWidget->setLight(nLight);
-	}
+    if (m_pLightWidget)
+    {
+        m_pLightWidget->init();
+    }
 }
 
 QWidget* QLightModule::getLightWidget()
@@ -44,71 +41,61 @@ QWidget* QLightModule::getLightWidget()
 	return m_pLightWidget;
 }
 
-void QLightModule::saveLuminance(int nDevice, int nChannel)
+void QLightModule::startUpLight()
+{
+    if (m_pLightWidget)
+    {
+        m_pLightWidget->startUpLight();
+    }
+}
+
+void QLightModule::endUpLight()
+{
+    if (m_pLightWidget)
+    {
+        m_pLightWidget->endUpLight();
+    }
+}
+
+void QLightModule::saveLuminance(int nChannel)
 {
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
 
 	if (ctrl)
 	{
-		QLightDevice *device = ctrl->getLightDevice(nDevice);
-		if (device)
-		{
-			QString key = QString("%0-%1%2").arg(device->getDeviceName()).arg(LUM_CH).arg(nChannel);
-			QString data = QString("%1").arg(getChLuminace(nDevice, nChannel));
-			System->setParam(key, data);
-		}
+        ctrl->saveLuminance(nChannel);
 	}
 }
 
-void QLightModule::setLuminance(int nDevice, int nChannel, int nLum)
+void QLightModule::setLuminance(int nChannel, int nLum)
 {
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
 	
 	if (ctrl)
 	{
-		QLightDevice *device = ctrl->getLightDevice(nDevice);
-		if(device)
-		{
-			device->setChLuminance(nChannel, nLum);
-		}		
+        ctrl->setLuminance(nChannel, nLum);
 	}
 }
 
-QString QLightModule::getChName(int nDevice, int nChannel)
+QString QLightModule::getChName(int nChannel)
 {
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
 	
 	if (ctrl)
 	{		
-		QString key;
-		QVariant data;
-		QLightDevice *device = ctrl->getLightDevice(nDevice);
-		if(device)
-		{
-			key = QString("%0-%1%2").arg(device->getDeviceName()).arg(NAMED_CH).arg(nChannel);
-			data = System->getParam(key);
-			return data.toString();
-		}		
+        return ctrl->getChName(nChannel);
 	}
 
 	return "";
 }
 
-int QLightModule::getChLuminace(int nDevice, int nChannel)
+int QLightModule::getChLuminace(int nChannel)
 {
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
 	
 	if (ctrl)
-	{		
-		QString key;
-		QVariant data;
-		QLightDevice *device = ctrl->getLightDevice(nDevice);
-		if(device)
-		{
-			key = QString("%0-%1%2").arg(device->getDeviceName()).arg(LUM_CH).arg(nChannel);
-			data = System->getParam(key);
-			return data.toInt();
-		}		
+	{	
+        return ctrl->getChLuminace(nChannel);
 	}
 
 	return 0;

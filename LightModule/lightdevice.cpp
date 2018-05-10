@@ -10,12 +10,12 @@
 #include "CommPort.h"
 
 
-QLightDevice::QLightDevice(const QString & devName,QObject *parent)
-	: m_devName(devName),QObject(parent),m_bOpened(false)
+QLightDevice::QLightDevice(const QString & devName, int nChnNum, QObject *parent)
+	: m_devName(devName),m_nChnNum(nChnNum), QObject(parent),m_bOpened(false)
 {
 	m_comPort = NULL;
 
-	this->open();
+	//this->open();
 	//qDebug() << "thread : " << (unsigned int)this;
 	
 	//connect(this,SIGNAL(emSendData(int,int)),SLOT(sendData(int,int)),Qt::QueuedConnection);
@@ -107,6 +107,7 @@ bool QLightDevice::isOpenLight(int ch)
 
 void QLightDevice::setChLuminance(int ch, int luminance)
 {
+    m_data[ch].iLuminance = luminance;
 	if (m_comPort)
 	{
 		QString strValue = QString("%1").arg(luminance, 4, 10, QLatin1Char('0'));

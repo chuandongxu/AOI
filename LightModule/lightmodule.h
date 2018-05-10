@@ -14,14 +14,15 @@ public:
 
 	void init();
 
-	void setLight(int nLight);
 	QWidget* getLightWidget();
+    void startUpLight();
+    void endUpLight();
 
-	void setLuminance(int nDevice, int nChannel, int nLum);
-	QString getChName(int nDevice, int nChannel);
-	int getChLuminace(int nDevice, int nChannel);
+	void setLuminance(int nChannel, int nLum);
+	QString getChName(int nChannel);
+	int getChLuminace(int nChannel);
 
-	virtual void saveLuminance(int nDevice, int nChannel);
+	void saveLuminance(int nChannel);
 
 	int getDeviceCount();
 	virtual void addSettingWiddget(QTabWidget *tabWidget);

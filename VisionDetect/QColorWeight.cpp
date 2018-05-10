@@ -948,10 +948,9 @@ void QColorWeight::displayGrayImg()
 	else if (EM_MODE_ONE_THRESHOLD == emMode)
 	{
         cv::Mat matGrayLocal = _convertToGrayImage();
-        cv::threshold(matGrayLocal, maskMat, m_nGrayLevelThreshold1, 255, cv::ThresholdTypes::THRESH_BINARY);
-        cv::Mat matMaskReverse = 255 - maskMat;
-        matGrayLocal.setTo(0, matMaskReverse);
-        cv::cvtColor(matGrayLocal, matGrayImg, CV_GRAY2RGB);
+        cv::threshold(matGrayLocal, maskMat, m_nGrayLevelThreshold1, 255, cv::ThresholdTypes::THRESH_BINARY);       
+        cv::cvtColor(maskMat, matGrayImg, CV_GRAY2RGB);
+        maskMat.setTo(1, maskMat);
 	}
 	else if (EM_MODE_TWO_THRESHOLD == emMode)
 	{
@@ -963,10 +962,9 @@ void QColorWeight::displayGrayImg()
         stCmd.nThreshold2 = m_nGrayLevelThreshold2;
         Vision::PR_Threshold(&stCmd, &stRpy);
 		maskMat = stRpy.matResultImg;
-
-        cv::Mat matMaskReverse = 255 - maskMat;
-        stCmd.matInputImg.setTo(0, matMaskReverse);
-        cv::cvtColor(stCmd.matInputImg, matGrayImg, CV_GRAY2RGB);
+     
+        cv::cvtColor(maskMat, matGrayImg, CV_GRAY2RGB);
+        maskMat.setTo(1, maskMat);
 	}
 
     m_maskMat = maskMat;

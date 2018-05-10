@@ -19,7 +19,7 @@
      <x>10</x>
      <y>20</y>
      <width>401</width>
-     <height>180</height>
+     <height>221</height>
     </rect>
    </property>
    <property name="title">
@@ -105,7 +105,7 @@
    </widget>
    <widget class="QLineEdit" name="lineEdit_readyPosZ">
     <property name="enabled">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -178,12 +178,25 @@
      <string>移动到标定位置</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_SaveCali">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>170</y>
+      <width>360</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>保存标定</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_6">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>250</y>
+     <y>300</y>
      <width>401</width>
      <height>80</height>
     </rect>
@@ -232,7 +245,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>210</y>
+     <y>260</y>
      <width>180</width>
      <height>30</height>
     </rect>
@@ -245,7 +258,7 @@
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>210</y>
+     <y>260</y>
      <width>180</width>
      <height>30</height>
     </rect>
@@ -258,7 +271,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>340</y>
+     <y>390</y>
      <width>401</width>
      <height>91</height>
     </rect>
@@ -329,9 +342,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>440</y>
+     <y>490</y>
      <width>401</width>
-     <height>141</height>
+     <height>131</height>
     </rect>
    </property>
    <property name="title">
@@ -353,7 +366,7 @@
    <widget class="QLineEdit" name="lineEdit_DetectGraySacleRow">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>60</x>
       <y>30</y>
       <width>70</width>
       <height>25</height>
@@ -363,7 +376,7 @@
    <widget class="QLabel" name="label_25">
     <property name="geometry">
      <rect>
-      <x>45</x>
+      <x>25</x>
       <y>30</y>
       <width>41</width>
       <height>18</height>
@@ -376,7 +389,7 @@
    <widget class="QLabel" name="label_35">
     <property name="geometry">
      <rect>
-      <x>180</x>
+      <x>150</x>
       <y>30</y>
       <width>41</width>
       <height>18</height>
@@ -389,25 +402,48 @@
    <widget class="QLineEdit" name="lineEdit_DetectGrayScaleCol">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>180</x>
       <y>30</y>
       <width>70</width>
       <height>25</height>
      </rect>
     </property>
    </widget>
+   <widget class="QLineEdit" name="lineEdit_GrayValue">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>30</y>
+      <width>70</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_36">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>30</y>
+      <width>41</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Gray:</string>
+    </property>
+   </widget>
   </widget>
-  <widget class="QPushButton" name="pushButton_SaveCali">
+  <widget class="QPushButton" name="pushButton_AutoCali">
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>600</y>
+     <y>640</y>
      <width>360</width>
      <height>34</height>
     </rect>
    </property>
    <property name="text">
-    <string>保存标定</string>
+    <string>自动标定</string>
    </property>
   </widget>
  </widget>
