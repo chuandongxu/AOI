@@ -21,30 +21,12 @@ LightWidget::LightWidget(QLightCtrl* pCtrl, QWidget *parent)
 
 	QLineEdit * editCtrls[6] = { ui.lineEdit_1_name, ui.lineEdit_2_name, ui.lineEdit_3_name, ui.lineEdit_4_name, ui.lineEdit_5_name, ui.lineEdit_6_name };
 
-	QLightDevice * device = m_pCtrl->getLightDevice(0);
-	if (device)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			QString key = QString("%0-%1%2").arg(device->getDeviceName()).arg(NAMED_CH).arg(i);
-			QVariant data = System->getParam(key);
-			editCtrls[i]->setText(data.toString());
-		}
-	}
+    for (int i = 0; i < 6; i++)
+    {
+        QString name = m_pCtrl->getChName(i);
+        editCtrls[i]->setText(name);
 
-	device = m_pCtrl->getLightDevice(1);
-	if (device)
-	{
-		for (int i = 0; i < 2; i++)
-		{
-			QString key = QString("%0-%1%2").arg(device->getDeviceName()).arg(NAMED_CH).arg(i);
-			QVariant data = System->getParam(key);
-			editCtrls[i + 4]->setText(data.toString());
-		}
-	}
-
-	loadConfig();
-	updateUI();
+    }		
 
 	connect(ui.pushButton_saveParams, SIGNAL(clicked()), SLOT(onSaveParams()));
 	connect(ui.pushButton_loadParams, SIGNAL(clicked()), SLOT(onLoadParams()));
@@ -62,47 +44,34 @@ LightWidget::~LightWidget()
 {
 }
 
-void LightWidget::setLight(int nLight)
+void LightWidget::init()
 {
-	Engine::LightVector vecLights;
-	auto result = Engine::GetLights(vecLights);
-	if (result != Engine::OK) {
-		String errorType, errorMessage;
-		Engine::GetErrorDetail(errorType, errorMessage);
-		System->setTrackInfo(QString("Error at SetLights, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-		return;
-	}
+    loadConfig();
+    updateUI();
+}
 
-	if (vecLights.size() <= 0) return;
-	if (vecLights.size() <= nLight) return;
+void LightWidget::startUpLight()
+{
+    if (m_vecLights.size() <= 0) return;
+    Engine::Light light = m_vecLights[0];
 
-	Engine::Light light = vecLights.at(nLight);
+    for (int i = 0; i < 6; i++)
+    {
+        int nLightInt = light.vecLightIntensity[i];
 
-	QLightDevice * device = m_pCtrl->getLightDevice(0);
-	if (device)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			int nLightInt = light.vecLightIntensity[i];
+        double dLumRate = nLightInt / 100.0;
+        int nLum = m_pCtrl->getChLuminace(i);
+        m_pCtrl->setLuminance(i, nLum * dLumRate);
+    }
+}
 
-			QString key = QString("%0-%1%2").arg(device->getDeviceName()).arg(LUM_CH).arg(i);
-			QVariant data = System->getParam(key);
-			device->setChLuminance(i, data.toInt() * nLightInt / 100.0);
-		}
-	}
-
-	device = m_pCtrl->getLightDevice(1);
-	if (device)
-	{
-		for (int i = 0; i < 2; i++)
-		{
-			int nLightInt = light.vecLightIntensity[i + 4];
-
-			QString key = QString("%0-%1%2").arg(device->getDeviceName()).arg(LUM_CH).arg(i);
-			QVariant data = System->getParam(key);
-			device->setChLuminance(i, data.toInt() * nLightInt / 100.0);
-		}
-	}
+void LightWidget::endUpLight()
+{
+    for (int i = 0; i < 6; i++)
+    {      
+        int nLum = m_pCtrl->getChLuminace(i);
+        m_pCtrl->setLuminance(i, nLum);
+    }
 }
 
 void LightWidget::onLightModeIndexChanged(int index)
@@ -127,30 +96,16 @@ void LightWidget::onLoadParams()
 
 void LightWidget::setLightValue(int chn, int value)
 {
-	int nIndex = ui.comboBox_selectLightMode->currentIndex();
-	if (nIndex >= m_vecLights.size()) return;
-	Engine::Light& light = m_vecLights[nIndex];
+    if (m_vecLights.size() <= 0) return;
+
+	Engine::Light& light = m_vecLights[0];
 	light.vecLightIntensity[chn] = value;
 
-	int i = 0;
-	QLightDevice * device = NULL;
-	if (chn >= 0 && chn < 4)
-	{
-		device = m_pCtrl->getLightDevice(0);
-		i = chn;
-	}		
-	else if (chn >= 4 && chn < 8)
-	{
-		i = chn - 4;
-		device = m_pCtrl->getLightDevice(1);
-	}
+    double dLumRate = value / 100.0;
+    int nLum = m_pCtrl->getChLuminace(chn);
+    m_pCtrl->setLuminance(chn, nLum * dLumRate);
 
-	if (device)
-	{
-		QString key = QString("%0-%1%2").arg(device->getDeviceName()).arg(LUM_CH).arg(i);
-		QVariant data = System->getParam(key);
-		device->setChLuminance(i, data.toInt() * value / 100.0);
-	}
+    //m_pCtrl->saveLuminance(chn);
 }
 
 void LightWidget::onSliderChanged1(int lum)
@@ -203,12 +158,12 @@ void LightWidget::onSliderChanged6(int lum)
 
 void LightWidget::onSliderChanged7(int lum)
 {
-	QString str = QString::number(lum);
-	ui.lineEdit_7->setText(str);	
+    if (m_vecLights.size() <= 0) return;
 
-	int nIndex = ui.comboBox_selectLightMode->currentIndex();
-	if (nIndex >= m_vecLights.size()) return;
-	Engine::Light& light = m_vecLights[nIndex];
+	QString str = QString::number(lum);
+	ui.lineEdit_7->setText(str);
+	
+	Engine::Light& light = m_vecLights[0];
 	light.expTime = lum;
 }
 
@@ -238,12 +193,9 @@ void LightWidget::saveConfig()
 
 void LightWidget::updateUI()
 {
-	int nIndex = ui.comboBox_selectLightMode->currentIndex();
-
 	if (m_vecLights.size() <= 0) return;
-	if (nIndex >= m_vecLights.size()) return;
 
-	Engine::Light light = m_vecLights[nIndex];
+	Engine::Light light = m_vecLights[0];
 
 	QSlider * sliderCtrls[6] = { ui.horizontalSlider_1, ui.horizontalSlider_2, ui.horizontalSlider_3, ui.horizontalSlider_4, ui.horizontalSlider_5, ui.horizontalSlider_6 };
 	QLineEdit * editLums[6] = { ui.lineEdit_1, ui.lineEdit_2, ui.lineEdit_3, ui.lineEdit_4, ui.lineEdit_5, ui.lineEdit_6 };

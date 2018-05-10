@@ -27,7 +27,7 @@ public slots:
 	void onTextChanged3(const QString &text);
 	void onTextChanged4(const QString &text);
 
-	void onDataReady();
+	//void onDataReady();
 	void onSaveData();
 private:
 	Ui::QDeviceFrom ui;

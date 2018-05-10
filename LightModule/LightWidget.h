@@ -14,7 +14,10 @@ public:
 	~LightWidget();
 
 public:
-	void setLight(int nLight);
+    void startUpLight();
+    void endUpLight();
+
+    void init();
 
 private:
 	void setLightValue(int chn, int value);

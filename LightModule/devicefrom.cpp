@@ -35,10 +35,10 @@ QDeviceFrom::QDeviceFrom(QLightDevice * device,QWidget *parent)
 		key = QString("%0-%1%2").arg(m_device->getDeviceName()).arg(LUM_CH).arg(i);
 		data = System->getParam(key);
 		sliderCtrls[i]->setValue(data.toInt());
-		m_device->setChLuminance(i,data.toInt());
+		//m_device->setChLuminance(i,data.toInt());
 		editLums[i]->setText(data.toString());
 	}
-	connect(m_device,SIGNAL(dataReady()),SLOT(onDataReady()));
+	//connect(m_device,SIGNAL(dataReady()),SLOT(onDataReady()));
 	connect(ui.pushButton,SIGNAL(clicked()),SLOT(onOpenCommPort()));
 	connect(ui.pushButton_2,SIGNAL(clicked()),SLOT(onSendTestData()));
 	connect(ui.pushButton_3,SIGNAL(clicked()),SLOT(onSaveData()));
@@ -78,12 +78,12 @@ void QDeviceFrom::onSendTestData()
 	//m_device->sendTestData(str);
 }
 
-void QDeviceFrom::onDataReady()
-{
-	//QString str;
-	//m_device->recvHexData(str);
-	//ui.textEdit->setText(str);
-}
+//void QDeviceFrom::onDataReady()
+//{
+//	//QString str;
+//	//m_device->recvHexData(str);
+//	//ui.textEdit->setText(str);
+//}
 
 void QDeviceFrom::onSaveData()
 {

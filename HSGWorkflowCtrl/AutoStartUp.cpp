@@ -12,6 +12,7 @@
 #include "../include/ICamera.h"
 #include "../include/IVision.h"
 #include "../include/IVisionUI.h"
+#include "../include/ILight.h"
 #include "../include/IdDefine.h"
 
 AutoStartUp::AutoStartUp(QWidget *parent)
@@ -86,7 +87,7 @@ void AutoStartUp::showProgress()
 {
     if (System->isRunOffline()) return;
 
-    initStartUp(4);
+    initStartUp(5);
 
     this->show();
 
@@ -149,6 +150,13 @@ void AutoStartUp::showProgress()
 
             insertMsg(QStringLiteral("DLP模块初始化完成"), bDLPInitOK);
         }
+    }
+
+    ILight* pLight = getModule<ILight>(LIGHT_MODEL);
+    if (pLight)
+    {
+        pLight->init();
+        insertMsg(QStringLiteral("成功启动光源控制器"), true);
     }
     
     QThread::msleep(1000);
