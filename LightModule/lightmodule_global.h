@@ -9,4 +9,8 @@
 # define LIGHTMODULE_EXPORT Q_DECL_IMPORT
 #endif
 
+#define _MAX_CHDATA_NUM 8
+
+#define _CHN_NUM 4
+
 #endif // LIGHTMODULE_GLOBAL_H

@@ -31,6 +31,7 @@
 #define RECORD_DETAILS_PATH "recordDetailsPath"
 #define ENABLE_BACKUP   "enableBackupData"
 #define BACKUP_PATH "backupDataPath"
+#define SYS_RUN_MODE   "sysRunMode"
 
 #define DEFALUT_USER  "aoiDebuger"
 #define DEFALUT_PASS  "aoi.com"
@@ -640,6 +641,24 @@ void QSystem::setRecordDetailsPath(const QString &path)
 QString QSystem::getRecordDetailPath()
 {
 	return getSysParam(RECORD_DETAILS_PATH).toString();
+}
+
+void QSystem::setSysRunMode(int nMode)
+{
+    setSysParam(SYS_RUN_MODE, nMode);
+}
+
+int QSystem::getSysRunMode()
+{
+    return getSysParam(SYS_RUN_MODE).toInt();
+}
+
+bool QSystem::isHardwareTrigger()
+{
+    int nRunMode = getSysRunMode();
+    if ((1 == nRunMode) || (2 == nRunMode))return true;
+
+    return false;
 }
 
 void QSystem::enableBackupData(bool s)
