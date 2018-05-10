@@ -5,7 +5,7 @@
 
 Merge3DHeightRunnable::Merge3DHeightRunnable(
     QThreadPool                                *pCalc3DHeightThreadPool,
-    const std::vector<Calc3dHeightRunnablePtr> &vecCalc3DHeightRunnable,
+    const std::vector<Calc3DHeightRunnablePtr> &vecCalc3DHeightRunnable,
     VectorOfMat                                *pVec3DFrameImages,
     int                                         nRow,
     int                                         nCol,
@@ -27,7 +27,7 @@ Merge3DHeightRunnable::~Merge3DHeightRunnable()
 
 void Merge3DHeightRunnable::run()
 {
-    m_pCalc3dHeightThreadPool->waitForDone();    
+    m_pCalc3dHeightThreadPool->waitForDone();
 
     QVector<cv::Mat> vecMatHeight;
     for (const auto &ptrCalc3DHeightRunnable : m_vecCalc3DHeightRunnable)

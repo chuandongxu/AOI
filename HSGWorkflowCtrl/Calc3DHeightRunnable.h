@@ -25,4 +25,4 @@ private:
     cv::Mat                 m_matHeightResultImg;
 };
 
-using Calc3dHeightRunnablePtr = std::shared_ptr<Calc3DHeightRunnable>;
+using Calc3DHeightRunnablePtr = std::shared_ptr<Calc3DHeightRunnable>;

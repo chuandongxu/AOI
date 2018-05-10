@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -636,7 +636,7 @@
        <x>20</x>
        <y>10</y>
        <width>350</width>
-       <height>301</height>
+       <height>371</height>
       </rect>
      </property>
      <property name="title">
@@ -758,6 +758,19 @@
         <string>记录所有日志</string>
        </property>
       </widget>
+     </widget>
+     <widget class="QPushButton" name="pushButton_PRDumpTimeLog">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>300</y>
+        <width>261</width>
+        <height>34</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>导出Vision Time Log</string>
+      </property>
      </widget>
     </widget>
    </widget>

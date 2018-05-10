@@ -187,6 +187,7 @@
   <ItemGroup>
     <ClInclude Include="..\DataModule\DataUtils.h" />
     <ClInclude Include="AlignmentRunnable.h" />
+    <ClInclude Include="AutoRunDataStructs.h" />
     <ClInclude Include="BoardInspResult.h" />
     <ClInclude Include="Calc3DHeightRunnable.h" />
     <ClInclude Include="GeneratedFiles\ui_WorkflowDiagions.h" />
@@ -195,6 +196,7 @@
     <ClInclude Include="Insp2DRunnable.h" />
     <ClInclude Include="Insp3DHeightRunnable.h" />
     <ClInclude Include="AutoRunThread.h" />
+    <ClInclude Include="InspRunnable.h" />
     <ClInclude Include="StopWatch.h" />
     <ClInclude Include="TimeLog.h" />
     <CustomBuild Include="hsgworksetting.h">

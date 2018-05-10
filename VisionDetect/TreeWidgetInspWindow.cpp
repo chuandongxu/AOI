@@ -48,17 +48,6 @@ void TreeWidgetInspWindow::dropEvent(QDropEvent * event) {
             return;
         }
 
-        //auto pNewItem = new QTreeWidgetItem(*pDraggingItem);
-        //pDropingOnItem->addChild(pNewItem);
-        //
-        //auto ptrParent = pDraggingItem->parent();
-        //if (ptrParent == NULL) {
-        //    this->takeTopLevelItem(this->indexOfTopLevelItem(pDraggingItem));
-        //}else {            
-        //    auto index = ptrParent->indexOfChild(pDraggingItem);
-        //    ptrParent->takeChild(index);
-        //}
-
         emit regrouped();
     }
 }

@@ -26,14 +26,9 @@ public:
 	virtual void confirmWindow(OPERATION enOperation) override;
 
 private:
-	void getDeviceBaseWindows(Engine::WindowVector& vecCurrentDeviceWindows);
-	cv::Rect getWindowRect(int nWinID);
-
-private:
 	Ui::HeightDetectWidget ui;
 
 	std::unique_ptr<QCheckBox>  m_pCheckBoxMeasure;
 	std::unique_ptr<QLineEdit>  m_pEditMinRange;
 	std::unique_ptr<QLineEdit>  m_pEditMaxRange;
-	std::unique_ptr<QStandardItemModel>  m_pStdItmModelRel;
 };

@@ -5,14 +5,13 @@
 #include "../include/constants.h"
 #include "../DataModule/DataUtils.h"
 
-Insp2DRunnable::Insp2DRunnable(const Vision::VectorOfMat    &vec2DImages,
-                               const Engine::WindowVector   &vecWindows,
+Insp2DRunnable::Insp2DRunnable(const Vision::VectorOfMat    &vec2DCaptureImages,
+                               const DeviceInspWindowVector &vecDeviceWindows,
                                const cv::Point2f            &ptFramePos,
                                BoardInspResultPtr           &ptrBoardInsResult) :
-    m_vec2DImages           (vec2DImages),
-    m_vecWindows            (vecWindows),
-    m_ptFramePos            (ptFramePos),
-    m_ptrBoardInspResult    (ptrBoardInsResult)
+    m_vec2DCaptureImages    (vec2DCaptureImages),
+    m_vecDeviceWindows      (vecDeviceWindows),
+    InspRunnable            (ptFramePos, ptrBoardInsResult)
 {
 }
 
@@ -21,30 +20,40 @@ Insp2DRunnable::~Insp2DRunnable() {
 
 void Insp2DRunnable::run()
 {
+    m_vec2DImages = _generate2DImages(m_vec2DCaptureImages);
+
     int nWindowIndex = 0;
-    for(const auto &window : m_vecWindows)
+    for(auto &deviceWindow : m_vecDeviceWindows)
     {
-        switch (window.usage) {
-        case Engine::Window::Usage::INSP_HOLE:
-            _inspHole(window);
-            break;
-
-        case Engine::Window::Usage::FIND_LINE:
-            _findLine(window);
-            break;
-
-        case Engine::Window::Usage::FIND_CIRCLE:
-            _findCircle(window);
-            break;
-
-        case Engine::Window::Usage::ALIGNMENT:
-            _alignment(window);
-            break;
-
-        default:
-            break;
+        auto iterAlignmentWindow = std::find_if(deviceWindow.vecUngroupedWindows.begin(), deviceWindow.vecUngroupedWindows.end(), [](const Engine::Window &window) { return window.usage == Engine::Window::Usage::ALIGNMENT; });
+        if (iterAlignmentWindow != deviceWindow.vecUngroupedWindows.end()) {
+            _alignment(*iterAlignmentWindow, deviceWindow);
         }
-        ++ nWindowIndex;
+
+        for (const auto &window : deviceWindow.vecUngroupedWindows) {
+            if (window.usage != Engine::Window::Usage::ALIGNMENT)
+                _inspWindow(window);
+        }
+    }
+}
+
+void Insp2DRunnable::_inspWindow(const Engine::Window &window)
+{
+    switch (window.usage) {
+    case Engine::Window::Usage::INSP_HOLE:
+        _inspHole(window);
+        break;
+
+    case Engine::Window::Usage::FIND_LINE:
+        _findLine(window);
+        break;
+
+    case Engine::Window::Usage::FIND_CIRCLE:
+        _findCircle(window);
+        break;
+
+    default:
+        break;
     }
 }
 
@@ -260,7 +269,7 @@ void Insp2DRunnable::_findCircle(const Engine::Window &window) {
     m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }
 
-void Insp2DRunnable::_alignment(const Engine::Window &window) {
+void Insp2DRunnable::_alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow) {
     QJsonParseError json_error;
 	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
 	if (json_error.error != QJsonParseError::NoError) {
@@ -304,6 +313,62 @@ void Insp2DRunnable::_alignment(const Engine::Window &window) {
     Vision::PR_MatchTmpl(&stCmd, &stRpy);
     m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
     if (Vision::VisionStatus::OK == stRpy.enStatus) {
-        //Update all device's window offset.
+        float fRealPosX = m_ptFramePos.x + (stRpy.ptObjPos.x - m_nImageWidthPixel  / 2) * m_dResolutionX;
+        float fRealPosY = m_ptFramePos.y - (stRpy.ptObjPos.y - m_nImageHeightPixel / 2) * m_dResolutionX;
+        float fOffsetX = fRealPosX - window.x;
+        float fOffsetY = fRealPosY - window.y;
+
+        for (auto &window : deviceInspWindow.vecUngroupedWindows) {
+            window.x += fOffsetX;
+            window.y += fOffsetY;
+        }
+
+        for (auto &windowGroup : deviceInspWindow.vecWindowGroup) {
+            for (auto &window : windowGroup.vecWindows) {
+                window.x += fOffsetX;
+                window.y += fOffsetY;
+            }
+        }
     }
+}
+
+Vision::VectorOfMat Insp2DRunnable::_generate2DImages(const Vision::VectorOfMat &vecInputImages)
+{
+    assert(vecInputImages.size() == CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT);
+
+    Vision::VectorOfMat vecResultImages;
+    cv::Mat matRed, matGreen, matBlue;
+    bool bColorCamera = false;
+    if (bColorCamera) {
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT],   matRed,   CV_BayerGR2GRAY);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT], matGreen, CV_BayerGR2GRAY);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT],  matBlue,  CV_BayerGR2GRAY);
+    }else {
+        matRed   = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT];
+        matGreen = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT];
+        matBlue  = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT];
+    }
+
+    Vision::VectorOfMat vecChannels{matBlue, matGreen, matRed};
+    cv::Mat matPseudocolorImage;
+    cv::merge(vecChannels, matPseudocolorImage);
+
+    cv::Mat matTopLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT], matTopLightImage, CV_BayerGR2BGR);
+	vecResultImages.push_back(matTopLightImage);
+
+    cv::Mat matLowAngleLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
+    vecResultImages.push_back(matLowAngleLightImage);
+
+    vecResultImages.push_back(matPseudocolorImage);
+
+	cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT], matUniformLightImage, CV_BayerGR2BGR);
+	vecResultImages.push_back(matUniformLightImage);
+
+    return vecResultImages;
 }

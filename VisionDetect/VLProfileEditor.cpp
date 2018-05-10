@@ -1303,7 +1303,7 @@ void QVLProfileEditor::displayObjMeasure()
 	}
 }
 
-void QVLProfileEditor::setHeightData(cv::Mat& matHeight)
+void QVLProfileEditor::setHeightData(const cv::Mat& matHeight)
 {
 	m_3DMatHeight = matHeight;
 }

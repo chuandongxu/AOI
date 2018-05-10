@@ -74,8 +74,8 @@ public:
     void setConfirmedFM(const VisionViewFMVector &vecFM);
     void setCurrentFM(const VisionViewFM &fm);
     VisionViewFM getCurrentFM() const;
-    void setHeightData(cv::Mat& matHeight);
-	cv::Mat getHeightData();
+    void setHeightData(const cv::Mat& matHeight);
+	cv::Mat getHeightData() const;
 
 	void openFile();
 	void cameraFile();

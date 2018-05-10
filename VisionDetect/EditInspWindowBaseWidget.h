@@ -24,10 +24,12 @@ public:
     virtual void tryInsp() = 0;
     virtual void confirmWindow(OPERATION enOperation) = 0;
     virtual void setCurrentWindow(const Engine::Window &window) = 0;
+    virtual void setWindowGroup(const Engine::WindowGroup &windowGroup);
 
 protected:
     InspWindowWidget           *m_pParent;
     Engine::Window              m_currentWindow;
+    Engine::WindowGroup         m_windowGroup;
 };
 
 using InspWindowBaseWidgetPtr = std::unique_ptr<EditInspWindowBaseWidget>;

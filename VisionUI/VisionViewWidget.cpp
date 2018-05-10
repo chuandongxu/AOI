@@ -1505,12 +1505,12 @@ void VisionViewWidget::moveImage(double motionX, double motionY)
 	repaintAll();
 }
 
-void VisionViewWidget::setHeightData(cv::Mat& matHeight)
+void VisionViewWidget::setHeightData(const cv::Mat& matHeight)
 {
 	m_3DMatHeight = matHeight;
 }
 
-cv::Mat VisionViewWidget::getHeightData()
+cv::Mat VisionViewWidget::getHeightData() const
 {
 	return m_3DMatHeight;
 }

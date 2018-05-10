@@ -56,8 +56,8 @@ public:
 	bool startUpCapture(bool bPromptSelect);
 	bool endUpCapture();
 
-	void setHeightData(cv::Mat& matHeight);
-	cv::Mat getHeightData();
+	void setHeightData(const cv::Mat& matHeight);
+	cv::Mat getHeightData() const;
 
 private slots:
 	void openFile();

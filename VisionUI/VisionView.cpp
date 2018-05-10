@@ -519,7 +519,7 @@ bool VisionView::endUpCapture()
 	return true;
 }
 
-void VisionView::setHeightData(cv::Mat& matHeight)
+void VisionView::setHeightData(const cv::Mat& matHeight)
 {
 	if (m_pViewWidget)
 	{
@@ -527,7 +527,7 @@ void VisionView::setHeightData(cv::Mat& matHeight)
 	}
 }
 
-cv::Mat VisionView::getHeightData()
+cv::Mat VisionView::getHeightData() const
 {
 	if (m_pViewWidget)
 	{

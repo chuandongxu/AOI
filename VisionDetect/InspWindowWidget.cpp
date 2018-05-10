@@ -241,7 +241,7 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
             auto windowId = pItem->data(0, Qt::UserRole).toInt();
             auto windowName = pItem->text(0);
             QString msg = "Are you sure to delete the inspection window: " + windowName;
-            int result = QMessageBox::warning(this, "删除检测框", msg, QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::Cancel);
+            int result = QMessageBox::warning(this, QStringLiteral("删除检测框"), msg, QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::Cancel);
             if (result != QMessageBox::StandardButton::Ok)
                 return;
 
@@ -269,7 +269,7 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
             auto groupwId = pItem->data(0, Qt::UserRole).toInt();
             auto groupName = pItem->text(0);
             QString msg = "Are you sure to delete the group: " + groupName;
-            int result = QMessageBox::warning(this, "删除检测框", msg, QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::Cancel);
+            int result = QMessageBox::warning(this, QStringLiteral("删除检测框"), msg, QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::Cancel);
             if (result != QMessageBox::StandardButton::Ok)
                 return;
 
@@ -296,6 +296,25 @@ void InspWindowWidget::on_btnCreateGroup_clicked()
     if (listOfItems.count() < 2) {
         System->showMessage(QStringLiteral("创建检测组"), QStringLiteral("请选择至少两个窗口!"));
         return;
+    }
+
+    for (const auto &pItem : listOfItems) {
+        if (pItem->type() == TREE_ITEM_GROUP) {
+            System->showMessage(QStringLiteral("创建检测组"), QStringLiteral("不能选择已经存在的group: ") + pItem->text(0));
+            return;
+        }
+
+        if (pItem->parent() != NULL) {
+            System->showMessage(QStringLiteral("创建检测组"), QStringLiteral("不能选择已经有分组的窗口: ") + pItem->text(0));
+            return;
+        }
+
+        auto windowId = pItem->data(0, Qt::UserRole).toInt();
+        auto window = m_mapIdWindow[windowId];
+        if (window.usage != Engine::Window::Usage::HEIGHT_MEASURE && window.usage != Engine::Window::Usage::HEIGHT_BASE) {
+            System->showMessage(QStringLiteral("创建检测组"), QStringLiteral("当前只支持高度框分组!"));
+            return;
+        }
     }
 
     DialogCreateGroup dialog;
@@ -326,7 +345,60 @@ void InspWindowWidget::on_btnTryInsp_clicked() {
     if (INSP_WIDGET_INDEX::UNDEFINED == m_enCurrentInspWidget)
         return;
 
-    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
+    if (INSP_WIDGET_INDEX::HEIGHT_DETECT == m_enCurrentInspWidget) {
+        auto ptrCurrentItem = ui.treeWidget->currentItem();
+        if (!ptrCurrentItem) {
+            System->showMessage(QStringLiteral("高度检测"), QStringLiteral("请先创建高度检测框组, 组里面包括高度检测框以及基准框."));
+            return;
+        }
+
+        auto groupId = 0;
+        if (ptrCurrentItem->type() == TREE_ITEM_GROUP)
+            groupId = ptrCurrentItem->data(0, Qt::UserRole).toInt();
+        else if (ptrCurrentItem->type() == TREE_ITEM_WINDOW) {
+            auto pParent = ptrCurrentItem->parent();
+            if (pParent != NULL)
+                groupId = pParent->data(0, Qt::UserRole).toInt();
+            else {
+                System->showMessage(QStringLiteral("高度检测"), QStringLiteral("请选择一个已经确定的高度检测框."));
+                return;
+            }
+        }
+
+        Engine::WindowGroup windowGroup;
+        auto result = Engine::GetGroupWindows(groupId, windowGroup);
+        if (Engine::OK != result) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString strMsg(QStringLiteral("创建检测框组失败, 错误消息: "));
+            strMsg += errorMessage.c_str();
+            System->showMessage(QStringLiteral("创建检测框组"), strMsg);
+            return;
+        }
+
+        bool bHasCheckWindow = false, bHasBaseWindow = false;
+        for (const auto &window : windowGroup.vecWindows) {
+            if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage)
+                bHasCheckWindow = true;
+            else if (Engine::Window::Usage::HEIGHT_BASE == window.usage)
+                bHasBaseWindow = true;
+        }
+
+        if (!bHasCheckWindow) {
+            System->showMessage(QStringLiteral("高度检测框组"), QStringLiteral("分组内没有高度检测框!"));
+            return;
+        }
+
+        if (!bHasBaseWindow) {
+            System->showMessage(QStringLiteral("高度检测框组"), QStringLiteral("分组内没有高度基准框!"));
+            return;
+        }
+
+        m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setWindowGroup(windowGroup);
+        m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
+    }
+    else
+        m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
 }
 
 void InspWindowWidget::on_btnConfirmWindow_clicked() {
@@ -415,9 +487,8 @@ void InspWindowWidget::onSelectedWindowChanged() {
 
     m_pComboBoxLighting->setCurrentIndex(window.lightId - 1);
 
-    double dResolutionX, dResolutionY;
-    dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-    dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
 
     auto x = window.x / dResolutionX;

@@ -81,7 +81,7 @@ bool VisionDetect::loadCmdData(int nStation)
 	return m_ctrl.loadCmdData(nStation);
 }
 
-bool VisionDetect::setHeightData(cv::Mat& matHeight)
+bool VisionDetect::setHeightData(const cv::Mat& matHeight)
 {
 	m_ctrl.getProfileEditor()->setHeightData(matHeight);
 	return true;

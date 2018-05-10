@@ -11,7 +11,7 @@ class Merge3DHeightRunnable : public QRunnable
 public:
     Merge3DHeightRunnable(
         QThreadPool                                *pCalc3DHeightThreadPool,
-        const std::vector<Calc3dHeightRunnablePtr> &vecCalc3DHeightRunnable,
+        const std::vector<Calc3DHeightRunnablePtr> &vecCalc3DHeightRunnable,
         VectorOfMat                                *pVec3DFrameImages,
         int                                         nRow,
         int                                         nCol,
@@ -24,7 +24,7 @@ protected:
 
 private:
     QThreadPool                          *m_pCalc3dHeightThreadPool;
-    std::vector<Calc3dHeightRunnablePtr>  m_vecCalc3DHeightRunnable;
+    std::vector<Calc3DHeightRunnablePtr>  m_vecCalc3DHeightRunnable;
     VectorOfMat                          *m_pVec3DFrameImages;
     int                                   m_nRow, m_nCol, m_nTotalRows, m_nTotalCols;
 };

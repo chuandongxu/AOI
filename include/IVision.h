@@ -17,7 +17,7 @@ public:
 
 	virtual bool loadCmdData(int nStation) = 0;
 
-	virtual bool setHeightData(cv::Mat& matHeight) = 0;
+	virtual bool setHeightData(const cv::Mat& matHeight) = 0;
 	virtual bool setProfGrayImg(cv::Mat& imgGray) = 0;
 	virtual bool setProf3DImg(QImage& img3D) = 0;
 	virtual bool setProfData(QVector<cv::Point2d>& profDatas) = 0;

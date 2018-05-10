@@ -29,15 +29,16 @@
 #include "Insp2DRunnable.h"
 
 AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignments,
-                             const Engine::WindowVector            &vecWindows,
+                             const DeviceInspWindowVector          &vecDeviceWindows,
                              const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr,
                              MapBoardInspResult                    *pMapBoardInspResult)
     :m_vecAlignments        (vecAlignments),
-     m_vecWindows           (vecWindows),
+     m_vecDeviceInspWindow  (vecDeviceWindows),
      m_vecVecFrameCtr       (vecVecFrameCtr),
      m_pMapBoardInspResult  (pMapBoardInspResult),
      m_exit                 (false)
 {
+    m_threadPoolCalc3DInsp2D.setMaxThreadCount(5);  // (4 DLP height calculation thead) + (1 2D inspection thread)
 }
 
 AutoRunThread::~AutoRunThread()
@@ -152,14 +153,17 @@ bool AutoRunThread::moveToCapturePos(float fPosX, float fPosY)
 bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
 {
     if (System->isRunOffline()) {
-        imageMats.clear();
-        std::string strImagePath("D:/Data/20180203_TestImageOnKB/0203125013/");
-        char strfileName[100];
-        for (int i = 1; i <= 54; ++ i) {
-            _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
-            cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
-            imageMats.push_back(matImage);
+        static QVector<cv::Mat> vecLocalImages;
+        if (vecLocalImages.empty()) {
+            std::string strImagePath("D:/Data/20180203_TestImageOnKB/0203125013/");
+            char strfileName[100];
+            for (int i = 1; i <= 54; ++ i) {
+                _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
+                cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
+                vecLocalImages.push_back(matImage);
+            }
         }
+        imageMats = vecLocalImages;
         return true;
     }
 
@@ -369,19 +373,30 @@ bool AutoRunThread::_doAlignment()
     return bResult;
 }
 
+void AutoRunThread::_transformPosition(float &x, float &y) {
+    std::vector<float> vecSrcPos;
+    vecSrcPos.push_back(x);
+    vecSrcPos.push_back(y);
+    vecSrcPos.push_back(1);
+    cv::Mat matSrcPos(vecSrcPos);
+    cv::Mat matDestPos = m_matTransform * matSrcPos;
+    x = matDestPos.at<float>(0);
+    y = matDestPos.at<float>(1);
+}
+
 bool AutoRunThread::_alignWindows()
 {
-    m_vecAlignedWindows.clear();
-    for (auto window : m_vecWindows) {
-        std::vector<float> vecSrcPos;
-        vecSrcPos.push_back(window.x);
-        vecSrcPos.push_back(window.y);
-        vecSrcPos.push_back(1);
-        cv::Mat matSrcPos(vecSrcPos);
-        cv::Mat matDestPos = m_matTransform * matSrcPos;
-        window.x = matDestPos.at<float>(0);
-        window.y = matDestPos.at<float>(1);
-        m_vecAlignedWindows.push_back(window);
+    m_vecAlignedDeviceInspWindow = m_vecDeviceInspWindow;
+    for (auto &deviceWindow : m_vecAlignedDeviceInspWindow) {
+        _transformPosition(deviceWindow.device.x, deviceWindow.device.y);
+
+        for (auto &window : deviceWindow.vecUngroupedWindows)
+            _transformPosition(window.x, window.y);
+
+        for (auto &windowGroup : deviceWindow.vecWindowGroup) {
+            for ( auto &window : windowGroup.vecWindows)
+                _transformPosition(window.x, window.y);
+        }
     }
     return true;
 }
@@ -418,21 +433,17 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
             }
             TimeLogInstance->addTimeLog("Capture all images.");
 
-            std::vector<Calc3dHeightRunnablePtr> vecCalc3dHeightRunnable;
+            QThreadPool::globalInstance()->waitForDone();
+
+            std::vector<Calc3DHeightRunnablePtr> vecCalc3dHeightRunnable;
             for (int nDlpId = 0; nDlpId < m_nDLPCount; ++ nDlpId) {
                 QVector<cv::Mat> vecDlpImage = vecMatImages.mid(nDlpId * DLP_IMG_COUNT, DLP_IMG_COUNT);
                 auto pCalc3DHeightRunnable = std::make_shared<Calc3DHeightRunnable>(nDlpId + 1, vecDlpImage);
                 pCalc3DHeightRunnable->setAutoDelete(false);
-                m_threadPoolCalc3DHeight.start(pCalc3DHeightRunnable.get());
+                m_threadPoolCalc3DInsp2D.start(pCalc3DHeightRunnable.get());
                 vecCalc3dHeightRunnable.push_back(std::move(pCalc3DHeightRunnable));
             }
 
-            {
-                auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolCalc3DHeight, vecCalc3dHeightRunnable);
-                QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
-            }
-
-            Engine::WindowVector vecWindows = _getWindowInFrame(ptFrameCtr);
             Vision::VectorOfMat vec2DCaptureImages(vecMatImages.begin() + m_nDLPCount * DLP_IMG_COUNT, vecMatImages.end());
             if (vec2DCaptureImages.size() != CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT) {
                 System->setTrackInfo(QString(QStringLiteral("2D image count %0 not correct.")).arg(vec2DCaptureImages.size()));
@@ -440,13 +451,23 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
                 break;
             }
 
-            auto vec2DImages = _generate2DImages(vec2DCaptureImages);
-            if (!vecWindows.empty()) {
-                auto pInsp2DRunnable = new Insp2DRunnable(vec2DImages, vecWindows, ptFrameCtr, ptrBoardInspResult);
-                pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
-                pInsp2DRunnable->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
-                QThreadPool::globalInstance()->start(pInsp2DRunnable);
+            auto vecDeviceWindows = _getDeviceWindowInFrame(ptFrameCtr);
+
+            auto pInsp2DRunnable = std::make_shared<Insp2DRunnable>(vec2DCaptureImages, vecDeviceWindows, ptFrameCtr, ptrBoardInspResult);
+            pInsp2DRunnable->setAutoDelete(false);
+            pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
+            pInsp2DRunnable->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
+            m_threadPoolCalc3DInsp2D.start(pInsp2DRunnable.get());
+
+            {
+                auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolCalc3DInsp2D, vecCalc3dHeightRunnable, pInsp2DRunnable, ptFrameCtr, ptrBoardInspResult);
+                pInsp3DHeightRunnalbe->setResolution(m_dResolutionX, m_dResolutionY);
+                pInsp3DHeightRunnalbe->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
+                QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
             }
+
+            if(isExit())
+                return bGood;
         }
 
         if (! bGood)
@@ -456,53 +477,32 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
     return bGood;
 }
 
-Engine::WindowVector AutoRunThread::_getWindowInFrame(const cv::Point2f &ptFrameCtr)
+DeviceInspWindowVector AutoRunThread::_getDeviceWindowInFrame(const cv::Point2f &ptFrameCtr)
 {
-    Engine::WindowVector vecResult;
-    for (const auto &window : m_vecAlignedWindows) {
-        if (DataUtils::isWindowInFrame(cv::Point2f(window.x, window.y), window.width, window.height, ptFrameCtr, m_fFovWidthUm, m_fFovHeightUm))
-            vecResult.push_back(window);
+    DeviceInspWindowVector vecResult;
+    for (const auto &deviceInspWindow : m_vecAlignedDeviceInspWindow) {
+        bool bInFrame = true;
+        for (const auto &window : deviceInspWindow.vecUngroupedWindows) {
+            if (! DataUtils::isWindowInFrame(cv::Point2f(window.x, window.y), window.width, window.height, ptFrameCtr, m_fFovWidthUm, m_fFovHeightUm)) {
+                bInFrame = false;
+                break;
+            }
+        }
+
+        if (!bInFrame)
+            continue;
+
+        for (const auto &windowGroup : deviceInspWindow.vecWindowGroup) {
+            for (const auto &window : windowGroup.vecWindows) {
+                if (! DataUtils::isWindowInFrame(cv::Point2f(window.x, window.y), window.width, window.height, ptFrameCtr, m_fFovWidthUm, m_fFovHeightUm)) {
+                    bInFrame = false;
+                    break;
+                }
+            }
+        }
+
+        if (bInFrame)
+            vecResult.push_back(deviceInspWindow);
     }
     return vecResult;
-}
-
-Vision::VectorOfMat AutoRunThread::_generate2DImages(const Vision::VectorOfMat &vecInputImages)
-{
-    assert(vecInputImages.size() == CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT);
-
-    Vision::VectorOfMat vecResultImages;
-    cv::Mat matRed, matGreen, matBlue;
-    bool bColorCamera = false;
-    if (bColorCamera) {
-        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT],   matRed,   CV_BayerGR2GRAY);
-        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT], matGreen, CV_BayerGR2GRAY);
-        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT],  matBlue,  CV_BayerGR2GRAY);
-    }else {
-        matRed   = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT];
-        matGreen = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT];
-        matBlue  = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT];
-    }
-
-    Vision::VectorOfMat vecChannels{matBlue, matGreen, matRed};
-    cv::Mat matPseudocolorImage;
-    cv::merge(vecChannels, matPseudocolorImage);
-
-    cv::Mat matTopLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT];
-    if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT], matTopLightImage, CV_BayerGR2BGR);
-	vecResultImages.push_back(matTopLightImage);
-
-    cv::Mat matLowAngleLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT];
-    if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
-    vecResultImages.push_back(matLowAngleLightImage);
-
-    vecResultImages.push_back(matPseudocolorImage);
-
-	cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
-    if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT], matUniformLightImage, CV_BayerGR2BGR);
-	vecResultImages.push_back(matUniformLightImage);
-
-    return vecResultImages;
 }

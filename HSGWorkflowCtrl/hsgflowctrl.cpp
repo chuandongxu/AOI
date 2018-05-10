@@ -196,58 +196,8 @@ void QFlowCtrl::start()
 	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
 	if (!pUI) return;
 
-    float left = 0, top = 0, right = 0, bottom = 0;
-    int nResult = Engine::GetBigBoardCoords(left, top, right, bottom);
-    if (Engine::OK != nResult) {
-        String errorType, errorMessage;
-        Engine::GetErrorDetail(errorType, errorMessage);
-        errorMessage = "Failed to get big board coordinates from data base, error message " + errorMessage;
-        System->showMessage(QStringLiteral("Prepare auto run"), errorMessage.c_str());
+    if (_prepareRunData() != OK)
         return;
-    }
-
-    Engine::AlignmentVector vecAlignments;
-    nResult = Engine::GetAllAlignments(vecAlignments);
-    if (Engine::OK != nResult) {
-        String errorType, errorMessage;
-        Engine::GetErrorDetail(errorType, errorMessage);
-        errorMessage = "Failed to get alignment from data base, error message " + errorMessage;
-        System->showMessage(QStringLiteral("Prepare auto run"), errorMessage.c_str());
-        return;
-    }   
-
-    if (vecAlignments.size() <= 1) {
-        System->showMessage(QStringLiteral("Prepare auto run"), QStringLiteral("Please set at least 2 alignment point!"));
-        return;
-    }
-
-    for (auto &alignment : vecAlignments) {
-        alignment.tmplPosX += left;
-        alignment.tmplPosY += bottom;
-    }
-
-    Engine::WindowVector vecWindows;
-    nResult = Engine::GetAllWindows(vecWindows);
-    if (Engine::OK != nResult) {
-        String errorType, errorMessage;
-        Engine::GetErrorDetail(errorType, errorMessage);
-        errorMessage = "Failed to get inspection windows from data base, error message " + errorMessage;
-        System->showMessage(QStringLiteral("Prepare auto run"), errorMessage.c_str());
-        return;
-    }
-
-    for ( auto &window : vecWindows) {
-        window.x += left;
-        window.y += bottom;
-    }
-
-    auto fResolutionX = System->getSysParam("CAM_RESOLUTION_X").toFloat();
-    auto fResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toFloat();
-    int nImgWidth = 0, nImgHeight = 0;
-    pCam->getCameraScreenSize(nImgWidth, nImgHeight);
-    float fovWidth = nImgWidth * fResolutionX, fovHeight = nImgHeight * fResolutionY;  // 2032 is the camera resolution, later need to get from elsewhere.
-    Vision::VectorOfVectorOfPoint2f vecVecFrameCtr;
-    nResult = DataUtils::assignFrames(left, top, right, bottom, fovWidth, fovHeight, vecVecFrameCtr);
 
 	if(!m_isHome)
 	{		
@@ -291,10 +241,10 @@ void QFlowCtrl::start()
         }
     }
 
-    m_pAutoRunThread = new AutoRunThread(vecAlignments, vecWindows, vecVecFrameCtr, &m_mapBoardInspResult);
+    m_pAutoRunThread = new AutoRunThread(m_vecAlignments, m_vecDeviceInspWindow, m_vecVecFrameCtr, &m_mapBoardInspResult);
     connect(m_pAutoRunThread, &AutoRunThread::finished, m_pAutoRunThread, &QObject::deleteLater);
-    m_pAutoRunThread->setImageSize(nImgWidth, nImgHeight);
-    m_pAutoRunThread->setBoardStartPos(left, bottom);
+    m_pAutoRunThread->setImageSize(m_nImgWidth, m_nImgHeight);
+    m_pAutoRunThread->setBoardStartPos(m_fBoardLeft, m_fBoardBottom);
     m_pAutoRunThread->start();
 
 	m_isStart = true;
@@ -460,4 +410,134 @@ void QFlowCtrl::initStartUp()
 
 	QApplication::processEvents();
 	QSystem::closeMessage();
+}
+
+int QFlowCtrl::_prepareRunData()
+{
+    int nResult = Engine::GetBigBoardCoords(m_fBoardLeft, m_fBoardTop, m_fBoardRight, m_fBoardBottom);
+    if (Engine::OK != nResult) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString msg(QStringLiteral("读取电路板坐标失败, 错误消息: "));
+        msg + errorMessage.c_str();
+        System->showMessage(QStringLiteral("准备自动运行"), msg);
+        return NOK;
+    }
+
+    
+    nResult = Engine::GetAllAlignments(m_vecAlignments);
+    if (Engine::OK != nResult) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString msg(QStringLiteral("读取定位标记信息失败, 错误消息: "));
+        msg + errorMessage.c_str();
+        System->showMessage(QStringLiteral("准备自动运行"), msg);
+        return NOK;
+    }
+
+    if (m_vecAlignments.size() <= 1) {
+        System->showMessage(QStringLiteral("Prepare auto run"), QStringLiteral("Please set at least 2 alignment point!"));
+        return NOK;
+    }
+
+    for (auto &alignment : m_vecAlignments) {
+        alignment.tmplPosX += m_fBoardLeft;
+        alignment.tmplPosY += m_fBoardBottom;
+    }
+
+    auto fResolutionX = System->getSysParam("CAM_RESOLUTION_X").toFloat();
+    auto fResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toFloat();
+    
+
+    auto pCam = getModule<ICamera>(CAMERA_MODEL);
+    pCam->getCameraScreenSize(m_nImgWidth, m_nImgHeight);
+    float fovWidth = m_nImgWidth * fResolutionX, fovHeight = m_nImgHeight * fResolutionY;  // 2032 is the camera resolution, later need to get from elsewhere.
+    
+    nResult = DataUtils::assignFrames(m_fBoardLeft, m_fBoardTop, m_fBoardRight, m_fBoardBottom, fovWidth, fovHeight, m_vecVecFrameCtr);
+    if (nResult != OK) {
+        System->showMessage(QStringLiteral("分配Frame"), QStringLiteral("分配Frame失败!"));
+        return NOK;
+    }   
+
+    Engine::DeviceVector vecDevice;
+    nResult = Engine::GetAllDevices(vecDevice);
+    if (Engine::OK != nResult) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString msg(QStringLiteral("读取元件信息失败, 错误消息: "));
+        msg + errorMessage.c_str();
+        System->showMessage(QStringLiteral("准备自动运行"), msg);
+        return NOK;
+    }
+
+    m_vecDeviceInspWindow.clear();
+    for (const auto &device: vecDevice) {
+        Engine::WindowVector vecWindows;
+        nResult = Engine::GetDeviceWindows(device.Id, vecWindows);
+        if (Engine::OK != nResult) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString msg(QStringLiteral("读取元件检测框失败, 错误消息: "));
+            msg + errorMessage.c_str();
+            System->showMessage(QStringLiteral("准备自动运行"), msg);
+            return NOK;
+        }
+
+        if (vecWindows.empty())
+            continue;
+
+        DeviceInspWindow deviceInpWindow;
+        deviceInpWindow.device = device;
+        nResult = Engine::GetDeviceUngroupedWindows(device.Id, deviceInpWindow.vecUngroupedWindows);
+        if (Engine::OK != nResult) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString msg(QStringLiteral("读取元件未分组检测框失败, 错误消息: "));
+            msg + errorMessage.c_str();
+            System->showMessage(QStringLiteral("准备自动运行"), msg);
+            return NOK;
+        }
+
+        for (auto &window : deviceInpWindow.vecUngroupedWindows) {
+            window.x += m_fBoardLeft;
+            window.y += m_fBoardBottom;
+        }
+
+        Int64Vector vecGroupId;
+        nResult = Engine::GetDeviceWindowGroups(device.Id, vecGroupId);
+        if (Engine::OK != nResult) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString msg(QStringLiteral("读取元件检测框组失败, 错误消息: "));
+            msg + errorMessage.c_str();
+            System->showMessage(QStringLiteral("准备自动运行"), msg);
+            return NOK;
+        }
+
+        if (!vecGroupId.empty()) {            
+            for (const auto groupId : vecGroupId) {
+                Engine::WindowGroup windowGroup;
+                nResult = Engine::GetGroupWindows(groupId, windowGroup);
+                if (Engine::OK != nResult) {
+                    String errorType, errorMessage;
+                    Engine::GetErrorDetail(errorType, errorMessage);
+                    QString msg(QStringLiteral("读取元件检测框组失败, 错误消息: "));
+                    msg + errorMessage.c_str();
+                    System->showMessage(QStringLiteral("准备自动运行"), msg);
+                    return NOK;
+                }
+
+                for (auto &window : windowGroup.vecWindows) {
+                    window.x += m_fBoardLeft;
+                    window.y += m_fBoardBottom;
+                }
+
+                deviceInpWindow.vecWindowGroup.push_back(windowGroup);
+            }
+        }
+
+        m_vecDeviceInspWindow.push_back(deviceInpWindow);
+    }
+    
+    return OK;
 }

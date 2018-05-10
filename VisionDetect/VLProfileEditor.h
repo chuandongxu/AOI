@@ -91,7 +91,7 @@ private:
 	QAction *profileLengthAct;
 
 public:
-	void setHeightData(cv::Mat& matHeight);
+	void setHeightData(const cv::Mat& matHeight);
 	void setProfGrayImg(cv::Mat& imgGray);
 
 	void setProf3DImg(QImage& img3D);

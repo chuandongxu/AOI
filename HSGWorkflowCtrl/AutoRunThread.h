@@ -3,9 +3,9 @@
 #include <QThreadPool>
 #include <atomic>
 
-#include "DataStoreAPI.h"
 #include "VisionAPI.h"
 #include "BoardInspResult.h"
+#include "AutoRunDataStructs.h"
 
 using namespace NFG::AOI;
 using namespace AOI;
@@ -14,7 +14,7 @@ class AutoRunThread : public QThread
 {
 public:
 	AutoRunThread(const Engine::AlignmentVector         &vecAlignments,
-                  const Engine::WindowVector            &vecWindows,
+                  const DeviceInspWindowVector          &vecDeviceWindows,
                   const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr,
                   MapBoardInspResult                    *pMapBoardInspResult);
 	~AutoRunThread();
@@ -47,23 +47,23 @@ private:
     bool _feedBoard();
     bool _readBarcode();
     bool _doAlignment();
+    void _transformPosition(float &x, float &y);
     bool _alignWindows();
     bool _doInspection(BoardInspResultPtr ptrBoardInspResult);
-    Engine::WindowVector _getWindowInFrame(const cv::Point2f &ptFrameCtr);
-    Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
+    DeviceInspWindowVector _getDeviceWindowInFrame(const cv::Point2f &ptFrameCtr);
 
 private:
 	std::atomic<bool>               m_exit;	
 	cv::Mat                         m_3DMatHeight;
     Engine::AlignmentVector         m_vecAlignments;
-    Engine::WindowVector            m_vecWindows;
-    Engine::WindowVector            m_vecAlignedWindows;
+    //Engine::WindowVector            m_vecWindows;
+    //Engine::WindowVector            m_vecAlignedWindows;
     double                          m_dResolutionX;
     double                          m_dResolutionY;
     int                             m_nDLPCount;
     cv::Mat                         m_matTransform;
     Vision::VectorOfVectorOfPoint2f m_vecVecFrameCtr;
-    QThreadPool                     m_threadPoolCalc3DHeight;
+    QThreadPool                     m_threadPoolCalc3DInsp2D;
     float                           m_fFovWidthUm;
     float                           m_fFovHeightUm;
     int                             m_nImageWidthPixel;
@@ -74,6 +74,8 @@ private:
     float                           m_fBoardBtmPos;
     MapBoardInspResult             *m_pMapBoardInspResult;
     QString                         m_boardName;
+    DeviceInspWindowVector          m_vecDeviceInspWindow;
+    DeviceInspWindowVector          m_vecAlignedDeviceInspWindow;
 };
 
 
