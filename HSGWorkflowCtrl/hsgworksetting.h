@@ -53,6 +53,7 @@ protected slots:
 	void onInitPRSystem();
 	void onUninitPRSystem();
 	void onClearAllRecords();
+    void onDumpVisionTimeLog();
 	void onAutoClearRecord(int iState);
 
 	void onCheckStartUpHome(int iState);

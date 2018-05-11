@@ -85,7 +85,7 @@ void QVisionUIModule::setImage(const cv::Mat& matImage, bool bDisplay)
 	}
 }
 
-void QVisionUIModule::setHeightData(cv::Mat& matHeight)
+void QVisionUIModule::setHeightData(const cv::Mat& matHeight)
 {
 	if (m_pVisionView)
 	{
@@ -93,7 +93,7 @@ void QVisionUIModule::setHeightData(cv::Mat& matHeight)
 	}
 }
 
-cv::Mat QVisionUIModule::getHeightData()
+cv::Mat QVisionUIModule::getHeightData() const
 {
 	if (m_pVisionView)
 	{

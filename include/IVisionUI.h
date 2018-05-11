@@ -27,8 +27,8 @@ public:
 	virtual void addImageText(QString szText) = 0;
 	virtual void displayImage(cv::Mat& image) = 0;
 
-	virtual void setHeightData(cv::Mat& matHeight) = 0;
-	virtual cv::Mat getHeightData() = 0;
+	virtual void setHeightData(const cv::Mat& matHeight) = 0;
+	virtual cv::Mat getHeightData() const = 0;
 	virtual bool startUpCapture(bool bPromptSelect = true) = 0;
 	virtual bool endUpCapture() = 0;
 

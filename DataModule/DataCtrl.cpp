@@ -29,19 +29,6 @@
 using namespace NFG::AOI;
 using namespace AOI;
 
-//template<int id>
-//class CCompFindDevice {
-//public:
-//	bool operator()(const Engine::Device& lhs) {
-//		return (lhs.Id == id);
-//	}
-//};
-//
-//Engine::DeviceVector::iterator rstFind = std::find_if(vecDevice.begin(), vecDevice.end(), CCompFindDevice<nDeviceID>());
-//if (rstFind != vecDevice.end())
-//{
-//}
-
 bool getDeviceGroup(Int64 devieId, const std::string groupNameUsage, std::vector<Int64>& winGroupIds)
 {
 	Int64Vector vecGroupIds;

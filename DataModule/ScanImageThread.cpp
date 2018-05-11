@@ -88,7 +88,7 @@ void ScanImageThread::run()
 
             QThreadPool::globalInstance()->waitForDone();
 
-            std::vector<Calc3dHeightRunnablePtr> vecCalc3dHeightRunnable;
+            std::vector<Calc3DHeightRunnablePtr> vecCalc3dHeightRunnable;
             for (int nDlpId = 0; nDlpId < m_nDLPCount; ++ nDlpId) {
                 QVector<cv::Mat> vecDlpImage = vecMatImages.mid(nDlpId * DLP_IMG_COUNT, DLP_IMG_COUNT);
                 auto pCalc3DHeightRunnable = std::make_shared<Calc3DHeightRunnable>(nDlpId + 1, vecDlpImage);

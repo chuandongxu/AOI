@@ -154,6 +154,12 @@
     <ClInclude Include="BoardInspResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AutoRunDataStructs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InspRunnable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_AutoRunPanel.h">
       <Filter>Generated Files</Filter>
     </ClInclude>

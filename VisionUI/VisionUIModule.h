@@ -21,8 +21,8 @@ public:
 
 	virtual QWidget* getVisionView();
 	virtual void setImage(const cv::Mat& matImage, bool bDisplay);
-	virtual void setHeightData(cv::Mat& matHeight);
-	virtual cv::Mat getHeightData();
+	virtual void setHeightData(const cv::Mat& matHeight);
+	virtual cv::Mat getHeightData() const;
 	virtual bool startUpCapture(bool bPromptSelect);
 	virtual bool endUpCapture();
 

@@ -30,7 +30,7 @@ public:
 public:
 	virtual bool loadCmdData(int nStation);
 
-	virtual bool setHeightData(cv::Mat& matHeight);
+	virtual bool setHeightData(const cv::Mat& matHeight);
 	virtual bool setProfGrayImg(cv::Mat& imgGray);
 	virtual bool setProf3DImg(QImage& img3D);
 	virtual bool setProfData(QVector<cv::Point2d>& profDatas);

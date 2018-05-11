@@ -204,6 +204,7 @@
   <ItemGroup>
     <ClInclude Include="..\DataModule\DataUtils.h" />
     <ClInclude Include="AlignmentRunnable.h" />
+    <ClInclude Include="AutoRunDataStructs.h" />
     <CustomBuild Include="AutoRunPanel.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing AutoRunPanel.h...</Message>
@@ -230,6 +231,7 @@
     <ClInclude Include="GeneratedFiles\ui_worksetting.h" />
     <ClInclude Include="Insp2DRunnable.h" />
     <ClInclude Include="Insp3DHeightRunnable.h" />
+    <ClInclude Include="InspRunnable.h" />
     <CustomBuild Include="AutoRunThread.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing AutoRunThread.h...</Message>

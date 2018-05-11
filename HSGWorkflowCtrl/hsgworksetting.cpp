@@ -4,8 +4,9 @@
 #include "../include/IdDefine.h"
 #include "../Common/eos.h"
 #include <QMessagebox>
+#include <future>
 
-#include "../lib/VisionLibrary/include/VisionAPI.h"
+#include "VisionAPI.h"
 using namespace AOI;
 
 //定义系统Vision LOG
@@ -218,6 +219,7 @@ void QWorkSetting::initUI()
 	connect(ui.pushButton_PRInit, SIGNAL(clicked()), SLOT(onInitPRSystem()));
 	connect(ui.pushButton_PRRelease, SIGNAL(clicked()), SLOT(onUninitPRSystem()));
 	connect(ui.pushButton_PRClearRecord, SIGNAL(clicked()), SLOT(onClearAllRecords()));
+    connect(ui.pushButton_PRDumpTimeLog, SIGNAL(clicked()), SLOT(onDumpVisionTimeLog()));
 	connect(ui.checkBox_AutoClearRecord, SIGNAL(stateChanged(int)), SLOT(onAutoClearRecord(int)));
 
 	bool bStartUpHomeEnable = System->getParam("auto_startup_home_enable").toBool();
@@ -516,6 +518,25 @@ void QWorkSetting::onClearAllRecords()
 			System->setTrackInfo(QString("Error at PR_FreeAllRecord, error code = %1").arg((int)retStatus));
 		}
 	}
+}
+
+void QWorkSetting::onDumpVisionTimeLog()
+{
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setNameFilter(tr("Log Files (*.log *.txt)"));
+    dialog.setViewMode(QFileDialog::Detail);
+    if ( ! dialog.exec() )
+        return;
+
+    QStringList fileNames = dialog.selectedFiles();
+    std::string filePath = fileNames[0].toStdString();
+
+    std::async( std::launch::async, 
+        [filePath] ()
+        { Vision::PR_DumpTimeLog(filePath); }
+    );
 }
 
 void QWorkSetting::onAutoClearRecord(int iState)
