@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>QStatisticsWidget</class>
- <widget class="QWidget" name="QStatisticsWidget">
+ <class>AutoRunPanel</class>
+ <widget class="QWidget" name="AutoRunPanel">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,46 +11,30 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>QStatisticsWidget</string>
+   <string>AutoRunPanel</string>
   </property>
-  <widget class="QGroupBox" name="groupBox">
+  <widget class="QTableView" name="tableView_resultList">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>20</y>
-     <width>360</width>
-     <height>121</height>
+     <y>290</y>
+     <width>361</width>
+     <height>350</height>
     </rect>
    </property>
-   <property name="title">
-    <string>操作运行</string>
+  </widget>
+  <widget class="QPushButton" name="pushButton_stopAutoRun">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>720</y>
+     <width>361</width>
+     <height>51</height>
+    </rect>
    </property>
-   <widget class="QPushButton" name="pushButton_runOnce">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>30</y>
-      <width>291</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>单步测试</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_AutoRun">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>90</y>
-      <width>91</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>自动运行</string>
-    </property>
-   </widget>
+   <property name="text">
+    <string>停止运行测试</string>
+   </property>
   </widget>
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
@@ -142,16 +126,6 @@
     </property>
    </widget>
   </widget>
-  <widget class="QTableView" name="tableView_resultList">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>290</y>
-     <width>361</width>
-     <height>350</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pushButton_startAutoRun">
    <property name="geometry">
     <rect>
@@ -165,18 +139,44 @@
     <string>启动运行测试</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_stopAutoRun">
+  <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>720</y>
-     <width>361</width>
-     <height>51</height>
+     <y>20</y>
+     <width>360</width>
+     <height>121</height>
     </rect>
    </property>
-   <property name="text">
-    <string>停止运行测试</string>
+   <property name="title">
+    <string>操作运行</string>
    </property>
+   <widget class="QPushButton" name="pushButton_runOnce">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>30</y>
+      <width>291</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>单步测试</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_AutoRun">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>90</y>
+      <width>91</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>自动运行</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

@@ -4,6 +4,7 @@
 #include "../include/IData.h"
 #include "../include/IVision.h"
 #include "../include/ICamera.h"
+#include "../include/IFlowCtrl.h"
 #include <QStyleOption>
 #include <QPainter>
 #include "../common/SystemData.h"
@@ -32,8 +33,12 @@ QRightWidget::QRightWidget(QWidget *parent)
 
     IData * pData = getModule<IData>(DATA_MODEL);	
 	if (pData) {
-        ui.stackedWidget->addWidget(pData->getDataWidget());
-        ui.stackedWidget->addWidget(pData->getStatisticsWidget());
+        ui.stackedWidget->addWidget(pData->getDataWidget());        
+    }
+    IFlowCtrl * p = getModule<IFlowCtrl>(CTRL_MODEL);
+    if (p)
+    {
+        ui.stackedWidget->addWidget(p->getAutoRunPanel());
     }
 	ui.stackedWidget->setCurrentIndex(0);	
 

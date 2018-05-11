@@ -26,7 +26,6 @@
 #include "opencv2/highgui.hpp"
 #include "../DataModule/DataUtils.h"
 
-#include "AutoStartUp.h"
 
 #define POS_ZHOME   "zHome%0"
 #define PROFILE_X   "xMoveProfile%0"
@@ -51,6 +50,7 @@ QFlowCtrl::QFlowCtrl(QObject *parent)
 	m_dateTime = QDateTime::currentDateTime();
 
 	QEos::Attach(EVENT_IMAGE_STATE, this, SLOT(onImageEvent(const QVariantList &)));
+    QEos::Attach(EVENT_THREAD_STATE, this, SLOT(onThreadState(const QVariantList &)));
 
 	//IMotion * pMotion = getModule<IMotion>(MOTION_MODEL);
 	//if(pMotion)
@@ -60,8 +60,6 @@ QFlowCtrl::QFlowCtrl(QObject *parent)
 	//	pMotion->setExtDO(DO_RED_LIGHT,0);
 	//	pMotion->setExtDO(DO_BUZZER,0);
 	//}	
-
-    m_startUpWidget = std::make_shared<AutoStartUp>();
 }
 
 QFlowCtrl::~QFlowCtrl()
@@ -81,6 +79,22 @@ void QFlowCtrl::onImageEvent(const QVariantList &data)
 	int iEvent = data[1].toInt();
 	if (iEvent != IMAGE_STATE_CHANGE) return;
 	int nIndex = data[2].toInt();
+}
+
+void QFlowCtrl::onThreadState(const QVariantList &data)
+{
+    if (data.size() <= 0) return;
+
+    int iEvent = data[0].toInt();
+
+    switch (iEvent)
+    {
+    case MAIN_THREAD_CLOSED:   
+        stop();
+        break;
+    default:
+        break;
+    }
 }
 
 void QFlowCtrl::home()
@@ -311,36 +325,14 @@ void QFlowCtrl::start()
 }
 	
 void QFlowCtrl::stop()
-{	
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return;
-
-	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
-	if (!pDlp) return;	
-
-	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-	if (!pUI) return;
-	
+{		
 	//m_isHome = false;
 
 	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在停止中..."), 0);
 	QApplication::processEvents();
 
-	if (m_pAutoRunThread) m_pAutoRunThread->quit();
-
-	QThreadPool::globalInstance()->waitForDone();
-	
-	pUI->endUpCapture();
-	
-    int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-	for (int i = 0; i < nStationNum; i++)
-	{
-		if (pDlp->isConnected(i))
-		{
-			if (!pDlp->endUpCapture(i))
-                continue;
-		}
-	}
+	//if (m_pAutoRunThread) m_pAutoRunThread->quit();
+    QEos::Notify(EVENT_THREAD_STATE, SHUTDOWN_MAIN_THREAD);
 
 	IMotion * p = getModule<IMotion>(MOTION_MODEL);
 	if(p)
@@ -395,9 +387,4 @@ void QFlowCtrl::initErrorCode()
 	//System->addErrorMap(ERROR_Z_POS_WARRING,MSG_Z_POS_WARRING);
 	System->addErrorMap(ERROR_MOTION_POS_WARRING,MSG_MOTION_POS_WARRING);
 	System->addErrorMap(ERROR_STATION_SAFE_GRATING_ALRM,MSG_STTATION_SAFE_GRATING_ALRM);
-}
-
-void QFlowCtrl::initStartUp()
-{
-    m_startUpWidget->showProgress();	
 }

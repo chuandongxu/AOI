@@ -53,6 +53,7 @@ CameraOnLive::CameraOnLive(VisionViewWidget* pView, bool bHWTrigger)
 
 void CameraOnLive::run()
 {
+    System->setTrackInfo("Start Capturing...");
 	m_bRuning = true;
 
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
@@ -138,6 +139,7 @@ void CameraOnLive::run()
 	}
 
 	m_bRuning = false;
+    System->setTrackInfo("End Capturing...");
 }
 
 void CameraOnLive::setQuitFlag()
@@ -452,6 +454,11 @@ void VisionViewWidget::onStopLive()
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return;
 
+    if (m_pCameraOnLive)
+    {
+        m_pCameraOnLive->setQuitFlag();      
+    }
+
 	if (pCam->getCameraNum() > 0)
 	{
 		pCam->endUpCapture();
@@ -460,21 +467,20 @@ void VisionViewWidget::onStopLive()
 	{
 		QSystem::closeMessage();
 		QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("请检查相机是否连接。"));
-	}
+	}	
 
-	if (m_pCameraOnLive)
-	{
-		m_pCameraOnLive->setQuitFlag();
-		while (m_pCameraOnLive->isRuning())
-		{
-			QThread::msleep(10);
-			QApplication::processEvents();
-		}
-		QThread::msleep(200);
+    if (m_pCameraOnLive)
+    {       
+        while (m_pCameraOnLive->isRuning())
+        {
+            QThread::msleep(10);
+            QApplication::processEvents();
+        }
+        QThread::msleep(200);
 
-		delete m_pCameraOnLive;
-		m_pCameraOnLive = NULL;
-	}
+        delete m_pCameraOnLive;
+        m_pCameraOnLive = NULL;
+    }
 }
 
 void VisionViewWidget::show3D()

@@ -16,7 +16,6 @@
 #include "opencv/cv.h"
 #include "BoardInspResult.h"
 
-class AutoStartUp;
 class QFlowCtrl : public QObject
 {
 	Q_OBJECT
@@ -26,10 +25,9 @@ public:
 
 	bool isRuning();
 
-	void initStartUp();
-
 protected slots:
 	void onImageEvent(const QVariantList &data);
+    void onThreadState(const QVariantList &data);
 
 	void home();
 	void startAutoRun();
@@ -61,8 +59,6 @@ private:
 	QDateTime           m_dateTime;
 	int                 m_errorCode;
     MapBoardInspResult  m_mapBoardInspResult;
-
-    std::shared_ptr<AutoStartUp> m_startUpWidget;
 };
 
 #endif // FLOWCTRL_H

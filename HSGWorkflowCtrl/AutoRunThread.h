@@ -2,6 +2,7 @@
 #include <QThread>
 #include <QThreadPool>
 #include <atomic>
+#include <qobject.h>
 
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
@@ -12,22 +13,30 @@ using namespace AOI;
 
 class AutoRunThread : public QThread
 {
+    Q_OBJECT
+
 public:
 	AutoRunThread(const Engine::AlignmentVector         &vecAlignments,
                   const Engine::WindowVector            &vecWindows,
                   const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr,
                   MapBoardInspResult                    *pMapBoardInspResult);
 	~AutoRunThread();
-
-	void quit();
+	
     static bool captureAllImages(QVector<cv::Mat>& imageMats);
     inline void setImageSize(int nImgWidth, int nImgHeight) { m_nImageWidthPixel = nImgWidth; m_nImageHeightPixel = nImgHeight; }
     inline void setBoardStartPos(float fBoardLeftPos, float fBoardBtmPos) { m_fBoardLeftPos = fBoardLeftPos; m_fBoardBtmPos = fBoardBtmPos; }
 
+public slots:
+    void onThreadState(const QVariantList &data);
+
 protected:
+    void quit();
+
 	bool preRunning();
 
 	void run() override;
+
+    void postRunning();
 	
 	bool waitStartBtn();
     bool moveToCapturePos(float fPosX, float fPosY);

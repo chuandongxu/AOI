@@ -75,22 +75,6 @@ QAppMainWidget::QAppMainWidget(QWidget *parent)
 
 	this->onChangeModuleType(QVariantList());
 	//QEos::Attach(EVENT_HSG_TYPE, this, SLOT(onChangeModuleType(const QVariantList &)));
-
-	QMoudleMgr * mgr = QMoudleMgr::instance();
-	if (mgr)
-	{
-		QList<int> ids = mgr->getModelIdList();
-		for (int i = 0; i<ids.size(); i++)
-		{
-			QModuleInterface * p = mgr->getModule(ids[i]);
-			if (p)
-			{
-				p->preStartUp();
-			}
-		}
-	}
-
-	System->setTrackInfo(QStringLiteral("系统已启动"));
 }
 
 QAppMainWidget::~QAppMainWidget()

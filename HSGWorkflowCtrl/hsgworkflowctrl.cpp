@@ -6,6 +6,8 @@
 #include "hsgworkflowctrl_global.h"
 #include "../include/IdDefine.h"
 
+#include "AutoRunPanel.h"
+
 HSGWorkflowCtrl::HSGWorkflowCtrl(int id,const QString &name)
 	:QModuleBase(id,name)
 {
@@ -13,6 +15,7 @@ HSGWorkflowCtrl::HSGWorkflowCtrl(int id,const QString &name)
 
 	m_ctrl = new QFlowCtrl(NULL);
 	m_workflowWidget = new QWorkFlowWidget;
+    m_pAutoRunWidget = new AutoRunPanel;
 }
 
 HSGWorkflowCtrl::~HSGWorkflowCtrl()
@@ -21,6 +24,10 @@ HSGWorkflowCtrl::~HSGWorkflowCtrl()
 	//if(m_workflowWidget)delete m_workflowWidget;
 }
 
+QWidget* HSGWorkflowCtrl::getAutoRunPanel()
+{
+    return m_pAutoRunWidget;
+}
 
 void HSGWorkflowCtrl::addSettingWiddget(QTabWidget *tabWidget)
 {
@@ -33,8 +40,7 @@ void HSGWorkflowCtrl::addDiagonseWidget(QTabWidget * tabWidget)
 }
 
 void HSGWorkflowCtrl::preStartUp()
-{
-	if (m_ctrl) m_ctrl->initStartUp();
+{	
 }
 
 bool HSGWorkflowCtrl::isRuning()

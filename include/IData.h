@@ -17,8 +17,7 @@ class QDetectObj;
 class QProfileObj;
 class IData
 {
-public:
-	virtual QWidget* getStatisticsWidget() = 0;
+public:	
 	virtual QWidget* getDataEditor() = 0;
     virtual QWidget* getDataWidget() = 0;
 
