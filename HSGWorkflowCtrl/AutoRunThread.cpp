@@ -39,10 +39,27 @@ AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignment
      m_exit                 (false)
 {
     m_threadPoolCalc3DInsp2D.setMaxThreadCount(5);  // (4 DLP height calculation thead) + (1 2D inspection thread)
+    QEos::Attach(EVENT_THREAD_STATE, this, SLOT(onThreadState(const QVariantList &)));
 }
 
 AutoRunThread::~AutoRunThread()
 {
+}
+
+void AutoRunThread::onThreadState(const QVariantList &data)
+{    
+    if (data.size() <= 0) return;
+
+    int iEvent = data[0].toInt();  
+
+    switch (iEvent)
+    {
+    case SHUTDOWN_MAIN_THREAD:
+        quit();
+        break;  
+    default:
+        break;
+    }
 }
 
 void AutoRunThread::quit()
@@ -105,7 +122,15 @@ void AutoRunThread::run()
 		}
 	}
 
+    QThreadPool::globalInstance()->waitForDone();
+    postRunning();
+
 	System->setTrackInfo(QString(QStringLiteral("主流程已停止")));
+}
+
+void AutoRunThread::postRunning()
+{
+    QEos::Notify(EVENT_THREAD_STATE, MAIN_THREAD_CLOSED);
 }
 
 bool AutoRunThread::waitStartBtn()
