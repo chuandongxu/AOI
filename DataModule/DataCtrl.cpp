@@ -160,8 +160,6 @@ DataCtrl::DataCtrl(QObject *parent)
 {
 	m_nCycleTestNum = 0;
 
-	m_bInfiniteCycles = false;
-
 	m_nProfileIndex = 0;
 
 	m_boardObj = new QBoardObj(0, "TestBoard");
@@ -194,11 +192,6 @@ DataCtrl::~DataCtrl()
 	}
 }
 
-void DataCtrl::setInfiniteCycles(bool bInfinite)
-{
-	m_bInfiniteCycles = bInfinite;
-}
-
 void DataCtrl::incrementCycleTests()
 {
 	QAutoLocker loacker(&m_mutex);
@@ -221,8 +214,6 @@ void DataCtrl::decrementCycleTests()
 int	DataCtrl::getCycleTests()
 {
 	QAutoLocker loacker(&m_mutex);
-
-	if (m_bInfiniteCycles) return 1;
 
 	return m_nCycleTestNum;
 }

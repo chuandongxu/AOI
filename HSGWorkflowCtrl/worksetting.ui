@@ -369,7 +369,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>DLP模式:</string>
+       <string>触发模式:</string>
       </property>
      </widget>
      <widget class="QComboBox" name="comboBox_dlpMode">

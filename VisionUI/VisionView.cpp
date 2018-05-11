@@ -7,6 +7,7 @@
 #include "../include/ILight.h"
 #include "../include/IVision.h"
 #include "../include/IMotion.h"
+#include "../Common/eos.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QDebug>
@@ -33,6 +34,8 @@ VisionView::VisionView(QWidget *parent)
 
 	setButtonsEnable(true);
 	setLiveButtonEnable(true);
+
+    QEos::Attach(EVENT_THREAD_STATE, this, SLOT(onThreadState(const QVariantList &)));
 }
 
 VisionView::~VisionView()
@@ -176,6 +179,22 @@ void VisionView::createStatusBar()
 	//statusBar()->showMessage(tr("Ready"));
 	//statusBar()->hide();
 	//statusBar()->setSizeGripEnabled(false);
+}
+
+void VisionView::onThreadState(const QVariantList &data)
+{
+    if (data.size() <= 0) return;
+
+    int iEvent = data[0].toInt();
+
+    switch (iEvent)
+    {
+    case MAIN_THREAD_CLOSED:
+        onStopLive();
+        break;
+    default:
+        break;
+    }
 }
 
 void VisionView::openFile()

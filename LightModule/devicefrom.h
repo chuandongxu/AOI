@@ -21,13 +21,21 @@ public slots:
 	void onSliderChanged2(int i);
 	void onSliderChanged3(int i);
 	void onSliderChanged4(int i);
+    void onSliderChanged5(int i);
+    void onSliderChanged6(int i);
+    void onSliderChanged7(int i);
+    void onSliderChanged8(int i);
 
 	void onTextChanged1(const QString &text);
 	void onTextChanged2(const QString &text);
 	void onTextChanged3(const QString &text);
 	void onTextChanged4(const QString &text);
+    void onTextChanged5(const QString &text);
+    void onTextChanged6(const QString &text);
+    void onTextChanged7(const QString &text);
+    void onTextChanged8(const QString &text);
 
-	void onDataReady();
+	//void onDataReady();
 	void onSaveData();
 private:
 	Ui::QDeviceFrom ui;

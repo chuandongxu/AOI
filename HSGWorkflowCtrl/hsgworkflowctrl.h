@@ -14,6 +14,8 @@ public:
 	HSGWorkflowCtrl(int id,const QString &name);
 	~HSGWorkflowCtrl();
 
+    QWidget * getAutoRunPanel() override;
+
 	void addSettingWiddget(QTabWidget *tabWidget);
 	void addDiagonseWidget(QTabWidget * tabWidget);
 
@@ -30,6 +32,7 @@ private:
 private:
 	QFlowCtrl * m_ctrl;
 	QWorkFlowWidget * m_workflowWidget;
+    QWidget *m_pAutoRunWidget;
 
 };
 

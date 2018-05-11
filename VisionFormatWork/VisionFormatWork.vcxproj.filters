@@ -56,6 +56,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_LoginEdit.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="AutoStartUp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AutoStartUp.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AutoStartUp.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="visionformatwork.qrc">
@@ -70,9 +79,18 @@
     <CustomBuild Include="LoginEdit.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="AutoStartUp.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AutoStartUp.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_LoginEdit.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_AutoStartUp.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

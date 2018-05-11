@@ -9,6 +9,7 @@ class IFlowCtrl
 {
 public:
 	virtual bool isRuning() = 0;
+    virtual QWidget * getAutoRunPanel() = 0;
 
 	virtual QWidget * getFlowCtrlWidget() = 0;
 	virtual void InitResoultItemModel(QStandardItemModel * pModel) = 0;

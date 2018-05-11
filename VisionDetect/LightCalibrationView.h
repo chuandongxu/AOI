@@ -30,14 +30,19 @@ private slots:
 
 	void onSaveCali();
 
+    void onAutoCali();
+
 private:
 	bool guideReadImage(cv::Mat& matImg, int nSelectLight);
 	int getLightLum(int nIndex);
 	void setLightLum(int nIndex, int lum);
+
+    int grayLevel(cv::Mat matImg);
 
 private:
 	Ui::LightCalibrationView ui;
 	VisionCtrl* m_pCtrl;
 	bool m_bGuideCali;
 	cv::Mat m_matImage;
+    cv::Rect m_selectROI;
 };

@@ -109,4 +109,8 @@
 #define EVENT_COLOR_WIDGET_STATE        "eventColorWidget"
 #define CHANGE_SELECTED_ROI             230
 
+#define EVENT_THREAD_STATE              "eventThreadState"
+#define SHUTDOWN_MAIN_THREAD            300
+#define MAIN_THREAD_CLOSED              301
+
 #endif

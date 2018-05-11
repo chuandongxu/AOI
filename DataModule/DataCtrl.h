@@ -20,7 +20,6 @@ public:
 	DataCtrl(QObject *parent = NULL);
 	~DataCtrl();
 
-	void setInfiniteCycles(bool bInfinite);
 	void incrementCycleTests();
 	void decrementCycleTests();
 	int	getCycleTests();
@@ -64,8 +63,7 @@ private:
 
 private:
 	QMutex m_mutex;
-	int m_nCycleTestNum;
-	bool m_bInfiniteCycles;
+	int m_nCycleTestNum;	
 
 	QBoardObj* m_boardObj;
 	QVector<QDetectObj*> m_cellTmpObjs;

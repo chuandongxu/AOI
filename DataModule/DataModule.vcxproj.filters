@@ -71,15 +71,6 @@
     <ClCompile Include="DataToolWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_QStatisticsWidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_QStatisticsWidget.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="QStatisticsWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_DataEditor.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -196,9 +187,6 @@
     <ClInclude Include="GeneratedFiles\ui_DataToolWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_QStatisticsWidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_DataEditor.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -267,12 +255,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="DataToolWidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="QStatisticsWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="QStatisticsWidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="DataEditor.h">

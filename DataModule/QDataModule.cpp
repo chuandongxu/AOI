@@ -1,13 +1,11 @@
 #include "QDataModule.h"
 #include "../common/SystemData.h"
 #include "DataSetting.h"
-#include "QStatisticsWidget.h"
 #include "DataEditor.h"
 
 QDataModule::QDataModule(int id, const QString &name)
 	:QModuleBase(id, name)
 {
-	m_pStatisticsWidget = new QStatisticsWidget(&m_ctrl);
 	m_pDataEditor = new DataEditor();
     m_pDataWidget = new DataWidget(&m_ctrl);
 }
@@ -26,11 +24,6 @@ void QDataModule::addSettingWiddget(QTabWidget * tabWidget)
 	{
 		//tabWidget->addTab(new DataSetting(&m_ctrl), QStringLiteral("Êı¾İÉèÖÃ"));
 	}
-}
-
-QWidget* QDataModule::getStatisticsWidget()
-{
-	return m_pStatisticsWidget;
 }
 
 QWidget* QDataModule::getDataEditor()

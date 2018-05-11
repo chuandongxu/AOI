@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+#include "lightmodule_global.h"
+
 struct CHData
 {
 	bool bOpen;
@@ -10,7 +12,7 @@ struct CHData
 	QString named;
 
 	CHData()
-		:bOpen(false),iLuminance(0)
+        :bOpen(false), iLuminance(0), named("")
 	{
 	}
 };
@@ -20,10 +22,11 @@ class QLightDevice : public QObject
 {
 	Q_OBJECT
 public:
-	QLightDevice(const QString & devName,QObject *parent);
+	QLightDevice(const QString & devName, int nChnNum, QObject *parent);
 	~QLightDevice();
 
 	QString getDeviceName(){return m_devName;};
+    int getChnNum(){ return m_nChnNum; }
 
 	static QStringList enumCommPort();
 	static QStringList enumCommBound();
@@ -51,7 +54,8 @@ private:
 
 	QString m_devName;
 	bool m_bOpened;
-	CHData m_data[4];
+    CHData m_data[_MAX_CHDATA_NUM];
+    int m_nChnNum;
 };
 
 typedef QList<QLightDevice*> QLightDeviceList;

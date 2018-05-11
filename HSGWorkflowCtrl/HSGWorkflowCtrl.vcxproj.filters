@@ -98,6 +98,21 @@
     <ClCompile Include="BoardInspResult.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AutoRunPanel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AutoRunPanel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoRunPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AutoRunThread.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AutoRunThread.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hsgworkflowctrl.h">
@@ -114,9 +129,6 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_worksetting.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AutoRunThread.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AlignmentRunnable.h">
       <Filter>Header Files</Filter>
@@ -148,6 +160,9 @@
     <ClInclude Include="InspRunnable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_AutoRunPanel.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="WorkflowDiagions.ui">
@@ -169,6 +184,15 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="hsgworksetting.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AutoRunPanel.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AutoRunPanel.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AutoRunThread.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

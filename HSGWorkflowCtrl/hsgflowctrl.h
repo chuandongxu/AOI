@@ -26,10 +26,9 @@ public:
 
 	bool isRuning();
 
-	void initStartUp();
-
 protected slots:
 	void onImageEvent(const QVariantList &data);
+    void onThreadState(const QVariantList &data);
 
 	void home();
 	void startAutoRun();

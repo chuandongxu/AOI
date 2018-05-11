@@ -1131,6 +1131,8 @@ bool MotionControl::move(int AxisID, int nProfile, double dDist, bool bSyn)
 bool MotionControl::moveTo(int AxisID, int nProfile, double dPos, bool bSyn)
 {
 	QMtrMoveProfile mtrProf = getMotorProfile(nProfile);
+    if (mtrProf._ID < 0) return false;
+
 	double dVec = mtrProf._velPf._vel;
 	double acc = mtrProf._velPf._acc;
 	double dec = mtrProf._velPf._dec;
