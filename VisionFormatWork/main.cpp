@@ -11,6 +11,8 @@
 #include <QDateTime.h>
 #include "../Common/CVSFile.h"
 
+#include "AutoStartUp.h"
+
 IVisionUI * InitGenVision()
 {
 	qDebug() << "InitGenVision";
@@ -73,6 +75,10 @@ int main(int argc, char *argv[])
 	if(pUI)
 	{
 		pUI->init();
+
+        AutoStartUp startUp;
+        startUp.showProgress();
+
 		pUI->Show();		
 
 		QSystem::closeMessage();

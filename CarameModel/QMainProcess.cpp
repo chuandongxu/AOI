@@ -182,11 +182,9 @@ bool QMainProcess::endUpCapture()
 
 bool QMainProcess::selectCaptureMode(ICamera::TRIGGER emCaptureMode, bool reStartUp)
 {
-	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
-	bool bMotionCardTrigger = (1 == nDlpMode);
+    const int nLightCaptureNum = 6; // image num triggered by lighting IO 
 
-	const int nLightCaptureNum = 6; // image num triggered by lighting IO 
-
+    bool bMotionCardTrigger = System->isHardwareTrigger();
 	if (bMotionCardTrigger)
 	{
 		int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;

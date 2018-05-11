@@ -1901,9 +1901,8 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
 
 void MainWindow::ApplyDefaultSolution()
 {
-	QString path = QApplication::applicationDirPath();
-	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
-	bool bMotionCardTrigger = (1 == nDlpMode);
+	QString path = QApplication::applicationDirPath();	
+    bool bMotionCardTrigger = System->isHardwareTrigger();
 	QString fileName = path + System->getParam((bMotionCardTrigger ? QString("dlp_default_solution_file_path_motion") : QString("dlp_default_solution_file_path")) + QString("_%1").arg(m_nDLPIndex + 1)).toString();
 
 	if (fileName.isEmpty() || !fileName.contains(".ini"))
@@ -1974,8 +1973,7 @@ bool MainWindow::isDataValiated()
 
 bool MainWindow::startUpCapture()
 {
-	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
-	bool bMotionCardTrigger = (1 == nDlpMode);
+    bool bMotionCardTrigger = System->isHardwareTrigger();
 
 	if (bMotionCardTrigger)
 		ui->radioButton_PatSeqDispRunContinuous->setChecked(true);
@@ -2419,8 +2417,7 @@ void MainWindow::on_pushButton_SaveSolution_clicked()
 		QDir dir(path);
 		QString szSavePath = str.remove(dir.absolutePath());
 
-		int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
-		bool bMotionCardTrigger = (1 == nDlpMode);
+        bool bMotionCardTrigger = System->isHardwareTrigger();
 		System->setParam((bMotionCardTrigger ? QString("dlp_default_solution_file_path_motion") : QString("dlp_default_solution_file_path")) + QString("_%1").arg(m_nDLPIndex + 1), szSavePath);
 	}
 

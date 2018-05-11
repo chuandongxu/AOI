@@ -13,9 +13,8 @@ public:
 	QDataModule(int id, const QString &name);
 	~QDataModule();
 
-	virtual void addSettingWiddget(QTabWidget * tabWidget);    
+	virtual void addSettingWiddget(QTabWidget * tabWidget); 
 
-	virtual QWidget* getStatisticsWidget() override;
 	virtual QWidget* getDataEditor() override;
     virtual QWidget* getDataWidget() override;
 
@@ -56,7 +55,6 @@ public:
     virtual QString getCurrentProject() const override { return m_strCurrentProject; }
 private:
 	DataCtrl m_ctrl;
-	QWidget *m_pStatisticsWidget;
 	QWidget *m_pDataEditor;
     QWidget *m_pDataWidget;
     QString  m_strCurrentProject;

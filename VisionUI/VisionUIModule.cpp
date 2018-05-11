@@ -1,6 +1,10 @@
 ﻿#include "visionuiModule.h"
 #include "AppMainWidget.h"
 
+#include "../Common/ModuleMgr.h"
+#include "../Common/SystemData.h"
+
+
 #include "VisionView.h"
 
 QVisionUIModule::QVisionUIModule(int id, const QString &name)
@@ -16,6 +20,22 @@ QVisionUIModule::~QVisionUIModule()
 void QVisionUIModule::init()
 {
 	m_mainWidget = new QAppMainWidget;
+
+    QMoudleMgr * mgr = QMoudleMgr::instance();
+    if (mgr)
+    {
+        QList<int> ids = mgr->getModelIdList();
+        for (int i = 0; i<ids.size(); i++)
+        {
+            QModuleInterface * p = mgr->getModule(ids[i]);
+            if (p)
+            {
+                p->preStartUp();
+            }
+        }
+    }
+
+    System->setTrackInfo(QStringLiteral("系统已启动"));
 }
 
 void QVisionUIModule::Show()

@@ -38,10 +38,27 @@ AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignment
      m_pMapBoardInspResult  (pMapBoardInspResult),
      m_exit                 (false)
 {
+    QEos::Attach(EVENT_THREAD_STATE, this, SLOT(onThreadState(const QVariantList &)));
 }
 
 AutoRunThread::~AutoRunThread()
 {
+}
+
+void AutoRunThread::onThreadState(const QVariantList &data)
+{    
+    if (data.size() <= 0) return;
+
+    int iEvent = data[0].toInt();  
+
+    switch (iEvent)
+    {
+    case SHUTDOWN_MAIN_THREAD:
+        quit();
+        break;  
+    default:
+        break;
+    }
 }
 
 void AutoRunThread::quit()
@@ -84,7 +101,7 @@ void AutoRunThread::run()
         BoardInspResultPtr ptrBoardInspResult = std::make_shared<BoardInspResult>(m_boardName);
         m_pMapBoardInspResult->insert(m_boardName, ptrBoardInspResult);
 
-		if (! _doAlignment()) break;
+        if (!_doAlignment()) break;
 		if (isExit()) break;
 		TimeLogInstance->addTimeLog("Finished do alignment.");
 
@@ -104,7 +121,15 @@ void AutoRunThread::run()
 		}
 	}
 
+    QThreadPool::globalInstance()->waitForDone();
+    postRunning();
+
 	System->setTrackInfo(QString(QStringLiteral("主流程已停止")));
+}
+
+void AutoRunThread::postRunning()
+{
+    QEos::Notify(EVENT_THREAD_STATE, MAIN_THREAD_CLOSED);
 }
 
 bool AutoRunThread::waitStartBtn()

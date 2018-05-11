@@ -148,9 +148,9 @@ void QWorkSetting::initUI()
 
 	connect(ui.comboBox_dlpMode, SIGNAL(currentIndexChanged(int)), SLOT(onDlpModeIndexChanged(int)));
 	ls.clear();
-	ls << QStringLiteral("DLP触发模式") << QStringLiteral("控制卡触发模式");
+    ls << QStringLiteral("DLP触发模式") << QStringLiteral("控制卡触发模式") << QStringLiteral("Trigger版触发模式");
 	ui.comboBox_dlpMode->addItems(ls);
-	int nDlpMode = System->getParam("sys_run_dlp_mode").toInt();
+    int nDlpMode = System->getSysRunMode();
 	ui.comboBox_dlpMode->setCurrentIndex(nDlpMode);
 
 	connect(ui.pushButton_DlpSave, SIGNAL(clicked()), SLOT(onDlpModeSave()));
@@ -399,7 +399,7 @@ void QWorkSetting::onDlpModeIndexChanged(int index)
 void QWorkSetting::onDlpModeSave()
 {
 	int nDlpMode = ui.comboBox_dlpMode->currentIndex();
-	System->setParam("sys_run_dlp_mode", nDlpMode);
+    System->setSysRunMode(nDlpMode);
 
 	if (QMessageBox::Ok == QMessageBox::warning(NULL, QStringLiteral("提示"),
 		QStringLiteral("系统配置已修改，请务必关闭软件并重新启动!"), QMessageBox::Ok))

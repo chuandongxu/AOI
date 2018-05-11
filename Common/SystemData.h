@@ -155,6 +155,10 @@ public:
 	void setRecordDetailsPath(const QString &path);
 	QString getRecordDetailPath();
 
+    void setSysRunMode(int nMode);
+    int getSysRunMode();
+    bool isHardwareTrigger();
+
 	void enableBackupData(bool s);
 	bool isEnableBackupData();
 	void setBackupDataPath(const QString &path);

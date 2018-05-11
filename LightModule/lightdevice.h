@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#define _MAX_CHDATA_NUM 8
+#include "lightmodule_global.h"
 
 struct CHData
 {

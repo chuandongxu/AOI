@@ -3,6 +3,8 @@
 #include "LightDefine.h"
 #include <qvariant.h>
 
+#include "lightmodule_global.h"
+
 QLightCtrl::QLightCtrl(QObject *parent)
 	: QObject(parent)
 {
@@ -10,7 +12,7 @@ QLightCtrl::QLightCtrl(QObject *parent)
 	for(int i = 0; i<n; i++)
 	{
 		QString name = QString("light%0").arg(i+1);
-		m_deviceList.append(new QLightDevice(name, 4, NULL));
+        m_deviceList.append(new QLightDevice(name, _CHN_NUM, NULL));
 	}
 	
 }
