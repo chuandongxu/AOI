@@ -42,6 +42,11 @@ void InspWindowSelectDialog::on_btnHeightDetectWindow_clicked()
 	m_enInspWidgetIndex = INSP_WIDGET_INDEX::HEIGHT_DETECT;
 }
 
+void InspWindowSelectDialog::on_btnInspPolarityWindow_clicked()
+{
+    m_enInspWidgetIndex = INSP_WIDGET_INDEX::INSP_POLARITY;
+}
+
 void InspWindowSelectDialog::on_accept()
 {
     if ( INSP_WIDGET_INDEX::UNDEFINED == m_enInspWidgetIndex ) {

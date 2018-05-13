@@ -9,8 +9,7 @@ TreeWidgetInspWindow::TreeWidgetInspWindow(QWidget *parent)
 {
 }
 
-TreeWidgetInspWindow::~TreeWidgetInspWindow()
-{
+TreeWidgetInspWindow::~TreeWidgetInspWindow() {
 }
 
 void TreeWidgetInspWindow::dropEvent(QDropEvent * event) {

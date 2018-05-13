@@ -116,6 +116,8 @@ struct Window {
         INSP_HOLE,
         FIND_LINE,
         FIND_CIRCLE,
+        INSP_POLARITY,
+        INSP_POLARITY_REF,
     };
     Window() :
         Id          (0),

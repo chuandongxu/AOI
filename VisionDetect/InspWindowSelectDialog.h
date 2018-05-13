@@ -19,6 +19,7 @@ private slots:
     void on_btnVoidInspWindow_clicked();
 	void on_btnAlignmentWindow_clicked();
 	void on_btnHeightDetectWindow_clicked();
+    void on_btnInspPolarityWindow_clicked();
     void on_accept();
 
 private:
