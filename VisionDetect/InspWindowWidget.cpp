@@ -16,6 +16,7 @@
 #include "InspVoidWidget.h"
 #include "AlignmentWidget.h"
 #include "HeightDetectWidget.h"
+#include "InspPolarityWidget.h"
 #include "TreeWidgetInspWindow.h"
 
 static const QString DEFAULT_WINDOW_NAME[] =
@@ -25,6 +26,7 @@ static const QString DEFAULT_WINDOW_NAME[] =
     "Caliper Circle",
     "Alignment",
     "Height Detect",
+    "Inspect Polarity",
 };
 
 static_assert (static_cast<size_t>(INSP_WIDGET_INDEX::SIZE) == sizeof(DEFAULT_WINDOW_NAME) / sizeof(DEFAULT_WINDOW_NAME[0]), "The window name size is not correct");
@@ -38,6 +40,7 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::CALIPER_CIRCLE)] = std::make_unique<FindCircleWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::ALIGNMENT)] = std::make_unique<AlignmentWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::HEIGHT_DETECT)] = std::make_unique<HeightDetectWidget>(this);
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_POLARITY)] = std::make_unique<InspPolarityWidget>(this);
 
     for (const auto &ptrInspWindowWidget : m_arrInspWindowWidget)
         ui.stackedWidget->addWidget(ptrInspWindowWidget.get());
@@ -290,29 +293,30 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
     UpdateInspWindowList();    
 }
 
-void InspWindowWidget::on_btnCreateGroup_clicked()
-{
+void InspWindowWidget::on_btnCreateGroup_clicked() {
+    QString strTitle(QStringLiteral("创建检测组"));
     auto listOfItems = ui.treeWidget->selectedItems();
     if (listOfItems.count() < 2) {
-        System->showMessage(QStringLiteral("创建检测组"), QStringLiteral("请选择至少两个窗口!"));
+        System->showMessage(strTitle, QStringLiteral("请选择至少两个窗口!"));
         return;
     }
 
     for (const auto &pItem : listOfItems) {
         if (pItem->type() == TREE_ITEM_GROUP) {
-            System->showMessage(QStringLiteral("创建检测组"), QStringLiteral("不能选择已经存在的group: ") + pItem->text(0));
+            System->showMessage(strTitle, QStringLiteral("不能选择已经存在的group: ") + pItem->text(0));
             return;
         }
 
         if (pItem->parent() != NULL) {
-            System->showMessage(QStringLiteral("创建检测组"), QStringLiteral("不能选择已经有分组的窗口: ") + pItem->text(0));
+            System->showMessage(strTitle, QStringLiteral("不能选择已经有分组的窗口: ") + pItem->text(0));
             return;
         }
 
         auto windowId = pItem->data(0, Qt::UserRole).toInt();
         auto window = m_mapIdWindow[windowId];
-        if (window.usage != Engine::Window::Usage::HEIGHT_MEASURE && window.usage != Engine::Window::Usage::HEIGHT_BASE) {
-            System->showMessage(QStringLiteral("创建检测组"), QStringLiteral("当前只支持高度框分组!"));
+        if (window.usage != Engine::Window::Usage::HEIGHT_MEASURE && window.usage != Engine::Window::Usage::HEIGHT_BASE
+            && window.usage != Engine::Window::Usage::INSP_POLARITY && window.usage != Engine::Window::Usage::INSP_POLARITY_REF) {
+            System->showMessage(strTitle, QStringLiteral("当前只支持高度框和极性检测框分组!"));
             return;
         }
     }
@@ -335,7 +339,7 @@ void InspWindowWidget::on_btnCreateGroup_clicked()
         Engine::GetErrorDetail(errorType, errorMessage);
         QString strMsg(QStringLiteral("创建检测框组失败, 错误消息: "));
         strMsg += errorMessage.c_str();
-        System->showMessage(QStringLiteral("创建检测框组"), strMsg);
+        System->showMessage(strTitle, strMsg);
         return;
     }
     UpdateInspWindowList();
@@ -345,60 +349,120 @@ void InspWindowWidget::on_btnTryInsp_clicked() {
     if (INSP_WIDGET_INDEX::UNDEFINED == m_enCurrentInspWidget)
         return;
 
-    if (INSP_WIDGET_INDEX::HEIGHT_DETECT == m_enCurrentInspWidget) {
-        auto ptrCurrentItem = ui.treeWidget->currentItem();
-        if (!ptrCurrentItem) {
-            System->showMessage(QStringLiteral("高度检测"), QStringLiteral("请先创建高度检测框组, 组里面包括高度检测框以及基准框."));
-            return;
-        }
-
-        auto groupId = 0;
-        if (ptrCurrentItem->type() == TREE_ITEM_GROUP)
-            groupId = ptrCurrentItem->data(0, Qt::UserRole).toInt();
-        else if (ptrCurrentItem->type() == TREE_ITEM_WINDOW) {
-            auto pParent = ptrCurrentItem->parent();
-            if (pParent != NULL)
-                groupId = pParent->data(0, Qt::UserRole).toInt();
-            else {
-                System->showMessage(QStringLiteral("高度检测"), QStringLiteral("请选择一个已经确定的高度检测框."));
-                return;
-            }
-        }
-
-        Engine::WindowGroup windowGroup;
-        auto result = Engine::GetGroupWindows(groupId, windowGroup);
-        if (Engine::OK != result) {
-            String errorType, errorMessage;
-            Engine::GetErrorDetail(errorType, errorMessage);
-            QString strMsg(QStringLiteral("创建检测框组失败, 错误消息: "));
-            strMsg += errorMessage.c_str();
-            System->showMessage(QStringLiteral("创建检测框组"), strMsg);
-            return;
-        }
-
-        bool bHasCheckWindow = false, bHasBaseWindow = false;
-        for (const auto &window : windowGroup.vecWindows) {
-            if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage)
-                bHasCheckWindow = true;
-            else if (Engine::Window::Usage::HEIGHT_BASE == window.usage)
-                bHasBaseWindow = true;
-        }
-
-        if (!bHasCheckWindow) {
-            System->showMessage(QStringLiteral("高度检测框组"), QStringLiteral("分组内没有高度检测框!"));
-            return;
-        }
-
-        if (!bHasBaseWindow) {
-            System->showMessage(QStringLiteral("高度检测框组"), QStringLiteral("分组内没有高度基准框!"));
-            return;
-        }
-
-        m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setWindowGroup(windowGroup);
-        m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
-    }
+    if (INSP_WIDGET_INDEX::HEIGHT_DETECT == m_enCurrentInspWidget)
+        _tryInspHeight();
+    else if(INSP_WIDGET_INDEX::INSP_POLARITY == m_enCurrentInspWidget)
+        _tryInspectPolarity();
     else
         m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
+}
+
+void InspWindowWidget::_tryInspHeight() {
+    QString strTitle(QStringLiteral("高度检测"));
+    auto ptrCurrentItem = ui.treeWidget->currentItem();
+    if (!ptrCurrentItem) {
+        System->showMessage(strTitle, QStringLiteral("请先创建高度检测框组, 组里面包括高度检测框以及基准框."));
+        return;
+    }
+
+    auto groupId = 0;
+    if (ptrCurrentItem->type() == TREE_ITEM_GROUP)
+        groupId = ptrCurrentItem->data(0, Qt::UserRole).toInt();
+    else if (ptrCurrentItem->type() == TREE_ITEM_WINDOW) {
+        auto pParent = ptrCurrentItem->parent();
+        if (pParent != NULL)
+            groupId = pParent->data(0, Qt::UserRole).toInt();
+        else {
+            System->showMessage(strTitle, QStringLiteral("请选择一个已经确定的高度检测框."));
+            return;
+        }
+    }
+
+    Engine::WindowGroup windowGroup;
+    auto result = Engine::GetGroupWindows(groupId, windowGroup);
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString strMsg(QStringLiteral("读取检测框组失败, 错误消息: "));
+        strMsg += errorMessage.c_str();
+        System->showMessage(strTitle, strMsg);
+        return;
+    }
+
+    bool bHasCheckWindow = false, bHasBaseWindow = false;
+    for (const auto &window : windowGroup.vecWindows) {
+        if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage)
+            bHasCheckWindow = true;
+        else if (Engine::Window::Usage::HEIGHT_BASE == window.usage)
+            bHasBaseWindow = true;
+    }
+
+    if (!bHasCheckWindow) {
+        System->showMessage(strTitle, QStringLiteral("分组内没有高度检测框!"));
+        return;
+    }
+
+    if (!bHasBaseWindow) {
+        System->showMessage(strTitle, QStringLiteral("分组内没有高度基准框!"));
+        return;
+    }
+
+    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setWindowGroup(windowGroup);
+    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
+}
+
+void InspWindowWidget::_tryInspectPolarity() {
+    QString strTitle(QStringLiteral("极性检测"));
+    auto ptrCurrentItem = ui.treeWidget->currentItem();
+    if (!ptrCurrentItem) {
+        System->showMessage(strTitle, QStringLiteral("请先创建高度检测框组, 组里面包括高度检测框以及基准框."));
+        return;
+    }
+
+    auto groupId = 0;
+    if (ptrCurrentItem->type() == TREE_ITEM_GROUP)
+        groupId = ptrCurrentItem->data(0, Qt::UserRole).toInt();
+    else if (ptrCurrentItem->type() == TREE_ITEM_WINDOW) {
+        auto pParent = ptrCurrentItem->parent();
+        if (pParent != NULL)
+            groupId = pParent->data(0, Qt::UserRole).toInt();
+        else {
+            System->showMessage(strTitle, QStringLiteral("请选择一个已经确定的极性检测框."));
+            return;
+        }
+    }
+
+    Engine::WindowGroup windowGroup;
+    auto result = Engine::GetGroupWindows(groupId, windowGroup);
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString strMsg(QStringLiteral("读取检测框组失败, 错误消息: "));
+        strMsg += errorMessage.c_str();
+        System->showMessage(strTitle, strMsg);
+        return;
+    }
+
+    bool bHasCheckWindow = false, bHasBaseWindow = false;
+    for (const auto &window : windowGroup.vecWindows) {
+        if (Engine::Window::Usage::INSP_POLARITY == window.usage)
+            bHasCheckWindow = true;
+        else if (Engine::Window::Usage::INSP_POLARITY_REF == window.usage)
+            bHasBaseWindow = true;
+    }
+
+    if (!bHasCheckWindow) {
+        System->showMessage(strTitle, QStringLiteral("分组内没有极性检测框!"));
+        return;
+    }
+
+    if (!bHasBaseWindow) {
+        System->showMessage(strTitle, QStringLiteral("分组内没有极性检测参考框!"));
+        return;
+    }
+
+    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setWindowGroup(windowGroup);
+    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
 }
 
 void InspWindowWidget::on_btnConfirmWindow_clicked() {
@@ -479,6 +543,10 @@ void InspWindowWidget::onSelectedWindowChanged() {
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_DETECT;
     else if (Engine::Window::Usage::HEIGHT_BASE == window.usage)
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_DETECT;
+    else if (Engine::Window::Usage::INSP_POLARITY == window.usage || Engine::Window::Usage::INSP_POLARITY_REF == window.usage)
+        m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_POLARITY;
+    else
+        assert(0);
 
     ui.labelWindowName->setText(window.name.c_str());
 

@@ -16,17 +16,17 @@ using namespace NFG::AOI;
 using namespace AOI;
 
 enum BASIC_PARAM {
-	FIND_INNER_ATTRI,
-	FIND_PAIR,	
-	SEARCH_START_ANGLE,
-	SEARCH_END_ANGLE,
-	CALIPER_COUNT,
-	CALIPER_WIDTH,
-	EDGE_THRESHOLD,
-	EDGE_SELECT_METHOD,
-	REMOVE_STRAY_POINT_RATIO,
-	GAUSSIAN_DIFF_HALF_WIDTH,
-	GAUSSIAN_DIFF_SIGMA,	
+    FIND_INNER_ATTRI,
+    FIND_PAIR,
+    SEARCH_START_ANGLE,
+    SEARCH_END_ANGLE,
+    CALIPER_COUNT,
+    CALIPER_WIDTH,
+    EDGE_THRESHOLD,
+    EDGE_SELECT_METHOD,
+    REMOVE_STRAY_POINT_RATIO,
+    GAUSSIAN_DIFF_HALF_WIDTH,
+    GAUSSIAN_DIFF_SIGMA,
 };
 
 FindCircleWidget::FindCircleWidget(InspWindowWidget *parent)
@@ -252,7 +252,7 @@ void FindCircleWidget::setCurrentWindow(const Engine::Window &window)
 			QJsonObject obj = parse_doucment.object();
 
 			m_pComboBoxInnerAttribute->setCurrentIndex(obj.take("InnerAttri").toInt());
-			m_pCheckBoxFindPair->setChecked(obj.take("FindPair").toBool());	
+			m_pCheckBoxFindPair->setChecked(obj.take("FindPair").toBool());
 			m_pEditStartSrchAngle->setText(QString::number(obj.take("SearchStartAngle").toDouble()));
 			m_pEditEndSrchAngle->setText(QString::number(obj.take("SearchEndAngle").toDouble()));
 			m_pEditCaliperCount->setText(QString::number(obj.take("CaliperCount").toInt()));

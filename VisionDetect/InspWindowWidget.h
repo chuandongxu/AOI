@@ -15,7 +15,8 @@ enum class INSP_WIDGET_INDEX {
 	CALIPER_CIRCLE,
 	ALIGNMENT,
 	HEIGHT_DETECT,
-    SIZE
+    INSP_POLARITY,
+    SIZE,
 };
 
 static const int DATA_COLUMN = 1;
@@ -40,6 +41,8 @@ protected:
     virtual void showEvent(QShowEvent *event) override;
     void _showWidgets();
     void _hideWidgets();
+    void _tryInspHeight();
+    void _tryInspectPolarity();
 
 private slots:
     void on_btnAddWindow_clicked();

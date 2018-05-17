@@ -1,8 +1,9 @@
-﻿#include "HeightDetectWidget.h"
-#include <QMessageBox>
+﻿#include <QMessageBox>
 #include <QJsonObject>
 #include <QJsonDocument>
 
+#include "InspPolarityWidget.h"
+#include "InspWindowWidget.h"
 #include "../Common/SystemData.h"
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
@@ -10,52 +11,77 @@
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../DataModule/QDetectObj.h"
-#include "InspWindowWidget.h"
 
 using namespace NFG::AOI;
 using namespace AOI;
 
 enum BASIC_PARAM {
-	MEASURE_TYPE_ATTRI,
-	RANGE_MIN_ATTRI,
-	RANGE_MAX_ATTRI,	
+    WINDOW_TYPE,
+    ATTRIBUTE,
+    INTENSITY_DIFF_TOL,
 };
 
-HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
-	:EditInspWindowBaseWidget(parent)
+InspPolarityWidget::InspPolarityWidget(InspWindowWidget *parent)
+    : EditInspWindowBaseWidget(parent)
 {
-	ui.setupUi(this);
+    ui.setupUi(this);
 
-	m_pCheckBoxMeasure = std::make_unique<QCheckBox>(ui.tableWidget);
-	ui.tableWidget->setCellWidget(MEASURE_TYPE_ATTRI, DATA_COLUMN, m_pCheckBoxMeasure.get());
+    m_pComboBoxType = std::make_unique<QComboBox>(ui.tableWidget);
+    m_pComboBoxType->addItem(QStringLiteral("检测"));
+	m_pComboBoxType->addItem(QStringLiteral("基准"));
+	ui.tableWidget->setCellWidget(WINDOW_TYPE, DATA_COLUMN, m_pComboBoxType.get());
 
-	m_pEditMinRange = std::make_unique<QLineEdit>(ui.tableWidget);
-	m_pEditMinRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinRange.get()));
-	ui.tableWidget->setCellWidget(RANGE_MIN_ATTRI, DATA_COLUMN, m_pEditMinRange.get());
+    m_pComboBoxAttribute = std::make_unique<QComboBox>(ui.tableWidget);
+    m_pComboBoxAttribute->addItem("Bright");
+	m_pComboBoxAttribute->addItem("Dark");
+    ui.tableWidget->setCellWidget(ATTRIBUTE, DATA_COLUMN, m_pComboBoxAttribute.get());
 
-	m_pEditMaxRange = std::make_unique<QLineEdit>(ui.tableWidget);
-	m_pEditMaxRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMaxRange.get()));
-	ui.tableWidget->setCellWidget(RANGE_MAX_ATTRI, DATA_COLUMN, m_pEditMaxRange.get());
+    m_pEditIntensityDiffTol = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditIntensityDiffTol->setValidator(new QIntValidator(1, 255, m_pEditIntensityDiffTol.get()));
+    m_pEditIntensityDiffTol->setText("50");
+    ui.tableWidget->setCellWidget(INTENSITY_DIFF_TOL, DATA_COLUMN, m_pEditIntensityDiffTol.get());
 }
 
-HeightDetectWidget::~HeightDetectWidget()
+InspPolarityWidget::~InspPolarityWidget()
 {
 }
 
-void HeightDetectWidget::setDefaultValue()
+void InspPolarityWidget::setDefaultValue()
 {
-	m_pCheckBoxMeasure->setChecked(true);
-	m_pEditMinRange->setText("30");
-	m_pEditMaxRange->setText("70");
+    m_pComboBoxType->setCurrentIndex(0);
+    m_pComboBoxAttribute->setCurrentIndex(0);
+    m_pEditIntensityDiffTol->setText("50");
 }
 
-void HeightDetectWidget::tryInsp()
+void InspPolarityWidget::setCurrentWindow(const Engine::Window &window) {
+    m_currentWindow = window;
+
+    QJsonParseError json_error;
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+	if (json_error.error != QJsonParseError::NoError) {
+        System->setTrackInfo(QString("Invalid inspection parameter encounted."));
+        return;
+    }
+
+    if (!parse_doucment.isObject()) {
+        System->setTrackInfo(QString("Invalid inspection parameter encounted."));
+        return;
+    }
+
+    QJsonObject obj = parse_doucment.object();
+
+    m_pComboBoxType->setCurrentIndex(obj.take("Type").toInt());
+    m_pComboBoxAttribute->setCurrentIndex(obj.take("Attribute").toInt());
+    m_pEditIntensityDiffTol->setText(QString::number(obj.take("IntensityDiffTol").toInt()));
+}
+
+void InspPolarityWidget::tryInsp()
 {
-	if (!m_pCheckBoxMeasure->isChecked())
+    if (m_pComboBoxType->currentIndex() != 0)
 	{
 		QString strMsg;
-		strMsg.sprintf("Select Measure Window to measure height!");
-		QMessageBox::information(this, "Measure Height", strMsg);
+		strMsg.sprintf("Select inspection window to inspect polarity!");
+		QMessageBox::information(this, "Inspect Polarity", strMsg);
 		return;
 	}
 
@@ -64,27 +90,27 @@ void HeightDetectWidget::tryInsp()
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
 
-	Vision::PR_CALC_3D_HEIGHT_DIFF_CMD stCmd;
-	Vision::PR_CALC_3D_HEIGHT_DIFF_RPY stRpy;
+	Vision::PR_INSP_POLARITY_CMD stCmd;
+	Vision::PR_INSP_POLARITY_RPY stRpy;
 
-	stCmd.fEffectHRatioStart = m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT;
-	stCmd.fEffectHRatioEnd = m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT;
+	stCmd.enInspROIAttribute = static_cast<Vision::PR_OBJECT_ATTRIBUTE>(m_pComboBoxAttribute->currentIndex());
+	stCmd.nGrayScaleDiffTol = m_pEditIntensityDiffTol->text().toInt();
 
 	auto pUI = getModule<IVisionUI>(UI_MODEL);
-	stCmd.matHeight = pUI->getHeightData();
+	stCmd.matInputImg = pUI->getImage();
 	cv::Rect rectROI = pUI->getSelectedROI();
 	if (rectROI.width <= 0 || rectROI.height <= 0) {
-		QMessageBox::critical(this, QStringLiteral("高度检测框"), QStringLiteral("Please select a ROI to do inspection."));
+		QMessageBox::critical(this, QStringLiteral("极性检测框"), QStringLiteral("Please select a ROI to do inspection."));
 		return;
 	}
-	stCmd.rectROI = rectROI;
+	stCmd.rectInspROI = rectROI;
 
     auto matImage = pUI->getImage();
     int nBigImgWidth  = matImage.cols / dCombinedImageScale;
     int nBigImgHeight = matImage.rows / dCombinedImageScale;
 
     for (const auto &window : m_windowGroup.vecWindows) {
-        if (Engine::Window::Usage::HEIGHT_BASE == window.usage) {
+        if (Engine::Window::Usage::INSP_POLARITY_REF == window.usage) {
             auto x = window.x / dResolutionX;
             auto y = window.y / dResolutionY;
             if (bBoardRotated)
@@ -95,26 +121,28 @@ void HeightDetectWidget::tryInsp()
             auto width = window.width / dResolutionX;
             auto height = window.height / dResolutionY;
             cv::RotatedRect rrBaseRect(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
-            stCmd.vecRectBases.push_back(rrBaseRect.boundingRect());
+            stCmd.rectCompareROI = rrBaseRect.boundingRect();
+            break;
         }
     }
 
-	Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
+	Vision::PR_InspPolarity(&stCmd, &stRpy);
 	QString strMsg;
-	strMsg.sprintf("Inspect Status %d, height(%f)", Vision::ToInt32(stRpy.enStatus), stRpy.fHeightDiff);
-	QMessageBox::information(this, "Height Detect", strMsg);
+	strMsg.sprintf("Inspect Status %d, Intensity difference(%d)", Vision::ToInt32(stRpy.enStatus), stRpy.nGrayScaleDiff);
+	QMessageBox::information(this, "Inspect Polarity", strMsg);
 }
 
-void HeightDetectWidget::confirmWindow(OPERATION enOperation)
+void InspPolarityWidget::confirmWindow(OPERATION enOperation)
 {
-	auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
 
 	QJsonObject json;
-	json.insert("MinRange", m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT);
-	json.insert("MaxRange", m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT);
+	json.insert("Type", m_pComboBoxType->currentIndex());
+	json.insert("Attribute", m_pComboBoxAttribute->currentIndex());
+    json.insert("IntensityDiffTol", m_pEditIntensityDiffTol->text().toInt());
 
 	QJsonDocument document;
 	document.setObject(json);
@@ -129,7 +157,7 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation)
 
 	Engine::Window window;
 	window.lightId = m_pParent->getSelectedLighting() + 1;
-	window.usage = m_pCheckBoxMeasure->isChecked() ? Engine::Window::Usage::HEIGHT_MEASURE : Engine::Window::Usage::HEIGHT_BASE;
+	window.usage = m_pComboBoxType->currentIndex() == 0 ? Engine::Window::Usage::INSP_POLARITY : Engine::Window::Usage::INSP_POLARITY_REF;
 	window.inspParams = byte_array;
 	
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width  / 2.f, rectROI.y + rectROI.height / 2.f);
@@ -153,10 +181,10 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation)
 	if (OPERATION::ADD == enOperation) {
 		window.deviceId = pUI->getSelectedDevice().getId();
 		char windowName[100];
-        if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage)
-		    _snprintf(windowName, sizeof(windowName), "Height Detect [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
+        if (Engine::Window::Usage::INSP_POLARITY == window.usage)
+		    _snprintf(windowName, sizeof(windowName), "Inspect Polarity [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
         else
-            _snprintf(windowName, sizeof(windowName), "Height Detect Base [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
+            _snprintf(windowName, sizeof(windowName), "Inspect Polarity Ref [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
 
 		window.name = windowName;
 		result = Engine::CreateWindow(window);
@@ -198,31 +226,3 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation)
 
 	m_pParent->UpdateInspWindowList();
 }
-
-void HeightDetectWidget::setCurrentWindow(const Engine::Window &window)
-{
-	m_currentWindow = window;
-
-	auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-
-	m_pCheckBoxMeasure->setChecked(window.usage == Engine::Window::Usage::HEIGHT_MEASURE);
-
-	QString szBaseIDs = "";
-
-	QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error == QJsonParseError::NoError)
-	{
-		if (parse_doucment.isObject())
-		{
-			QJsonObject obj = parse_doucment.object();
-
-			m_pEditMinRange->setText(QString::number(obj.take("MinRange").toDouble() * ONE_HUNDRED_PERCENT));
-			m_pEditMaxRange->setText(QString::number(obj.take("MaxRange").toDouble() * ONE_HUNDRED_PERCENT));
-
-			szBaseIDs = obj.take("BaseIDs").toString();
-		}
-	}	
-}
-
