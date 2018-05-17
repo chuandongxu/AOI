@@ -33,6 +33,8 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
 {
     ui.setupUi(this);
 
+    m_lastIndexMode = -1;
+
     m_pGraphicsEditor = new IGraphicEditor();
     m_pGraphicsEditor->setViewPos(100, 0);
     m_pGraphicsEditor->setScale(1.0, 100);
@@ -485,6 +487,9 @@ void CameraSetting::onCaptureDLP()
     int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
     int nSelectDLP = ui.comboBox_selectDLP->currentIndex();
 
+    bool bClearSteup = (m_lastIndexMode != nCaptureNumMode);
+    m_lastIndexMode = nCaptureNumMode;
+
     switch (nCaptureNumMode)
     {
     case 0:
@@ -492,14 +497,14 @@ void CameraSetting::onCaptureDLP()
         bool bTriggerBoard = System->isTriggerBoard();
         if (bTriggerBoard)
         {
-            if (!pLight->triggerCapturing(ILight::TRIGGER_ALL, true, true))
+            if (!pLight->triggerCapturing(ILight::TRIGGER_ALL, true, bClearSteup))
             {
                 System->setTrackInfo(QString("triggerCapturing error!"));
             }
         }
         else
         {
-            if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true, true))
+            if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true, bClearSteup))
             {
                 System->setTrackInfo(QString("triggerCapturing error!"));
             }
@@ -511,14 +516,14 @@ void CameraSetting::onCaptureDLP()
         bool bTriggerBoard = System->isTriggerBoard();
         if (bTriggerBoard)
         {
-            if (!pLight->triggerCapturing(ILight::TRIGGER_DLP, true, true))
+            if (!pLight->triggerCapturing(ILight::TRIGGER_DLP, true, bClearSteup))
             {
                 System->setTrackInfo(QString("triggerCapturing error!"));
             }
         }
         else
         {
-            if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP, true, true))
+            if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP, true, bClearSteup))
             {
                 System->setTrackInfo(QString("triggerCapturing error!"));
             }
@@ -530,14 +535,14 @@ void CameraSetting::onCaptureDLP()
         bool bTriggerBoard = System->isTriggerBoard();
         if (bTriggerBoard)
         {
-            if (!pLight->triggerCapturing(ILight::TRIGGER(ILight::TRIGGER_DLP1 + nSelectDLP), true, true))
+            if (!pLight->triggerCapturing(ILight::TRIGGER(ILight::TRIGGER_DLP1 + nSelectDLP), true, bClearSteup))
             {
                 System->setTrackInfo(QString("triggerCapturing error!"));
             }
         }
         else
         {
-            if (!pMotion->triggerCapturing(IMotion::TRIGGER(IMotion::TRIGGER_DLP1 + nSelectDLP), true, true))
+            if (!pMotion->triggerCapturing(IMotion::TRIGGER(IMotion::TRIGGER_DLP1 + nSelectDLP), true, bClearSteup))
             {
                 System->setTrackInfo(QString("triggerCapturing error!"));
             }
@@ -572,6 +577,9 @@ void CameraSetting::onCaptureLight()
     int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
     int nSelectLight = ui.comboBox_selectLight->currentIndex();
 
+    bool bClearSteup = (m_lastIndexMode != nCaptureNumMode);
+    m_lastIndexMode = nCaptureNumMode;
+
     switch (nCaptureNumMode)
     {
     case 3:
@@ -580,7 +588,7 @@ void CameraSetting::onCaptureLight()
         bool bTriggerBoard = System->isTriggerBoard();
         if (bTriggerBoard)
         {
-            if (!pLight->triggerCapturing(ILight::TRIGGER(ILight::TRIGGER_ONE_CH1 + nSelectLight), true, true))
+            if (!pLight->triggerCapturing(ILight::TRIGGER(ILight::TRIGGER_ONE_CH1 + nSelectLight), true, bClearSteup))
             {
                 System->setTrackInfo(QString("triggerCapturing error!"));
             }
@@ -624,14 +632,14 @@ void CameraSetting::onCaptureLight()
         bool bTriggerBoard = System->isTriggerBoard();
         if (bTriggerBoard)
         {
-            if (!pLight->triggerCapturing(ILight::TRIGGER_LIGHT, true, true))
+            if (!pLight->triggerCapturing(ILight::TRIGGER_LIGHT, true, bClearSteup))
             {
                 System->setTrackInfo(QString("triggerCapturing error!"));
             }
         }
         else
         {
-            if (!pMotion->triggerCapturing(IMotion::TRIGGER_LIGHT, true, true))
+            if (!pMotion->triggerCapturing(IMotion::TRIGGER_LIGHT, true, bClearSteup))
             {
                 System->setTrackInfo(QString("triggerCapturing error!"));
             }

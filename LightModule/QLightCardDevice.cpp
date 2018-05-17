@@ -36,13 +36,14 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     //设置灯光亮度电流值
     for (int i = 0; i < nCaptureLightNum; i++)
     {
-        szCmd = "SetPWM" + QString::number(i) + " " + QString::number(getChLuminance(i)) + "\r\n";
+        szCmd = "SetPWM" + QString::number(i) + " " + QString::number(((int)(getChLuminance(i)/10))) + "\r\n";
         writeCmd(szCmd);
+        QThread::msleep(100);
     }
 
     //设置DLP曝光参数
-    double dPatternExposure = System->getParam("motion_trigger_pattern_exposure").toDouble()*1000;
-    double dPatternPeriod = System->getParam("motion_trigger_pattern_period").toDouble()*1000;
+    double dPatternExposure = System->getParam("motion_trigger_pattern_exposure").toDouble()*100;
+    double dPatternPeriod = System->getParam("motion_trigger_pattern_period").toDouble()*100;
     int nPatternNum = System->getParam("motion_trigger_pattern_num").toInt();
 
     szCmd = "SetPWM" + QString::number(9) + " " + QString::number((int)dPatternExposure) + "\r\n";
@@ -56,6 +57,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     {
         szCmd = "SetOut" + QString::number(i) + " " + QString::number(nPatternNum) + "\r\n";
         writeCmd(szCmd);
+        QThread::msleep(100);
     }
 
     szCmd = "SetN" + QString::number(1) + " " + QString::number(nStationNum) + "\r\n";
@@ -63,7 +65,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
 
     //设置Light曝光参数
     double dLightExposure = System->getParam("motion_trigger_light_exposure").toDouble();
-    double dLightPeriod = System->getParam("motion_trigger_light_period").toDouble()*1000;
+    double dLightPeriod = System->getParam("motion_trigger_light_period").toDouble()*100;
 
     szCmd = "SetT" + QString::number(0) + " " + QString::number((int)dLightPeriod) + "\r\n";
     writeCmd(szCmd);   
@@ -80,6 +82,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     {
         szCmd = "SetPlus" + QString::number(i) + " " + QString::number(plus[i]) + "\r\n";
         writeCmd(szCmd);
+        QThread::msleep(100);
     }
 
   
@@ -115,7 +118,7 @@ void QLightCardDevice::writeCmd(const QString& szCmd)
             QString value = readLine;
             if (!value.trimmed().isEmpty())
             {                
-               System->setTrackInfo("Lighting Card, rev= " + value);
+               qDebug() << "LiCard, rev = " + value;
             }           
         }   
         else

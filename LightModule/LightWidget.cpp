@@ -47,7 +47,7 @@ LightWidget::~LightWidget()
 void LightWidget::init()
 {
     loadConfig();
-    updateUI();
+    //updateUI();
 }
 
 void LightWidget::startUpLight()

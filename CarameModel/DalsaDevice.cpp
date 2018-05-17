@@ -164,6 +164,7 @@ void DalsaCameraDevice::updateGrabCount(cv::Mat& imgMat)
 		m_waitCon.wakeAll();		
 	}
 	m_waitMutex.unlock();
+    qDebug() << "Grab Image Count: " << m_nGrabCount;
 }
 
 void DalsaCameraDevice::setCamera(IPylonDevice* dev)

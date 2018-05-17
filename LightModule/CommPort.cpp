@@ -126,26 +126,36 @@ bool QCommPort::readSyn(QByteArray &ar)
 
     memset(ReadBuf, 0, sizeof(ReadBuf));
 
-    m_ovWait.Offset = 0;
-    Status = WaitCommEvent(m_hCom, &WaitEvent, &m_ovWait);
-
-    ClearCommError(m_hCom, &Error, &cs);
-
-    if (TRUE == Status //等待事件成功
-        &&WaitEvent&EV_RXCHAR//缓存中有数据到达
-        && cs.cbInQue > 0)//有数据
+    while (m_bOpen)
     {
-        //数据已经到达缓存区，ReadFile不会当成异步命令，而是立即读取并返回True  
-        Status = ReadFile(m_hCom, ReadBuf, sizeof(ReadBuf), &Bytes, NULL);
-        if (Status != FALSE)
+        WaitEvent = 0;
+        m_ovWait.Offset = 0;
+        Status = WaitCommEvent(m_hCom, &WaitEvent, &m_ovWait);      
+
+        if (FALSE == Status && GetLastError() == ERROR_IO_PENDING)
         {
-            ar.append(ReadBuf, Bytes);
-        }      
+            //qDebug() << "Wait GetOverlappedResult";
+            Status = GetOverlappedResult(m_hCom, &m_ovWait, &Bytes, TRUE);
+        }
+        ClearCommError(m_hCom, &Error, &cs);
+        if (TRUE == Status //等待事件成功
+            &&WaitEvent&EV_RXCHAR//缓存中有数据到达
+            && cs.cbInQue > 0)//有数据
+        {
+            Bytes = 0;
+            //数据已经到达缓存区，ReadFile不会当成异步命令，而是立即读取并返回True  
+            Status = ReadFile(m_hCom, ReadBuf, sizeof(ReadBuf), &Bytes, NULL);
+            if (Status != FALSE)
+            {
+                ar.append(ReadBuf, Bytes);
+            }
 
-        PurgeComm(m_hCom, PURGE_RXCLEAR | PURGE_RXABORT);
+            PurgeComm(m_hCom, PURGE_RXCLEAR | PURGE_RXABORT);
 
-        return true;
+            return true;
+        }
     }
+   
 
     return false;
 }

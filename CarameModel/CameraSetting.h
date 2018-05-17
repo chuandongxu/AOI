@@ -56,4 +56,5 @@ private:
 	Ui::CameraSetting ui;
 	CameraCtrl* m_pCameraCtrl;
 	IGraphicEditor *m_pGraphicsEditor;	
+    int m_lastIndexMode;
 };
