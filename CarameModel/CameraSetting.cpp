@@ -34,6 +34,7 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
     ui.setupUi(this);
 
     m_lastIndexMode = -1;
+    m_lastIndexNum = -1;
 
     m_pGraphicsEditor = new IGraphicEditor();
     m_pGraphicsEditor->setViewPos(100, 0);
@@ -102,6 +103,7 @@ CameraSetting::CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent)
     ls.clear();
     ls << QStringLiteral("第一圈红") << QStringLiteral("第一圈白") << QStringLiteral("第二圈绿") << QStringLiteral("第三圈蓝") << QStringLiteral("第四圈白") << QStringLiteral("第四圈蓝");
     ui.comboBox_selectLight->addItems(ls);
+    connect(ui.comboBox_selectLight, SIGNAL(currentIndexChanged(int)), SLOT(onSelectLightIndexChanged(int)));
     connect(ui.pushButton_startSetupDLP, SIGNAL(clicked()), SLOT(onStartSetupDLP()));
     connect(ui.pushButton_endSetupDLP, SIGNAL(clicked()), SLOT(onEndSetupDLP()));
     connect(ui.pushButton_captureDLP, SIGNAL(clicked()), SLOT(onCaptureDLP()));
@@ -229,10 +231,23 @@ void CameraSetting::onCaptureModeIndexChanged(int iIndex)
 
 void CameraSetting::onCaptureNumModeIndexChanged(int iIndex)
 {
+    int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
+
+    if (nCaptureNumMode == 2) // disable 12 images captured
+    {
+        ui.comboBox_captureNumMode->setCurrentIndex(m_lastIndexNum);
+        QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("目前不支持12副图像采集，请选择其他模式！"));
+        return;
+    }
+    else
+    {
+        m_lastIndexNum = nCaptureNumMode;
+    }
+    
+
     ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
     if (pCam)
-    {
-        int nCaptureNumMode = ui.comboBox_captureNumMode->currentIndex();
+    {        
         pCam->selectCaptureMode((ICamera::TRIGGER)nCaptureNumMode, true);
     }
 
@@ -564,6 +579,12 @@ void CameraSetting::onCaptureDLP()
             return;
         }
     }
+}
+
+void CameraSetting::onSelectLightIndexChanged(int iIndex)
+{
+    int nIndex = ui.comboBox_selectLight->currentIndex();
+    m_lastIndexMode = -1;
 }
 
 void CameraSetting::onCaptureLight()

@@ -34,6 +34,7 @@ protected slots:
 	void onSaveImgDLP2Path();
 	void onCalibration();
 
+    void onSelectLightIndexChanged(int iIndex);
 	void onStartSetupDLP();
 	void onEndSetupDLP();
 	void onCaptureDLP();
@@ -57,4 +58,5 @@ private:
 	CameraCtrl* m_pCameraCtrl;
 	IGraphicEditor *m_pGraphicsEditor;	
     int m_lastIndexMode;
+    int m_lastIndexNum;
 };

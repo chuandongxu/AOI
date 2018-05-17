@@ -229,19 +229,41 @@ void QLightCardDevice::writeCmd(const QString& szCmd)
     {
         m_comPort->write(szCmd.toLocal8Bit());
 
-        QByteArray readLine;
-        if (m_comPort->readSyn(readLine))
+        int nWaitTime = 1 * 100;
+        while (nWaitTime-- > 0)
         {
-            QString value = readLine;
-            if (!value.trimmed().isEmpty())
-            {                
-               qDebug() << "LiCard, rev = " + value;
-            }           
-        }   
-        else
-        {
-            System->setTrackInfo("read com error!");
+            QByteArray readLine;
+            if (m_comPort->read(readLine))
+            {
+                QString value = readLine;
+                if (!value.trimmed().isEmpty())
+                {
+                    qDebug() << "LiCard, rev = " + value;
+                    break;
+                }
+            }
+
+            QThread::msleep(10);
         }
+
+        if (nWaitTime <= 0)
+        {
+            System->setTrackInfo("writeCmd fail. Wait Timeout!");
+        }
+
+        //QByteArray readLine;
+        //if (m_comPort->readSyn(readLine))
+        //{
+        //    QString value = readLine;
+        //    if (!value.trimmed().isEmpty())
+        //    {                
+        //       qDebug() << "LiCard, rev = " + value;
+        //    }           
+        //}   
+        //else
+        //{
+        //    System->setTrackInfo("read com error!");
+        //}
     }
 }
 
