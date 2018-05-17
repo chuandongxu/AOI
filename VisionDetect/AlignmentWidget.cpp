@@ -1,7 +1,7 @@
 ﻿#include "AlignmentWidget.h"
 #include <QMessageBox>
-#include <qjsonobject.h>
-#include <qjsondocument.h>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "../Common/SystemData.h"
 #include "DataStoreAPI.h"
