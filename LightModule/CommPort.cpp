@@ -5,7 +5,9 @@
 QCommPort::QCommPort(QObject *parent)
 	: QObject(parent),m_hCom(INVALID_HANDLE_VALUE)
 {
+    memset(&m_ovWait, 0, sizeof(m_ovWait));
 
+    m_bOpen = false;
 }
 
 QCommPort::~QCommPort()
@@ -49,7 +51,7 @@ bool QCommPort::open(const QString &port,int BaudRate)
 	}
 
 	//清除收发缓存区
-	PurgeComm(m_hCom, PURGE_TXCLEAR|PURGE_RXCLEAR);
+    PurgeComm(m_hCom, PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_TXABORT);//清空缓存
 
 	COMMTIMEOUTS timeOutis;
 	GetCommTimeouts(m_hCom,&timeOutis);
@@ -60,9 +62,14 @@ bool QCommPort::open(const QString &port,int BaudRate)
 	timeOutis.WriteTotalTimeoutMultiplier = 0;
 	SetCommTimeouts(m_hCom,&timeOutis);
 
+    m_ovWait.hEvent = CreateEvent(NULL, false, false, NULL);
+    SetCommMask(m_hCom, EV_ERR | EV_RXCHAR);//设置接受事件
+
 	DWORD dwErrorFlags;
 	COMSTAT ComStat;
 	ClearCommError(m_hCom, &dwErrorFlags, &ComStat);
+
+    m_bOpen = true;
 
 	return true;
 }
@@ -73,6 +80,14 @@ void QCommPort::close()
 
 	CloseHandle(m_hCom);
 	m_hCom = INVALID_HANDLE_VALUE;
+
+    if (NULL != m_ovWait.hEvent)
+    {
+        CloseHandle(m_ovWait.hEvent);
+        m_ovWait.hEvent = NULL;
+    }
+
+    m_bOpen = false;
 }
 
 
@@ -81,25 +96,65 @@ bool QCommPort::read(QByteArray &ar)
 	if(INVALID_HANDLE_VALUE == m_hCom)return false;
 
 	char readBuffer[512];
-	memset(readBuffer, 0, 512);
+    memset(readBuffer, 0, sizeof(readBuffer));
 	DWORD wCount= 500;//读取的字节数
 	BOOL bReadStat;
 
 	bReadStat = ReadFile(m_hCom, readBuffer, wCount, &wCount, NULL);
-	if(wCount > 0)
+	if(wCount <= 0)
 	{
-		ar.append(readBuffer,wCount);
-
-		return true;
+		return false;
 	}
 
-	return false;
+    ar.append(readBuffer, wCount);
 
+    PurgeComm(m_hCom, PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_TXABORT);//清空缓存
+
+	return true;
+
+}
+
+bool QCommPort::readSyn(QByteArray &ar)
+{
+    if (INVALID_HANDLE_VALUE == m_hCom)return false;
+
+    DWORD WaitEvent = 0, Bytes = 0;
+    BOOL Status = FALSE;
+    char ReadBuf[512];
+    DWORD Error;
+    COMSTAT cs = { 0 };  
+
+    memset(ReadBuf, 0, sizeof(ReadBuf));
+
+    m_ovWait.Offset = 0;
+    Status = WaitCommEvent(m_hCom, &WaitEvent, &m_ovWait);
+
+    ClearCommError(m_hCom, &Error, &cs);
+
+    if (TRUE == Status //等待事件成功
+        &&WaitEvent&EV_RXCHAR//缓存中有数据到达
+        && cs.cbInQue > 0)//有数据
+    {
+        //数据已经到达缓存区，ReadFile不会当成异步命令，而是立即读取并返回True  
+        Status = ReadFile(m_hCom, ReadBuf, sizeof(ReadBuf), &Bytes, NULL);
+        if (Status != FALSE)
+        {
+            ar.append(ReadBuf, Bytes);
+        }      
+
+        PurgeComm(m_hCom, PURGE_RXCLEAR | PURGE_RXABORT);
+
+        return true;
+    }
+
+    return false;
 }
 
 bool QCommPort::write(const QByteArray &ar)
 {
 	if(INVALID_HANDLE_VALUE == m_hCom)return false;
+
+    PurgeComm(m_hCom, PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_TXABORT);//清空缓存
 
 	unsigned long dwBytesWrite;
 	COMSTAT ComStat;
