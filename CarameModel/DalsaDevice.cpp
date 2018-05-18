@@ -482,9 +482,9 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
                 else // 48 + 6 pics
                 {
                     int nLightImgNum = nImageNum - DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;
-                    if (nIndex >= nLightImgNum)
+                    if (nIndex < DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
                     {
-                        int nImgIndex = (nIndex - nLightImgNum)%DLP_SEQ_PATTERN_IMG_NUM;
+                        int nImgIndex = nIndex%DLP_SEQ_PATTERN_IMG_NUM;
                         if (5 == nImgIndex)// 5 Pattern Sequence Special Index
                         {
                             nIndex += 1;
