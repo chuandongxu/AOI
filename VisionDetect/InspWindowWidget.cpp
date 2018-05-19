@@ -132,6 +132,7 @@ void InspWindowWidget::UpdateInspWindowList() {
     }
     ui.treeWidget->expandAll();
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
+
 }
 
 int InspWindowWidget::getSelectedLighting() const {
@@ -358,6 +359,9 @@ void InspWindowWidget::on_btnTryInsp_clicked() {
         _tryInspectPolarity();
     else
         m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
+
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
 }
 
 void InspWindowWidget::_tryInspHeight() {
@@ -418,7 +422,7 @@ void InspWindowWidget::_tryInspectPolarity() {
     QString strTitle(QStringLiteral("极性检测"));
     auto ptrCurrentItem = ui.treeWidget->currentItem();
     if (!ptrCurrentItem) {
-        System->showMessage(strTitle, QStringLiteral("请先创建高度检测框组, 组里面包括高度检测框以及基准框."));
+        System->showMessage(strTitle, QStringLiteral("请选择一个已经确定的极性检测框."));
         return;
     }
 
@@ -430,7 +434,7 @@ void InspWindowWidget::_tryInspectPolarity() {
         if (pParent != NULL)
             groupId = pParent->data(0, Qt::UserRole).toInt();
         else {
-            System->showMessage(strTitle, QStringLiteral("请选择一个已经确定的极性检测框."));
+            System->showMessage(strTitle, QStringLiteral("请先创建高度检测框组, 组里面包括高度检测框以及基准框."));
             return;
         }
     }
@@ -479,6 +483,11 @@ void InspWindowWidget::onInspWindowState(const QVariantList &data) {
     UpdateInspWindowList();
     if (ui.treeWidget->topLevelItemCount() > 0) {
         ui.treeWidget->topLevelItem(ui.treeWidget->topLevelItemCount() - 1)->setSelected(true);
+    }else {
+        m_enCurrentInspWidget = INSP_WIDGET_INDEX::UNDEFINED;
+
+        IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+        pUI->setCurrentDetectObj(QDetectObj());
     }
 }
 
@@ -515,7 +524,7 @@ void InspWindowWidget::onSelectedWindowChanged() {
 
             int childIndex = pParentItem->indexOfChild(pItem);
             window = m_vecWindowGroup[index].vecWindows[childIndex];
-        }        
+        }
     }
     else {
         int index = ui.treeWidget->indexOfTopLevelItem(pItem);
@@ -526,9 +535,6 @@ void InspWindowWidget::onSelectedWindowChanged() {
             return;
 
         window = m_vecWindowGroup[index].vecWindows[0];
-        //auto pChindItem = pItem->child(0);
-        //pChindItem->setSelected(true);
-        //pItem->setSelected(false);
     }
 
     if (pItem)
@@ -548,6 +554,8 @@ void InspWindowWidget::onSelectedWindowChanged() {
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_DETECT;
     else if (Engine::Window::Usage::INSP_POLARITY == window.usage || Engine::Window::Usage::INSP_POLARITY_REF == window.usage)
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_POLARITY;
+    else if (Engine::Window::Usage::INSP_CONTOUR == window.usage)
+        m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_CONTOUR;
     else
         assert(0);
 

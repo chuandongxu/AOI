@@ -62,18 +62,19 @@ InspContourWidget::InspContourWidget(InspWindowWidget *parent)
     ui.tableWidget->setCellWidget(OUTER_MASK_DEPTH, DATA_COLUMN, m_pEditOuterMaskDepth.get());
 }
 
-InspContourWidget::~InspContourWidget()
-{
+InspContourWidget::~InspContourWidget() {
 }
 
-void InspContourWidget::setDefaultValue()
-{
+void InspContourWidget::setDefaultValue() {
     m_pEditDefectThreshold->setText("30");
     m_pEditMinDefectArea->setText("5000");
     m_pEditDefectInnerLengthTol->setText("100");
     m_pEditDefectOuterLengthTol->setText("100");
     m_pEditInnerMaskDepth->setText("50");
     m_pEditOuterMaskDepth->setText("50");
+
+    m_bIsTryInspected = false;
+    m_currentWindow.recordId = 0;
 }
 
 void InspContourWidget::setCurrentWindow(const Engine::Window &window) {
@@ -91,14 +92,14 @@ void InspContourWidget::setCurrentWindow(const Engine::Window &window) {
         return;
     }
 
-    QJsonObject obj = parse_doucment.object();
+    QJsonObject jsonValue = parse_doucment.object();
 
-    m_pEditDefectThreshold->setText(obj.take("DefectThreshold").toString());
-    m_pEditMinDefectArea->setText(obj.take("MinDefectArea").toString());
-    m_pEditDefectInnerLengthTol->setText(obj.take("DefectInnerLengthTol").toString());
-    m_pEditDefectOuterLengthTol->setText(obj.take("DefectOuterLengthTol").toString());
-    m_pEditInnerMaskDepth->setText(obj.take("InnerMaskDepth").toString());
-    m_pEditOuterMaskDepth->setText(obj.take("OuterMaskDepth").toString());
+    m_pEditDefectThreshold->setText(QString::number(jsonValue["DefectThreshold"].toInt()));
+    m_pEditMinDefectArea->setText(QString::number(jsonValue["MinDefectArea"].toDouble()));
+    m_pEditDefectInnerLengthTol->setText(QString::number(jsonValue["DefectInnerLengthTol"].toDouble()));
+    m_pEditDefectOuterLengthTol->setText(QString::number(jsonValue["DefectOuterLengthTol"].toDouble()));
+    m_pEditInnerMaskDepth->setText(QString::number(jsonValue["InnerMaskDepth"].toDouble()));
+    m_pEditOuterMaskDepth->setText(QString::number(jsonValue["OuterMaskDepth"].toDouble()));
 }
 
 bool InspContourWidget::_learnContour(int &recordId) {
@@ -109,7 +110,7 @@ bool InspContourWidget::_learnContour(int &recordId) {
     stCmd.matInputImg = pUI->getImage();
     cv::Rect rectROI = pUI->getSelectedROI();
     if (rectROI.width <= 0 || rectROI.height <= 0) {
-        QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Please select a ROI to do inspection."));
+        QMessageBox::critical(this, QStringLiteral("边界检测框"), QStringLiteral("Please select a ROI to do inspection."));
         return false;
     }
 
@@ -117,7 +118,7 @@ bool InspContourWidget::_learnContour(int &recordId) {
 
     Vision::PR_LrnContour(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {
-        System->showMessage(QStringLiteral("定位框"), QStringLiteral("学习模板失败"));
+        System->showMessage(QStringLiteral("边界检测框"), QStringLiteral("学习边界失败"));
         recordId = 0;
         return false;
     }
@@ -127,6 +128,7 @@ bool InspContourWidget::_learnContour(int &recordId) {
 }
 
 bool InspContourWidget::_inspContour(int recordId, bool bShowResult /*= true*/) {
+    QString strTitle(QStringLiteral("边界检测框"));
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
@@ -145,7 +147,7 @@ bool InspContourWidget::_inspContour(int recordId, bool bShowResult /*= true*/) 
     stCmd.matInputImg = pUI->getImage();
     cv::Rect rectROI = pUI->getSelectedROI();
     if (rectROI.width <= 0 || rectROI.height <= 0) {
-        QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Please select a ROI to do inspection."));
+        QMessageBox::critical(this, strTitle, QStringLiteral("Please select a ROI to do inspection."));
         return false;
     }
     stCmd.rectROI = rectROI;
@@ -153,31 +155,26 @@ bool InspContourWidget::_inspContour(int recordId, bool bShowResult /*= true*/) 
     Vision::PR_InspContour(&stCmd, &stRpy);
     if (bShowResult) {
         QString strMsg;
-        strMsg.sprintf("Inspect Contour %d, defect count %d.", Vision::ToInt32(stRpy.enStatus), stRpy.vecDefectContour.size());
-        QMessageBox::information(this, "Alignment", strMsg);
+        strMsg.sprintf("Inspect contour status %d, defect count %d.", Vision::ToInt32(stRpy.enStatus), stRpy.vecDefectContour.size());
+        QMessageBox::information(this, strTitle, strMsg);
     }
 
     return Vision::VisionStatus::OK == stRpy.enStatus;
 }
 
-void InspContourWidget::tryInsp()
-{
+void InspContourWidget::tryInsp() {
 	auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-    // Ask user to select the search window
-    auto pUI = getModule<IVisionUI>(UI_MODEL);
-    auto rectROI = pUI->getSelectedROI();
-    cv::Rect rectDefaultSrchWindow = CalcUtils::resizeRect(rectROI, cv::Size2f(rectROI.width * 1.5f, rectROI.height * 1.5f));
-    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_SRCH_WINDOW);
-    pUI->setSrchWindow(rectDefaultSrchWindow);    
-    auto nReturn = System->showInteractMessage(QStringLiteral("定位框"), QStringLiteral("请拖动鼠标选择搜寻窗口"));
-    if (nReturn != QDialog::Accepted)
-        return;
-
 	int nRecordId = 0;
-    if (!_learnContour(nRecordId)) {
-        return;
+    bool bNewRecord = false;
+    if (m_currentWindow.recordId > 0)
+        nRecordId = m_currentWindow.recordId;
+    else {
+        if (!_learnContour(nRecordId))
+            return;
+        else
+            bNewRecord = true;
     }
 
     if (_inspContour(nRecordId))
@@ -185,11 +182,11 @@ void InspContourWidget::tryInsp()
     else
         m_bIsTryInspected = false;
 	
-	Vision::PR_FreeRecord(nRecordId);
+    if (bNewRecord)
+	    Vision::PR_FreeRecord(nRecordId);
 }
 
-void InspContourWidget::confirmWindow(OPERATION enOperation)
-{
+void InspContourWidget::confirmWindow(OPERATION enOperation) {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
@@ -280,8 +277,7 @@ void InspContourWidget::confirmWindow(OPERATION enOperation)
 		auto vecDetectObjs = pUI->getDetectObjs();
 		vecDetectObjs.push_back(detectObj);
 		pUI->setDetectObjs(vecDetectObjs);
-	}
-	else {
+	}else {
 		window.Id = m_currentWindow.Id;
 		window.name = m_currentWindow.name;
 		result = Engine::UpdateWindow(window);
