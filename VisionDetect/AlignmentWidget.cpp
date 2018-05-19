@@ -1,7 +1,7 @@
 ﻿#include "AlignmentWidget.h"
 #include <QMessageBox>
-#include <qjsonobject.h>
-#include <qjsondocument.h>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "../Common/SystemData.h"
 #include "DataStoreAPI.h"
@@ -70,6 +70,7 @@ void AlignmentWidget::setDefaultValue()
 	m_pEditMinScore->setText("60");
 
     m_bIsTryInspected = false;
+    m_currentWindow.recordId = 0;
 }
 
 bool AlignmentWidget::_learnTemplate(int &recordId)
@@ -147,8 +148,14 @@ void AlignmentWidget::tryInsp()
         return;
 
 	int nRecordId = 0;
-    if (!_learnTemplate(nRecordId)) {
-        return;
+    bool bNewRecord = false;
+    if (m_currentWindow.recordId > 0)
+        nRecordId = m_currentWindow.recordId;
+    else {
+        if (!_learnTemplate(nRecordId))
+            return;
+        else
+            bNewRecord = true;
     }
 
     if (_srchTemplate(nRecordId))
@@ -156,7 +163,8 @@ void AlignmentWidget::tryInsp()
     else
         m_bIsTryInspected = false;
 	
-	Vision::PR_FreeRecord(nRecordId);
+	if (bNewRecord)
+	    Vision::PR_FreeRecord(nRecordId);
 }
 
 void AlignmentWidget::confirmWindow(OPERATION enOperation)

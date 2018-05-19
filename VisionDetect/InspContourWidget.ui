@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>InspContourWidget</class>
+ <widget class="EditInspWindowBaseWidget" name="InspContourWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>420</width>
+    <height>440</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>InspContourWidget</string>
+  </property>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>30</y>
+     <width>401</width>
+     <height>221</height>
+    </rect>
+   </property>
+   <property name="rowCount">
+    <number>6</number>
+   </property>
+   <property name="columnCount">
+    <number>2</number>
+   </property>
+   <attribute name="horizontalHeaderVisible">
+    <bool>false</bool>
+   </attribute>
+   <attribute name="horizontalHeaderDefaultSectionSize">
+    <number>210</number>
+   </attribute>
+   <attribute name="horizontalHeaderStretchLastSection">
+    <bool>true</bool>
+   </attribute>
+   <attribute name="verticalHeaderVisible">
+    <bool>false</bool>
+   </attribute>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <column/>
+   <column/>
+   <item row="0" column="0">
+    <property name="text">
+     <string>缺陷灰度差门槛</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="0" column="1">
+    <property name="text">
+     <string>30</string>
+    </property>
+   </item>
+   <item row="1" column="0">
+    <property name="text">
+     <string>缺陷面积下限(um^2)</string>
+    </property>
+    <property name="flags">
+     <set>NoItemFlags</set>
+    </property>
+   </item>
+   <item row="1" column="1">
+    <property name="text">
+     <string>5000</string>
+    </property>
+   </item>
+   <item row="2" column="0">
+    <property name="text">
+     <string>缺陷向内长度下限</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="2" column="1">
+    <property name="text">
+     <string>100</string>
+    </property>
+   </item>
+   <item row="3" column="0">
+    <property name="text">
+     <string>缺陷向外长度下限</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="3" column="1">
+    <property name="text">
+     <string>100</string>
+    </property>
+   </item>
+   <item row="4" column="0">
+    <property name="text">
+     <string>边界向内遮罩宽度</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="4" column="1">
+    <property name="text">
+     <string>50</string>
+    </property>
+   </item>
+   <item row="5" column="0">
+    <property name="text">
+     <string>边界向外遮罩宽度</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+    </property>
+   </item>
+   <item row="5" column="1">
+    <property name="text">
+     <string>50</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="labelBasicParameter">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>基础检测参数</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>EditInspWindowBaseWidget</class>
+   <extends>QWidget</extends>
+   <header>editinspwindowbasewidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
