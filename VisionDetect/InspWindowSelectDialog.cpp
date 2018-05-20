@@ -52,6 +52,11 @@ void InspWindowSelectDialog::on_btnInspContourWindow_clicked()
     m_enInspWidgetIndex = INSP_WIDGET_INDEX::INSP_CONTOUR;
 }
 
+void InspWindowSelectDialog::on_btnInspChipWindow_clicked()
+{
+    m_enInspWidgetIndex = INSP_WIDGET_INDEX::INSP_CHIP;
+}
+
 void InspWindowSelectDialog::on_accept()
 {
     if ( INSP_WIDGET_INDEX::UNDEFINED == m_enInspWidgetIndex ) {
