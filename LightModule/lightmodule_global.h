@@ -11,6 +11,6 @@
 
 #define _MAX_CHDATA_NUM 8
 
-#define _CHN_NUM 4
+#define _CHN_NUM 6
 
 #endif // LIGHTMODULE_GLOBAL_H

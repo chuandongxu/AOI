@@ -661,6 +661,14 @@ bool QSystem::isHardwareTrigger()
     return false;
 }
 
+bool QSystem::isTriggerBoard()
+{
+    int nRunMode = getSysRunMode();
+    if (2 == nRunMode)return true;
+
+    return false;
+}
+
 void QSystem::enableBackupData(bool s)
 {
 	if(s)

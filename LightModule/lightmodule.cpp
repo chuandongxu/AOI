@@ -121,4 +121,16 @@ void QLightModule::addSettingWiddget(QTabWidget *tabWidget)
 	}
 }
 
+bool QLightModule::triggerCapturing(TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig)
+{
+    QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
+    if (ctrl)
+    {
+        return ctrl->triggerCapturing(emTrig, bWaitDone, bClearSetupConfig);
+    }
+
+    return false;
+}
+
+
 QMOUDLE_INSTANCE(QLightModule)

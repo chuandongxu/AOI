@@ -9,6 +9,7 @@
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../include/IMotion.h"
+#include "../include/ILight.h"
 
 #include "QMainProcess.h"
 #include "CameraSetting.h"
@@ -146,6 +147,9 @@ bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return false;
 
+    ILight* pLight = getModule<ILight>(LIGHT_MODEL);
+    if (!pLight) return false;
+
 	imageMats.clear();
 
 	//if (!startCapturing())
@@ -154,11 +158,22 @@ bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
 	//	return false;
 	//}
 	
-	if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true))
-	{
-		System->setTrackInfo(QString("triggerCapturing error."));
-		return false;
-	}	
+    bool bTriggerBoard = System->isTriggerBoard();
+    if (bTriggerBoard)
+    {
+        if (!pLight->triggerCapturing(ILight::TRIGGER_ALL, true, true))
+        {
+            System->setTrackInfo(QString("triggerCapturing error!"));
+        }
+    }
+    else
+    {
+        if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true))
+        {
+            System->setTrackInfo(QString("triggerCapturing error."));
+            return false;
+        }
+    }
 
 	if (!getLastImages(imageMats))
 	{

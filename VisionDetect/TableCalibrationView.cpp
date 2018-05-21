@@ -5,6 +5,7 @@
 #include "../include/IdDefine.h"
 #include "../include/ICamera.h"
 #include "../include/IMotion.h"
+#include "../include/ILight.h"
 #include "../include/IVisionUI.h"
 
 #include <QMessageBox>
@@ -273,6 +274,9 @@ bool TableCalibrationView::guideReadImage(cv::Mat& matImg)
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return false;
 
+    ILight* pLight = getModule<ILight>(LIGHT_MODEL);
+    if (!pLight) return false;
+
 	if (!pCam->selectCaptureMode(ICamera::TRIGGER_ONE))// 1 image
 	{
 		System->setTrackInfo(QString("selectCaptureMode error"));
@@ -285,14 +289,25 @@ bool TableCalibrationView::guideReadImage(cv::Mat& matImg)
 	//	return false;
 	//}
 
-	QVector<int> nPorts;
+    bool bTriggerBoard = System->isTriggerBoard();
+    if (bTriggerBoard)
+    {
+        if (!pLight->triggerCapturing(ILight::TRIGGER(ILight::TRIGGER_ONE_CH1), true, true))
+        {
+            System->setTrackInfo(QString("triggerCapturing error!"));
+        }
+    }
+    else
+    {
+        QVector<int> nPorts;
 
-	nPorts.push_back(DO_LIGHT1_CH1);	
-	nPorts.push_back(DO_CAMERA_TRIGGER2);
+        nPorts.push_back(DO_LIGHT1_CH1);
+        nPorts.push_back(DO_CAMERA_TRIGGER2);
 
-	pMotion->setDOs(nPorts, 1);
-	QThread::msleep(10);
-	pMotion->setDOs(nPorts, 0);
+        pMotion->setDOs(nPorts, 1);
+        QThread::msleep(10);
+        pMotion->setDOs(nPorts, 0);
+    }
 
 	QVector<cv::Mat> matImgs;
 	if (!pCam->getLastImages(matImgs))

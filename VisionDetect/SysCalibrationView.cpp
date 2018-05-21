@@ -11,6 +11,7 @@
 #include "../include/IDlp.h"
 #include "../include/IVisionUI.h"
 #include "../include/IMotion.h"
+#include "../include/ILight.h"
 #include "../Common/eos.h"
 #include <QMessageBox>
 #include <QtMath>
@@ -726,6 +727,9 @@ bool SysCalibrationView::guideReadImages(QVector<cv::Mat>& matImgs)
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return false;
 
+    ILight* pLight = getModule<ILight>(LIGHT_MODEL);
+    if (!pLight) return false;
+
 	matImgs.clear();
 
 	if (!pCam->selectCaptureMode(ICamera::TRIGGER_DLP_ALL, true))// all images
@@ -734,11 +738,22 @@ bool SysCalibrationView::guideReadImages(QVector<cv::Mat>& matImgs)
 		return false;
 	}
 
-	if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP, true))
-	{
-		System->setTrackInfo(QString("triggerCapturing error"));
-		return false;
-	}
+    bool bTriggerBoard = System->isTriggerBoard();
+    if (bTriggerBoard)
+    {
+        if (!pLight->triggerCapturing(ILight::TRIGGER_DLP, true, true))
+        {
+            System->setTrackInfo(QString("triggerCapturing error!"));
+        }
+    }
+    else
+    {
+        if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP, true))
+        {
+            System->setTrackInfo(QString("triggerCapturing error"));
+            return false;
+        }
+    }
 
 	if (!pCam->getLastImages(matImgs))
 	{
@@ -757,6 +772,9 @@ bool SysCalibrationView::guideReadImage(cv::Mat& matImg)
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return false;
 
+    ILight* pLight = getModule<ILight>(LIGHT_MODEL);
+    if (!pLight) return false;
+
 	if (!pCam->selectCaptureMode(ICamera::TRIGGER_ONE, true))// 1 image
 	{
 		System->setTrackInfo(QString("selectCaptureMode error"));
@@ -769,15 +787,26 @@ bool SysCalibrationView::guideReadImage(cv::Mat& matImg)
 	//	return false;
 	//}
 
-	QVector<int> nPorts;
+    bool bTriggerBoard = System->isTriggerBoard();
+    if (bTriggerBoard)
+    {
+        if (!pLight->triggerCapturing(ILight::TRIGGER(ILight::TRIGGER_ONE_CH1), true, true))
+        {
+            System->setTrackInfo(QString("triggerCapturing error!"));
+        }
+    }
+    else
+    {
+        QVector<int> nPorts;
 
-	nPorts.push_back(DO_LIGHT1_CH2);
-	nPorts.push_back(DO_LIGHT2_CH1);
-	nPorts.push_back(DO_CAMERA_TRIGGER2);
+        nPorts.push_back(DO_LIGHT1_CH2);
+        nPorts.push_back(DO_LIGHT2_CH1);
+        nPorts.push_back(DO_CAMERA_TRIGGER2);
 
-	pMotion->setDOs(nPorts, 1);
-	QThread::msleep(10);
-	pMotion->setDOs(nPorts, 0);
+        pMotion->setDOs(nPorts, 1);
+        QThread::msleep(10);
+        pMotion->setDOs(nPorts, 0);
+    }
 
 	QVector<cv::Mat> matImgs;
 	if (!pCam->getLastImages(matImgs))

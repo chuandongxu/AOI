@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include "lightmodule_global.h"
+#include "../include/ILight.h"
 
 struct CHData
 {
@@ -39,8 +40,11 @@ public:
 	void closeLight(int ch);
 	bool isOpenLight(int ch);
 
-	void setChLuminance(int ch,int luminance);
+	virtual void setChLuminance(int ch,int luminance) = 0;
 	void setChName(int ch,const QString & name);
+
+    virtual void setupTrigger(ILight::TRIGGER emTrig) = 0;
+    virtual bool trigger() = 0;
 
 	int getChLuminance(int ch);
 	QString getChName(int ch);
@@ -50,14 +54,29 @@ protected:
 	int mapPortName(const QString &str);
 
 private:
-	QCommPort * m_comPort;
-
 	QString m_devName;
-	bool m_bOpened;
-    CHData m_data[_MAX_CHDATA_NUM];
+	bool m_bOpened;  
     int m_nChnNum;
+
+protected:
+    QCommPort * m_comPort;
+    CHData m_data[_MAX_CHDATA_NUM];
 };
 
 typedef QList<QLightDevice*> QLightDeviceList;
+
+class QLightDerivedDevice : public QLightDevice
+{  
+    Q_OBJECT
+public:
+    QLightDerivedDevice(const QString & devName, int nChnNum, QObject *parent);
+    ~QLightDerivedDevice();
+
+    virtual void setChLuminance(int ch, int luminance) override;
+
+    virtual void setupTrigger(ILight::TRIGGER emTrig) override{}
+
+    virtual bool trigger() override{return true; }
+};
 
 #endif // LIGHTDEVICE_H
