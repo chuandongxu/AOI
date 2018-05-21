@@ -130,8 +130,7 @@ void InspVoidWidget::setCurrentWindow(const Engine::Window &window)
     on_inspModeChanged(m_pComboBoxInspMode->currentIndex());
 }
 
-void InspVoidWidget::tryInsp()
-{
+void InspVoidWidget::tryInsp() {
     Vision::PR_INSP_HOLE_CMD stCmd;
     Vision::PR_INSP_HOLE_RPY stRpy;
 
