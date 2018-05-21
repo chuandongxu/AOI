@@ -40,7 +40,8 @@ void Insp3DHeightRunnable::run()
     IVision* pVision = getModule<IVision>(VISION_MODEL);
 	if (!pVision) return;
 
-    pVision->merge3DHeight(vecMatHeight, m_mat3DHeight);
+    pVision->setInspect3DHeight(vecMatHeight);
+    pVision->merge3DHeight(vecMatHeight, m_mat3DHeight);   
 
     for (const auto &deviceInspWindow : vecDeviceInspWindow) {
         for (const auto &windowGroup : deviceInspWindow.vecWindowGroup) {

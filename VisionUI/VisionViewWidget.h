@@ -91,6 +91,7 @@ public:
 
 	void show3D();
 	void showSelectROI3D();
+    void showInspectROI();
 
 protected:
 	void dragEnterEvent(QDragEnterEvent *event);
@@ -118,6 +119,7 @@ private:
 	cv::Point convertToMousePos(const cv::Point &ptImgPos);
 
 	void show3DView(cv::Rect& rectROI);
+    void showInspectView(cv::Rect& rectROI);
 
 	void fullImage();
 	void zoomImage(double scale);
@@ -185,4 +187,6 @@ private:
 	const float             _constZoomInStep = 2.0;
 	const float             _constZoomOutStep = 0.5;
 	const int               _constDeviceWindowLineWidth = 5;
+
+    QWidget* m_pInspectWidget;
 };

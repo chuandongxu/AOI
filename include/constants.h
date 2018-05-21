@@ -46,6 +46,7 @@ const int NOK =                                     -1;
 enum VISION_VIEW_MODE {
     MODE_VIEW_NONE = 1,
     MODE_VIEW_SELECT_3D_ROI,
+    MODE_VIEW_SELECT_INSPECT_ROI,
     MODE_VIEW_SELECT_ROI,
     MODE_VIEW_MOVE,
     MODE_VIEW_SET_FIDUCIAL_MARK,

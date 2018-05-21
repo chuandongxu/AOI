@@ -106,7 +106,6 @@ private slots:
 
     void onColorWidgetState(const QVariantList &data);
 
-
 private:
 	Ui::QColorWeight ui;
 

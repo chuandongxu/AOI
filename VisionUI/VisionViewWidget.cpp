@@ -237,6 +237,13 @@ VisionViewWidget::VisionViewWidget(QWidget *parent)
 	m_bMainView3DInitial = false;
 
 	m_pCameraOnLive = NULL;
+
+    m_pInspectWidget = NULL;
+    IVision* pVision = getModule<IVision>(VISION_MODEL);
+    if (pVision)
+    {
+        m_pInspectWidget = pVision->getInspect3DProfileView();
+    }
 }
 
 VisionViewWidget::~VisionViewWidget()
@@ -562,6 +569,10 @@ void VisionViewWidget::showSelectROI3D()
 	setViewState(MODE_VIEW_SELECT_3D_ROI);
 }
 
+void VisionViewWidget::showInspectROI()
+{
+    setViewState(MODE_VIEW_SELECT_INSPECT_ROI);
+}
 void VisionViewWidget::setImage(const cv::Mat& matImage, bool bDisplay)
 {
 	m_hoImage = matImage.clone();
@@ -710,6 +721,7 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
 		switch (m_stateView)
 		{
 		case MODE_VIEW_SELECT_3D_ROI:
+        case MODE_VIEW_SELECT_INSPECT_ROI:
 		case MODE_VIEW_SELECT_ROI:
         case MODE_VIEW_EDIT_INSP_WINDOW:
 			if ((0 != (int)motionX) || (0 != (int)motionY))
@@ -815,6 +827,7 @@ void VisionViewWidget::mousePressEvent(QMouseEvent * event)
 		switch (m_stateView)
 		{
 		case MODE_VIEW_SELECT_3D_ROI:
+        case MODE_VIEW_SELECT_INSPECT_ROI:
 		case MODE_VIEW_SELECT_ROI:
 			break;
 		case MODE_VIEW_NONE:
@@ -829,6 +842,8 @@ void VisionViewWidget::mousePressEvent(QMouseEvent * event)
 		{
 		case MODE_VIEW_SELECT_3D_ROI:
 			break;
+        case MODE_VIEW_SELECT_INSPECT_ROI:
+            break;
 		case MODE_VIEW_SELECT_ROI:
 			break;
 		case MODE_VIEW_NONE:
@@ -858,6 +873,14 @@ void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
 			m_selectROI.width = 0;
 			m_selectROI.height = 0;
 			break;
+        case MODE_VIEW_SELECT_INSPECT_ROI:
+            if (m_selectROI.width > 0 && m_selectROI.height > 0)
+            {
+                showInspectView(m_selectROI);
+            }
+            m_selectROI.width = 0;
+            m_selectROI.height = 0;
+            break;
 		case MODE_VIEW_SELECT_ROI:
 			break;
 		case MODE_VIEW_SET_FIDUCIAL_MARK:
@@ -1109,6 +1132,9 @@ void VisionViewWidget::setViewState(VISION_VIEW_MODE state)
 	case MODE_VIEW_SELECT_3D_ROI:
 		setCursor(Qt::CrossCursor);
 		break;
+    case MODE_VIEW_SELECT_INSPECT_ROI:
+        setCursor(Qt::CrossCursor);
+        break;
 	case MODE_VIEW_SELECT_ROI:
 		setCursor(Qt::CrossCursor);
 		break;
@@ -1470,6 +1496,18 @@ void VisionViewWidget::show3DView(cv::Rect& rectROI)
 		m_pSelectView->setVisible(true);
 		m_bMainView3DInitial = false;
 	}
+}
+
+void VisionViewWidget::showInspectView(cv::Rect& rectROI)
+{
+    IVision* pVision = getModule<IVision>(VISION_MODEL);
+    if (!pVision) return;
+
+    if (m_pInspectWidget)
+    {
+        pVision->inspect3DProfile();
+        m_pInspectWidget->show();
+    }
 }
 
 void VisionViewWidget::fullImage()
