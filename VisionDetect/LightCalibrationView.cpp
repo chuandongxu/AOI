@@ -238,6 +238,9 @@ bool LightCalibrationView::guideReadImage(cv::Mat& matImg, int nSelectLight)
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return false;
 
+    ILight* pLight = getModule<ILight>(LIGHT_MODEL);
+    if (!pLight) return false;
+
 	if (!pCam->selectCaptureMode(ICamera::TRIGGER_ONE))// 1 image
 	{
 		System->setTrackInfo(QString("selectCaptureMode error"));
@@ -250,35 +253,46 @@ bool LightCalibrationView::guideReadImage(cv::Mat& matImg, int nSelectLight)
 	//	return false;
 	//}
 
-	QVector<int> nPorts;
-	switch (nSelectLight)
-	{	
-	case 0:
-		nPorts.push_back(DO_LIGHT1_CH1);
-		break;
-	case 1:
-		nPorts.push_back(DO_LIGHT1_CH2);
-		break;
-	case 2:
-		nPorts.push_back(DO_LIGHT1_CH3);
-		break;
-	case 3:
-		nPorts.push_back(DO_LIGHT1_CH4);
-		break;
-	case 4:
-		nPorts.push_back(DO_LIGHT2_CH1);
-		break;
-	case 5:
-		nPorts.push_back(DO_LIGHT2_CH2);
-		break;
-	default:
-		break;
-	}
-	nPorts.push_back(DO_CAMERA_TRIGGER2);
+    bool bTriggerBoard = System->isTriggerBoard();
+    if (bTriggerBoard)
+    {
+        if (!pLight->triggerCapturing(ILight::TRIGGER(ILight::TRIGGER_ONE_CH1 + nSelectLight), true, true))
+        {
+            System->setTrackInfo(QString("triggerCapturing error!"));
+        }
+    }
+    else
+    {
+        QVector<int> nPorts;
+        switch (nSelectLight)
+        {
+        case 0:
+            nPorts.push_back(DO_LIGHT1_CH1);
+            break;
+        case 1:
+            nPorts.push_back(DO_LIGHT1_CH2);
+            break;
+        case 2:
+            nPorts.push_back(DO_LIGHT1_CH3);
+            break;
+        case 3:
+            nPorts.push_back(DO_LIGHT1_CH4);
+            break;
+        case 4:
+            nPorts.push_back(DO_LIGHT2_CH1);
+            break;
+        case 5:
+            nPorts.push_back(DO_LIGHT2_CH2);
+            break;
+        default:
+            break;
+        }
+        nPorts.push_back(DO_CAMERA_TRIGGER2);
 
-	pMotion->setDOs(nPorts, 1);
-	QThread::msleep(10);
-	pMotion->setDOs(nPorts, 0);
+        pMotion->setDOs(nPorts, 1);
+        QThread::msleep(10);
+        pMotion->setDOs(nPorts, 0);
+    }
 
 	QVector<cv::Mat> matImgs;
 	if (!pCam->getLastImages(matImgs))

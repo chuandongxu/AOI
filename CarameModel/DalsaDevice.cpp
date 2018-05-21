@@ -164,6 +164,7 @@ void DalsaCameraDevice::updateGrabCount(cv::Mat& imgMat)
 		m_waitCon.wakeAll();		
 	}
 	m_waitMutex.unlock();
+    qDebug() << "Grab Image Count: " << m_nGrabCount;
 }
 
 void DalsaCameraDevice::setCamera(IPylonDevice* dev)
@@ -454,27 +455,80 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 
 	bool bCaptureImageAsMatlab = System->getParam("camera_cap_image_matlab").toBool();
 	int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+    bool bTriggerBoard = System->isTriggerBoard();
+
+    int nImageNum = m_imageMats.size();
 
 	imageMats.clear();
-	for (int i = 0; i < m_imageMats.size(); i++)
+    for (int i = 0; i < nImageNum; i++)
 	{
 		int nIndex = i;
-		if (bCaptureImageAsMatlab && m_imageMats.size() >= DLP_SEQ_PATTERN_IMG_NUM)
+        if (bCaptureImageAsMatlab && nImageNum >= DLP_SEQ_PATTERN_IMG_NUM)
 		{
-			if (m_imageMats.size() <= DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
-			{
-				if (5 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 5 Pattern Sequence Special Index
-				{
-					nIndex += 1;
-				}
-				else if (6 == nIndex%DLP_SEQ_PATTERN_IMG_NUM)// 6 Pattern Sequence Special Index
-				{
-					nIndex -= 1;
-				}
-			}
+            if (bTriggerBoard)
+            {
+                if (nImageNum <= DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
+                {
+                    int nImgIndex = nIndex%DLP_SEQ_PATTERN_IMG_NUM;
+                    if (5 == nImgIndex)// 5 Pattern Sequence Special Index
+                    {
+                        nIndex += 1;
+                    }
+                    else if (6 == nImgIndex)// 6 Pattern Sequence Special Index
+                    {
+                        nIndex -= 1;
+                    }
+                }
+                else // 48 + 6 pics
+                {
+                    int nLightImgNum = nImageNum - DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;
+                    if (nIndex < DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
+                    {
+                        int nImgIndex = nIndex%DLP_SEQ_PATTERN_IMG_NUM;
+                        if (5 == nImgIndex)// 5 Pattern Sequence Special Index
+                        {
+                            nIndex += 1;
+                        }
+                        else if (6 == nImgIndex)// 6 Pattern Sequence Special Index
+                        {
+                            nIndex -= 1;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (nIndex <= DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
+                {
+                    int nImgIndex = nIndex%DLP_SEQ_PATTERN_IMG_NUM;
+                    if (5 == nImgIndex)// 5 Pattern Sequence Special Index
+                    {
+                        nIndex += 1;
+                    }
+                    else if (6 == nImgIndex)// 6 Pattern Sequence Special Index
+                    {
+                        nIndex -= 1;
+                    }
+                }
+            }			
 		}
 
-		imageMats.push_back(m_imageMats[nIndex]);
+        if (bTriggerBoard && (nImageNum > DLP_SEQ_PATTERN_IMG_NUM * nDlpNum))
+        {
+            int nLightImgNum = nImageNum - DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;
+            if (nIndex < DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
+            {
+                imageMats.push_back(m_imageMats[nIndex + nLightImgNum]);
+            }
+            else
+            {
+                imageMats.push_back(m_imageMats[nIndex - DLP_SEQ_PATTERN_IMG_NUM * nDlpNum]);
+            }            
+        }
+        else
+        {
+            imageMats.push_back(m_imageMats[nIndex]);
+        }		
 	}
 
 	return m_bStopFlag ? false : true;

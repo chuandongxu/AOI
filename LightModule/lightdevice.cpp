@@ -104,65 +104,6 @@ bool QLightDevice::isOpenLight(int ch)
 {
 	return m_data[ch].bOpen;
 }
-
-void QLightDevice::setChLuminance(int ch, int luminance)
-{
-    m_data[ch].iLuminance = luminance;
-	if (m_comPort)
-	{
-		QString strValue = QString("%1").arg(luminance, 4, 10, QLatin1Char('0'));
-
-		QString szCh = "";
-		switch (ch)
-		{
-		case 0:
-			szCh = "A";
-			break;
-		case 1:
-			szCh = "B";
-			break;
-		case 2:
-			szCh = "C";
-			break;
-		case 3:
-			szCh = "D";
-			break;
-		default:
-			break;
-		}
-
-		QString szCmd = "SI" + strValue + szCh + "#";
-		m_comPort->write(szCmd.toLocal8Bit());
-
-		QString szRetValue = "I" + szCh;
-
-		int nWaitTime = 1 * 100;
-		while (nWaitTime-- > 0)
-		{
-			QByteArray readLine;
-			if (m_comPort->read(readLine))
-			{
-				QString value = readLine;
-				if (!value.trimmed().isEmpty())
-				{
-					if (value != szRetValue)
-					{
-						System->setTrackInfo("set light setChLuminance fail, ret=" + value);
-					}
-					break;
-				}			
-			}
-
-			QThread::msleep(10);
-		}
-
-		if (nWaitTime <= 0)
-		{
-			System->setTrackInfo("set light setChLuminance fail. Wait Timeout!");
-		}		
-	}
-}
-
 	
 void QLightDevice::setChName(int ch,const QString & name)
 {
@@ -202,4 +143,72 @@ int QLightDevice::mapPortName(const QString &str)
 	else if("com18" == port)return 18;
 
 	return 0;
+}
+
+QLightDerivedDevice::QLightDerivedDevice(const QString & devName, int nChnNum, QObject *parent)
+    : QLightDevice(devName, nChnNum, parent)
+{   
+}
+
+QLightDerivedDevice::~QLightDerivedDevice()
+{
+   
+}
+
+void QLightDerivedDevice::setChLuminance(int ch, int luminance)
+{
+    m_data[ch].iLuminance = luminance;
+    if (m_comPort)
+    {
+        QString strValue = QString("%1").arg(luminance, 4, 10, QLatin1Char('0'));
+
+        QString szCh = "";
+        switch (ch)
+        {
+        case 0:
+            szCh = "A";
+            break;
+        case 1:
+            szCh = "B";
+            break;
+        case 2:
+            szCh = "C";
+            break;
+        case 3:
+            szCh = "D";
+            break;
+        default:
+            break;
+        }
+
+        QString szCmd = "SI" + strValue + szCh + "#";
+        m_comPort->write(szCmd.toLocal8Bit());
+
+        QString szRetValue = "I" + szCh;
+
+        int nWaitTime = 1 * 100;
+        while (nWaitTime-- > 0)
+        {
+            QByteArray readLine;
+            if (m_comPort->read(readLine))
+            {
+                QString value = readLine;
+                if (!value.trimmed().isEmpty())
+                {
+                    if (value != szRetValue)
+                    {
+                        System->setTrackInfo("set light setChLuminance fail, ret=" + value);
+                    }
+                    break;
+                }
+            }
+
+            QThread::msleep(10);
+        }
+
+        if (nWaitTime <= 0)
+        {
+            System->setTrackInfo("set light setChLuminance fail. Wait Timeout!");
+        }
+    }
 }

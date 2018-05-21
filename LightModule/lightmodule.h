@@ -28,6 +28,9 @@ public:
 	virtual void addSettingWiddget(QTabWidget *tabWidget);
     //virtual void addDiagonseWidget(QTabWidget *tabWidget);
 
+
+    virtual bool triggerCapturing(TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig) override;
+
 private:
 	void * m_devCtrl;
 	LightWidget* m_pLightWidget;

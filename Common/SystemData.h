@@ -158,6 +158,7 @@ public:
     void setSysRunMode(int nMode);
     int getSysRunMode();
     bool isHardwareTrigger();
+    bool isTriggerBoard();
 
 	void enableBackupData(bool s);
 	bool isEnableBackupData();

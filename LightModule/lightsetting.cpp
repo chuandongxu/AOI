@@ -31,7 +31,16 @@ void QLightSetting::onAddLightCtrl()
 	QString str = QString(QStringLiteral("光源控制器%0")).arg(n+1);
 	QString name = QString("light%0").arg(n+1);
 
-    QLightDevice * pDevice = new QLightDevice(name, _CHN_NUM, NULL);
+    QLightDevice * pDevice = NULL;
+    if (System->isTriggerBoard())
+    {
+        pDevice = new QLightCardDevice(name, _CHN_NUM, NULL);
+    }
+    else
+    {
+        pDevice = new QLightDerivedDevice(name, _CHN_NUM, NULL);
+    }
+
 	m_lightCtrl->addDevice(pDevice);
 	ui.tabWidget->addTab(new QDeviceFrom(pDevice,this),str);
 
