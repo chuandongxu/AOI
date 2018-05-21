@@ -215,11 +215,11 @@ bool VisionDetect::setInspect3DHeight(QVector<cv::Mat>& matHeights)
     return false;
 }
 
-void VisionDetect::inspect3DProfile()
+void VisionDetect::inspect3DProfile(cv::Rect& rectROI)
 {
     if (m_pInspect3DProfileView)
     {
-        m_pInspect3DProfileView->inspect();
+        m_pInspect3DProfileView->inspect(rectROI);
     } 
 }
 

@@ -57,7 +57,7 @@ public:
     virtual QString getVisionLibraryVersion() const { return m_ctrl.getVisionLibraryVersion(); }
 
     virtual bool setInspect3DHeight(QVector<cv::Mat>& matHeights) override;
-    virtual void inspect3DProfile() override;
+    virtual void inspect3DProfile(cv::Rect& rectROI) override;
 
 private:
 	VisionCtrl m_ctrl;

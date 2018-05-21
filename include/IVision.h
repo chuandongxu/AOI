@@ -43,7 +43,7 @@ public:
 
 
     virtual bool setInspect3DHeight(QVector<cv::Mat>& matHeights) = 0;
-    virtual void inspect3DProfile() = 0;
+    virtual void inspect3DProfile(cv::Rect& rectROI) = 0;
 };
 
 #endif

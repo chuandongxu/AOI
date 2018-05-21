@@ -20,12 +20,14 @@ public:
     ~Inspect3DProfileWidget();
 
     bool set3DHeight(QVector<cv::Mat>& matHeights);
-    void inspect();
+    void inspect(cv::Rect& rectROI);
 
     void setInspectPos(double dX, double dY);
 
 private:
     void initUI();
+
+    void doInspect();
 
 private slots:
     void onInspect();
@@ -40,6 +42,7 @@ private:
 private:
     Ui::Inspect3DProfileWidget ui;
     QVector<cv::Mat> m_matHeights;
+    cv::Rect m_rectROI;
 
     std::shared_ptr<DisplayScene> m_dlpImgScene1;
     std::shared_ptr<DisplayScene> m_dlpImgScene2;

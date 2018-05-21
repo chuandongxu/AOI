@@ -1505,7 +1505,7 @@ void VisionViewWidget::showInspectView(cv::Rect& rectROI)
 
     if (m_pInspectWidget)
     {
-        pVision->inspect3DProfile();
+        pVision->inspect3DProfile(rectROI);
         m_pInspectWidget->show();
     }
 }
