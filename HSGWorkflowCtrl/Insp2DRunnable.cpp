@@ -5,6 +5,10 @@
 #include "../include/constants.h"
 #include "../DataModule/DataUtils.h"
 
+#include "../include/IdDefine.h"
+#include "../Common/ModuleMgr.h"
+#include "../include/IVisionUI.h"
+
 Insp2DRunnable::Insp2DRunnable(const Vision::VectorOfMat    &vec2DCaptureImages,
                                const DeviceInspWindowVector &vecDeviceWindows,
                                const cv::Point2f            &ptFramePos,
@@ -21,6 +25,9 @@ Insp2DRunnable::~Insp2DRunnable() {
 void Insp2DRunnable::run()
 {
     m_vec2DImages = _generate2DImages(m_vec2DCaptureImages);
+
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    if (m_vec2DImages.size() >0) pUI->setImage(m_vec2DImages[0]);
 
     int nWindowIndex = 0;
     for(auto &deviceWindow : m_vecDeviceWindows)

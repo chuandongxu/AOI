@@ -130,6 +130,12 @@ void VisionView::createActions()
 	m_pSelect3DROI->setStatusTip(tr("Show Select 3D Data"));
 	connect(m_pSelect3DROI.get(), SIGNAL(triggered()), this, SLOT(showSelectROI3D()));
 	addAction(m_pSelect3DROI.get());
+
+    m_pSelectInspectROI = std::make_unique<QAction>(QIcon("image/profImage.png"), tr("&Select Inspect"), this);
+    m_pSelectInspectROI->setShortcuts(QKeySequence::Underline);
+    m_pSelectInspectROI->setStatusTip(tr("Show Select Inspect Data"));
+    connect(m_pSelectInspectROI.get(), SIGNAL(triggered()), this, SLOT(showInspectROI()));
+    addAction(m_pSelectInspectROI.get());
 	setContextMenuPolicy(Qt::ActionsContextMenu);
 
 	showLightAct = new QAction(QIcon("image/busy.png"), QStringLiteral("显示灯光设置"), this);
@@ -282,6 +288,14 @@ void VisionView::showSelectROI3D()
 	{
 		m_pViewWidget->showSelectROI3D();
 	}
+}
+
+void VisionView::showInspectROI()
+{
+    if (m_pViewWidget)
+    {
+        m_pViewWidget->showInspectROI();
+    }
 }
 
 void VisionView::setImage(const cv::Mat& matImage, bool bDisplay)
