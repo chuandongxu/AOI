@@ -46,8 +46,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>98</width>
-        <height>28</height>
+        <width>400</width>
+        <height>571</height>
        </rect>
       </property>
       <attribute name="label">
@@ -575,7 +575,7 @@
       <rect>
        <x>65</x>
        <y>6</y>
-       <width>150</width>
+       <width>120</width>
        <height>22</height>
       </rect>
      </property>
@@ -600,7 +600,7 @@
      <property name="geometry">
       <rect>
        <x>310</x>
-       <y>6</y>
+       <y>5</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -687,6 +687,37 @@
      </property>
      <property name="text">
       <string>跳过</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBox_displayCaliRslt">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>5</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>显示结果</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <property name="autoRepeat">
+      <bool>false</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
+     </property>
+     <property name="tristate">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>

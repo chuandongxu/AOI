@@ -22,6 +22,7 @@
 
 #include "QCameraRunnable.h"
 #include "QCaliGuideDialog.h"
+#include "QDlpMTFRsltDisplay.h"
 
 #include "CryptLib.h"
 
@@ -47,6 +48,8 @@ SysCalibrationView::SysCalibrationView(VisionCtrl* pCtrl, QWidget *parent)
 	m_nCaliGuideStep = 0;
 	m_bGuideCali = false;
 	m_pCameraRunnable = NULL;
+
+    m_pDlpCaliRstDisplay = std::make_shared<QDlpMTFRsltDisplay>(this);
 
 	QString user;
 	int level = 0;
@@ -430,6 +433,20 @@ void SysCalibrationView::on3DDetectCali()
 
 		cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
 		getVisionUI()->displayImage(matHeightResultImg);
+       
+        int nRstDataSize = m_dlpCaliRstData[nDLPIndex].size();
+        if (nRstDataSize > 0)
+        {
+            cv::Mat matHeight = stRpy.matHeight;
+            for (int y = 0; y < matHeight.rows; y++)
+            {
+                for (int x = 0; x < matHeight.cols; x++)
+                {
+                    float& fHeight = matHeight.at<float>(y, x);
+                    m_dlpCaliRstData[nDLPIndex][nRstDataSize - 1].push_back(fHeight);
+                }
+            }           
+        }        
 
 		System->setTrackInfo(QStringLiteral("标定DLP%1的H%2面成功").arg(nDLPIndex + 1).arg(nStepIndex + 1));
 	}
@@ -957,6 +974,11 @@ void SysCalibrationView::onCaliGuideNext()
 			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("获取马达位置错误！"));
 		}
 
+        for (int i = 0; i < _MAX_DLP_NUM; i++)
+        {
+            m_dlpCaliRstData[i].clear();
+        }        
+
 		for (int i = 0; i < m_caliStepMap.size(); i++)
 		{
 			int nStepIndex = m_caliStepMap.keys().at(i);
@@ -971,6 +993,12 @@ void SysCalibrationView::onCaliGuideNext()
 			{
 				return;
 			}
+
+            for (int i = 0; i < _MAX_DLP_NUM; i++)
+            {
+                VectorOfFloat vecDatas;
+                m_dlpCaliRstData[i].push_back(vecDatas);
+            }
 
 			ui.comboBox_selectCaliType->setCurrentIndex(nStepIndex);
 
@@ -1016,6 +1044,25 @@ void SysCalibrationView::onCaliGuideNext()
 		{
 			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("运动马达错误！"));
 		}
+
+        bool bDisplayCaliResult = ui.checkBox_displayCaliRslt->isChecked();
+        if (bDisplayCaliResult)
+        {
+            std::vector<QString> plotDataName;
+            for (int i = 0; i < m_caliStepMap.size(); i++)
+            {
+                int nStepIndex = m_caliStepMap.keys().at(i);
+                int nStepValue = m_caliStepMap.value(nStepIndex);
+                plotDataName.push_back(QString::number(nStepValue, 'g', 2));
+            } 
+
+            m_pDlpCaliRstDisplay->setupPlot1Data(QString("DLP1 Calibration Result"), m_dlpCaliRstData[0], plotDataName);
+            m_pDlpCaliRstDisplay->setupPlot2Data(QString("DLP2 Calibration Result"), m_dlpCaliRstData[1], plotDataName);
+            m_pDlpCaliRstDisplay->setupPlot3Data(QString("DLP3 Calibration Result"), m_dlpCaliRstData[2], plotDataName);
+            m_pDlpCaliRstDisplay->setupPlot4Data(QString("DLP4 Calibration Result"), m_dlpCaliRstData[3], plotDataName);
+
+            m_pDlpCaliRstDisplay->show();
+        }
 
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("自动标定向导完成！"));
 	}

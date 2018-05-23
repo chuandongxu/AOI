@@ -6,8 +6,14 @@
 #include "VisionAPI.h"
 #include "opencv2/highgui.hpp"
 
+#define _MAX_DLP_NUM    4
+
+using VectorOfFloat = std::vector < float >;
+using VectorOfVectorOfFloat = std::vector < VectorOfFloat >;
+
 class QCameraRunnable;
 class IVisionUI;
+class QDlpMTFRsltDisplay;
 class SysCalibrationView : public QWidget
 {
 	Q_OBJECT
@@ -82,4 +88,7 @@ private:
 	QIntValidator *inputIntRangeAll;
 	QDoubleValidator *inputDoubleRangePos;
 	QDoubleValidator *inputDoubleRangeAll;
+
+    std::shared_ptr<QDlpMTFRsltDisplay> m_pDlpCaliRstDisplay;
+    VectorOfVectorOfFloat m_dlpCaliRstData[_MAX_DLP_NUM];
 };
