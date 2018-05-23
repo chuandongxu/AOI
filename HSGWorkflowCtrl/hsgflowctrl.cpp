@@ -92,6 +92,9 @@ void QFlowCtrl::onThreadState(const QVariantList &data)
     case MAIN_THREAD_CLOSED:   
         stop();
         break;
+    case REFRESH_BIG_IMAGE:
+        _refreshDisplayImage();
+        break;
     default:
         break;
     }
@@ -259,10 +262,11 @@ void QFlowCtrl::start()
         }
     }
 
-    m_pAutoRunThread = new AutoRunThread(m_vecAlignments, m_vecDeviceInspWindow, m_vecVecFrameCtr, &m_mapBoardInspResult);
+    auto enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(System->getParam("scan_image_Direction").toInt());
+
+    AutoRunParams stAutoRunParams(m_nImgWidth, m_nImgHeight, m_fBoardLeft, m_fBoardBottom, m_fOverlapX, m_fOverlapY, enScanDir);
+    m_pAutoRunThread = new AutoRunThread(m_vecAlignments, m_vecDeviceInspWindow, m_vecVecFrameCtr, stAutoRunParams, &m_mapBoardInspResult);
     connect(m_pAutoRunThread, &AutoRunThread::finished, m_pAutoRunThread, &QObject::deleteLater);
-    m_pAutoRunThread->setImageSize(m_nImgWidth, m_nImgHeight);
-    m_pAutoRunThread->setBoardStartPos(m_fBoardLeft, m_fBoardBottom);
     m_pAutoRunThread->start();
 
 	m_isStart = true;
@@ -373,14 +377,13 @@ int QFlowCtrl::_prepareRunData()
     }
 
     auto fResolutionX = System->getSysParam("CAM_RESOLUTION_X").toFloat();
-    auto fResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toFloat();
-    
+    auto fResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toFloat();    
 
     auto pCam = getModule<ICamera>(CAMERA_MODEL);
     pCam->getCameraScreenSize(m_nImgWidth, m_nImgHeight);
     float fovWidth = m_nImgWidth * fResolutionX, fovHeight = m_nImgHeight * fResolutionY;  // 2032 is the camera resolution, later need to get from elsewhere.
     
-    nResult = DataUtils::assignFrames(m_fBoardLeft, m_fBoardTop, m_fBoardRight, m_fBoardBottom, fovWidth, fovHeight, m_vecVecFrameCtr);
+    nResult = DataUtils::assignFrames(m_fBoardLeft, m_fBoardTop, m_fBoardRight, m_fBoardBottom, fovWidth, fovHeight, m_vecVecFrameCtr, m_fOverlapX, m_fOverlapY);
     if (nResult != OK) {
         System->showMessage(QStringLiteral("分配Frame"), QStringLiteral("分配Frame失败!"));
         return NOK;
@@ -467,4 +470,9 @@ int QFlowCtrl::_prepareRunData()
     }
     
     return OK;
+}
+
+void QFlowCtrl::_refreshDisplayImage() {
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    pUI->setImage(m_pAutoRunThread->getBigImage());
 }

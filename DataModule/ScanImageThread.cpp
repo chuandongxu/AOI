@@ -37,8 +37,7 @@ ScanImageThread::ScanImageThread(
 {
 }
 
-ScanImageThread::~ScanImageThread()
-{
+ScanImageThread::~ScanImageThread() {
 }
 
 void ScanImageThread::quit()

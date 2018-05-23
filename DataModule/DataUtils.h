@@ -165,7 +165,9 @@ public:
         float                            bottom,
         float                            fovWidth,
         float                            fovHeight,
-        Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr);
+        Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr,
+        float                           &fOverlapX,
+        float                           &fOverlapY);
 
     static bool isWindowInFrame(
         const cv::Point2f &ptWindowCtr,
