@@ -77,6 +77,7 @@ private slots:
 	void show3D();
     void selectROI();
 	void showSelectROI3D();
+    void showInspectROI();
 
 	void showLight();
 	void showColorSpace();
@@ -111,6 +112,7 @@ private:
 	QAction *show3DAct;
     std::unique_ptr<QAction> m_pSelectROI;
 	std::unique_ptr<QAction> m_pSelect3DROI;
+    std::unique_ptr<QAction> m_pSelectInspectROI;
 
 	QAction *showLightAct;
 	QAction *showColorSpaceAct;
@@ -129,5 +131,5 @@ private:
 	VisionViewWidget* m_pViewWidget;	
 
 	QWidget* m_pLightWidget;
-	QWidget* m_pColorWidget;
+	QWidget* m_pColorWidget;    
 };

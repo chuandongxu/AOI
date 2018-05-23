@@ -14,6 +14,7 @@ public:
 	virtual QWidget* getCaliView() = 0;
     virtual QWidget* getInspWindowView() = 0;
 	virtual QWidget* getColorWeightView() = 0;
+    virtual QWidget* getInspect3DProfileView() = 0;
 
 	virtual bool loadCmdData(int nStation) = 0;
 
@@ -39,6 +40,10 @@ public:
     virtual void setColorWidgetImage(const cv::Mat &matImg) = 0;
     virtual cv::Mat getColorWidgetProcessedImage() = 0;
     virtual QString getVisionLibraryVersion() const = 0;
+
+
+    virtual bool setInspect3DHeight(QVector<cv::Mat>& matHeights) = 0;
+    virtual void inspect3DProfile(cv::Rect& rectROI) = 0;
 };
 
 #endif

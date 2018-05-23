@@ -12,6 +12,7 @@ class SysCalibrationView;
 class LightCalibrationView;
 class TableCalibrationView;
 class QColorWeight;
+class Inspect3DProfileWidget;
 class  VisionDetect : public QModuleBase, public IVision
 {
 public:
@@ -26,6 +27,7 @@ public:
 	virtual QWidget* getCaliView();
     virtual QWidget* getInspWindowView() override;
 	virtual QWidget* getColorWeightView() override;
+    virtual QWidget* getInspect3DProfileView() override;
 
 public:
 	virtual bool loadCmdData(int nStation);
@@ -54,6 +56,9 @@ public:
     virtual cv::Mat getColorWidgetProcessedImage() override;
     virtual QString getVisionLibraryVersion() const { return m_ctrl.getVisionLibraryVersion(); }
 
+    virtual bool setInspect3DHeight(QVector<cv::Mat>& matHeights) override;
+    virtual void inspect3DProfile(cv::Rect& rectROI) override;
+
 private:
 	VisionCtrl m_ctrl;
 	VisionDetectRunView* m_pDetectView;
@@ -61,5 +66,6 @@ private:
 	LightCalibrationView* m_pLightCaliView;
 	TableCalibrationView* m_pTableCaliView;
 	QColorWeight* m_pColorWeightView;
+    Inspect3DProfileWidget* m_pInspect3DProfileView;
     InspWindowWidget* m_pInspWindowView;
 };

@@ -9,6 +9,7 @@
 #include "LightCalibrationView.h"
 #include "TableCalibrationView.h"
 #include "QColorWeight.h"
+#include "Inspect3DProfileWidget.h"
 #include "qthread.h"
 
 VisionDetect::VisionDetect(int id, const QString &name)
@@ -19,6 +20,7 @@ VisionDetect::VisionDetect(int id, const QString &name)
 	m_pLightCaliView = new LightCalibrationView(&m_ctrl);
 	m_pTableCaliView = new TableCalibrationView(&m_ctrl);
 	m_pColorWeightView = new QColorWeight();
+    m_pInspect3DProfileView = new Inspect3DProfileWidget();
     m_pInspWindowView = new InspWindowWidget(NULL, m_pColorWeightView);
 }
 
@@ -74,6 +76,11 @@ QWidget* VisionDetect::getInspWindowView()
 QWidget* VisionDetect::getColorWeightView()
 {
 	return m_pColorWeightView;
+}
+
+QWidget* VisionDetect::getInspect3DProfileView()
+{
+    return m_pInspect3DProfileView;
 }
 
 bool VisionDetect::loadCmdData(int nStation)
@@ -197,6 +204,23 @@ void VisionDetect::setColorWidgetImage(const cv::Mat &matImg)
 cv::Mat VisionDetect::getColorWidgetProcessedImage()
 {
     return m_pColorWeightView->getProcessedImage();
+}
+
+bool VisionDetect::setInspect3DHeight(QVector<cv::Mat>& matHeights)
+{
+    if (m_pInspect3DProfileView)
+    {
+        return m_pInspect3DProfileView->set3DHeight(matHeights);
+    }
+    return false;
+}
+
+void VisionDetect::inspect3DProfile(cv::Rect& rectROI)
+{
+    if (m_pInspect3DProfileView)
+    {
+        m_pInspect3DProfileView->inspect(rectROI);
+    } 
 }
 
 QMOUDLE_INSTANCE(VisionDetect)
