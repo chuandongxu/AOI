@@ -11,6 +11,31 @@
 using namespace NFG::AOI;
 using namespace AOI;
 
+struct AutoRunParams
+{
+    AutoRunParams(int     nImgWidthPixel,
+                  int     nImgHeightPixel,
+                  float   fBoardLeftPos,
+                  float   fBoardBtmPos,
+                  float   fFrameOverlapX,
+                  float   fFrameOverlapY,
+                  Vision::PR_SCAN_IMAGE_DIR       enScanDir) :
+                  nImgWidthPixel    (nImgWidthPixel),
+                  nImgHeightPixel   (nImgHeightPixel),
+                  fBoardLeftPos     (fBoardLeftPos),
+                  fBoardBtmPos      (fBoardBtmPos),
+                  fOverlapUmX       (fOverlapUmX),
+                  fOverlapUmY       (fOverlapUmY),
+                  enScanDir         (enScanDir) {}
+    int     nImgWidthPixel;
+    int     nImgHeightPixel;
+    float   fBoardLeftPos;
+    float   fBoardBtmPos;
+    float   fOverlapUmX;
+    float   fOverlapUmY;
+    Vision::PR_SCAN_IMAGE_DIR       enScanDir;
+};
+
 class AutoRunThread : public QThread
 {
     Q_OBJECT
@@ -19,12 +44,12 @@ public:
 	AutoRunThread(const Engine::AlignmentVector         &vecAlignments,
                   const DeviceInspWindowVector          &vecDeviceWindows,
                   const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr,
+                  const AutoRunParams                   &stAutoRunParams,
                   MapBoardInspResult                    *pMapBoardInspResult);
 	~AutoRunThread();
 	
     static bool captureAllImages(QVector<cv::Mat>& imageMats);
-    inline void setImageSize(int nImgWidth, int nImgHeight) { m_nImageWidthPixel = nImgWidth; m_nImageHeightPixel = nImgHeight; }
-    inline void setBoardStartPos(float fBoardLeftPos, float fBoardBtmPos) { m_fBoardLeftPos = fBoardLeftPos; m_fBoardBtmPos = fBoardBtmPos; }
+    cv::Mat getBigImage() const { return m_matBigImage; }
 
 public slots:
     void onThreadState(const QVariantList &data);
@@ -60,6 +85,7 @@ private:
     bool _alignWindows();
     bool _doInspection(BoardInspResultPtr ptrBoardInspResult);
     DeviceInspWindowVector _getDeviceWindowInFrame(const cv::Point2f &ptFrameCtr);
+    bool _combineBigImage(const Vision::VectorOfMat &vecMatImages);
 
 private:
 	std::atomic<bool>               m_exit;	
@@ -81,10 +107,15 @@ private:
     cv::Mat                         m_matCombinedBigHeight;
     float                           m_fBoardLeftPos;
     float                           m_fBoardBtmPos;
+    float                           m_fOverlapUmX;
+    float                           m_fOverlapUmY;
     MapBoardInspResult             *m_pMapBoardInspResult;
     QString                         m_boardName;
     DeviceInspWindowVector          m_vecDeviceInspWindow;
     DeviceInspWindowVector          m_vecAlignedDeviceInspWindow;
+    Vision::VectorOfMat             m_vecDisplayFrameImages;
+    cv::Mat                         m_matBigImage;
+    Vision::PR_SCAN_IMAGE_DIR       m_enScanDir;
 };
 
 

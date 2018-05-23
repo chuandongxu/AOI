@@ -31,6 +31,7 @@
 AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignments,
                              const DeviceInspWindowVector          &vecDeviceWindows,
                              const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr,
+                             const AutoRunParams                   &stAutoRunParams,
                              MapBoardInspResult                    *pMapBoardInspResult)
     :m_vecAlignments        (vecAlignments),
      m_vecDeviceInspWindow  (vecDeviceWindows),
@@ -40,17 +41,29 @@ AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignment
 {
     m_threadPoolCalc3DInsp2D.setMaxThreadCount(5);  // (4 DLP height calculation thead) + (1 2D inspection thread)
     QEos::Attach(EVENT_THREAD_STATE, this, SLOT(onThreadState(const QVariantList &)));
+
+    int ROWS = m_vecVecFrameCtr.size();
+    int COLS = m_vecVecFrameCtr[0].size();
+    int TOTAL = ROWS * COLS;
+    m_vecDisplayFrameImages = Vision::VectorOfMat(TOTAL, cv::Mat());
+
+    m_nImageWidthPixel  = stAutoRunParams.nImgHeightPixel;
+    m_nImageHeightPixel = stAutoRunParams.nImgHeightPixel;
+    m_fBoardLeftPos = stAutoRunParams.fBoardLeftPos;
+    m_fBoardBtmPos = stAutoRunParams.fBoardBtmPos;
+    m_fOverlapUmX = stAutoRunParams.fOverlapUmX;
+    m_fOverlapUmY = stAutoRunParams.fOverlapUmY;
+    m_enScanDir = stAutoRunParams.enScanDir;
 }
 
-AutoRunThread::~AutoRunThread()
-{
+AutoRunThread::~AutoRunThread() {
 }
 
 void AutoRunThread::onThreadState(const QVariantList &data)
 {    
     if (data.size() <= 0) return;
 
-    int iEvent = data[0].toInt();  
+    int iEvent = data[0].toInt();
 
     switch (iEvent)
     {
@@ -429,8 +442,10 @@ bool AutoRunThread::_alignWindows()
 bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
 {
     bool bGood = true;
-    for (int row = 0; row < m_vecVecFrameCtr.size(); ++ row) {
-        for (int col = 0; col < m_vecVecFrameCtr[0].size(); ++ col) {
+    int ROWS = m_vecVecFrameCtr.size();
+    int COLS = m_vecVecFrameCtr[0].size();
+    for (int row = 0; row < ROWS; ++ row) {
+        for (int col = 0; col < COLS; ++ col) {
             auto ptFrameCtr = m_vecVecFrameCtr[row][col];
             if (! moveToCapturePos(ptFrameCtr.x, ptFrameCtr.y)) {
                 bGood = false;
@@ -476,6 +491,8 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
                 break;
             }
 
+            m_vecDisplayFrameImages[row * COLS + col] = vec2DCaptureImages[0];
+
             auto vecDeviceWindows = _getDeviceWindowInFrame(ptFrameCtr);
 
             auto pInsp2DRunnable = std::make_shared<Insp2DRunnable>(vec2DCaptureImages, vecDeviceWindows, ptFrameCtr, ptrBoardInspResult);
@@ -498,6 +515,8 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
         if (! bGood)
             break;
     }
+
+    _combineBigImage(m_vecDisplayFrameImages);
 
     return bGood;
 }
@@ -530,4 +549,26 @@ DeviceInspWindowVector AutoRunThread::_getDeviceWindowInFrame(const cv::Point2f 
             vecResult.push_back(deviceInspWindow);
     }
     return vecResult;
+}
+
+bool AutoRunThread::_combineBigImage(const Vision::VectorOfMat &vecMatImages) {
+    Vision::PR_COMBINE_IMG_CMD stCmd;
+    Vision::PR_COMBINE_IMG_RPY stRpy;
+    stCmd.nCountOfImgPerFrame = 1;
+    stCmd.nCountOfFrameX = m_vecVecFrameCtr[0].size();
+    stCmd.nCountOfFrameY = m_vecVecFrameCtr.size();
+    stCmd.nOverlapX = m_fOverlapUmX / m_dResolutionX;
+    stCmd.nOverlapY = m_fOverlapUmY / m_dResolutionY;
+    stCmd.nCountOfImgPerRow = m_vecVecFrameCtr[0].size();
+    stCmd.enScanDir = m_enScanDir;
+
+    stCmd.vecInputImages = m_vecDisplayFrameImages;
+    if (Vision::VisionStatus::OK == Vision::PR_CombineImg(&stCmd, &stRpy)) {
+        m_matBigImage = stRpy.vecResultImages[0];
+        QEos::Notify(EVENT_THREAD_STATE, REFRESH_BIG_IMAGE);
+        return true;
+    }else {
+        System->setTrackInfo(QString(QStringLiteral("合并大图失败.")));
+        return false;
+    }
 }

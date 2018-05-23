@@ -17,6 +17,7 @@ enum class INSP_WIDGET_INDEX {
 	HEIGHT_DETECT,
     INSP_POLARITY,
     INSP_CONTOUR,
+    INSP_CHIP,
     SIZE,
 };
 
