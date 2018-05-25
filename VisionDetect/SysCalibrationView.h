@@ -91,4 +91,5 @@ private:
 
     std::shared_ptr<QDlpMTFRsltDisplay> m_pDlpCaliRstDisplay;
     VectorOfVectorOfFloat m_dlpCaliRstData[_MAX_DLP_NUM];
+    double m_dlpCaliBaseHeightValue;
 };
