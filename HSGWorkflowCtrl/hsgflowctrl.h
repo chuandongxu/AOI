@@ -51,6 +51,7 @@ protected:
 
 private:
     int _prepareRunData();
+    void _refreshDisplayImage();
 
 private:
 	int                             m_timerId;
@@ -66,6 +67,7 @@ private:
     Engine::AlignmentVector         m_vecAlignments;
     float                           m_fBoardLeft = 0, m_fBoardTop = 0, m_fBoardRight = 0, m_fBoardBottom = 0;
     int                             m_nImgWidth = 0, m_nImgHeight = 0;
+    float                           m_fOverlapX = 0, m_fOverlapY = 0;
     Vision::VectorOfVectorOfPoint2f m_vecVecFrameCtr;
     DeviceInspWindowVector          m_vecDeviceInspWindow;
 };

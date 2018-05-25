@@ -18,6 +18,7 @@
 #include "HeightDetectWidget.h"
 #include "InspPolarityWidget.h"
 #include "InspContourWidget.h"
+#include "InspChipWidget.h"
 #include "TreeWidgetInspWindow.h"
 
 static const QString DEFAULT_WINDOW_NAME[] =
@@ -29,6 +30,7 @@ static const QString DEFAULT_WINDOW_NAME[] =
     "Height Detect",
     "Inspect Polarity",
     "Inspect Contour",
+    "Inspect Chip",
 };
 
 static_assert (static_cast<size_t>(INSP_WIDGET_INDEX::SIZE) == sizeof(DEFAULT_WINDOW_NAME) / sizeof(DEFAULT_WINDOW_NAME[0]), "The window name size is not correct");
@@ -44,6 +46,7 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::HEIGHT_DETECT)] = std::make_unique<HeightDetectWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_POLARITY)] = std::make_unique<InspPolarityWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CONTOUR)] = std::make_unique<InspContourWidget>(this);
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CHIP)] = std::make_unique<InspChipWidget>(this);
 
     for (const auto &ptrInspWindowWidget : m_arrInspWindowWidget)
         ui.stackedWidget->addWidget(ptrInspWindowWidget.get());

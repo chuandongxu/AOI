@@ -102,12 +102,12 @@ void AutoRunPanel::onStateEvent(const QVariantList &data)
 
         if (iValue > 0)
         {
-            ui.label_resultOutput->setStyleSheet("color: rgb(50, 255, 50);font: 75 48pt '宋体';");
+            ui.label_resultOutput->setStyleSheet(QStringLiteral("color: rgb(50, 255, 50);font: 75 48pt '宋体';"));
             ui.label_resultOutput->setText(QStringLiteral("OK"));
         }
         else
         {
-            ui.label_resultOutput->setStyleSheet("color: rgb(255, 50, 50);font: 75 48pt '宋体';");
+            ui.label_resultOutput->setStyleSheet(QStringLiteral("color: rgb(255, 50, 50);font: 75 48pt '宋体';"));
             ui.label_resultOutput->setText(QStringLiteral("FAIL"));
         }
     }

@@ -112,5 +112,6 @@
 #define EVENT_THREAD_STATE              "eventThreadState"
 #define SHUTDOWN_MAIN_THREAD            300
 #define MAIN_THREAD_CLOSED              301
+#define REFRESH_BIG_IMAGE               302
 
 #endif

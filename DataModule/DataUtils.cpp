@@ -442,35 +442,39 @@ matTransform = [ cos(a) -sina(a) Tx ]
         float                            bottom,
         float                            fovWidth,
         float                            fovHeight,
-        Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr)
+        Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr,
+        float                           &fOverlapX,
+        float                           &fOverlapY)
 {
     vecVecFrameCtr.clear();
+    fOverlapX = 0.f, fOverlapY = 0.f;
+
     if (right <= left || top < bottom)
         return -1;
 
     int frameCountX = static_cast<int>((right - left) / fovWidth) + 1;
     int frameCountY = static_cast<int>((top - bottom) / fovHeight) + 1;
-    float overlapX = 0.f, overlapY = 0.f;
+    
     if (frameCountX > 1)
-        overlapX = (frameCountX * fovWidth - (right - left)) / (frameCountX - 1);
+        fOverlapX = (frameCountX * fovWidth - (right - left)) / (frameCountX - 1);
     else
-        overlapX = 0.f;
+        fOverlapX = 0.f;
     if (frameCountY > 1)
-        overlapY = (frameCountY * fovHeight - (top - bottom)) / (frameCountY - 1);
+        fOverlapY = (frameCountY * fovHeight - (top - bottom)) / (frameCountY - 1);
     else
-        overlapY = 0.f;
+        fOverlapY = 0.f;
 
     for (int row = 0; row < frameCountY; ++ row) {
         Vision::VectorOfPoint2f vecFrameCtr;
         for (int col = 0; col < frameCountX; ++ col) {
             float frameCtrX = 0.f, frameCtrY = 0.f;
             if (frameCountX > 1)
-                frameCtrX = left + (col * (fovWidth - overlapX) + fovWidth / 2.f);
+                frameCtrX = left + (col * (fovWidth - fOverlapX) + fovWidth / 2.f);
             else
                 frameCtrX = (right + left) / 2.f;
 
             if (frameCountY > 1)
-                frameCtrY = top - (row * (fovHeight - overlapY) + fovHeight / 2.f);
+                frameCtrY = top - (row * (fovHeight - fOverlapY) + fovHeight / 2.f);
             else
                 frameCtrY = (top + bottom) / 2.f;
             vecFrameCtr.emplace_back(frameCtrX, frameCtrY);

@@ -338,8 +338,9 @@ void TestAlignWithTwoPoints() {
 }
 
 void TestAssignFrames() {
-    auto printResult = [](const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr) {
+    auto printResult = [](const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr, float fOverlapX, float fOverlapY) {
         std::cout << "Rows: " << vecVecFrameCtr.size() << " Cols: " << vecVecFrameCtr[0].size() << std::endl;
+        std::cout << "OverlapX: " << fOverlapX << ", OverlapY: " << fOverlapY << std::endl;
         for (const auto &vecFrameCtr : vecVecFrameCtr) {
             for (const auto &ptFrameCtr : vecFrameCtr)
                 std::cout << ptFrameCtr << " ";
@@ -348,38 +349,39 @@ void TestAssignFrames() {
     };
 
     Vision::VectorOfVectorOfPoint2f vecVecFrameCtr;
+    float fOverlapX, fOverlapY;
 
     std::cout << std::endl << "----------------------------------------------";
     std::cout << std::endl << "TEST assignFrames case 1";
     std::cout << std::endl << "----------------------------------------------";
     std::cout << std::endl;
     
-    DataUtils::assignFrames(200, 500, 600, 300, 50, 50, vecVecFrameCtr);
-    printResult(vecVecFrameCtr);
+    DataUtils::assignFrames(200, 500, 600, 300, 50, 50, vecVecFrameCtr, fOverlapX, fOverlapY);
+    printResult(vecVecFrameCtr, fOverlapX, fOverlapY);
 
     std::cout << std::endl << "----------------------------------------------";
     std::cout << std::endl << "TEST assignFrames case 2";
     std::cout << std::endl << "----------------------------------------------";
     std::cout << std::endl;
     
-    DataUtils::assignFrames(12435, 13224, 22678, 6543, 600, 600, vecVecFrameCtr);
-    printResult(vecVecFrameCtr);
+    DataUtils::assignFrames(12435, 13224, 22678, 6543, 600, 600, vecVecFrameCtr, fOverlapX, fOverlapY);
+    printResult(vecVecFrameCtr, fOverlapX, fOverlapY);
 
     std::cout << std::endl << "----------------------------------------------";
     std::cout << std::endl << "TEST assignFrames case 3";
     std::cout << std::endl << "----------------------------------------------";
     std::cout << std::endl;
     
-    DataUtils::assignFrames(12435, 0, 22678, 0, 600, 600, vecVecFrameCtr);
-    printResult(vecVecFrameCtr);
+    DataUtils::assignFrames(12435, 0, 22678, 0, 600, 600, vecVecFrameCtr, fOverlapX, fOverlapY);
+    printResult(vecVecFrameCtr, fOverlapX, fOverlapY);
 
     std::cout << std::endl << "----------------------------------------------";
     std::cout << std::endl << "TEST assignFrames case 4";
     std::cout << std::endl << "----------------------------------------------";
     std::cout << std::endl;
     
-    DataUtils::assignFrames(12435, 300, 12689, 0, 600, 600, vecVecFrameCtr);
-    printResult(vecVecFrameCtr);
+    DataUtils::assignFrames(12435, 300, 12689, 0, 600, 600, vecVecFrameCtr, fOverlapX, fOverlapY);
+    printResult(vecVecFrameCtr, fOverlapX, fOverlapY);
 }
 
 void TestIsWindowInFrame() {

@@ -311,7 +311,49 @@
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>./Image/Contour.png</normaloff>./Image/Contour.png</iconset>
+      <normaloff>Image/Contour.png</normaloff>Image/Contour.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>60</width>
+      <height>60</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelInspectChip">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>230</y>
+      <width>61</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>元件检测 Chip</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnInspChipWindow">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>160</y>
+      <width>60</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>Image/Chip.png</normaloff>Image/Chip.png</iconset>
     </property>
     <property name="iconSize">
      <size>
