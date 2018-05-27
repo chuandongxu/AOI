@@ -76,6 +76,7 @@ private:
 
 	bool m_bGuideCali;
 	int m_nCaliGuideStep;
+    QVector<QString> m_szCaliGuideStepInfo;
 	QVector<cv::Mat> m_guideImgMats;
 	QCameraRunnable* m_pCameraRunnable;    
 
@@ -92,4 +93,6 @@ private:
     std::shared_ptr<QDlpMTFRsltDisplay> m_pDlpCaliRstDisplay;
     VectorOfVectorOfFloat m_dlpCaliRstData[_MAX_DLP_NUM];
     double m_dlpCaliBaseHeightValue;
+
+    QVector<Vision::PR_CALC_3D_HEIGHT_CMD> m_stCalcCmds;
 };

@@ -104,7 +104,7 @@ void QDlpMTFRsltDisplay::setupPlotData(VectorOfVectorOfFloat& dataDisplay, std::
 	}
 
 	// zoom out a bit:
-	customPlot->yAxis->scaleRange(0.1, -customPlot->yAxis->range().center()*0.1);
+	customPlot->yAxis->scaleRange(0.01, -customPlot->yAxis->range().center()*0.01);
 	customPlot->xAxis->scaleRange(1.1, customPlot->xAxis->range().center());
 	// set blank axis lines:
 	customPlot->xAxis->setTicks(true);
