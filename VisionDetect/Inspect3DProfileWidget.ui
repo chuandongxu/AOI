@@ -64,7 +64,7 @@
     <rect>
      <x>790</x>
      <y>20</y>
-     <width>100</width>
+     <width>50</width>
      <height>21</height>
     </rect>
    </property>
@@ -75,9 +75,9 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>960</x>
+     <x>900</x>
      <y>20</y>
-     <width>100</width>
+     <width>50</width>
      <height>21</height>
     </rect>
    </property>
@@ -85,7 +85,7 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>910</x>
+     <x>850</x>
      <y>20</y>
      <width>72</width>
      <height>15</height>
@@ -98,9 +98,9 @@
   <widget class="QPushButton" name="pushButton_inspect">
    <property name="geometry">
     <rect>
-     <x>1090</x>
+     <x>1190</x>
      <y>10</y>
-     <width>200</width>
+     <width>100</width>
      <height>35</height>
     </rect>
    </property>
@@ -157,6 +157,58 @@
     <string/>
    </property>
    <widget class="QWidget" name="dockWidgetContents_2"/>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_offset">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>1130</x>
+     <y>20</y>
+     <width>50</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_range">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>1020</x>
+     <y>20</y>
+     <width>50</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>1090</x>
+     <y>20</y>
+     <width>31</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>偏移：</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>980</x>
+     <y>20</y>
+     <width>41</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>范围：</string>
+   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

@@ -77,7 +77,7 @@ void QDlpMTFRsltDisplay::setupPlotData(VectorOfVectorOfFloat& dataDisplay, std::
 {
 	if (dataDisplay.size() != plotDataName.size()) return;
 
-	customPlot->legend->setVisible(true);
+	customPlot->legend->setVisible(false);
 	customPlot->legend->setFont(QFont("Helvetica", 9));
 
 	QPen pen;
@@ -89,8 +89,8 @@ void QDlpMTFRsltDisplay::setupPlotData(VectorOfVectorOfFloat& dataDisplay, std::
 		pen.setColor(QColor(qSin(i * 3 + 1.2) * 80 + 80, qSin(i*1 + 0) * 80 + 80, qSin(i*0.3 + 1.5) * 80 + 80));
 		customPlot->graph()->setPen(pen);
 		customPlot->graph()->setName(QString(plotDataName[i]));
-		customPlot->graph()->setLineStyle(QCPGraph::lsLine);
-		customPlot->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 5));
+        customPlot->graph()->setLineStyle(QCPGraph::lsNone);
+        customPlot->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCross, 2));
 		// generate data:
 		int nDataNum = dataDisplay[i].size();
 		QVector<double> x(nDataNum), y(nDataNum);
@@ -104,7 +104,7 @@ void QDlpMTFRsltDisplay::setupPlotData(VectorOfVectorOfFloat& dataDisplay, std::
 	}
 
 	// zoom out a bit:
-	customPlot->yAxis->scaleRange(0.15, customPlot->yAxis->range().center()*0.15);
+	customPlot->yAxis->scaleRange(0.01, -customPlot->yAxis->range().center()*0.01);
 	customPlot->xAxis->scaleRange(1.1, customPlot->xAxis->range().center());
 	// set blank axis lines:
 	customPlot->xAxis->setTicks(true);

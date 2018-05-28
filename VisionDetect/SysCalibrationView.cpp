@@ -22,6 +22,7 @@
 
 #include "QCameraRunnable.h"
 #include "QCaliGuideDialog.h"
+#include "QDlpMTFRsltDisplay.h"
 
 #include "CryptLib.h"
 
@@ -47,6 +48,8 @@ SysCalibrationView::SysCalibrationView(VisionCtrl* pCtrl, QWidget *parent)
 	m_nCaliGuideStep = 0;
 	m_bGuideCali = false;
 	m_pCameraRunnable = NULL;
+
+    m_pDlpCaliRstDisplay = std::make_shared<QDlpMTFRsltDisplay>(); 
 
 	QString user;
 	int level = 0;
@@ -370,48 +373,52 @@ void SysCalibrationView::on3DDetectCali()
 	
 	const int IMAGE_COUNT = 12;
 	std::string strFolder = sz3DDetectCaliFile.toStdString();
-	Vision::PR_CALC_3D_HEIGHT_CMD stCmd;
+	//Vision::PR_CALC_3D_HEIGHT_CMD stCmd;
 	Vision::PR_CALC_3D_HEIGHT_RPY stRpy;
+
+    int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
+    int nStepIndex = ui.comboBox_selectCaliType->currentIndex();
+    QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("标定DLP%1的H=%2mm面...请耐心等待...").arg(nDLPIndex + 1).arg(m_caliStepMap.value(nStepIndex)), 0);
+    QApplication::processEvents();
 	
-	if (!readImages(sz3DDetectCaliFile, stCmd.vecInputImgs))
+    m_stCalcCmds[nDLPIndex].vecInputImgs.clear();
+    if (!readImages(sz3DDetectCaliFile, m_stCalcCmds[nDLPIndex].vecInputImgs))
 	{
 		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("读取文件错误"));
 		return;
-	}
+	}	
 
-	int nDLPIndex = ui.comboBox_selectDLP->currentIndex();
-	int nStepIndex = ui.comboBox_selectCaliType->currentIndex();
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("标定DLP%1的H=%2mm面...请耐心等待...").arg(nDLPIndex + 1).arg(m_caliStepMap.value(nStepIndex)), 0);
-	QApplication::processEvents();
+    if (m_stCalcCmds[nDLPIndex].matThickToThinK.empty() || m_stCalcCmds[nDLPIndex].matThickToThinnestK.empty())
+    {
+        bool b3DDetectCaliUseThinPattern = ui.checkBox_3DCaliUseThinPattern->isChecked();
+        bool b3DDetectGaussionFilter = ui.checkBox_3DDetectCaliGaussionFilter->isChecked();
+        //bool b3DDetectReverseSeq = ui.checkBox_3DDetectCaliReverseSeq->isChecked();
+        double d3DDetectMinIntDiff = ui.lineEdit_3DDetectCaliMinIntDiff->text().toDouble();
 
-	bool b3DDetectCaliUseThinPattern = ui.checkBox_3DCaliUseThinPattern->isChecked();
-	bool b3DDetectGaussionFilter = ui.checkBox_3DDetectCaliGaussionFilter->isChecked();
-	//bool b3DDetectReverseSeq = ui.checkBox_3DDetectCaliReverseSeq->isChecked();
-	double d3DDetectMinIntDiff = ui.lineEdit_3DDetectCaliMinIntDiff->text().toDouble();
-	stCmd.bEnableGaussianFilter = b3DDetectGaussionFilter;
-	//stCmd.bReverseSeq = b3DDetectReverseSeq;
-	stCmd.fMinAmplitude = d3DDetectMinIntDiff;
-	stCmd.bUseThinnestPattern = b3DDetectCaliUseThinPattern;
+        m_stCalcCmds[nDLPIndex].bEnableGaussianFilter = b3DDetectGaussionFilter;
+        //m_stCmd.bReverseSeq = b3DDetectReverseSeq;
+        m_stCalcCmds[nDLPIndex].fMinAmplitude = d3DDetectMinIntDiff;
+        m_stCalcCmds[nDLPIndex].bUseThinnestPattern = b3DDetectCaliUseThinPattern;
 
-	cv::Mat matBaseSurfaceParam;
+        std::string strResultMatPath = sz3DCaliRstFile.toStdString();
+        cv::FileStorage fs(strResultMatPath, cv::FileStorage::READ);
+        cv::FileNode fileNode = fs["K1"];
+        cv::read(fileNode, m_stCalcCmds[nDLPIndex].matThickToThinK, cv::Mat());
+        fileNode = fs["K2"];
+        cv::read(fileNode, m_stCalcCmds[nDLPIndex].matThickToThinnestK, cv::Mat());
+        fileNode = fs["BaseWrappedAlpha"];
+        cv::read(fileNode, m_stCalcCmds[nDLPIndex].matBaseWrappedAlpha, cv::Mat());
+        fileNode = fs["BaseWrappedBeta"];
+        cv::read(fileNode, m_stCalcCmds[nDLPIndex].matBaseWrappedBeta, cv::Mat());
+        fileNode = fs["BaseWrappedGamma"];
+        cv::read(fileNode, m_stCalcCmds[nDLPIndex].matBaseWrappedGamma, cv::Mat());
+        fileNode = fs["ReverseSeq"];
+        cv::read(fileNode, m_stCalcCmds[nDLPIndex].bReverseSeq, 0);
+        fs.release();
+    }
+		
 
-	std::string strResultMatPath = sz3DCaliRstFile.toStdString();
-	cv::FileStorage fs(strResultMatPath, cv::FileStorage::READ);
-	cv::FileNode fileNode = fs["K1"];
-	cv::read(fileNode, stCmd.matThickToThinK, cv::Mat());
-	fileNode = fs["K2"];
-	cv::read(fileNode, stCmd.matThickToThinnestK, cv::Mat());
-	fileNode = fs["BaseWrappedAlpha"];
-	cv::read(fileNode, stCmd.matBaseWrappedAlpha, cv::Mat());
-	fileNode = fs["BaseWrappedBeta"];
-	cv::read(fileNode, stCmd.matBaseWrappedBeta, cv::Mat());
-	fileNode = fs["BaseWrappedGamma"];
-	cv::read(fileNode, stCmd.matBaseWrappedGamma, cv::Mat());
-	fileNode = fs["ReverseSeq"];	
-	cv::read(fileNode, stCmd.bReverseSeq, 0);
-	fs.release();	
-
-	Vision::VisionStatus retStatus = PR_Calc3DHeight(&stCmd, &stRpy);
+    Vision::VisionStatus retStatus = PR_Calc3DHeight(&(m_stCalcCmds[nDLPIndex]), &stRpy);
 	if (retStatus == Vision::VisionStatus::OK)
 	{
 		QString path = QApplication::applicationDirPath();
@@ -429,7 +436,7 @@ void SysCalibrationView::on3DDetectCali()
 		fsCalibData.release();
 
 		cv::Mat matHeightResultImg = drawHeightGray(stRpy.matHeight);
-		getVisionUI()->displayImage(matHeightResultImg);
+		getVisionUI()->displayImage(matHeightResultImg);  
 
 		System->setTrackInfo(QStringLiteral("标定DLP%1的H%2面成功").arg(nDLPIndex + 1).arg(nStepIndex + 1));
 	}
@@ -514,25 +521,58 @@ void SysCalibrationView::on3DDetectCaliComb()
 				++i;
 			}
 
-			if (i > 1) getVisionUI()->displayImage(stRpy.vecMatResultImg[0]);
-		}
+            if (i > 1) getVisionUI()->displayImage(stRpy.vecMatResultImg[0]);
+        }
 
 
-		QString fileName = QString("IntegrateCalibResult") + QString::number(nDLPIndex + 1, 'g', 2) + QString(".yml");
+        QString fileName = QString("IntegrateCalibResult") + QString::number(nDLPIndex + 1, 'g', 2) + QString(".yml");
 
-		std::string strCalibResultFile(path.toStdString() + fileName.toStdString());
-		cv::FileStorage fsCalibResultData(strCalibResultFile, cv::FileStorage::WRITE);
-		if (!fsCalibResultData.isOpened())
-		{
-			qDebug() << "Failed to open file: " << strCalibResultFile.c_str();
-			QSystem::closeMessage();
-			return;
-		}
-		cv::write(fsCalibResultData, "IntegratedK", stRpy.matIntegratedK);
-		cv::write(fsCalibResultData, "Order3CurveSurface", stRpy.matOrder3CurveSurface);
-		fsCalibResultData.release();
+        std::string strCalibResultFile(path.toStdString() + fileName.toStdString());
+        cv::FileStorage fsCalibResultData(strCalibResultFile, cv::FileStorage::WRITE);
+        if (!fsCalibResultData.isOpened())
+        {
+            qDebug() << "Failed to open file: " << strCalibResultFile.c_str();
+            QSystem::closeMessage();
+            return;
+        }
+        cv::write(fsCalibResultData, "IntegratedK", stRpy.matIntegratedK);
+        cv::write(fsCalibResultData, "Order3CurveSurface", stRpy.matOrder3CurveSurface);
+        fsCalibResultData.release();
 
-		System->setTrackInfo(QStringLiteral("合成DLP%1标定成功").arg(nDLPIndex + 1));
+        for (int i = 0; i < stRpy.vecHeightBlockHeights.size(); i++)
+        {
+            VectorOfFloat vecDatas;
+            m_dlpCaliRstData[nDLPIndex].push_back(vecDatas);
+
+            float fTargtHeight = stRpy.vecHeightBlockHeights[i].first;
+            VectorOfFloat heightVec = stRpy.vecHeightBlockHeights[i].second;
+
+            for (int j = 0; j < heightVec.size(); j++)
+            {
+                float fHeight = heightVec[j];
+                m_dlpCaliRstData[nDLPIndex][i].push_back(fHeight - fTargtHeight);
+            }
+        }
+
+        /*for (int i = 0; i < stRpy.vecHeightCalibResult.size(); i++)
+        {
+            VectorOfFloat vecDatas;
+            m_dlpCaliRstData[nDLPIndex].push_back(vecDatas);
+
+            double dTargtHeight = stRpy.vecHeightCalibResult[i].first;
+            cv::Mat matHeight = stRpy.vecHeightCalibResult[i].second;
+           
+            for (int y = 0; y < matHeight.rows; y++)
+            {
+                for (int x = 0; x < matHeight.cols; x++)
+                {
+                    float& fHeight = matHeight.at<float>(y, x);                     
+                    m_dlpCaliRstData[nDLPIndex][i].push_back(fHeight - dTargtHeight);
+                }
+            }
+        }*/
+
+        System->setTrackInfo(QStringLiteral("合成DLP%1标定成功").arg(nDLPIndex + 1));
 	}
 	else
 	{
@@ -822,8 +862,8 @@ bool SysCalibrationView::guideReadImage(cv::Mat& matImg)
 }
 
 void SysCalibrationView::onCaliGuide()
-{
-	if (m_bGuideCali)
+{  
+  	if (m_bGuideCali)
 	{
 		stopCaliGuide();
 	}
@@ -841,8 +881,15 @@ void SysCalibrationView::onCaliGuide()
 		}
 		else
 		{
-			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("开始标定..."));
+			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("开始标定..."));            
 		}
+
+        m_szCaliGuideStepInfo.clear();
+        m_szCaliGuideStepInfo.push_back(QStringLiteral("移动到标定位置"));
+        m_szCaliGuideStepInfo.push_back(QStringLiteral("标定基面"));
+        m_szCaliGuideStepInfo.push_back(QStringLiteral("标定Step面"));
+        m_szCaliGuideStepInfo.push_back(QStringLiteral("合成标定信息"));
+        m_szCaliGuideStepInfo.push_back(QStringLiteral("标定完成"));
 	}
 }
 
@@ -850,6 +897,12 @@ void SysCalibrationView::onCaliGuideNext()
 {
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
 	if (!pMotion) return;
+
+    if (QMessageBox::Cancel == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+        QStringLiteral("运行当前【步骤%1】【%2】，确定？").arg(m_nCaliGuideStep).arg(m_szCaliGuideStepInfo[m_nCaliGuideStep]), QMessageBox::Ok, QMessageBox::Cancel))
+    {
+        return;
+    }
 
 	switch (m_nCaliGuideStep)
 	{
@@ -957,10 +1010,18 @@ void SysCalibrationView::onCaliGuideNext()
 			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("获取马达位置错误！"));
 		}
 
+        m_stCalcCmds.clear();
+        int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;       
+        for (int i = 0; i < nStationNum; i++)
+        {
+            m_stCalcCmds.push_back(Vision::PR_CALC_3D_HEIGHT_CMD());
+        }
+
 		for (int i = 0; i < m_caliStepMap.size(); i++)
 		{
 			int nStepIndex = m_caliStepMap.keys().at(i);
 			int nStepValue = m_caliStepMap.value(nStepIndex);
+            m_dlpCaliBaseHeightValue = -nStepValue;
 
 			pMotion->moveTo(AXIS_MOTOR_Z, 0, zZeroPos + nStepValue, true);
 
@@ -970,7 +1031,7 @@ void SysCalibrationView::onCaliGuideNext()
 			if (!guideReadImages(m_guideImgMats))
 			{
 				return;
-			}
+			}           
 
 			ui.comboBox_selectCaliType->setCurrentIndex(nStepIndex);
 
@@ -987,11 +1048,16 @@ void SysCalibrationView::onCaliGuideNext()
 			on3DDetectCali();			
 		}		
 
-		m_nCaliGuideStep++;
+		m_nCaliGuideStep++;       
 	}
 	break;	
 	case 3:
 	{
+        for (int i = 0; i < _MAX_DLP_NUM; i++)
+        {
+            m_dlpCaliRstData[i].clear();
+        }
+
 		ui.comboBox_selectDLP->setCurrentIndex(0);
 		on3DDetectCaliComb();
 
@@ -1004,7 +1070,27 @@ void SysCalibrationView::onCaliGuideNext()
 		ui.comboBox_selectDLP->setCurrentIndex(3);
 		on3DDetectCaliComb();
 
-		m_nCaliGuideStep++;
+		m_nCaliGuideStep++;  
+
+
+        bool bDisplayCaliResult = ui.checkBox_displayCaliRslt->isChecked();
+        if (bDisplayCaliResult)
+        {
+            std::vector<QString> plotDataName;
+            for (int i = 0; i < m_caliStepMap.size(); i++)
+            {
+                int nStepIndex = m_caliStepMap.keys().at(i);
+                int nStepValue = m_caliStepMap.value(nStepIndex);
+                plotDataName.push_back(QString::number(nStepValue, 'g', 2));
+            }
+
+            m_pDlpCaliRstDisplay->setupPlot1Data(QString("DLP1 Calibration Result"), m_dlpCaliRstData[0], plotDataName);
+            m_pDlpCaliRstDisplay->setupPlot2Data(QString("DLP2 Calibration Result"), m_dlpCaliRstData[1], plotDataName);
+            m_pDlpCaliRstDisplay->setupPlot3Data(QString("DLP3 Calibration Result"), m_dlpCaliRstData[2], plotDataName);
+            m_pDlpCaliRstDisplay->setupPlot4Data(QString("DLP4 Calibration Result"), m_dlpCaliRstData[3], plotDataName);
+
+            m_pDlpCaliRstDisplay->show();
+        }
 	}
 	break;
 	default:
@@ -1017,7 +1103,7 @@ void SysCalibrationView::onCaliGuideNext()
 			QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("运动马达错误！"));
 		}
 
-		QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("自动标定向导完成！"));
+        QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("自动标定向导完成！"));       
 	}
 	break;
 	}
@@ -1027,8 +1113,11 @@ void SysCalibrationView::onCaliGuideSkip()
 {
 	if (m_nCaliGuideStep > 0)
 	{
-		m_nCaliGuideStep += 1;
-		onCaliGuideNext();
+        if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+            QStringLiteral("跳过当前【步骤%1】【%2】，确定？").arg(m_nCaliGuideStep).arg(m_szCaliGuideStepInfo[m_nCaliGuideStep]), QMessageBox::Ok, QMessageBox::Cancel))
+        {
+            m_nCaliGuideStep += 1;
+        }
 	}
 	else
 	{
@@ -1040,8 +1129,11 @@ void SysCalibrationView::onCaliGuidePrevious()
 {
 	if (m_nCaliGuideStep > 0)
 	{
-		m_nCaliGuideStep -= 1;
-		onCaliGuideNext();
+        if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+            QStringLiteral("回退当前【步骤%1】【%2】，确定？").arg(m_nCaliGuideStep).arg(m_szCaliGuideStepInfo[m_nCaliGuideStep]), QMessageBox::Ok, QMessageBox::Cancel))
+        {
+            m_nCaliGuideStep -= 1;
+        }
 	}
 	else
 	{

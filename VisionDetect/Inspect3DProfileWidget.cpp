@@ -103,6 +103,8 @@ void Inspect3DProfileWidget::initUI()
 
     ui.lineEdit_row->setText("0");
     ui.lineEdit_col->setText("0");
+    ui.lineEdit_range->setText("1.0");
+    ui.lineEdit_offset->setText("-1.0");
     connect(ui.pushButton_inspect, SIGNAL(clicked()), SLOT(onInspect()));
 
     m_pInspectRowPlot = std::make_shared<QCustomPlot>(this);
@@ -259,7 +261,10 @@ void Inspect3DProfileWidget::generateProfData(bool bRow, int nIndex, QVector<cv:
 
 void Inspect3DProfileWidget::setupPlotData(std::shared_ptr<QCustomPlot> customPlot, InspectProfDataVector& profData)
 {
-    customPlot->legend->setVisible(false);
+    float fRange = ui.lineEdit_range->text().toFloat();
+    float fOffset = ui.lineEdit_offset->text().toFloat();
+
+    customPlot->legend->setVisible(true);
     customPlot->legend->setFont(QFont("Helvetica", 9));
 
     QPen pen;
@@ -286,7 +291,7 @@ void Inspect3DProfileWidget::setupPlotData(std::shared_ptr<QCustomPlot> customPl
     }
 
     // zoom out a bit:
-    customPlot->yAxis->scaleRange(1.1, customPlot->yAxis->range().center());
+    customPlot->yAxis->scaleRange(fRange / 2.5, customPlot->yAxis->range().center()*(fOffset/2.5));
     customPlot->xAxis->scaleRange(1.1, customPlot->xAxis->range().center());
     // set blank axis lines:
     customPlot->xAxis->setTicks(true);

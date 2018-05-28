@@ -6,8 +6,14 @@
 #include "VisionAPI.h"
 #include "opencv2/highgui.hpp"
 
+#define _MAX_DLP_NUM    4
+
+using VectorOfFloat = std::vector < float >;
+using VectorOfVectorOfFloat = std::vector < VectorOfFloat >;
+
 class QCameraRunnable;
 class IVisionUI;
+class QDlpMTFRsltDisplay;
 class SysCalibrationView : public QWidget
 {
 	Q_OBJECT
@@ -70,6 +76,7 @@ private:
 
 	bool m_bGuideCali;
 	int m_nCaliGuideStep;
+    QVector<QString> m_szCaliGuideStepInfo;
 	QVector<cv::Mat> m_guideImgMats;
 	QCameraRunnable* m_pCameraRunnable;    
 
@@ -82,4 +89,10 @@ private:
 	QIntValidator *inputIntRangeAll;
 	QDoubleValidator *inputDoubleRangePos;
 	QDoubleValidator *inputDoubleRangeAll;
+
+    std::shared_ptr<QDlpMTFRsltDisplay> m_pDlpCaliRstDisplay;
+    VectorOfVectorOfFloat m_dlpCaliRstData[_MAX_DLP_NUM];
+    double m_dlpCaliBaseHeightValue;
+
+    QVector<Vision::PR_CALC_3D_HEIGHT_CMD> m_stCalcCmds;
 };

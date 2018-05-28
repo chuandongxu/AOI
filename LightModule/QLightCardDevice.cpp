@@ -45,6 +45,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
         lums[i] = ToInt(getChLuminance(i) / 10.0);
     }
 
+    //int plus[_CHN_NUM] = { 0x02, 0x10, 0x01, 0x04, 0x28, 0x12 };
     int plus[_CHN_NUM] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20 };
 
     //设置DLP曝光参数
