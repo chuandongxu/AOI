@@ -24,9 +24,12 @@ protected:
 private:
     void _inspWindow(const Engine::Window &window);
     bool _preprocessImage(const Engine::Window &window, cv::Mat &matOutput);
+    void _inspChip(const Engine::Window &window);
     void _inspHole(const Engine::Window &window);
     void _findLine(const Engine::Window &window);
     void _findCircle(const Engine::Window &window);
+    void _inspContour(const Engine::Window &window);
+    void _inspPolarityGroup(const Engine::WindowGroup &windowGroup);
     void _alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow);
     Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
 

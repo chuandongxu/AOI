@@ -1,4 +1,4 @@
-#include <QJsonObject>
+﻿#include <QJsonObject>
 #include <QJsonDocument>
 
 #include "Insp2DRunnable.h"
@@ -15,8 +15,7 @@ Insp2DRunnable::Insp2DRunnable(const Vision::VectorOfMat    &vec2DCaptureImages,
                                BoardInspResultPtr           &ptrBoardInsResult) :
     m_vec2DCaptureImages    (vec2DCaptureImages),
     m_vecDeviceWindows      (vecDeviceWindows),
-    InspRunnable            (ptFramePos, ptrBoardInsResult)
-{
+    InspRunnable            (ptFramePos, ptrBoardInsResult) {
 }
 
 Insp2DRunnable::~Insp2DRunnable() {
@@ -41,12 +40,23 @@ void Insp2DRunnable::run()
             if (window.usage != Engine::Window::Usage::ALIGNMENT)
                 _inspWindow(window);
         }
+
+        for (const auto &windowGroup : deviceWindow.vecWindowGroup) {
+            auto iterHeightCheckWindow = std::find_if(windowGroup.vecWindows.begin(), windowGroup.vecWindows.end(), [](const Engine::Window &window) { return Engine::Window::Usage::INSP_POLARITY == window.usage; });
+            if (iterHeightCheckWindow != windowGroup.vecWindows.end()) {
+                _inspPolarityGroup(windowGroup);
+            }
+        }
     }
 }
 
 void Insp2DRunnable::_inspWindow(const Engine::Window &window)
 {
     switch (window.usage) {
+    case Engine::Window::Usage::INSP_CHIP:
+        _inspChip(window);
+        break;
+
     case Engine::Window::Usage::INSP_HOLE:
         _inspHole(window);
         break;
@@ -59,13 +69,16 @@ void Insp2DRunnable::_inspWindow(const Engine::Window &window)
         _findCircle(window);
         break;
 
+    case Engine::Window::Usage::INSP_CONTOUR:
+        _inspContour(window);
+        break;
+
     default:
         break;
     }
 }
 
-bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &matOutput)
-{
+bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &matOutput) {
     QJsonParseError json_error;
 	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.colorParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
@@ -140,8 +153,48 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
     return true;
 }
 
-void Insp2DRunnable::_inspHole(const Engine::Window &window)
-{
+void Insp2DRunnable::_inspChip(const Engine::Window &window) {
+    QJsonParseError json_error;
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+	if (json_error.error != QJsonParseError::NoError) {
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+		return;
+    }
+    QJsonObject jsonValue = parse_doucment.object();
+
+    Vision::PR_INSP_CHIP_CMD stCmd;
+    Vision::PR_INSP_CHIP_RPY stRpy;
+
+    int nImageIndex = window.lightId - 1;
+    if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        return;
+    }
+
+    stCmd.matInputImg = m_vec2DImages[nImageIndex];
+    stCmd.rectSrchWindow = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
+        jsonValue["SrchWinWidth"].toDouble(),
+        jsonValue["SrchWinHeight"].toDouble(),
+        m_ptFramePos,
+        m_nImageWidthPixel,
+        m_nImageHeightPixel,
+        m_dResolutionX,
+        m_dResolutionY);
+
+    if (stCmd.rectSrchWindow.x < 0) stCmd.rectSrchWindow.x = 0;
+    if (stCmd.rectSrchWindow.y < 0) stCmd.rectSrchWindow.y = 0;
+    if ((stCmd.rectSrchWindow.x + stCmd.rectSrchWindow.width) > stCmd.matInputImg.cols)
+        stCmd.rectSrchWindow.width = stCmd.matInputImg.cols - stCmd.rectSrchWindow.x;
+    if ((stCmd.rectSrchWindow.y + stCmd.rectSrchWindow.height) > stCmd.matInputImg.rows)
+        stCmd.rectSrchWindow.height = stCmd.matInputImg.rows - stCmd.rectSrchWindow.y;
+
+    stCmd.enInspMode = static_cast<Vision::PR_INSP_CHIP_MODE>(jsonValue["InspMode"].toInt()); 
+
+    Vision::PR_InspChip(&stCmd, &stRpy);
+    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+}
+
+void Insp2DRunnable::_inspHole(const Engine::Window &window) {
     QJsonParseError json_error;
 	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
 	if (json_error.error != QJsonParseError::NoError) {
@@ -155,7 +208,7 @@ void Insp2DRunnable::_inspHole(const Engine::Window &window)
 
     stCmd.enInspMode = static_cast<Vision::PR_INSP_HOLE_MODE>(jsonValue["InspMode"].toInt());
 
-    // The preprocessed image returns the image of ROI, so 
+    // The preprocessed image returns the image of ROI.
     if (! _preprocessImage(window, stCmd.matInputImg))
         return;
     
@@ -273,6 +326,99 @@ void Insp2DRunnable::_findCircle(const Engine::Window &window) {
 	stCmd.fMinSrchRadius = qMin(rectROI.width / 2.0f, rectROI.height / 2.0f) / 3.0f;
 
     Vision::PR_FindCircle(&stCmd, &stRpy);
+    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+}
+
+void Insp2DRunnable::_inspContour(const Engine::Window &window) {
+    QJsonParseError json_error;
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+	if (json_error.error != QJsonParseError::NoError) {
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+		return;
+    }
+    QJsonObject jsonValue = parse_doucment.object();
+
+    Vision::PR_INSP_CONTOUR_CMD stCmd;
+    Vision::PR_INSP_CONTOUR_RPY stRpy;
+
+    stCmd.nDefectThreshold = jsonValue["DefectThreshold"].toInt();
+    stCmd.fMinDefectArea = jsonValue["MinDefectArea"].toDouble() / m_dResolutionX / m_dResolutionY;
+    stCmd.fDefectInnerLengthTol = jsonValue["DefectInnerLengthTol"].toDouble() / m_dResolutionX;
+    stCmd.fDefectOuterLengthTol = jsonValue["DefectOuterLengthTol"].toDouble() / m_dResolutionX;
+    stCmd.fInnerMaskDepth = jsonValue["InnerMaskDepth"].toDouble() / m_dResolutionX;
+    stCmd.fOuterMaskDepth = jsonValue["OuterMaskDepth"].toDouble() / m_dResolutionX;
+    stCmd.nRecordId = window.recordId;
+
+    int nImageIndex = window.lightId - 1;
+    if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        return;
+    }
+
+    stCmd.matInputImg = m_vec2DImages[nImageIndex];
+    stCmd.rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
+        window.width,
+        window.height,
+        m_ptFramePos,
+        m_nImageWidthPixel,
+        m_nImageHeightPixel,
+        m_dResolutionX,
+        m_dResolutionY);
+
+    Vision::PR_InspContour(&stCmd, &stRpy);
+    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+}
+
+void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) {
+    auto iterPolarityCheckWindow = std::find_if(windowGroup.vecWindows.begin(), windowGroup.vecWindows.end(), [](const Engine::Window &window) { return Engine::Window::Usage::INSP_POLARITY == window.usage; });
+    auto window = *iterPolarityCheckWindow;
+
+    QJsonParseError json_error;
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+	if (json_error.error != QJsonParseError::NoError) {
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+		return;
+    }
+    QJsonObject jsonValue = parse_doucment.object();
+
+    Vision::PR_INSP_POLARITY_CMD stCmd;
+	Vision::PR_INSP_POLARITY_RPY stRpy;
+
+    int nImageIndex = window.lightId - 1;
+    if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        return;
+    }
+
+    stCmd.matInputImg = m_vec2DImages[nImageIndex];
+
+	stCmd.enInspROIAttribute = static_cast<Vision::PR_OBJECT_ATTRIBUTE>(jsonValue["Attribute"].toInt());
+	stCmd.nGrayScaleDiffTol = jsonValue["IntensityDiffTol"].toInt();
+
+	stCmd.rectInspROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
+        window.width,
+        window.height,
+        m_ptFramePos,
+        m_nImageWidthPixel,
+        m_nImageHeightPixel,
+        m_dResolutionX,
+        m_dResolutionY);
+
+    for (const auto &window : windowGroup.vecWindows) {
+        if (Engine::Window::Usage::INSP_POLARITY_REF == window.usage) {
+            stCmd.rectCompareROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
+                window.width,
+                window.height,
+                m_ptFramePos,
+                m_nImageWidthPixel,
+                m_nImageHeightPixel,
+                m_dResolutionX,
+                m_dResolutionY);
+            break;
+        }
+    }
+
+	Vision::PR_InspPolarity(&stCmd, &stRpy);
     m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }
 

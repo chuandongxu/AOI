@@ -28,10 +28,8 @@ Insp3DHeightRunnable::~Insp3DHeightRunnable()
 
 void Insp3DHeightRunnable::run()
 {
-    m_pThreadPoolCalc3DInsp2D->waitForDone();    
+    m_pThreadPoolCalc3DInsp2D->waitForDone();
     TimeLogInstance->addTimeLog(std::string("Finished wait for 3D calculation done in thead ") + QThread::currentThread()->objectName().toStdString());
-
-    auto vecDeviceInspWindow = m_ptrInsp2DRunnable->getDeviceInspWindow();
 
     QVector<cv::Mat> vecMatHeight;
     for (const auto &ptrCalc3DHeightRunnable : m_vecCalc3DHeightRunnable)
@@ -41,8 +39,9 @@ void Insp3DHeightRunnable::run()
 	if (!pVision) return;
 
     pVision->setInspect3DHeight(vecMatHeight);
-    pVision->merge3DHeight(vecMatHeight, m_mat3DHeight);   
+    pVision->merge3DHeight(vecMatHeight, m_mat3DHeight);
 
+    auto vecDeviceInspWindow = m_ptrInsp2DRunnable->getDeviceInspWindow();
     for (const auto &deviceInspWindow : vecDeviceInspWindow) {
         for (const auto &windowGroup : deviceInspWindow.vecWindowGroup) {
             auto iterHeightCheckWindow = std::find_if(windowGroup.vecWindows.begin(), windowGroup.vecWindows.end(), [](const Engine::Window &window) { return Engine::Window::Usage::HEIGHT_MEASURE == window.usage; });

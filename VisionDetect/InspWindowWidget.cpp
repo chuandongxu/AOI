@@ -437,7 +437,7 @@ void InspWindowWidget::_tryInspectPolarity() {
         if (pParent != NULL)
             groupId = pParent->data(0, Qt::UserRole).toInt();
         else {
-            System->showMessage(strTitle, QStringLiteral("请先创建高度检测框组, 组里面包括高度检测框以及基准框."));
+            System->showMessage(strTitle, QStringLiteral("请先创建极性检测框组, 组里面包括极性检测框以及参考框."));
             return;
         }
     }
@@ -559,6 +559,8 @@ void InspWindowWidget::onSelectedWindowChanged() {
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_POLARITY;
     else if (Engine::Window::Usage::INSP_CONTOUR == window.usage)
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_CONTOUR;
+    else if (Engine::Window::Usage::INSP_CHIP == window.usage)
+        m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_CHIP;
     else
         assert(0);
 
@@ -580,7 +582,7 @@ void InspWindowWidget::onSelectedWindowChanged() {
     else
         y = m_nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
 
-    auto width = window.width / dResolutionX;
+    auto width  = window.width  / dResolutionX;
     auto height = window.height / dResolutionY;
     cv::RotatedRect detectObjWin(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
     QDetectObj detectObj(window.Id, window.name.c_str());

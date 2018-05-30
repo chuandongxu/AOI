@@ -10,7 +10,7 @@ struct DeviceInspWindow
 {
     Engine::Device          device;
     Engine::WindowVector    vecUngroupedWindows;
-    WindowGroupVector       vecWindowGroup;   
+    WindowGroupVector       vecWindowGroup;
 };
 
 using DeviceInspWindowVector = std::vector<DeviceInspWindow>;
