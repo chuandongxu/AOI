@@ -126,7 +126,7 @@ void DLPTableCalibrationView::on_scanImage_done()
 {
     if (m_pScanImageThread->isGood()) 
     {
-        Vision::VectorOfVectorOfFloat frameChartData = m_pScanImageThread->getFrameChartData();
+        Vision::VectorOfVectorOfPoint2f frameChartData = m_pScanImageThread->getFrameChartData();
 
         m_pDisplayWidget->setFrameChartData(frameChartData);
         m_pDisplayWidget->show();

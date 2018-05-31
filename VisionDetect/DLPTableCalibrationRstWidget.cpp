@@ -8,7 +8,7 @@
 #include <QGraphicsSceneMouseEvent>
 
 const int IMG_DISPLAY_WIDTH = 1200;
-const int IMG_DISPLAY_HEIGHT = 800;
+const int IMG_DISPLAY_HEIGHT = 400;
 
 DLPTableCalibrationRstWidget::DLPTableCalibrationRstWidget(QWidget *parent)
     : QWidget(parent)
@@ -32,22 +32,32 @@ void DLPTableCalibrationRstWidget::closeEvent(QCloseEvent *e){
 
 void DLPTableCalibrationRstWidget::_initUI()
 {
-    m_pProfGrayPlot = std::make_shared<QCustomPlot>();
-    _setupGrayPlotData(m_pProfGrayPlot, m_vecVecFrameChartData, true);
-    m_profGrayDataSene = std::make_shared<QGraphicsScene>();
-    ui.graphicsView_rst->setScene(m_profGrayDataSene.get());
-    ui.graphicsView_rst->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui.graphicsView_rst->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui.graphicsView_rst->setFixedSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT);
-    m_pProfGrayPlot->setFixedSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT);
-    m_profGrayDataSene->addPixmap(m_pProfGrayPlot->grab());
+    m_pProfGrayPlotX = std::make_shared<QCustomPlot>();
+    _setupGrayPlotData(m_pProfGrayPlotX, m_vecVecFrameChartData, true);
+    m_profGrayDataSeneX = std::make_shared<QGraphicsScene>();
+    ui.graphicsView_rstX->setScene(m_profGrayDataSeneX.get());
+    ui.graphicsView_rstX->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_rstX->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_rstX->setFixedSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT);
+    m_pProfGrayPlotX->setFixedSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT);
+    m_profGrayDataSeneX->addPixmap(m_pProfGrayPlotX->grab());
+
+    m_pProfGrayPlotY = std::make_shared<QCustomPlot>();
+    _setupGrayPlotData(m_pProfGrayPlotY, m_vecVecFrameChartData, true);
+    m_profGrayDataSeneY = std::make_shared<QGraphicsScene>();
+    ui.graphicsView_rstY->setScene(m_profGrayDataSeneY.get());
+    ui.graphicsView_rstY->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_rstY->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_rstY->setFixedSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT);
+    m_pProfGrayPlotY->setFixedSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT);
+    m_profGrayDataSeneY->addPixmap(m_pProfGrayPlotY->grab());
 }
 
-void DLPTableCalibrationRstWidget::_setupGrayPlotData(std::shared_ptr<QCustomPlot> customPlot, Vision::VectorOfVectorOfFloat& profData, bool bCreate)
+void DLPTableCalibrationRstWidget::_setupGrayPlotData(std::shared_ptr<QCustomPlot> customPlot, Vision::VectorOfVectorOfPoint2f& profData, bool bCreate)
 {
     if (bCreate)
     {
-        customPlot->legend->setVisible(false);
+        customPlot->legend->setVisible(true);
         customPlot->legend->setFont(QFont("Helvetica", 9));
     }
 
@@ -68,8 +78,8 @@ void DLPTableCalibrationRstWidget::_setupGrayPlotData(std::shared_ptr<QCustomPlo
         QVector<double> x(nDataNum), y(nDataNum);
         for (int j = 0; j < nDataNum; ++j)
         {
-            x[j] = j + 1;
-            y[j] = profData[i][j];
+            x[j] = profData[i][j].x;
+            y[j] = profData[i][j].y;
         }
         customPlot->graph()->setData(x, y);
         customPlot->graph()->rescaleAxes(true);
@@ -81,8 +91,8 @@ void DLPTableCalibrationRstWidget::_setupGrayPlotData(std::shared_ptr<QCustomPlo
         //customPlot->yAxis->setLabel("MTF [%]");
 
         // zoom out a bit:
-        customPlot->yAxis->scaleRange(1.1, customPlot->yAxis->range().center());
-        customPlot->xAxis->scaleRange(1.1, customPlot->xAxis->range().center());
+        customPlot->yAxis->scaleRange(0.05, -customPlot->yAxis->range().center()*0.05);
+        customPlot->xAxis->scaleRange(1.0, customPlot->xAxis->range().center());
 
         // set blank axis lines:
         //customPlot->xAxis->setTicks(true);
@@ -97,11 +107,25 @@ void DLPTableCalibrationRstWidget::_setupGrayPlotData(std::shared_ptr<QCustomPlo
 
 void DLPTableCalibrationRstWidget::_updateChart()
 {
-    _setupGrayPlotData(m_pProfGrayPlot, m_vecVecFrameChartData);
+    Vision::VectorOfVectorOfPoint2f::iterator itr = m_vecVecFrameChartData.begin();
 
-    m_pProfGrayPlot->setFixedSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT);
+    if (m_vecVecFrameChartData.size() >= 8)
+    {
+        Vision::VectorOfVectorOfPoint2f  vecVecFrameChartData;
+        vecVecFrameChartData.assign(itr, itr + 4);
+        _setupGrayPlotData(m_pProfGrayPlotX, vecVecFrameChartData);
 
-    m_profGrayDataSene->clear();
-    m_profGrayDataSene->addPixmap(m_pProfGrayPlot->grab());
-    ui.graphicsView_rst->update();
+        m_pProfGrayPlotX->setFixedSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT);
+        m_profGrayDataSeneX->clear();
+        m_profGrayDataSeneX->addPixmap(m_pProfGrayPlotX->grab());
+        ui.graphicsView_rstX->update();
+
+        vecVecFrameChartData.assign(itr + 4, itr + 8);
+        _setupGrayPlotData(m_pProfGrayPlotY, vecVecFrameChartData);
+
+        m_pProfGrayPlotY->setFixedSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT);
+        m_profGrayDataSeneY->clear();
+        m_profGrayDataSeneY->addPixmap(m_pProfGrayPlotY->grab());
+        ui.graphicsView_rstY->update();
+    }   
 }

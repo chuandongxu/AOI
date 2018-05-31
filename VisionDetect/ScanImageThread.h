@@ -17,7 +17,7 @@ public:
 
 	void quit();
     static bool captureAllImages(QVector<cv::Mat>& imageMats);
-    Vision::VectorOfVectorOfFloat getFrameChartData() const { return m_vecVecFrameChartData; }
+    Vision::VectorOfVectorOfPoint2f getFrameChartData() const { return m_vecVecFrameChartData; }
     bool isGood() const { return m_bGood; }
 
 protected:
@@ -40,7 +40,7 @@ private:
     int                             m_nDLPCount;
     Vision::VectorOfVectorOfPoint2f m_vecVecFrameCtr;
     QThreadPool                     m_threadPoolCalc3DHeight;
-    Vision::VectorOfVectorOfFloat m_vecVecFrameChartData;
+    Vision::VectorOfVectorOfPoint2f m_vecVecFrameChartData;
     bool                            m_bGood = true;
 };
 

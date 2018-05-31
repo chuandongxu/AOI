@@ -121,10 +121,10 @@ void ScanImageThread::run()
 
             if (Vision::VisionStatus::OK == Vision::PR_CalcDlpOffset(&stCmd, &stRpy)) {
 
-                vecVecFrameDLP1[row][col] = stRpy.fOffset4 - stRpy.fOffset1;
-                vecVecFrameDLP2[row][col] = stRpy.fOffset4 - stRpy.fOffset2;
-                vecVecFrameDLP3[row][col] = stRpy.fOffset4 - stRpy.fOffset3;
-                vecVecFrameDLP4[row][col] = 0;
+                vecVecFrameDLP1[row][col] = stRpy.fOffset1;
+                vecVecFrameDLP2[row][col] = stRpy.fOffset2;
+                vecVecFrameDLP3[row][col] = stRpy.fOffset3;
+                vecVecFrameDLP4[row][col] = stRpy.fOffset4;
             }
             else {
                 System->setTrackInfo(QString(QStringLiteral("计算DLP的OFFSET错误.")));
@@ -148,67 +148,105 @@ void ScanImageThread::run()
     int nBottom = ToInt(m_fBottom);
 
     int nTotalCount = 0;
-    if (nRight == nLeft)
+    if ((nTop - nBottom) > (nRight - nLeft))
     {
         nTotalCount = (nTop - nBottom) + 1;
     }
-    else  if (nTop == nBottom)
-    {
-        nTotalCount = (nRight - nLeft) + 1;
-    }
     else
     {
-        nTotalCount = (nTop - nBottom + 1) * (nRight - nLeft + 1);
-    }
+        nTotalCount = (nRight - nLeft) + 1;
+    }  
 
     m_vecVecFrameChartData.clear();
-    m_vecVecFrameChartData = Vision::VectorOfVectorOfFloat(4, Vision::VectorOfFloat(nTotalCount, float(0.0)));
+    m_vecVecFrameChartData = Vision::VectorOfVectorOfPoint2f(8, Vision::VectorOfPoint2f(nTotalCount, cv::Point2f(0.0)));
 
-    for (int x = nLeft; x <= nRight; ++x)    
+    for (int x = nLeft; x <= nRight; ++x)
     {
-        for (int y = nBottom; y <= nTop; ++y)
-        {
-            stCmd.ptTargetFrameCenter.x = x;
-            stCmd.ptTargetFrameCenter.y = y;
+        stCmd.ptTargetFrameCenter.x = x;
+        stCmd.ptTargetFrameCenter.y = (nTop + nBottom)/2;
+        if (stCmd.ptTargetFrameCenter.y == 0)  stCmd.ptTargetFrameCenter.y = 1;
 
-            stCmd.vecVecRefFrameValues = vecVecFrameDLP1;          
-            if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
-
-                m_vecVecFrameChartData[0].push_back(stRpy.fResult);
-            }
-            else {
-                System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
-                m_bGood = false;
-            }
-
-            stCmd.vecVecRefFrameValues = vecVecFrameDLP2;
-            if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
-                m_vecVecFrameChartData[1].push_back(stRpy.fResult);
-            }
-            else {
-                System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
-                m_bGood = false;
-            }
-
-            stCmd.vecVecRefFrameValues = vecVecFrameDLP3;
-            if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
-                m_vecVecFrameChartData[2].push_back(stRpy.fResult);
-            }
-            else {
-                System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
-                m_bGood = false;
-            }
-
-            stCmd.vecVecRefFrameValues = vecVecFrameDLP4;
-            if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
-                m_vecVecFrameChartData[3].push_back(stRpy.fResult);
-            }
-            else {
-                System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
-                m_bGood = false;
-            }
+        stCmd.vecVecRefFrameValues = vecVecFrameDLP1;
+        if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
+            m_vecVecFrameChartData[0].push_back(cv::Point2f(x, stRpy.fResult));
         }
-    }   
+        else {
+            System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
+            m_bGood = false;
+        }
+
+        stCmd.vecVecRefFrameValues = vecVecFrameDLP2;
+        if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
+            m_vecVecFrameChartData[1].push_back(cv::Point2f(x, stRpy.fResult));
+        }
+        else {
+            System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
+            m_bGood = false;
+        }
+
+        stCmd.vecVecRefFrameValues = vecVecFrameDLP3;
+        if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
+            m_vecVecFrameChartData[2].push_back(cv::Point2f(x, stRpy.fResult));
+        }
+        else {
+            System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
+            m_bGood = false;
+        }
+
+        stCmd.vecVecRefFrameValues = vecVecFrameDLP4;
+        if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
+            m_vecVecFrameChartData[3].push_back(cv::Point2f(x, stRpy.fResult));
+        }
+        else {
+            System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
+            m_bGood = false;
+        }
+
+    }
+   
+    for (int y = nBottom; y <= nTop; ++y)
+    {
+        stCmd.ptTargetFrameCenter.x = (nLeft + nRight);
+        stCmd.ptTargetFrameCenter.y = y;
+        if (stCmd.ptTargetFrameCenter.x == 0) stCmd.ptTargetFrameCenter.x = 1;
+
+        stCmd.vecVecRefFrameValues = vecVecFrameDLP1;
+        if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
+            m_vecVecFrameChartData[4].push_back(cv::Point2f(y, stRpy.fResult));           
+        }
+        else {
+            System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
+            m_bGood = false;
+        }
+
+        stCmd.vecVecRefFrameValues = vecVecFrameDLP2;
+        if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
+            m_vecVecFrameChartData[5].push_back(cv::Point2f(y, stRpy.fResult));
+        }
+        else {
+            System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
+            m_bGood = false;
+        }
+
+        stCmd.vecVecRefFrameValues = vecVecFrameDLP3;
+        if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
+            m_vecVecFrameChartData[6].push_back(cv::Point2f(y, stRpy.fResult));
+        }
+        else {
+            System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
+            m_bGood = false;
+        }
+
+        stCmd.vecVecRefFrameValues = vecVecFrameDLP4;
+        if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
+            m_vecVecFrameChartData[7].push_back(cv::Point2f(y, stRpy.fResult));
+        }
+        else {
+            System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
+            m_bGood = false;
+        }
+    }
+
 
 	System->setTrackInfo(QString(QStringLiteral("扫描区域完成")));
 }

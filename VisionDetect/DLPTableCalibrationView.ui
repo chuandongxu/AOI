@@ -27,7 +27,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>../DataModule/Image/LowerRight.png</normaloff>../DataModule/Image/LowerRight.png</iconset>
+     <normaloff>Image/LowerRight.png</normaloff>Image/LowerRight.png</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -105,7 +105,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>../DataModule/Image/UpperLeft.png</normaloff>../DataModule/Image/UpperLeft.png</iconset>
+     <normaloff>Image/UpperLeft.png</normaloff>Image/UpperLeft.png</iconset>
    </property>
    <property name="iconSize">
     <size>
