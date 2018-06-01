@@ -9,25 +9,19 @@
 #include "../Common/ModuleMgr.h"
 #include "../include/IVisionUI.h"
 
-Insp2DRunnable::Insp2DRunnable(const Vision::VectorOfMat    &vec2DCaptureImages,
+Insp2DRunnable::Insp2DRunnable(const Vision::VectorOfMat    &vec2DImages,
                                const DeviceInspWindowVector &vecDeviceWindows,
                                const cv::Point2f            &ptFramePos,
                                BoardInspResultPtr           &ptrBoardInsResult) :
-    m_vec2DCaptureImages    (vec2DCaptureImages),
-    m_vecDeviceWindows      (vecDeviceWindows),
-    InspRunnable            (ptFramePos, ptrBoardInsResult) {
+    m_vec2DImages      (vec2DImages),
+    m_vecDeviceWindows (vecDeviceWindows),
+    InspRunnable       (ptFramePos, ptrBoardInsResult) {
 }
 
 Insp2DRunnable::~Insp2DRunnable() {
 }
 
-void Insp2DRunnable::run()
-{
-    m_vec2DImages = _generate2DImages(m_vec2DCaptureImages);
-
-    auto pUI = getModule<IVisionUI>(UI_MODEL);
-    if (m_vec2DImages.size() >0) pUI->setImage(m_vec2DImages[0]);
-
+void Insp2DRunnable::run() {
     int nWindowIndex = 0;
     for(auto &deviceWindow : m_vecDeviceWindows)
     {
@@ -80,7 +74,7 @@ void Insp2DRunnable::_inspWindow(const Engine::Window &window)
 
 bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &matOutput) {
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.colorParams.c_str(), &json_error);
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.colorParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
         return false;
@@ -155,8 +149,8 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
 
 void Insp2DRunnable::_inspChip(const Engine::Window &window) {
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error != QJsonParseError::NoError) {
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
 		return;
     }
@@ -196,10 +190,10 @@ void Insp2DRunnable::_inspChip(const Engine::Window &window) {
 
 void Insp2DRunnable::_inspHole(const Engine::Window &window) {
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error != QJsonParseError::NoError) {
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
-		return;
+        return;
     }
     QJsonObject jsonValue = parse_doucment.object();
 
@@ -232,10 +226,10 @@ void Insp2DRunnable::_inspHole(const Engine::Window &window) {
 
 void Insp2DRunnable::_findLine(const Engine::Window &window) {
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error != QJsonParseError::NoError) {
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
-		return;
+        return;
     }
     QJsonObject jsonValue = parse_doucment.object();
 
@@ -283,10 +277,10 @@ void Insp2DRunnable::_findLine(const Engine::Window &window) {
 
 void Insp2DRunnable::_findCircle(const Engine::Window &window) {
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error != QJsonParseError::NoError) {
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
-		return;
+        return;
     }
     QJsonObject jsonValue = parse_doucment.object();
 
@@ -331,10 +325,10 @@ void Insp2DRunnable::_findCircle(const Engine::Window &window) {
 
 void Insp2DRunnable::_inspContour(const Engine::Window &window) {
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error != QJsonParseError::NoError) {
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
-		return;
+        return;
     }
     QJsonObject jsonValue = parse_doucment.object();
 
@@ -374,10 +368,10 @@ void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) 
     auto window = *iterPolarityCheckWindow;
 
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error != QJsonParseError::NoError) {
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
-		return;
+        return;
     }
     QJsonObject jsonValue = parse_doucment.object();
 
@@ -424,10 +418,10 @@ void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) 
 
 void Insp2DRunnable::_alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow) {
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error != QJsonParseError::NoError) {
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
-		return;
+        return;
     }
     QJsonObject jsonValue = parse_doucment.object();
 
@@ -483,45 +477,4 @@ void Insp2DRunnable::_alignment(const Engine::Window &window, DeviceInspWindow &
             }
         }
     }
-}
-
-Vision::VectorOfMat Insp2DRunnable::_generate2DImages(const Vision::VectorOfMat &vecInputImages)
-{
-    assert(vecInputImages.size() == CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT);
-
-    Vision::VectorOfMat vecResultImages;
-    cv::Mat matRed, matGreen, matBlue;
-    bool bColorCamera = false;
-    if (bColorCamera) {
-        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT],   matRed,   CV_BayerGR2GRAY);
-        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT], matGreen, CV_BayerGR2GRAY);
-        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT],  matBlue,  CV_BayerGR2GRAY);
-    }else {
-        matRed   = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT];
-        matGreen = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT];
-        matBlue  = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT];
-    }
-
-    Vision::VectorOfMat vecChannels{matBlue, matGreen, matRed};
-    cv::Mat matPseudocolorImage;
-    cv::merge(vecChannels, matPseudocolorImage);
-
-    cv::Mat matTopLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT];
-    if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT], matTopLightImage, CV_BayerGR2BGR);
-	vecResultImages.push_back(matTopLightImage);
-
-    cv::Mat matLowAngleLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT];
-    if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
-    vecResultImages.push_back(matLowAngleLightImage);
-
-    vecResultImages.push_back(matPseudocolorImage);
-
-	cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
-    if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT], matUniformLightImage, CV_BayerGR2BGR);
-	vecResultImages.push_back(matUniformLightImage);
-
-    return vecResultImages;
 }

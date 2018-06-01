@@ -135,7 +135,6 @@ void InspWindowWidget::UpdateInspWindowList() {
     }
     ui.treeWidget->expandAll();
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
-
 }
 
 int InspWindowWidget::getSelectedLighting() const {
