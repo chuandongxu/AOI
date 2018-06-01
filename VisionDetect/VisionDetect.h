@@ -9,6 +9,7 @@
 
 class VisionDetectRunView;
 class SysCalibrationView;
+class DLPTableCalibrationView;
 class LightCalibrationView;
 class TableCalibrationView;
 class QColorWeight;
@@ -63,6 +64,7 @@ private:
 	VisionCtrl m_ctrl;
 	VisionDetectRunView* m_pDetectView;
 	SysCalibrationView* m_pCaliView; 
+    DLPTableCalibrationView* m_pDLPCaliView;
 	LightCalibrationView* m_pLightCaliView;
 	TableCalibrationView* m_pTableCaliView;
 	QColorWeight* m_pColorWeightView;
