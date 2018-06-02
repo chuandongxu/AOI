@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include <QMessageBox>
 #include <time.h>
+#include <qdebug.h>
 
 #include "opencv2/highgui.hpp"
 #include "opencv2/video.hpp"
@@ -147,7 +148,7 @@ void ScanImageThread::run()
     int nRight = ToInt(m_fRight);
     int nBottom = ToInt(m_fBottom);
 
-    int nTotalCount = 0;
+/*    int nTotalCount = 0;
     if ((nTop - nBottom) > (nRight - nLeft))
     {
         nTotalCount = (nTop - nBottom) + 1;
@@ -155,15 +156,17 @@ void ScanImageThread::run()
     else
     {
         nTotalCount = (nRight - nLeft) + 1;
-    }  
+    } */ 
 
     m_vecVecFrameChartData.clear();
-    m_vecVecFrameChartData = Vision::VectorOfVectorOfPoint2f(8, Vision::VectorOfPoint2f(nTotalCount, cv::Point2f(0.0)));
+    m_vecVecFrameChartData = Vision::VectorOfVectorOfPoint2f(8, Vision::VectorOfPoint2f());
 
     for (int x = nLeft; x <= nRight; ++x)
     {
         stCmd.ptTargetFrameCenter.x = x;
         stCmd.ptTargetFrameCenter.y = (nTop + nBottom)/2;
+
+        qDebug() << "test x " << stCmd.ptTargetFrameCenter.x << " " <<stCmd.ptTargetFrameCenter.y;
     
         stCmd.vecVecRefFrameValues = vecVecFrameDLP1;
         if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
@@ -205,8 +208,10 @@ void ScanImageThread::run()
    
     for (int y = nBottom; y <= nTop; ++y)
     {
-        stCmd.ptTargetFrameCenter.x = (nLeft + nRight);
+        stCmd.ptTargetFrameCenter.x = (nLeft + nRight)/2;
         stCmd.ptTargetFrameCenter.y = y;
+
+        qDebug() << "test y " << stCmd.ptTargetFrameCenter.x << " " << stCmd.ptTargetFrameCenter.y;
        
         stCmd.vecVecRefFrameValues = vecVecFrameDLP1;
         if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {

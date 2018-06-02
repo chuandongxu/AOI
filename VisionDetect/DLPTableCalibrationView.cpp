@@ -93,8 +93,9 @@ void DLPTableCalibrationView::on_btnPrepareScanImage_clicked()
     float fovWidth = nImageWidth  * dResolutionX * UM_TO_MM;
     float fovHeight = nImageHeight * dResolutionY * UM_TO_MM;
     float overlapX = 0.f, overlapY = 0.f;
+    float fStepSample = 1.0;
 
-    int result = DataUtils::assignFrames(m_dLeftX, m_dTopY, m_dRightX, m_dBottomY, fovWidth, fovHeight, m_vecVecFrameCtr, overlapX, overlapY);
+    int result = DataUtils::assignFrames(m_dLeftX, m_dTopY, m_dRightX, m_dBottomY, fovWidth/fStepSample, fovHeight/fStepSample, m_vecVecFrameCtr, overlapX, overlapY);
     auto frameCountX = m_vecVecFrameCtr[0].size();
     auto frameCountY = m_vecVecFrameCtr.size();
 
