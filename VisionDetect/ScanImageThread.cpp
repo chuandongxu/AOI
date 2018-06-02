@@ -164,8 +164,7 @@ void ScanImageThread::run()
     {
         stCmd.ptTargetFrameCenter.x = x;
         stCmd.ptTargetFrameCenter.y = (nTop + nBottom)/2;
-        if (stCmd.ptTargetFrameCenter.y == 0)  stCmd.ptTargetFrameCenter.y = 1;
-
+    
         stCmd.vecVecRefFrameValues = vecVecFrameDLP1;
         if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
             m_vecVecFrameChartData[0].push_back(cv::Point2f(x, stRpy.fResult));
@@ -208,8 +207,7 @@ void ScanImageThread::run()
     {
         stCmd.ptTargetFrameCenter.x = (nLeft + nRight);
         stCmd.ptTargetFrameCenter.y = y;
-        if (stCmd.ptTargetFrameCenter.x == 0) stCmd.ptTargetFrameCenter.x = 1;
-
+       
         stCmd.vecVecRefFrameValues = vecVecFrameDLP1;
         if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
             m_vecVecFrameChartData[4].push_back(cv::Point2f(y, stRpy.fResult));           
@@ -254,10 +252,7 @@ void ScanImageThread::run()
 bool ScanImageThread::moveToCapturePos(float fPosX, float fPosY)
 {
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
-	if (!pMotion) return false;
-
-    fPosX *= UM_TO_MM;
-    fPosY *= UM_TO_MM;
+	if (!pMotion) return false;   
 
     if (! pMotion->moveToGroup(std::vector<int>({AXIS_MOTOR_X, AXIS_MOTOR_Y}), std::vector<double>({fPosX, fPosY}), std::vector<int>({0, 0}), true))
     {

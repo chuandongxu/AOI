@@ -1,4 +1,4 @@
-#include "DLPTableCalibrationRstWidget.h"
+ï»¿#include "DLPTableCalibrationRstWidget.h"
 
 #include "qcustomplot.h"
 
@@ -23,7 +23,7 @@ DLPTableCalibrationRstWidget::~DLPTableCalibrationRstWidget()
 }
 
 void DLPTableCalibrationRstWidget::closeEvent(QCloseEvent *e){
-    //qDebug() << "¹Ø±ÕÊÂ¼þ";
+    //qDebug() << "å…³é—­äº‹ä»¶";
     e->ignore();
 
     this->hide();

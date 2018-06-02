@@ -1,4 +1,4 @@
-#include <QDialog>
+ï»¿#include <QDialog>
 
 #include "DLPTableCalibrationView.h"
 
@@ -35,7 +35,7 @@ void DLPTableCalibrationView::on_btnTopLeft_clicked()
 {
     _showJoyStick();
 
-    auto nReturn = System->showInteractMessage(QStringLiteral("ÉèÖÃ²âÊÔÇøÓò"), QStringLiteral("ÇëÒÆ¶¯XY TableÖ±µ½Ïà»úÖĞĞÄ¶Ô×¼ÇøÓò×óÉÏ½Ç"));
+    auto nReturn = System->showInteractMessage(QStringLiteral("è®¾ç½®æµ‹è¯•åŒºåŸŸ"), QStringLiteral("è¯·ç§»åŠ¨XY Tableç›´åˆ°ç›¸æœºä¸­å¿ƒå¯¹å‡†åŒºåŸŸå·¦ä¸Šè§’"));
     if (nReturn != QDialog::Accepted)
         return;
 
@@ -45,9 +45,6 @@ void DLPTableCalibrationView::on_btnTopLeft_clicked()
     pMotion->getCurrentPos(AXIS_MOTOR_X, &m_dLeftX);
     pMotion->getCurrentPos(AXIS_MOTOR_Y, &m_dTopY);
 
-    m_dLeftX *= MM_TO_UM;
-    m_dTopY *= MM_TO_UM;
-
     _saveResult();
     _displayResult();
 }
@@ -56,7 +53,7 @@ void DLPTableCalibrationView::on_btnBtmRight_clicked()
 {
     _showJoyStick();
 
-    auto nReturn = System->showInteractMessage(QStringLiteral("ÉèÖÃ²âÊÔÇøÓò"), QStringLiteral("ÇëÒÆ¶¯XY TableÖ±µ½Ïà»úÖĞĞÄ¶Ô×¼ÇøÓòÓÒÏÂ½Ç"));
+    auto nReturn = System->showInteractMessage(QStringLiteral("è®¾ç½®æµ‹è¯•åŒºåŸŸ"), QStringLiteral("è¯·ç§»åŠ¨XY Tableç›´åˆ°ç›¸æœºä¸­å¿ƒå¯¹å‡†åŒºåŸŸå³ä¸‹è§’"));
     if (nReturn != QDialog::Accepted)
         return;
 
@@ -64,16 +61,13 @@ void DLPTableCalibrationView::on_btnBtmRight_clicked()
     pMotion->getCurrentPos(AXIS_MOTOR_X, &m_dRightX);
     pMotion->getCurrentPos(AXIS_MOTOR_Y, &m_dBottomY);
 
-    m_dRightX *= MM_TO_UM;
-    m_dBottomY *= MM_TO_UM;
-
     if (m_dRightX <= m_dLeftX) {
-        System->showMessage(QStringLiteral("ÉèÖÃ²âÊÔÇøÓò"), QStringLiteral("ÇøÓòÓÒ±ß½ç×ø±ê (%1) Ğ¡ÓÚ×ó±ß½ç×ø±ê (%2). ÇëÖØĞÂÉèÖÃ.").arg(m_dRightX).arg(m_dLeftX));
+        System->showMessage(QStringLiteral("è®¾ç½®æµ‹è¯•åŒºåŸŸ"), QStringLiteral("åŒºåŸŸå³è¾¹ç•Œåæ ‡ (%1) å°äºå·¦è¾¹ç•Œåæ ‡ (%2). è¯·é‡æ–°è®¾ç½®.").arg(m_dRightX).arg(m_dLeftX));
         return;
     }
 
     if (m_dTopY < m_dBottomY) {
-        System->showMessage(QStringLiteral("ÉèÖÃ²âÊÔÇøÓò"), QStringLiteral("ÇøÓòÉÏ±ß½ç×ø±ê (%1) Ğ¡ÓÚÏÂ±ß½ç×ø±ê (%2). ÇëÖØĞÂÉèÖÃ.").arg(m_dTopY).arg(m_dBottomY));
+        System->showMessage(QStringLiteral("è®¾ç½®æµ‹è¯•åŒºåŸŸ"), QStringLiteral("åŒºåŸŸä¸Šè¾¹ç•Œåæ ‡ (%1) å°äºä¸‹è¾¹ç•Œåæ ‡ (%2). è¯·é‡æ–°è®¾ç½®.").arg(m_dTopY).arg(m_dBottomY));
         return;
     }
 
@@ -86,7 +80,7 @@ void DLPTableCalibrationView::on_btnPrepareScanImage_clicked()
     _displayResult();
 
     if (m_dRightX <= m_dLeftX || m_dTopY < m_dBottomY) {
-        System->showMessage(QStringLiteral("ÉèÖÃ¼ì²âÇøÓò"), QStringLiteral("¼ì²âÇøÓò²ÎÊı²»ÕıÈ·."));
+        System->showMessage(QStringLiteral("è®¾ç½®æ£€æµ‹åŒºåŸŸ"), QStringLiteral("æ£€æµ‹åŒºåŸŸå‚æ•°ä¸æ­£ç¡®."));
         return;
     }
 
@@ -96,8 +90,8 @@ void DLPTableCalibrationView::on_btnPrepareScanImage_clicked()
     auto pCamera = getModule<ICamera>(CAMERA_MODEL);
     int nImageWidth = 0, nImageHeight = 0;
     pCamera->getCameraScreenSize(nImageWidth, nImageHeight);
-    float fovWidth = nImageWidth  * dResolutionX;
-    float fovHeight = nImageHeight * dResolutionY;
+    float fovWidth = nImageWidth  * dResolutionX * UM_TO_MM;
+    float fovHeight = nImageHeight * dResolutionY * UM_TO_MM;
     float overlapX = 0.f, overlapY = 0.f;
 
     int result = DataUtils::assignFrames(m_dLeftX, m_dTopY, m_dRightX, m_dBottomY, fovWidth, fovHeight, m_vecVecFrameCtr, overlapX, overlapY);
@@ -115,9 +109,9 @@ void DLPTableCalibrationView::on_btnPrepareScanImage_clicked()
 
 void DLPTableCalibrationView::on_btnScanImage_clicked() 
 {
-    System->showMessage(QStringLiteral("É¨ÇøÓò"), QStringLiteral("ÕıÔÚÉ¨ÇøÓòÖĞ£¬ÇëµÈºò..."), 1);   
+    System->showMessage(QStringLiteral("æ‰«åŒºåŸŸ"), QStringLiteral("æ­£åœ¨æ‰«åŒºåŸŸä¸­ï¼Œè¯·ç­‰å€™..."), 1);   
 
-    m_pScanImageThread = new ScanImageThread(m_vecVecFrameCtr, m_dLeftX*UM_TO_MM, m_dTopY*UM_TO_MM, m_dRightX*UM_TO_MM, m_dBottomY*UM_TO_MM);
+    m_pScanImageThread = new ScanImageThread(m_vecVecFrameCtr, m_dLeftX, m_dTopY, m_dRightX, m_dBottomY);
     connect(m_pScanImageThread, &ScanImageThread::finished, this, &DLPTableCalibrationView::on_scanImage_done);
     m_pScanImageThread->start();
 }
