@@ -205,7 +205,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>um</string>
+    <string>mm</string>
    </property>
   </widget>
   <widget class="QLabel" name="labelOverlapUnitUmX_2">
@@ -218,7 +218,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>um</string>
+    <string>mm</string>
    </property>
   </widget>
   <widget class="QLabel" name="labelOverlapUnitUmX_3">
@@ -231,7 +231,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>um</string>
+    <string>mm</string>
    </property>
   </widget>
   <widget class="QLabel" name="labelOverlapUnitUmX_4">
@@ -244,7 +244,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>um</string>
+    <string>mm</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btnPrepareScanImage">

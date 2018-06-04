@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include <QMessageBox>
 #include <time.h>
+#include <qdebug.h>
 
 #include "opencv2/highgui.hpp"
 #include "opencv2/video.hpp"
@@ -147,7 +148,7 @@ void ScanImageThread::run()
     int nRight = ToInt(m_fRight);
     int nBottom = ToInt(m_fBottom);
 
-    int nTotalCount = 0;
+/*    int nTotalCount = 0;
     if ((nTop - nBottom) > (nRight - nLeft))
     {
         nTotalCount = (nTop - nBottom) + 1;
@@ -155,17 +156,18 @@ void ScanImageThread::run()
     else
     {
         nTotalCount = (nRight - nLeft) + 1;
-    }  
+    } */ 
 
     m_vecVecFrameChartData.clear();
-    m_vecVecFrameChartData = Vision::VectorOfVectorOfPoint2f(8, Vision::VectorOfPoint2f(nTotalCount, cv::Point2f(0.0)));
+    m_vecVecFrameChartData = Vision::VectorOfVectorOfPoint2f(8, Vision::VectorOfPoint2f());
 
     for (int x = nLeft; x <= nRight; ++x)
     {
         stCmd.ptTargetFrameCenter.x = x;
         stCmd.ptTargetFrameCenter.y = (nTop + nBottom)/2;
-        if (stCmd.ptTargetFrameCenter.y == 0)  stCmd.ptTargetFrameCenter.y = 1;
 
+        qDebug() << "test x " << stCmd.ptTargetFrameCenter.x << " " <<stCmd.ptTargetFrameCenter.y;
+    
         stCmd.vecVecRefFrameValues = vecVecFrameDLP1;
         if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
             m_vecVecFrameChartData[0].push_back(cv::Point2f(x, stRpy.fResult));
@@ -206,10 +208,11 @@ void ScanImageThread::run()
    
     for (int y = nBottom; y <= nTop; ++y)
     {
-        stCmd.ptTargetFrameCenter.x = (nLeft + nRight);
+        stCmd.ptTargetFrameCenter.x = (nLeft + nRight)/2;
         stCmd.ptTargetFrameCenter.y = y;
-        if (stCmd.ptTargetFrameCenter.x == 0) stCmd.ptTargetFrameCenter.x = 1;
 
+        qDebug() << "test y " << stCmd.ptTargetFrameCenter.x << " " << stCmd.ptTargetFrameCenter.y;
+       
         stCmd.vecVecRefFrameValues = vecVecFrameDLP1;
         if (Vision::VisionStatus::OK == Vision::PR_CalcFrameValue(&stCmd, &stRpy)) {
             m_vecVecFrameChartData[4].push_back(cv::Point2f(y, stRpy.fResult));           
@@ -254,10 +257,7 @@ void ScanImageThread::run()
 bool ScanImageThread::moveToCapturePos(float fPosX, float fPosY)
 {
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
-	if (!pMotion) return false;
-
-    fPosX *= UM_TO_MM;
-    fPosY *= UM_TO_MM;
+	if (!pMotion) return false;   
 
     if (! pMotion->moveToGroup(std::vector<int>({AXIS_MOTOR_X, AXIS_MOTOR_Y}), std::vector<double>({fPosX, fPosY}), std::vector<int>({0, 0}), true))
     {
