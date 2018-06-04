@@ -161,7 +161,7 @@ bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
     bool bTriggerBoard = System->isTriggerBoard();
     if (bTriggerBoard)
     {
-        if (!pLight->triggerCapturing(ILight::TRIGGER_ALL, true, true))
+        if (!pLight->triggerCapturing(ILight::TRIGGER_ALL, true))
         {
             System->setTrackInfo(QString("triggerCapturing error!"));
         }
