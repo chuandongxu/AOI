@@ -45,11 +45,15 @@ AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignment
     int ROWS = m_vecVecFrameCtr.size();
     int COLS = m_vecVecFrameCtr[0].size();
     int TOTAL = ROWS * COLS;
-    m_vecDisplayFrameImages = Vision::VectorOfMat(TOTAL, cv::Mat());
+    m_vecVecFrameImages = Vision::VectorOfVectorOfMat(PROCESSED_IMAGE_SEQUENCE::TOTAL_COUNT, Vision::VectorOfMat(TOTAL, cv::Mat()));
+    m_vecFrame3DHeight = Vision::VectorOfMat(TOTAL, cv::Mat());
+    m_vecMatBigImage = Vision::VectorOfMat(PROCESSED_IMAGE_SEQUENCE::TOTAL_COUNT, cv::Mat());
 
     m_nImageWidthPixel  = stAutoRunParams.nImgHeightPixel;
     m_nImageHeightPixel = stAutoRunParams.nImgHeightPixel;
     m_fBoardLeftPos = stAutoRunParams.fBoardLeftPos;
+    m_fBoardTopPos = stAutoRunParams.fBoardTopPos;
+    m_fBoardRightPos = stAutoRunParams.fBoardRightPos;
     m_fBoardBtmPos = stAutoRunParams.fBoardBtmPos;
     m_fOverlapUmX = stAutoRunParams.fOverlapUmX;
     m_fOverlapUmY = stAutoRunParams.fOverlapUmY;
@@ -460,7 +464,7 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
                 ptFrameCtr = cv::Point2f(dPosX * MM_TO_UM, dPosY * MM_TO_UM);
             }
 
-             // Only has frame in X direction. It should only happen when there is only X axis can move.
+            // Only has frame in X direction. It should only happen when there is only X axis can move.
             if (fabs(ptFrameCtr.y) <= 0.01f)
                 ptFrameCtr.y = m_nImageHeightPixel * m_dResolutionY / 2.f;
 
@@ -491,24 +495,26 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
                 break;
             }
 
-            m_vecDisplayFrameImages[row * COLS + col] = vec2DCaptureImages[0];
+            auto vec2DImages = _generate2DImages(vec2DCaptureImages);
+            for (int i = 0; i < 4; ++ i)
+                m_vecVecFrameImages[i][row * COLS + col] = vec2DImages[i];
 
             auto vecDeviceWindows = _getDeviceWindowInFrame(ptFrameCtr);
 
-            auto pInsp2DRunnable = std::make_shared<Insp2DRunnable>(vec2DCaptureImages, vecDeviceWindows, ptFrameCtr, ptrBoardInspResult);
+            auto pInsp2DRunnable = std::make_shared<Insp2DRunnable>(vec2DImages, vecDeviceWindows, ptFrameCtr, ptrBoardInspResult);
             pInsp2DRunnable->setAutoDelete(false);
             pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
             pInsp2DRunnable->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
             m_threadPoolCalc3DInsp2D.start(pInsp2DRunnable.get());
 
             {
-                auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolCalc3DInsp2D, vecCalc3dHeightRunnable, pInsp2DRunnable, ptFrameCtr, ptrBoardInspResult);
+                auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolCalc3DInsp2D, vecCalc3dHeightRunnable, pInsp2DRunnable, ptFrameCtr, &m_vecFrame3DHeight, row, col, ROWS, COLS, ptrBoardInspResult);
                 pInsp3DHeightRunnalbe->setResolution(m_dResolutionX, m_dResolutionY);
                 pInsp3DHeightRunnalbe->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
                 QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
             }
 
-            if(isExit())
+            if (isExit())
                 return bGood;
         }
 
@@ -516,15 +522,43 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
             break;
     }
 
-    _combineBigImage(m_vecDisplayFrameImages);
+    for (int i = 0; i < 4; ++ i)
+        m_vecMatBigImage[i] = _combineBigImage(m_vecVecFrameImages[i]);
+    QEos::Notify(EVENT_THREAD_STATE, REFRESH_BIG_IMAGE);
 
+    QThreadPool::globalInstance()->waitForDone();
+    m_matWhole3DHeight = _combineBigImage(m_vecFrame3DHeight);
+
+    auto vecNotInspectedDeviceWindow = _getNotInspectedDeviceWindow();
+    if (! vecNotInspectedDeviceWindow.empty()) {
+        cv::Point2f ptBigImageCenter((m_fBoardLeftPos + m_fBoardRightPos) / 2.f, (m_fBoardTopPos, m_fBoardBtmPos) / 2.f);
+        // Only has frame in X direction. It should only happen when there is only X axis can move.
+        if (fabs(ptBigImageCenter.y) <= 0.01f)
+            ptBigImageCenter.y = m_vecMatBigImage[0].rows * m_dResolutionY / 2.f;
+
+        auto pInsp2DRunnable = std::make_shared<Insp2DRunnable>(m_vecMatBigImage, vecNotInspectedDeviceWindow, ptBigImageCenter, ptrBoardInspResult);
+        pInsp2DRunnable->setAutoDelete(false);
+        pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
+        pInsp2DRunnable->setImageSize(m_vecMatBigImage[0].cols, m_vecMatBigImage[0].rows);
+        m_threadPoolCalc3DInsp2D.start(pInsp2DRunnable.get());
+
+        {
+            auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolCalc3DInsp2D, std::vector<Calc3DHeightRunnablePtr>(), pInsp2DRunnable, ptBigImageCenter, &m_vecFrame3DHeight, 0, 0, ROWS, COLS, ptrBoardInspResult);
+            pInsp3DHeightRunnalbe->set3DHeight(m_matWhole3DHeight);
+            pInsp3DHeightRunnalbe->setResolution(m_dResolutionX, m_dResolutionY);
+            pInsp3DHeightRunnalbe->setImageSize(m_vecMatBigImage[0].cols, m_vecMatBigImage[0].rows);
+            QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
+        }
+    }
+
+    
     return bGood;
 }
 
 DeviceInspWindowVector AutoRunThread::_getDeviceWindowInFrame(const cv::Point2f &ptFrameCtr)
 {
     DeviceInspWindowVector vecResult;
-    for (const auto &deviceInspWindow : m_vecAlignedDeviceInspWindow) {
+    for (auto &deviceInspWindow : m_vecAlignedDeviceInspWindow) {
         bool bInFrame = true;
         for (const auto &window : deviceInspWindow.vecUngroupedWindows) {
             if (! DataUtils::isWindowInFrame(cv::Point2f(window.x, window.y), window.width, window.height, ptFrameCtr, m_fFovWidthUm, m_fFovHeightUm)) {
@@ -545,13 +579,66 @@ DeviceInspWindowVector AutoRunThread::_getDeviceWindowInFrame(const cv::Point2f 
             }
         }
 
-        if (bInFrame)
+        if (bInFrame) {
+            deviceInspWindow.bInspected = true;
+            vecResult.push_back(deviceInspWindow);
+        }
+    }
+    return vecResult;
+}
+
+DeviceInspWindowVector AutoRunThread::_getNotInspectedDeviceWindow() const
+{
+    DeviceInspWindowVector vecResult;
+    for (const auto &deviceInspWindow : m_vecAlignedDeviceInspWindow) {
+        if (! deviceInspWindow.bInspected)
             vecResult.push_back(deviceInspWindow);
     }
     return vecResult;
 }
 
-bool AutoRunThread::_combineBigImage(const Vision::VectorOfMat &vecMatImages) {
+Vision::VectorOfMat AutoRunThread::_generate2DImages(const Vision::VectorOfMat &vecInputImages)
+{
+    assert(vecInputImages.size() == CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT);
+
+    Vision::VectorOfMat vecResultImages;
+    cv::Mat matRed, matGreen, matBlue;
+    bool bColorCamera = false;
+    if (bColorCamera) {
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT],   matRed,   CV_BayerGR2GRAY);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT], matGreen, CV_BayerGR2GRAY);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT],  matBlue,  CV_BayerGR2GRAY);
+    }else {
+        matRed   = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT];
+        matGreen = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT];
+        matBlue  = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT];
+    }
+
+    Vision::VectorOfMat vecChannels{matBlue, matGreen, matRed};
+    cv::Mat matPseudocolorImage;
+    cv::merge(vecChannels, matPseudocolorImage);
+
+    cv::Mat matTopLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT], matTopLightImage, CV_BayerGR2BGR);
+	vecResultImages.push_back(matTopLightImage);
+
+    cv::Mat matLowAngleLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
+    vecResultImages.push_back(matLowAngleLightImage);
+
+    vecResultImages.push_back(matPseudocolorImage);
+
+	cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT], matUniformLightImage, CV_BayerGR2BGR);
+	vecResultImages.push_back(matUniformLightImage);
+
+    return vecResultImages;
+}
+
+cv::Mat AutoRunThread::_combineBigImage(const Vision::VectorOfMat &vecMatImages) {
     Vision::PR_COMBINE_IMG_CMD stCmd;
     Vision::PR_COMBINE_IMG_RPY stRpy;
     stCmd.nCountOfImgPerFrame = 1;
@@ -562,13 +649,11 @@ bool AutoRunThread::_combineBigImage(const Vision::VectorOfMat &vecMatImages) {
     stCmd.nCountOfImgPerRow = m_vecVecFrameCtr[0].size();
     stCmd.enScanDir = m_enScanDir;
 
-    stCmd.vecInputImages = m_vecDisplayFrameImages;
+    stCmd.vecInputImages = vecMatImages;
     if (Vision::VisionStatus::OK == Vision::PR_CombineImg(&stCmd, &stRpy)) {
-        m_matBigImage = stRpy.vecResultImages[0];
-        QEos::Notify(EVENT_THREAD_STATE, REFRESH_BIG_IMAGE);
-        return true;
+        return stRpy.vecResultImages[0];
     }else {
         System->setTrackInfo(QString(QStringLiteral("合并大图失败.")));
-        return false;
+        return cv::Mat();
     }
 }

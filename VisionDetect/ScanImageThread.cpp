@@ -203,7 +203,6 @@ void ScanImageThread::run()
             System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
             m_bGood = false;
         }
-
     }
    
     for (int y = nBottom; y <= nTop; ++y)
@@ -250,7 +249,6 @@ void ScanImageThread::run()
         }
     }
 
-
 	System->setTrackInfo(QString(QStringLiteral("扫描区域完成")));
 }
 
@@ -286,7 +284,6 @@ bool ScanImageThread::captureAllImages(QVector<cv::Mat>& imageMats)
 
 	return pCam->captureAllImages(imageMats);
 }
-
 
 bool ScanImageThread::isExit()
 {

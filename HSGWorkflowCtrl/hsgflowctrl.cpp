@@ -89,7 +89,7 @@ void QFlowCtrl::onThreadState(const QVariantList &data)
 
     switch (iEvent)
     {
-    case MAIN_THREAD_CLOSED:   
+    case MAIN_THREAD_CLOSED:
         stop();
         break;
     case REFRESH_BIG_IMAGE:
@@ -264,7 +264,7 @@ void QFlowCtrl::start()
 
     auto enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(System->getParam("scan_image_Direction").toInt());
 
-    AutoRunParams stAutoRunParams(m_nImgWidth, m_nImgHeight, m_fBoardLeft, m_fBoardBottom, m_fOverlapX, m_fOverlapY, enScanDir);
+    AutoRunParams stAutoRunParams(m_nImgWidth, m_nImgHeight, m_fBoardLeft, m_fBoardTop, m_fBoardRight, m_fBoardBottom, m_fOverlapX, m_fOverlapY, enScanDir);
     m_pAutoRunThread = new AutoRunThread(m_vecAlignments, m_vecDeviceInspWindow, m_vecVecFrameCtr, stAutoRunParams, &m_mapBoardInspResult);
     connect(m_pAutoRunThread, &AutoRunThread::finished, m_pAutoRunThread, &QObject::deleteLater);
     m_pAutoRunThread->start();
@@ -303,7 +303,7 @@ void QFlowCtrl::stop()
 	System->setParam("camera_show_image_toScreen_enable", true);
 
 	m_isStart = false;
-	QEos::Notify(EVENT_RUN_STATE,RUN_STATE_STOP);
+	QEos::Notify(EVENT_RUN_STATE, RUN_STATE_STOP);
 	QSystem::closeMessage();
 }
 
@@ -417,6 +417,7 @@ int QFlowCtrl::_prepareRunData()
             continue;
 
         DeviceInspWindow deviceInpWindow;
+        deviceInpWindow.bInspected = false;
         deviceInpWindow.device = device;
         nResult = Engine::GetDeviceUngroupedWindows(device.Id, deviceInpWindow.vecUngroupedWindows);
         if (Engine::OK != nResult) {

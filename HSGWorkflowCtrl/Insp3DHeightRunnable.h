@@ -13,8 +13,14 @@ public:
         const std::vector<Calc3DHeightRunnablePtr> &vecCalc3DHeightRunnable,
         Insp2DRunnablePtr                           ptrInsp2DRunnable,
         const cv::Point2f                          &ptFramePos,
+        Vision::VectorOfMat                        *pVec3DFrameImages,
+        int                                         nRow,
+        int                                         nCol,
+        int                                         nTotalRows,
+        int                                         nTotalCols,
         BoardInspResultPtr                         &ptrBoardInsResult);
     ~Insp3DHeightRunnable();
+    void set3DHeight(const cv::Mat &mat3DHeight);
 
 protected:
     virtual void run() override;
@@ -25,4 +31,6 @@ private:
     std::vector<Calc3DHeightRunnablePtr>  m_vecCalc3DHeightRunnable;
     Insp2DRunnablePtr                     m_ptrInsp2DRunnable;
     cv::Mat                               m_mat3DHeight;
+    Vision::VectorOfMat                  *m_pVec3DFrameImages;
+    int                                   m_nRow, m_nCol, m_nTotalRows, m_nTotalCols;
 };
