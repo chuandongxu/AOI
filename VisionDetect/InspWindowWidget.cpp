@@ -20,6 +20,7 @@
 #include "InspContourWidget.h"
 #include "InspChipWidget.h"
 #include "TreeWidgetInspWindow.h"
+#include "VisionAPI.h"
 
 static const QString DEFAULT_WINDOW_NAME[] =
 {
@@ -135,7 +136,6 @@ void InspWindowWidget::UpdateInspWindowList() {
     }
     ui.treeWidget->expandAll();
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
-
 }
 
 int InspWindowWidget::getSelectedLighting() const {
@@ -255,6 +255,11 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
             if (result != QMessageBox::StandardButton::Ok)
                 return;
 
+            Engine::Window window;
+            Engine::GetWindow(windowId, window);
+            if (window.recordId > 0)
+              AOI::Vision::PR_FreeRecord(window.recordId);
+
             result = Engine::DeleteWindow(windowId);
             if (result != Engine::OK) {
                 String errorType, errorMessage;
@@ -264,6 +269,7 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
                 System->showMessage(QStringLiteral("检测框"), msg);
                 return;
             }
+
             auto pParent = pItem->parent();
             if (NULL == pParent)
                 ui.treeWidget->takeTopLevelItem(ui.treeWidget->indexOfTopLevelItem(pItem));
@@ -437,7 +443,7 @@ void InspWindowWidget::_tryInspectPolarity() {
         if (pParent != NULL)
             groupId = pParent->data(0, Qt::UserRole).toInt();
         else {
-            System->showMessage(strTitle, QStringLiteral("请先创建高度检测框组, 组里面包括高度检测框以及基准框."));
+            System->showMessage(strTitle, QStringLiteral("请先创建极性检测框组, 组里面包括极性检测框以及参考框."));
             return;
         }
     }
@@ -559,6 +565,8 @@ void InspWindowWidget::onSelectedWindowChanged() {
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_POLARITY;
     else if (Engine::Window::Usage::INSP_CONTOUR == window.usage)
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_CONTOUR;
+    else if (Engine::Window::Usage::INSP_CHIP == window.usage)
+        m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_CHIP;
     else
         assert(0);
 
@@ -580,7 +588,7 @@ void InspWindowWidget::onSelectedWindowChanged() {
     else
         y = m_nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
 
-    auto width = window.width / dResolutionX;
+    auto width  = window.width  / dResolutionX;
     auto height = window.height / dResolutionY;
     cv::RotatedRect detectObjWin(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
     QDetectObj detectObj(window.Id, window.name.c_str());

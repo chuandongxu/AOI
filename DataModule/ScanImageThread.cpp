@@ -64,7 +64,7 @@ void ScanImageThread::run()
     int ROWS = m_vecVecFrameCtr.size();
     int COLS = m_vecVecFrameCtr[0].size();
     int TOTAL = ROWS * COLS;
-    Vision::VectorOfVectorOfMat vecVecFrameImages(5, Vision::VectorOfMat(TOTAL, cv::Mat()));
+    Vision::VectorOfVectorOfMat vecVecFrameImages(PROCESSED_IMAGE_SEQUENCE::TOTAL_COUNT, Vision::VectorOfMat(TOTAL, cv::Mat()));
 	Vision::VectorOfMat vecFrame3DHeight(TOTAL, cv::Mat());
     
     m_bGood = true;

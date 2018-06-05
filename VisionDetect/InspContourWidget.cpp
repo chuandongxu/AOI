@@ -24,6 +24,7 @@ enum BASIC_PARAM {
     DEFECT_OUTER_LENGTH_TOL,
     INNER_MASK_DEPTH,
     OUTER_MASK_DEPTH,
+    RECORD_ID,
 };
 
 InspContourWidget::InspContourWidget(InspWindowWidget *parent)
@@ -60,6 +61,11 @@ InspContourWidget::InspContourWidget(InspWindowWidget *parent)
     m_pEditOuterMaskDepth->setValidator(new QIntValidator(10, 10000, m_pEditOuterMaskDepth.get()));
     m_pEditOuterMaskDepth->setText("50");
     ui.tableWidget->setCellWidget(OUTER_MASK_DEPTH, DATA_COLUMN, m_pEditOuterMaskDepth.get());
+
+    m_pEditRecordID = std::make_unique<QLineEdit>(ui.tableWidget);
+	m_pEditRecordID->setValidator(new QIntValidator(0, 1000, m_pEditRecordID.get()));
+	ui.tableWidget->setCellWidget(RECORD_ID, DATA_COLUMN, m_pEditRecordID.get());
+	m_pEditRecordID->setEnabled(false);
 }
 
 InspContourWidget::~InspContourWidget() {
@@ -72,6 +78,7 @@ void InspContourWidget::setDefaultValue() {
     m_pEditDefectOuterLengthTol->setText("100");
     m_pEditInnerMaskDepth->setText("50");
     m_pEditOuterMaskDepth->setText("50");
+    m_pEditRecordID->setText("0");
 
     m_bIsTryInspected = false;
     m_currentWindow.recordId = 0;
@@ -100,6 +107,7 @@ void InspContourWidget::setCurrentWindow(const Engine::Window &window) {
     m_pEditDefectOuterLengthTol->setText(QString::number(jsonValue["DefectOuterLengthTol"].toDouble()));
     m_pEditInnerMaskDepth->setText(QString::number(jsonValue["InnerMaskDepth"].toDouble()));
     m_pEditOuterMaskDepth->setText(QString::number(jsonValue["OuterMaskDepth"].toDouble()));
+    m_pEditRecordID->setText(QString::number(window.recordId));
 }
 
 bool InspContourWidget::_learnContour(int &recordId) {
@@ -186,7 +194,7 @@ void InspContourWidget::tryInsp() {
 	    Vision::PR_FreeRecord(nRecordId);
 }
 
-void InspContourWidget::confirmWindow(OPERATION enOperation) {
+void InspContourWidget::confirmWindow(OPERATION enOperation) {    
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
@@ -197,8 +205,9 @@ void InspContourWidget::confirmWindow(OPERATION enOperation) {
         return;
     }
 
+    QString strTitle(QStringLiteral("边界检测框"));
     if (!_inspContour(nRecordId, false)) {
-        System->showInteractMessage(QStringLiteral("边界检测框"), QStringLiteral("检测失败!"));
+        System->showInteractMessage(strTitle, QStringLiteral("检测失败!"));
         return;
     }
 
@@ -217,7 +226,7 @@ void InspContourWidget::confirmWindow(OPERATION enOperation) {
 	auto pUI = getModule<IVisionUI>(UI_MODEL);
 	auto rectROI = pUI->getSelectedROI();
 	if (rectROI.width <= 0 || rectROI.height <= 0) {
-		QMessageBox::critical(this, QStringLiteral("Add Height Detect Window"), QStringLiteral("Please select a ROI to do inspection."));
+		QMessageBox::critical(this, strTitle, QStringLiteral("Please select a ROI to do inspection."));
 		return;
 	}
 
@@ -245,9 +254,10 @@ void InspContourWidget::confirmWindow(OPERATION enOperation) {
 
     window.recordId = nRecordId;
     if (ReadBinaryFile(FormatRecordName(window.recordId), window.recordData) != 0) {
-        QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Failed to read record data."));
+        QMessageBox::critical(this, strTitle, QStringLiteral("Failed to read record data."));
 	    return;
     }
+    m_pEditRecordID->setText(QString::number(nRecordId));
 
 	int result = Engine::OK;
 	if (OPERATION::ADD == enOperation) {

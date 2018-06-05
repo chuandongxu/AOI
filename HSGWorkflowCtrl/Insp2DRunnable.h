@@ -10,7 +10,7 @@ using namespace AOI;
 class Insp2DRunnable : public InspRunnable
 {
 public:
-    Insp2DRunnable(const Vision::VectorOfMat    &vec2DCaptureImages,
+    Insp2DRunnable(const Vision::VectorOfMat    &vec2DImages,
                    const DeviceInspWindowVector &vecDeviceWindows,
                    const cv::Point2f            &ptFramePos,
                    BoardInspResultPtr           &ptrBoardInsResult);
@@ -24,14 +24,15 @@ protected:
 private:
     void _inspWindow(const Engine::Window &window);
     bool _preprocessImage(const Engine::Window &window, cv::Mat &matOutput);
+    void _inspChip(const Engine::Window &window);
     void _inspHole(const Engine::Window &window);
     void _findLine(const Engine::Window &window);
     void _findCircle(const Engine::Window &window);
-    void _alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow);
-    Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
+    void _inspContour(const Engine::Window &window);
+    void _inspPolarityGroup(const Engine::WindowGroup &windowGroup);
+    void _alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow);    
 
 private:
-    Vision::VectorOfMat                     m_vec2DCaptureImages;
     Vision::VectorOfMat                     m_vec2DImages;
     DeviceInspWindowVector                  m_vecDeviceWindows;
 };

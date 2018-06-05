@@ -14,35 +14,50 @@ Insp3DHeightRunnable::Insp3DHeightRunnable(
     const std::vector<Calc3DHeightRunnablePtr> &vecCalc3DHeightRunnable,
     Insp2DRunnablePtr                           ptrInsp2DRunnable,
     const cv::Point2f                          &ptFramePos,
+    Vision::VectorOfMat                        *pVec3DFrameImages,
+    int                                         nRow,
+    int                                         nCol,
+    int                                         nTotalRows,
+    int                                         nTotalCols,
     BoardInspResultPtr                         &ptrBoardInsResult) :
-    m_pThreadPoolCalc3DInsp2D   (pCalc3DHeightThreadPool),
-    m_vecCalc3DHeightRunnable   (vecCalc3DHeightRunnable),
-    m_ptrInsp2DRunnable         (ptrInsp2DRunnable),
-    InspRunnable                (ptFramePos, ptrBoardInsResult)
+        m_pThreadPoolCalc3DInsp2D   (pCalc3DHeightThreadPool),
+        m_vecCalc3DHeightRunnable   (vecCalc3DHeightRunnable),
+        m_ptrInsp2DRunnable         (ptrInsp2DRunnable),
+        m_pVec3DFrameImages         (pVec3DFrameImages),
+        m_nRow                      (nRow),
+        m_nCol                      (nCol),
+        m_nTotalRows                (nTotalRows),
+        m_nTotalCols                (nTotalCols),
+        InspRunnable                (ptFramePos, ptrBoardInsResult)
 {
 }
 
-Insp3DHeightRunnable::~Insp3DHeightRunnable()
-{
+Insp3DHeightRunnable::~Insp3DHeightRunnable() {
+}
+
+void Insp3DHeightRunnable::set3DHeight(const cv::Mat &mat3DHeight) {
+    m_mat3DHeight = mat3DHeight;
 }
 
 void Insp3DHeightRunnable::run()
 {
-    m_pThreadPoolCalc3DInsp2D->waitForDone();    
+    m_pThreadPoolCalc3DInsp2D->waitForDone();
     TimeLogInstance->addTimeLog(std::string("Finished wait for 3D calculation done in thead ") + QThread::currentThread()->objectName().toStdString());
 
+    if (!m_vecCalc3DHeightRunnable.empty()) {
+        QVector<cv::Mat> vecMatHeight;
+        for (const auto &ptrCalc3DHeightRunnable : m_vecCalc3DHeightRunnable)
+            vecMatHeight.push_back(ptrCalc3DHeightRunnable->get3DHeight());
+
+        IVision* pVision = getModule<IVision>(VISION_MODEL);
+        if (!pVision) return;
+
+        pVision->setInspect3DHeight(vecMatHeight);
+        pVision->merge3DHeight(vecMatHeight, m_mat3DHeight);
+        (*m_pVec3DFrameImages)[m_nRow * m_nTotalCols + m_nCol] = m_mat3DHeight;
+    }
+
     auto vecDeviceInspWindow = m_ptrInsp2DRunnable->getDeviceInspWindow();
-
-    QVector<cv::Mat> vecMatHeight;
-    for (const auto &ptrCalc3DHeightRunnable : m_vecCalc3DHeightRunnable)
-        vecMatHeight.push_back(ptrCalc3DHeightRunnable->get3DHeight());
-
-    IVision* pVision = getModule<IVision>(VISION_MODEL);
-	if (!pVision) return;
-
-    pVision->setInspect3DHeight(vecMatHeight);
-    pVision->merge3DHeight(vecMatHeight, m_mat3DHeight);   
-
     for (const auto &deviceInspWindow : vecDeviceInspWindow) {
         for (const auto &windowGroup : deviceInspWindow.vecWindowGroup) {
             auto iterHeightCheckWindow = std::find_if(windowGroup.vecWindows.begin(), windowGroup.vecWindows.end(), [](const Engine::Window &window) { return Engine::Window::Usage::HEIGHT_MEASURE == window.usage; });
