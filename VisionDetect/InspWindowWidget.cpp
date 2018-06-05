@@ -20,6 +20,7 @@
 #include "InspContourWidget.h"
 #include "InspChipWidget.h"
 #include "TreeWidgetInspWindow.h"
+#include "VisionAPI.h"
 
 static const QString DEFAULT_WINDOW_NAME[] =
 {
@@ -254,6 +255,11 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
             if (result != QMessageBox::StandardButton::Ok)
                 return;
 
+            Engine::Window window;
+            Engine::GetWindow(windowId, window);
+            if (window.recordId > 0)
+              AOI::Vision::PR_FreeRecord(window.recordId);
+
             result = Engine::DeleteWindow(windowId);
             if (result != Engine::OK) {
                 String errorType, errorMessage;
@@ -263,6 +269,7 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
                 System->showMessage(QStringLiteral("检测框"), msg);
                 return;
             }
+
             auto pParent = pItem->parent();
             if (NULL == pParent)
                 ui.treeWidget->takeTopLevelItem(ui.treeWidget->indexOfTopLevelItem(pItem));

@@ -42,6 +42,7 @@ API_CALL(int)  GetAllDevices(DeviceVector &vecDevice);
 API_CALL(int)  CreateWindow(Window &window);
 API_CALL(int)  DeleteWindow(Int64 windowId);
 API_CALL(int)  UpdateWindow(const Window &window);
+API_CALL(int)  GetWindow(Int64 windowId, Window &window);
 API_CALL(int)  GetDeviceWindows(Int64 deviceId, WindowVector &vecWindow);
 API_CALL(int)  GetDeviceUngroupedWindows(Int64 deviceId, WindowVector &vecWindow);
 API_CALL(int)  GetAllWindows(WindowVector &vecWindow);
