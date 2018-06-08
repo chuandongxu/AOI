@@ -95,6 +95,7 @@ private:
     DeviceInspWindowVector _getNotInspectedDeviceWindow() const;
     Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
     cv::Mat _combineBigImage(const Vision::VectorOfMat &vecMatImages);
+    void _generateResultBigImage(cv::Mat matBigImage, BoardInspResultPtr ptrBoardInspResult);
 
 private:
     std::atomic<bool>               m_exit;

@@ -59,24 +59,28 @@ void Insp3DHeightRunnable::run()
 
     auto vecDeviceInspWindow = m_ptrInsp2DRunnable->getDeviceInspWindow();
     for (const auto &deviceInspWindow : vecDeviceInspWindow) {
+        if (! deviceInspWindow.bAlignmentPassed)
+            continue;
+
         for (const auto &windowGroup : deviceInspWindow.vecWindowGroup) {
             auto iterHeightCheckWindow = std::find_if(windowGroup.vecWindows.begin(), windowGroup.vecWindows.end(), [](const Engine::Window &window) { return Engine::Window::Usage::HEIGHT_MEASURE == window.usage; });
             if (iterHeightCheckWindow != windowGroup.vecWindows.end()) {
                 _insp3DHeightGroup(windowGroup);
             }
         }
+        m_ptrBoardInspResult->addDeviceInspWindow(deviceInspWindow);
     }
 }
 
 void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowGroup)
 {
     auto iterHeightCheckWindow = std::find_if(windowGroup.vecWindows.begin(), windowGroup.vecWindows.end(), [](const Engine::Window &window) { return Engine::Window::Usage::HEIGHT_MEASURE == window.usage; });
-    auto window = *iterHeightCheckWindow;
+    auto windowInsp = *iterHeightCheckWindow;
 
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(windowInsp.inspParams.c_str(), &json_error);
 	if (json_error.error != QJsonParseError::NoError) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->addWindowStatus(windowInsp.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
 		return;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -87,9 +91,9 @@ void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowG
     stCmd.fEffectHRatioStart = jsonValue["MinRange"].toDouble();
 	stCmd.fEffectHRatioEnd = jsonValue["MaxRange"].toDouble();
 
-    stCmd.rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
-        window.width,
-        window.height,
+    stCmd.rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(windowInsp.x, windowInsp.y),
+        windowInsp.width,
+        windowInsp.height,
         m_ptFramePos,
         m_nImageWidthPixel,
         m_nImageHeightPixel,
@@ -112,5 +116,7 @@ void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowG
     }
 
     Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
-    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+
+    for (const auto &window : windowGroup.vecWindows)
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }

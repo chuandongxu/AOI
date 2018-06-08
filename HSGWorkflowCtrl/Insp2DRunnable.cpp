@@ -27,7 +27,11 @@ void Insp2DRunnable::run() {
     {
         auto iterAlignmentWindow = std::find_if(deviceWindow.vecUngroupedWindows.begin(), deviceWindow.vecUngroupedWindows.end(), [](const Engine::Window &window) { return window.usage == Engine::Window::Usage::ALIGNMENT; });
         if (iterAlignmentWindow != deviceWindow.vecUngroupedWindows.end()) {
-            _alignment(*iterAlignmentWindow, deviceWindow);
+            if ( _alignment(*iterAlignmentWindow, deviceWindow) != Vision::VisionStatus::OK) {
+                deviceWindow.bGood = false;
+                deviceWindow.bAlignmentPassed = false;
+                continue;
+            }
         }
 
         for (const auto &window : deviceWindow.vecUngroupedWindows) {
@@ -41,6 +45,7 @@ void Insp2DRunnable::run() {
                 _inspPolarityGroup(windowGroup);
             }
         }
+        m_ptrBoardInspResult->addDeviceInspWindow(deviceWindow);
     }
 }
 
@@ -365,12 +370,12 @@ void Insp2DRunnable::_inspContour(const Engine::Window &window) {
 
 void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) {
     auto iterPolarityCheckWindow = std::find_if(windowGroup.vecWindows.begin(), windowGroup.vecWindows.end(), [](const Engine::Window &window) { return Engine::Window::Usage::INSP_POLARITY == window.usage; });
-    auto window = *iterPolarityCheckWindow;
+    auto windowInsp = *iterPolarityCheckWindow;
 
     QJsonParseError json_error;
-    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(windowInsp.inspParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->addWindowStatus(windowInsp.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
         return;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -378,9 +383,9 @@ void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) 
     Vision::PR_INSP_POLARITY_CMD stCmd;
 	Vision::PR_INSP_POLARITY_RPY stRpy;
 
-    int nImageIndex = window.lightId - 1;
+    int nImageIndex = windowInsp.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->addWindowStatus(windowInsp.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
         return;
     }
 
@@ -389,9 +394,9 @@ void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) 
 	stCmd.enInspROIAttribute = static_cast<Vision::PR_OBJECT_ATTRIBUTE>(jsonValue["Attribute"].toInt());
 	stCmd.nGrayScaleDiffTol = jsonValue["IntensityDiffTol"].toInt();
 
-	stCmd.rectInspROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
-        window.width,
-        window.height,
+	stCmd.rectInspROI = DataUtils::convertWindowToFrameRect(cv::Point2f(windowInsp.x, windowInsp.y),
+        windowInsp.width,
+        windowInsp.height,
         m_ptFramePos,
         m_nImageWidthPixel,
         m_nImageHeightPixel,
@@ -413,15 +418,16 @@ void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) 
     }
 
 	Vision::PR_InspPolarity(&stCmd, &stRpy);
-    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+    for (const auto &window : windowGroup.vecWindows)
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }
 
-void Insp2DRunnable::_alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow) {
+Vision::VisionStatus Insp2DRunnable::_alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow) {
     QJsonParseError json_error;
     QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
-        return;
+        return Vision::VisionStatus::INVALID_PARAM;
     }
     QJsonObject jsonValue = parse_doucment.object();
 
@@ -437,7 +443,7 @@ void Insp2DRunnable::_alignment(const Engine::Window &window, DeviceInspWindow &
     int nImageIndex = window.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
-        return;
+        return Vision::VisionStatus::INVALID_PARAM;
     }
 
     stCmd.matInputImg = m_vec2DImages[nImageIndex];
@@ -477,4 +483,5 @@ void Insp2DRunnable::_alignment(const Engine::Window &window, DeviceInspWindow &
             }
         }
     }
+    return stRpy.enStatus;
 }

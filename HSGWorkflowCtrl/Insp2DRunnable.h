@@ -30,11 +30,13 @@ private:
     void _findCircle(const Engine::Window &window);
     void _inspContour(const Engine::Window &window);
     void _inspPolarityGroup(const Engine::WindowGroup &windowGroup);
-    void _alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow);    
+    Vision::VisionStatus _alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow);
 
 private:
-    Vision::VectorOfMat                     m_vec2DImages;
-    DeviceInspWindowVector                  m_vecDeviceWindows;
+    Vision::VectorOfMat     m_vec2DImages;
+    DeviceInspWindowVector  m_vecDeviceWindows;
+    bool                    m_bWithFatalError = false;
+    std::string             m_strErrorMsg;
 };
 
 using Insp2DRunnablePtr = std::shared_ptr<Insp2DRunnable>;

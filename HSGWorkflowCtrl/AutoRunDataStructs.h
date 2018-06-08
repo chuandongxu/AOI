@@ -12,6 +12,8 @@ struct DeviceInspWindow
     Engine::WindowVector    vecUngroupedWindows;
     WindowGroupVector       vecWindowGroup;
     bool                    bInspected = false;
+    bool                    bAlignmentPassed = true;
+    bool                    bGood = true;
 };
 
 using DeviceInspWindowVector = std::vector<DeviceInspWindow>;
