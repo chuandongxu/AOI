@@ -4,6 +4,8 @@
 #include "ui_CameraSetting.h"
 #include "CameraCtrl.h"
 
+#include <qmutex.h>
+
 #include "opencv/cv.h"
 
 class IGraphicEditor;
@@ -59,4 +61,6 @@ private:
 	IGraphicEditor *m_pGraphicsEditor;	
     int m_lastIndexMode;
     int m_lastIndexNum;
+
+    QMutex m_mutex;
 };

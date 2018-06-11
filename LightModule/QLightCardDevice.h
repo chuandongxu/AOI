@@ -25,4 +25,6 @@ private:
 
 private:
     ILight::TRIGGER m_emTrig;
+
+    bool m_bSetChn;
 };
