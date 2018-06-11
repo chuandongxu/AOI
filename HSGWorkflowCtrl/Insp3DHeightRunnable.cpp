@@ -59,24 +59,30 @@ void Insp3DHeightRunnable::run()
 
     auto vecDeviceInspWindow = m_ptrInsp2DRunnable->getDeviceInspWindow();
     for (const auto &deviceInspWindow : vecDeviceInspWindow) {
+        if (! deviceInspWindow.bAlignmentPassed)
+            continue;
+
         for (const auto &windowGroup : deviceInspWindow.vecWindowGroup) {
             auto iterHeightCheckWindow = std::find_if(windowGroup.vecWindows.begin(), windowGroup.vecWindows.end(), [](const Engine::Window &window) { return Engine::Window::Usage::HEIGHT_MEASURE == window.usage; });
             if (iterHeightCheckWindow != windowGroup.vecWindows.end()) {
                 _insp3DHeightGroup(windowGroup);
             }
         }
+        m_ptrBoardInspResult->addDeviceInspWindow(deviceInspWindow);
     }
 }
 
 void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowGroup)
 {
     auto iterHeightCheckWindow = std::find_if(windowGroup.vecWindows.begin(), windowGroup.vecWindows.end(), [](const Engine::Window &window) { return Engine::Window::Usage::HEIGHT_MEASURE == window.usage; });
-    auto window = *iterHeightCheckWindow;
+    auto windowInsp = *iterHeightCheckWindow;
 
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(windowInsp.inspParams.c_str(), &json_error);
 	if (json_error.error != QJsonParseError::NoError) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->setFatalError();
+        std::string strErrorMsg = "Window \"" + windowInsp.name + "\" color parameters \"" + windowInsp.colorParams + "\" is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
 		return;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -87,9 +93,9 @@ void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowG
     stCmd.fEffectHRatioStart = jsonValue["MinRange"].toDouble();
 	stCmd.fEffectHRatioEnd = jsonValue["MaxRange"].toDouble();
 
-    stCmd.rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
-        window.width,
-        window.height,
+    stCmd.rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(windowInsp.x, windowInsp.y),
+        windowInsp.width,
+        windowInsp.height,
         m_ptFramePos,
         m_nImageWidthPixel,
         m_nImageHeightPixel,
@@ -112,5 +118,17 @@ void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowG
     }
 
     Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
-    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window \"" + windowInsp.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+            return;
+        }
+    }
+
+    for (const auto &window : windowGroup.vecWindows)
+        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }

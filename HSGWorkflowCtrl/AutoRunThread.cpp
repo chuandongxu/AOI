@@ -103,6 +103,8 @@ void AutoRunThread::run()
     m_boardName.clear();
 
 	double dtime_start = 0, dtime_movePos = 0;
+    BoardInspResultPtr ptrBoardInspResult;
+
 	while (! isExit())
 	{
 		//if (! waitStartBtn()) continue;
@@ -115,18 +117,36 @@ void AutoRunThread::run()
         if(!m_boardName.isEmpty())
             System->setTrackInfo(QStringLiteral("电路板: ") + m_boardName + QStringLiteral(" 检测完毕."));
 
+        if (ptrBoardInspResult != nullptr) {
+            _generateResultBigImage(m_vecMatBigImage[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT], ptrBoardInspResult);
+
+            if (ptrBoardInspResult->isWithFatalError()) {
+                m_strErrorMsg = ptrBoardInspResult->getErrorMsg();
+                _sendErrorAndWaitForResponse();
+            }
+
+            if (isExit()) break;
+        }
+
         _readBarcode();
-        BoardInspResultPtr ptrBoardInspResult = std::make_shared<BoardInspResult>(m_boardName);
+        ptrBoardInspResult = std::make_shared<BoardInspResult>(m_boardName);
         m_pMapBoardInspResult->insert(m_boardName, ptrBoardInspResult);
 
-		if (! _doAlignment()) break;
-		if (isExit()) break;
+		if (! _doAlignment()) {
+		    if (isExit()) break;
+            else continue;
+        }
+
+        if (isExit()) break;
 		TimeLogInstance->addTimeLog("Finished do alignment.");
 
         if (m_vecVecFrameCtr.empty())
             break;
 
-        if(! _doInspection(ptrBoardInspResult)) break;
+        if(! _doInspection(ptrBoardInspResult)) {
+            if (isExit()) break;
+            else continue;
+        }
         if (isExit()) break;
 	}
 
@@ -147,33 +167,30 @@ void AutoRunThread::run()
 
 void AutoRunThread::postRunning()
 {
-    QEos::Notify(EVENT_THREAD_STATE, MAIN_THREAD_CLOSED);
+    QEos::Notify(EVENT_THREAD_STATE, THREAD_CLOSED);
 }
 
 bool AutoRunThread::waitStartBtn()
 {
-	IData * pData = getModule<IData>(DATA_MODEL);
-	if (pData)
-	{
-		int iState = 0;
+    IData * pData = getModule<IData>(DATA_MODEL);
+    if (pData) {
+        int iState = 0;
 
-		QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_WAIT_START, 0);
+        QEos::Notify(EVENT_CHECK_STATE, 0, STATION_STATE_WAIT_START, 0);
 
-		while (1)
-		{
-			if (pData->getCycleTests() > 0)
-			{
-				return true;
-			}
+        while (1) {
+            if (pData->getCycleTests() > 0) {
+                return true;
+            }
 
-			if (isExit())return false;
-			QThread::msleep(10);
-		}
+            if (isExit())return false;
+            QThread::msleep(10);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 bool AutoRunThread::moveToCapturePos(float fPosX, float fPosY)
@@ -317,6 +334,9 @@ bool AutoRunThread::_readBarcode()
     // Read the bard code.
     // Need to implement later.
     m_boardName = "Board_" + QDateTime::currentDateTime().toString();
+    for (auto &chValue : m_boardName)
+        if (':' == chValue )
+            chValue = '_';
     return true;
 }
 
@@ -376,8 +396,11 @@ bool AutoRunThread::_doAlignment()
     TimeLogInstance->addTimeLog("Search for alignment point done.");
     
     for (size_t i = 0; i < m_vecAlignments.size(); ++ i) {
-        if (Vision::VisionStatus::OK != vecAlignmentRunnable[i]->getStatus())
+        if (Vision::VisionStatus::OK != vecAlignmentRunnable[i]->getStatus()) {
+            m_strErrorMsg = "Alignment fail";
+            _sendErrorAndWaitForResponse();
             return false;
+        }            
 
         if (System->isRunOffline())
             vecSrchPoint.push_back(cv::Point(m_vecAlignments[i].tmplPosX, m_vecAlignments[i].tmplPosY));
@@ -443,8 +466,7 @@ bool AutoRunThread::_alignWindows()
     return true;
 }
 
-bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
-{
+bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
     bool bGood = true;
     int ROWS = m_vecVecFrameCtr.size();
     int COLS = m_vecVecFrameCtr[0].size();
@@ -478,6 +500,12 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
             TimeLogInstance->addTimeLog("Capture all images.");
 
             QThreadPool::globalInstance()->waitForDone();
+            if (ptrBoardInspResult->isWithFatalError()) {
+                m_strErrorMsg = ptrBoardInspResult->getErrorMsg();
+                _sendErrorAndWaitForResponse();
+                bGood = false;
+                break;
+            }
 
             std::vector<Calc3DHeightRunnablePtr> vecCalc3dHeightRunnable;
             for (int nDlpId = 0; nDlpId < m_nDLPCount; ++ nDlpId) {
@@ -550,7 +578,6 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult)
             QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
         }
     }
-
     
     return bGood;
 }
@@ -615,8 +642,8 @@ Vision::VectorOfMat AutoRunThread::_generate2DImages(const Vision::VectorOfMat &
     }
 
     Vision::VectorOfMat vecChannels{matBlue, matGreen, matRed};
-    cv::Mat matPseudocolorImage;
-    cv::merge(vecChannels, matPseudocolorImage);
+    cv::Mat matPseudoColorImage;
+    cv::merge(vecChannels, matPseudoColorImage);
 
     cv::Mat matTopLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT];
     if (bColorCamera)
@@ -628,7 +655,7 @@ Vision::VectorOfMat AutoRunThread::_generate2DImages(const Vision::VectorOfMat &
 	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
     vecResultImages.push_back(matLowAngleLightImage);
 
-    vecResultImages.push_back(matPseudocolorImage);
+    vecResultImages.push_back(matPseudoColorImage);
 
 	cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
     if (bColorCamera)
@@ -656,4 +683,85 @@ cv::Mat AutoRunThread::_combineBigImage(const Vision::VectorOfMat &vecMatImages)
         System->setTrackInfo(QString(QStringLiteral("合并大图失败.")));
         return cv::Mat();
     }
+}
+
+void AutoRunThread::_generateResultBigImage(cv::Mat matBigImage, BoardInspResultPtr ptrBoardInspResult) {
+    cv::Point2f ptBigImageCenter((m_fBoardLeftPos + m_fBoardRightPos) / 2.f, (m_fBoardTopPos, m_fBoardBtmPos) / 2.f);
+    // Only has frame in X direction. It should only happen when there is only X axis can move.
+    if (fabs(ptBigImageCenter.y) <= 0.01f)
+        ptBigImageCenter.y = matBigImage.rows * m_dResolutionY / 2.f;
+
+    cv::Scalar scalarGreen(0, 255, 0), scalarRed(0, 0, 255), scalarYellow(0, 255, 255);
+
+    auto drawText = [](cv::Mat &matImage, const cv::Rect &rectROI, const std::string &strText) {
+        int baseline = 0;
+        int fontFace = cv::FONT_HERSHEY_SIMPLEX;
+        double fontScale = 1;
+        int thickness = 2;
+        cv::Size textSize = cv::getTextSize(strText, fontFace, fontScale, thickness, &baseline);
+        //The height use '+' because text origin start from left-bottom.
+        cv::Point ptTextOrg(rectROI.x + (rectROI.width - textSize.width) / 2, rectROI.y + (rectROI.height + textSize.height) / 2);
+        cv::putText(matImage, strText, ptTextOrg, fontFace, fontScale, cv::Scalar(255, 0, 0), thickness);
+    };
+
+    auto vecDeviceInspWindow = ptrBoardInspResult->getDeviceInspWindow();
+    for (const auto &deviceInspWindow : vecDeviceInspWindow) {
+        for (const auto &window : deviceInspWindow.vecUngroupedWindows) {
+            auto rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
+                window.width,
+                window.height,
+                ptBigImageCenter,
+                matBigImage.cols,
+                matBigImage.rows,
+                m_dResolutionX,
+                m_dResolutionY);
+            cv::Scalar scalar;
+            auto status = ptrBoardInspResult->getWindowStatus(window.Id);
+            if (status < 0)
+                scalar = scalarYellow;
+            else if(0 == status)
+                scalar = scalarGreen;
+            else
+                scalar = scalarRed;
+            cv::rectangle(matBigImage, rectROI, scalar, 2);
+            drawText(matBigImage, rectROI, window.name);
+        }
+
+        for (const auto &windowGroup : deviceInspWindow.vecWindowGroup) {
+            for (const auto &window : windowGroup.vecWindows) {
+                auto rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
+                    window.width,
+                    window.height,
+                    ptBigImageCenter,
+                    matBigImage.cols,
+                    matBigImage.rows,
+                    m_dResolutionX,
+                    m_dResolutionY);
+                cv::Scalar scalar;
+                auto status = ptrBoardInspResult->getWindowStatus(window.Id);
+                if (status < 0)
+                    scalar = scalarYellow;
+                else if (0 == status)
+                    scalar = scalarGreen;
+                else
+                    scalar = scalarRed;
+                cv::rectangle(matBigImage, rectROI, scalar, 2);
+                drawText(matBigImage, rectROI, window.name);
+            }
+        }
+    }
+
+    std::string strCapture = "./capture/";
+    strCapture += ptrBoardInspResult->getBoardName().toStdString() + "_result.png";
+    cv::imwrite(strCapture, matBigImage);
+}
+
+void AutoRunThread::_sendErrorAndWaitForResponse() {
+    QEos::Notify(EVENT_THREAD_STATE, AUTO_RUN_WITH_ERROR);
+    m_conditionVariable.wait(std::unique_lock<std::mutex>(m_mutex));
+}
+
+void AutoRunThread::nofityResponse(bool bExit) {
+    m_exit = bExit;
+    m_conditionVariable.notify_one();
 }
