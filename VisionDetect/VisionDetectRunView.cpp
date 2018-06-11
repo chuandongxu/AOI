@@ -244,8 +244,9 @@ void VisionDetectRunView::initUI()
 
 	bool b3DDetectGaussionFilter = System->getParam("3d_detect_gaussion_filter").toBool();
 	bool b3DDetectReverseSeq = System->getParam("3d_detect_reverse_seq").toBool();
+    bool b3DDetectThinkPattern = System->getParam("3d_detect_thin_pattern").toBool();
 	ui.checkBox_3DDetectGaussionFilter->setChecked(b3DDetectGaussionFilter);
-	ui.checkBox_3DDetectReverseSeq->setChecked(b3DDetectReverseSeq);
+    ui.checkBox_3DDetectThinPattern->setChecked(b3DDetectThinkPattern);
 	double d3DDetectMinIntDiff = System->getParam("3d_detect_min_intensity_diff").toDouble();
 	ui.lineEdit_3DDetectMinIntDiff->setText(QString("%1").arg(d3DDetectMinIntDiff));
 
@@ -338,7 +339,6 @@ void VisionDetectRunView::initUI()
 	ui.lineEdit_dlpPDMagnitudeOfDLP->setText(QString("%1").arg(dMagnitudeOfDlpPD));
 	ui.lineEdit_dlpPDPixelCycle->setText(QString("%1").arg(dDlpPDPixelCycle));
 	ui.lineEdit_dlpPDGaussianSigma->setText(QString("%1").arg(dDlpPDGaussianSigma));
-
 
 	connect(ui.pushButton_dlpPDOpen, SIGNAL(clicked()), SLOT(onDlpPDOpen()));
 	connect(ui.pushButton_DetectDlpPD, SIGNAL(clicked()), SLOT(onDetectDlpPD()));
@@ -1095,7 +1095,6 @@ void VisionDetectRunView::on3DDetectOpen()
 	}
 }
 
-
 void VisionDetectRunView::on3DDetect()
 {
 	QString sz3DDetectFile = ui.lineEdit_3DDetectFile->text();
@@ -1127,15 +1126,13 @@ void VisionDetectRunView::on3DDetect()
 		return;
 	}
 
-	bool b3DDetectCaliUseThinPattern = ui.checkBox_3DCaliUseThinPattern->isChecked();
+	bool b3DDetectUseThinPattern = ui.checkBox_3DDetectThinPattern->isChecked();
 	bool b3DDetectGaussionFilter = ui.checkBox_3DDetectGaussionFilter->isChecked();
-	bool b3DDetectReverseSeq = ui.checkBox_3DDetectReverseSeq->isChecked();
 	double d3DDetectMinIntDiff = ui.lineEdit_3DDetectMinIntDiff->text().toDouble();
 	double d3DDetectPhaseShift = ui.doubleSpinBox_phaseShift->value();
 	stCmd.bEnableGaussianFilter = b3DDetectGaussionFilter;
-	stCmd.bReverseSeq = b3DDetectReverseSeq;
 	stCmd.fMinAmplitude = d3DDetectMinIntDiff;
-	stCmd.bUseThinnestPattern = b3DDetectCaliUseThinPattern;
+	stCmd.bUseThinnestPattern = b3DDetectUseThinPattern;
 	stCmd.fPhaseShift = d3DDetectPhaseShift;
 
 	cv::Mat matBaseSurfaceParam;
@@ -1388,15 +1385,15 @@ void VisionDetectRunView::on3DDetectMerge()
 
 void VisionDetectRunView::onSave3DDetectParams()
 {
+    bool b3DDetectThinPattern = ui.checkBox_3DDetectThinPattern->isChecked();
 	bool b3DDetectGaussionFilter = ui.checkBox_3DDetectGaussionFilter->isChecked();
-	bool b3DDetectReverseSeq = ui.checkBox_3DDetectReverseSeq->isChecked();
 	double d3DDetectMinIntDiff = ui.lineEdit_3DDetectMinIntDiff->text().toDouble();
 	double d3DDetectHeightDiffThd = ui.lineEdit_3DDetectHeightDiffThreshold->text().toDouble();
 	double d3DDetectHeightNoiseThd = ui.lineEdit_3DDetectHeightNoiseThreshold->text().toDouble();
 	double d3DDetectPhaseShift = ui.doubleSpinBox_phaseShift->value();
 
+    System->setParam("3d_detect_thin_pattern", b3DDetectThinPattern);
 	System->setParam("3d_detect_gaussion_filter", b3DDetectGaussionFilter);
-	System->setParam("3d_detect_reverse_seq", b3DDetectReverseSeq);
 	System->setParam("3d_detect_min_intensity_diff", d3DDetectMinIntDiff);
 	System->setParam("3d_detect_height_diff_threshold", d3DDetectHeightDiffThd);
 	System->setParam("3d_detect_height_noise_threshold", d3DDetectHeightNoiseThd);
