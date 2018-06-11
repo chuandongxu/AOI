@@ -14,6 +14,7 @@
 QLightCardDevice::QLightCardDevice(const QString & devName, int nChnNum, QObject *parent)
     : QLightDevice(devName, nChnNum, parent)
 {
+    m_bSetChn = false;
 }
 
 QLightCardDevice::~QLightCardDevice()
@@ -45,8 +46,8 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
         lums[i] = ToInt(getChLuminance(i) / 10.0);
     }
 
-    //int plus[_CHN_NUM] = { 0x02, 0x10, 0x01, 0x04, 0x28, 0x12 };
-    int plus[_CHN_NUM] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20 };
+    int plus[_CHN_NUM] = { 0x02, 0x10, 0x01, 0x04, 0x28, 0x12 };
+    //int plus[_CHN_NUM] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20 };
 
     //设置DLP曝光参数
     const double dPatternExposure = System->getParam("motion_trigger_pattern_exposure").toDouble() * 100;
@@ -209,16 +210,25 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
 
     szCmd = "SetCh" + QString::number(8) + " " + QString::number(1) + "\r\n";
     writeCmd(szCmd);
+
+    m_bSetChn = false;
 }
 
 bool QLightCardDevice::trigger()
 {
     QString szCmd;
 
-    szCmd = "SetCh" + QString::number(8) + " " + QString::number(0) + "\r\n";
-    writeCmd(szCmd);
+    if (!m_bSetChn)
+    {
+        szCmd = "SetCh" + QString::number(8) + " " + QString::number(0) + "\r\n";
+        writeCmd(szCmd);
 
-    szCmd = "Start" + QString("") + " " + QString::number(getPatternNum()) + "\r\n";
+        QThread::msleep(200);
+
+        m_bSetChn = true;
+    }
+
+    szCmd = "Start" + QString("") + " " + QString::number(getPatternNum() + 2) + "\r\n";
     writeCmd(szCmd);
 
     return true;
@@ -228,6 +238,7 @@ void QLightCardDevice::writeCmd(const QString& szCmd)
 {
     if (m_comPort)
     {
+        qDebug() << "LiCard, write cmd";
         m_comPort->write(szCmd.toLocal8Bit());
 
         int nWaitTime = 1 * 100;
@@ -243,6 +254,8 @@ void QLightCardDevice::writeCmd(const QString& szCmd)
                     break;
                 }
             }
+
+            qDebug() << "LiCard, try to read...";
 
             QThread::msleep(10);
         }

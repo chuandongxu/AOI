@@ -186,7 +186,7 @@ bool QLightCtrl::triggerCapturing(ILight::TRIGGER emTrig, bool bWaitDone, bool b
     {
         QLightDevice * pDevice = getLightDevice(0);
         if (pDevice)
-        {
+        {           
             pDevice->trigger();
         }
     }

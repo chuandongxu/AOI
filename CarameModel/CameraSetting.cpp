@@ -3,6 +3,7 @@
 #include "../include/workflowDefine.h"
 #include "../Common/eos.h"
 #include "../Common/SystemData.h"
+#include "../Common/ThreadPrioc.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../include/ICamera.h"
@@ -493,6 +494,8 @@ void CameraSetting::onEndSetupDLP()
 
 void CameraSetting::onCaptureDLP()
 {
+    QAutoLocker loacker(&m_mutex);
+
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
     if (!pMotion) return;
 
@@ -568,7 +571,6 @@ void CameraSetting::onCaptureDLP()
         break;
     }
 
-
     ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
     if (pCam)
     {
@@ -589,6 +591,8 @@ void CameraSetting::onSelectLightIndexChanged(int iIndex)
 
 void CameraSetting::onCaptureLight()
 {
+    QAutoLocker loacker(&m_mutex);
+
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
     if (!pMotion) return;
 
@@ -608,7 +612,7 @@ void CameraSetting::onCaptureLight()
 
         bool bTriggerBoard = System->isTriggerBoard();
         if (bTriggerBoard)
-        {
+        {          
             if (!pLight->triggerCapturing(ILight::TRIGGER(ILight::TRIGGER_ONE_CH1 + nSelectLight), true, bClearSteup))
             {
                 System->setTrackInfo(QString("triggerCapturing error!"));
