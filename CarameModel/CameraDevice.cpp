@@ -79,7 +79,6 @@ bool CameraDevice::getStatus()
 	return m_bOpen;
 }
 
-
 BaslerCameraDevice::BaslerCameraDevice(IPylonDevice* dev, QString cameraName, QString  cameraID)
 	:CameraDevice(cameraName, cameraID)
 {

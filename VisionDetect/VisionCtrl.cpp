@@ -103,7 +103,7 @@ bool VisionCtrl::loadCmdData(int nStation)
 {
 	if (m_stCalcHeightCmds[nStation - 1].matThickToThinK.empty())
 	{
-		bool b3DDetectCaliUseThinPattern = System->getParam("3d_detect_cali_thin_pattern").toBool();
+		bool b3DDetectCaliUseThinPattern = System->getParam("3d_detect_thin_pattern").toBool();
 		bool b3DDetectGaussionFilter = System->getParam("3d_detect_gaussion_filter").toBool();
 		//bool b3DDetectReverseSeq = System->getParam("3d_detect_reverse_seq").toBool();
 		double d3DDetectMinIntDiff = System->getParam("3d_detect_min_intensity_diff").toDouble();
@@ -179,7 +179,7 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
 			m_stCalcHeightCmds[nStation - 1].vecInputImgs.push_back(imageMats[i]);
 		}
 
-		bool b3DDetectCaliUseThinPattern = System->getParam("3d_detect_cali_thin_pattern").toBool();
+		bool b3DDetectCaliUseThinPattern = System->getParam("3d_detect_thin_pattern").toBool();
 		bool b3DDetectGaussionFilter = System->getParam("3d_detect_gaussion_filter").toBool();
 		//bool b3DDetectReverseSeq = System->getParam("3d_detect_reverse_seq").toBool();
 		double d3DDetectMinIntDiff = System->getParam("3d_detect_min_intensity_diff").toDouble();

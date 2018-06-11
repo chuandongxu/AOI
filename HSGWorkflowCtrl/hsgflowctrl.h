@@ -33,7 +33,6 @@ protected slots:
 	void home();
 	void startAutoRun();
 	void stopAutoRun();
-    void onError(const QString &strMsg);
 
 protected:
 	void readbarCode();
@@ -52,6 +51,7 @@ protected:
 private:
     int _prepareRunData();
     void _refreshDisplayImage();
+    void _onAutoRunError();
 
 private:
 	int                             m_timerId;

@@ -89,12 +89,18 @@ void QFlowCtrl::onThreadState(const QVariantList &data)
 
     switch (iEvent)
     {
-    case MAIN_THREAD_CLOSED:
+    case THREAD_CLOSED:
         stop();
         break;
+
     case REFRESH_BIG_IMAGE:
         _refreshDisplayImage();
         break;
+
+    case AUTO_RUN_WITH_ERROR:
+        _onAutoRunError();
+        break;
+
     default:
         break;
     }
@@ -104,7 +110,7 @@ void QFlowCtrl::home()
 {	
 	if(m_isStart)
 	{
-		QSystem::showMessage(QStringLiteral("提示"),QStringLiteral("设备正在运行中，请先停止在回零"));
+		QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在运行中，请先停止在回零"));
 		QApplication::processEvents();
 
 		//this->stop();
@@ -150,11 +156,6 @@ void QFlowCtrl::startAutoRun()
 void QFlowCtrl::stopAutoRun()
 {
 	if (m_isStart) stop();
-}
-
-void QFlowCtrl::onError(const QString &strMsg)
-{
-    QSystem::showMessage(QStringLiteral("警告"), strMsg);
 }
 
 void QFlowCtrl::readbarCode()
@@ -208,48 +209,45 @@ void QFlowCtrl::reset()
 	
 void QFlowCtrl::start()
 {
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return;
+    ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+    if (!pCam) return;
 
-	IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
-	if (!pDlp) return;
+    IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
+    if (!pDlp) return;
 
-	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-	if (!pUI) return;
+    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    if (!pUI) return;
 
     if (_prepareRunData() != OK)
         return;
 
-	if(!m_isHome)
-	{		
-		QSystem::showMessage(QStringLiteral("提示"),QStringLiteral("请先将设备回零"));
-		return;
-	}
+    if (!m_isHome) {
+        QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("请先将设备回零"));
+        return;
+    }
 
-	if(m_isStart)
-	{		
-		QSystem::showMessage(QStringLiteral("提示"),QStringLiteral("设备正在运行，请先按停止按钮"));
-		return;
-	}
+    if (m_isStart) {
+        QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在运行，请先按停止按钮"));
+        return;
+    }
 
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在启动中..."), 0);
-	QApplication::processEvents();	
+    QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在启动中..."), 0);
+    QApplication::processEvents();
 
     if (! System->isRunOffline()) {
-		pCam->selectCaptureMode(ICamera::TRIGGER_ALL);
-	    if (pCam->getCameraNum() > 0)
-	    {
-		    if (!pUI->startUpCapture(false))
-		    {
-			    QSystem::closeMessage();
-			    QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));
-			    return;
-		    }
-	    }else {
-		    QSystem::closeMessage();
-		    QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("请检查相机是否连接。"));
-		    return;
-	    }
+        pCam->selectCaptureMode(ICamera::TRIGGER_ALL);
+        if (pCam->getCameraNum() > 0) {
+            if (!pUI->startUpCapture(false)) {
+                QSystem::closeMessage();
+                QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));
+                return;
+            }
+        }
+        else {
+            QSystem::closeMessage();
+            QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("请检查相机是否连接。"));
+            return;
+        }
 
         int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
         for (int i = 0; i < nStationNum; ++ i) {
@@ -269,13 +267,13 @@ void QFlowCtrl::start()
     connect(m_pAutoRunThread, &AutoRunThread::finished, m_pAutoRunThread, &QObject::deleteLater);
     m_pAutoRunThread->start();
 
-	m_isStart = true;
+    m_isStart = true;
 
-	QEos::Notify(EVENT_RUN_STATE,RUN_STATE_RUNING);
+    QEos::Notify(EVENT_RUN_STATE, RUN_STATE_RUNING);
 
-	System->setParam("camera_show_image_toScreen_enable", false);
+    System->setParam("camera_show_image_toScreen_enable", false);
 
-	QSystem::closeMessage();
+    QSystem::closeMessage();
 }
 	
 void QFlowCtrl::stop()
@@ -476,4 +474,12 @@ int QFlowCtrl::_prepareRunData()
 void QFlowCtrl::_refreshDisplayImage() {
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     pUI->setImage(m_pAutoRunThread->getBigImage());
+}
+
+void QFlowCtrl::_onAutoRunError() {
+    int nReturn = System->showInteractMessage(QString(QStringLiteral("自动运行")), m_pAutoRunThread->getErrorMsg());
+    bool bExit = false;
+    if (nReturn != QDialog::Accepted)
+        bExit = true;
+    m_pAutoRunThread->nofityResponse(bExit);
 }
