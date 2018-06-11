@@ -18,6 +18,10 @@ public:
     inline QString getBoardName() const { return m_boardName; }
     void addDeviceInspWindow(const DeviceInspWindow &deviceInspWindow);
     DeviceInspWindowVector getDeviceInspWindow() const;
+    void setFatalError() { m_bWithFatalError = true; }
+    bool isWithFatalError() const { return m_bWithFatalError; }
+    void setErrorMsg(const QString &strErrMsg) { m_strErrorMsg = strErrMsg; }
+    QString getErrorMsg() const { return m_strErrorMsg; }
 
 private:
     QString                 m_boardName;
@@ -26,6 +30,9 @@ private:
     QMutex                  m_mutex;
     QMap<int, int>          m_mapWindowStatus;
     DeviceInspWindowVector  m_vecDeviceInspWindow;
+
+    bool                    m_bWithFatalError = false;
+    QString                 m_strErrorMsg;
 };
 
 using BoardInspResultPtr = std::shared_ptr<BoardInspResult>;

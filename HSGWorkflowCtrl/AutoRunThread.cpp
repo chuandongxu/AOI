@@ -117,21 +117,36 @@ void AutoRunThread::run()
         if(!m_boardName.isEmpty())
             System->setTrackInfo(QStringLiteral("电路板: ") + m_boardName + QStringLiteral(" 检测完毕."));
 
-        if (ptrBoardInspResult != nullptr)
+        if (ptrBoardInspResult != nullptr) {
             _generateResultBigImage(m_vecMatBigImage[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT], ptrBoardInspResult);
+
+            if (ptrBoardInspResult->isWithFatalError()) {
+                m_strErrorMsg = ptrBoardInspResult->getErrorMsg();
+                _sendErrorAndWaitForResponse();
+            }
+
+            if (isExit()) break;
+        }
 
         _readBarcode();
         ptrBoardInspResult = std::make_shared<BoardInspResult>(m_boardName);
         m_pMapBoardInspResult->insert(m_boardName, ptrBoardInspResult);
 
-		if (! _doAlignment()) break;
-		if (isExit()) break;
+		if (! _doAlignment()) {
+		    if (isExit()) break;
+            else continue;
+        }
+
+        if (isExit()) break;
 		TimeLogInstance->addTimeLog("Finished do alignment.");
 
         if (m_vecVecFrameCtr.empty())
             break;
 
-        if(! _doInspection(ptrBoardInspResult)) break;
+        if(! _doInspection(ptrBoardInspResult)) {
+            if (isExit()) break;
+            else continue;
+        }
         if (isExit()) break;
 	}
 
@@ -152,7 +167,7 @@ void AutoRunThread::run()
 
 void AutoRunThread::postRunning()
 {
-    QEos::Notify(EVENT_THREAD_STATE, MAIN_THREAD_CLOSED);
+    QEos::Notify(EVENT_THREAD_STATE, THREAD_CLOSED);
 }
 
 bool AutoRunThread::waitStartBtn()
@@ -381,8 +396,11 @@ bool AutoRunThread::_doAlignment()
     TimeLogInstance->addTimeLog("Search for alignment point done.");
     
     for (size_t i = 0; i < m_vecAlignments.size(); ++ i) {
-        if (Vision::VisionStatus::OK != vecAlignmentRunnable[i]->getStatus())
+        if (Vision::VisionStatus::OK != vecAlignmentRunnable[i]->getStatus()) {
+            m_strErrorMsg = "Alignment fail";
+            _sendErrorAndWaitForResponse();
             return false;
+        }            
 
         if (System->isRunOffline())
             vecSrchPoint.push_back(cv::Point(m_vecAlignments[i].tmplPosX, m_vecAlignments[i].tmplPosY));
@@ -482,6 +500,12 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
             TimeLogInstance->addTimeLog("Capture all images.");
 
             QThreadPool::globalInstance()->waitForDone();
+            if (ptrBoardInspResult->isWithFatalError()) {
+                m_strErrorMsg = ptrBoardInspResult->getErrorMsg();
+                _sendErrorAndWaitForResponse();
+                bGood = false;
+                break;
+            }
 
             std::vector<Calc3DHeightRunnablePtr> vecCalc3dHeightRunnable;
             for (int nDlpId = 0; nDlpId < m_nDLPCount; ++ nDlpId) {
@@ -669,6 +693,17 @@ void AutoRunThread::_generateResultBigImage(cv::Mat matBigImage, BoardInspResult
 
     cv::Scalar scalarGreen(0, 255, 0), scalarRed(0, 0, 255), scalarYellow(0, 255, 255);
 
+    auto drawText = [](cv::Mat &matImage, const cv::Rect &rectROI, const std::string &strText) {
+        int baseline = 0;
+        int fontFace = cv::FONT_HERSHEY_SIMPLEX;
+        double fontScale = 1;
+        int thickness = 2;
+        cv::Size textSize = cv::getTextSize(strText, fontFace, fontScale, thickness, &baseline);
+        //The height use '+' because text origin start from left-bottom.
+        cv::Point ptTextOrg(rectROI.x + (rectROI.width - textSize.width) / 2, rectROI.y + (rectROI.height + textSize.height) / 2);
+        cv::putText(matImage, strText, ptTextOrg, fontFace, fontScale, cv::Scalar(255, 0, 0), thickness);
+    };
+
     auto vecDeviceInspWindow = ptrBoardInspResult->getDeviceInspWindow();
     for (const auto &deviceInspWindow : vecDeviceInspWindow) {
         for (const auto &window : deviceInspWindow.vecUngroupedWindows) {
@@ -689,6 +724,7 @@ void AutoRunThread::_generateResultBigImage(cv::Mat matBigImage, BoardInspResult
             else
                 scalar = scalarRed;
             cv::rectangle(matBigImage, rectROI, scalar, 2);
+            drawText(matBigImage, rectROI, window.name);
         }
 
         for (const auto &windowGroup : deviceInspWindow.vecWindowGroup) {
@@ -710,6 +746,7 @@ void AutoRunThread::_generateResultBigImage(cv::Mat matBigImage, BoardInspResult
                 else
                     scalar = scalarRed;
                 cv::rectangle(matBigImage, rectROI, scalar, 2);
+                drawText(matBigImage, rectROI, window.name);
             }
         }
     }
@@ -717,4 +754,14 @@ void AutoRunThread::_generateResultBigImage(cv::Mat matBigImage, BoardInspResult
     std::string strCapture = "./capture/";
     strCapture += ptrBoardInspResult->getBoardName().toStdString() + "_result.png";
     cv::imwrite(strCapture, matBigImage);
+}
+
+void AutoRunThread::_sendErrorAndWaitForResponse() {
+    QEos::Notify(EVENT_THREAD_STATE, AUTO_RUN_WITH_ERROR);
+    m_conditionVariable.wait(std::unique_lock<std::mutex>(m_mutex));
+}
+
+void AutoRunThread::nofityResponse(bool bExit) {
+    m_exit = bExit;
+    m_conditionVariable.notify_one();
 }

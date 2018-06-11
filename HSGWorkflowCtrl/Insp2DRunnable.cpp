@@ -81,18 +81,22 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
     QJsonParseError json_error;
     QJsonDocument parse_doucment = QJsonDocument::fromJson(window.colorParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->setFatalError();
+        std::string strErrorMsg = "Window \"" + window.name + "\" color parameters \"" + window.colorParams + "\" is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
         return false;
     }
 
     if (! parse_doucment.isObject()) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->setFatalError();
         return false;
     }
 
     int nImageIndex = window.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        std::string strErrorMsg = "Window \"" + window.name + "\" image id " + std::to_string(window.lightId) + " is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+        m_ptrBoardInspResult->setFatalError();
         return false;
     }
 
@@ -156,7 +160,7 @@ void Insp2DRunnable::_inspChip(const Engine::Window &window) {
     QJsonParseError json_error;
     QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->setFatalError();
 		return;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -166,7 +170,9 @@ void Insp2DRunnable::_inspChip(const Engine::Window &window) {
 
     int nImageIndex = window.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        std::string strErrorMsg = "Window \"" + window.name + "\" image id " + std::to_string(window.lightId) + " is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+        m_ptrBoardInspResult->setFatalError();
         return;
     }
 
@@ -197,7 +203,7 @@ void Insp2DRunnable::_inspHole(const Engine::Window &window) {
     QJsonParseError json_error;
     QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->setFatalError();
         return;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -233,7 +239,9 @@ void Insp2DRunnable::_findLine(const Engine::Window &window) {
     QJsonParseError json_error;
     QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        std::string strErrorMsg = "Window \"" + window.name + "\" inspect parameters \"" + window.colorParams + "\" is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+        m_ptrBoardInspResult->setFatalError();
         return;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -260,7 +268,9 @@ void Insp2DRunnable::_findLine(const Engine::Window &window) {
 
     int nImageIndex = window.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        std::string strErrorMsg = "Window \"" + window.name + "\" image id " + std::to_string(window.lightId) + " is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+        m_ptrBoardInspResult->setFatalError();
         return;
     }
 
@@ -277,6 +287,16 @@ void Insp2DRunnable::_findLine(const Engine::Window &window) {
     stCmd.rectRotatedROI.center = cv::Point2f(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2);
     stCmd.rectRotatedROI.size = rectROI.size();
     Vision::PR_FindLine(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+            return;
+        }
+    }
     m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }
 
@@ -284,7 +304,7 @@ void Insp2DRunnable::_findCircle(const Engine::Window &window) {
     QJsonParseError json_error;
     QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->setFatalError();
         return;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -306,7 +326,9 @@ void Insp2DRunnable::_findCircle(const Engine::Window &window) {
 
     int nImageIndex = window.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        std::string strErrorMsg = "Window \"" + window.name + "\" image id " + std::to_string(window.lightId) + " is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+        m_ptrBoardInspResult->setFatalError();
         return;
     }
 
@@ -325,6 +347,16 @@ void Insp2DRunnable::_findCircle(const Engine::Window &window) {
 	stCmd.fMinSrchRadius = qMin(rectROI.width / 2.0f, rectROI.height / 2.0f) / 3.0f;
 
     Vision::PR_FindCircle(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+            return;
+        }
+    }
     m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }
 
@@ -332,7 +364,7 @@ void Insp2DRunnable::_inspContour(const Engine::Window &window) {
     QJsonParseError json_error;
     QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->setFatalError();
         return;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -350,7 +382,9 @@ void Insp2DRunnable::_inspContour(const Engine::Window &window) {
 
     int nImageIndex = window.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        std::string strErrorMsg = "Window \"" + window.name + "\" image id " + std::to_string(window.lightId) + " is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+        m_ptrBoardInspResult->setFatalError();
         return;
     }
 
@@ -365,6 +399,16 @@ void Insp2DRunnable::_inspContour(const Engine::Window &window) {
         m_dResolutionY);
 
     Vision::PR_InspContour(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+            return;
+        }
+    }
     m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }
 
@@ -385,7 +429,9 @@ void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) 
 
     int nImageIndex = windowInsp.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        m_ptrBoardInspResult->addWindowStatus(windowInsp.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        std::string strErrorMsg = "Window \"" + windowInsp.name + "\" image id " + std::to_string(windowInsp.lightId) + " is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+        m_ptrBoardInspResult->setFatalError();
         return;
     }
 
@@ -418,6 +464,16 @@ void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) 
     }
 
 	Vision::PR_InspPolarity(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window group \"" + windowGroup.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+            return;
+        }
+    }
     for (const auto &window : windowGroup.vecWindows)
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }
@@ -426,7 +482,7 @@ Vision::VisionStatus Insp2DRunnable::_alignment(const Engine::Window &window, De
     QJsonParseError json_error;
     QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->setFatalError();
         return Vision::VisionStatus::INVALID_PARAM;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -442,7 +498,9 @@ Vision::VisionStatus Insp2DRunnable::_alignment(const Engine::Window &window, De
 
     int nImageIndex = window.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        std::string strErrorMsg = "Window \"" + window.name + "\" image id " + std::to_string(window.lightId) + " is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+        m_ptrBoardInspResult->setFatalError();
         return Vision::VisionStatus::INVALID_PARAM;
     }
 
@@ -482,6 +540,15 @@ Vision::VisionStatus Insp2DRunnable::_alignment(const Engine::Window &window, De
                 window.y += fOffsetY;
             }
         }
+    }else {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+        }
     }
+
     return stRpy.enStatus;
 }

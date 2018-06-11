@@ -2,7 +2,6 @@
 #include <QRunnable>
 #include <QVector>
 #include <mutex>
-#include <condition_variable>
 #include "InspRunnable.h"
 
 using namespace AOI;
@@ -35,8 +34,6 @@ private:
 private:
     Vision::VectorOfMat     m_vec2DImages;
     DeviceInspWindowVector  m_vecDeviceWindows;
-    bool                    m_bWithFatalError = false;
-    std::string             m_strErrorMsg;
 };
 
 using Insp2DRunnablePtr = std::shared_ptr<Insp2DRunnable>;

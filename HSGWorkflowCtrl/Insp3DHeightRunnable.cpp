@@ -80,7 +80,9 @@ void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowG
     QJsonParseError json_error;
 	QJsonDocument parse_doucment = QJsonDocument::fromJson(windowInsp.inspParams.c_str(), &json_error);
 	if (json_error.error != QJsonParseError::NoError) {
-        m_ptrBoardInspResult->addWindowStatus(windowInsp.Id, Vision::ToInt32(Vision::VisionStatus::INVALID_PARAM));
+        m_ptrBoardInspResult->setFatalError();
+        std::string strErrorMsg = "Window \"" + windowInsp.name + "\" color parameters \"" + windowInsp.colorParams + "\" is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
 		return;
     }
     QJsonObject jsonValue = parse_doucment.object();
@@ -116,6 +118,16 @@ void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowG
     }
 
     Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window \"" + windowInsp.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+            return;
+        }
+    }
 
     for (const auto &window : windowGroup.vecWindows)
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));

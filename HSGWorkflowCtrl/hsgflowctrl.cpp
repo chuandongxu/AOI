@@ -89,12 +89,18 @@ void QFlowCtrl::onThreadState(const QVariantList &data)
 
     switch (iEvent)
     {
-    case MAIN_THREAD_CLOSED:
+    case THREAD_CLOSED:
         stop();
         break;
+
     case REFRESH_BIG_IMAGE:
         _refreshDisplayImage();
         break;
+
+    case AUTO_RUN_WITH_ERROR:
+        _onAutoRunError();
+        break;
+
     default:
         break;
     }
@@ -104,7 +110,7 @@ void QFlowCtrl::home()
 {	
 	if(m_isStart)
 	{
-		QSystem::showMessage(QStringLiteral("提示"),QStringLiteral("设备正在运行中，请先停止在回零"));
+		QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在运行中，请先停止在回零"));
 		QApplication::processEvents();
 
 		//this->stop();
@@ -150,11 +156,6 @@ void QFlowCtrl::startAutoRun()
 void QFlowCtrl::stopAutoRun()
 {
 	if (m_isStart) stop();
-}
-
-void QFlowCtrl::onError(const QString &strMsg)
-{
-    QSystem::showMessage(QStringLiteral("警告"), strMsg);
 }
 
 void QFlowCtrl::readbarCode()
@@ -473,4 +474,12 @@ int QFlowCtrl::_prepareRunData()
 void QFlowCtrl::_refreshDisplayImage() {
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     pUI->setImage(m_pAutoRunThread->getBigImage());
+}
+
+void QFlowCtrl::_onAutoRunError() {
+    int nReturn = System->showInteractMessage(QString(QStringLiteral("自动运行")), m_pAutoRunThread->getErrorMsg());
+    bool bExit = false;
+    if (nReturn != QDialog::Accepted)
+        bExit = true;
+    m_pAutoRunThread->nofityResponse(bExit);
 }

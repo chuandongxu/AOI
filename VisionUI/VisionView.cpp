@@ -24,7 +24,6 @@
 
 #define ToInt(value)                (static_cast<int>(value))
 
-
 VisionView::VisionView(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -34,12 +33,9 @@ VisionView::VisionView(QWidget *parent)
 
 	setButtonsEnable(true);
 	setLiveButtonEnable(true);
-
-    QEos::Attach(EVENT_THREAD_STATE, this, SLOT(onThreadState(const QVariantList &)));
 }
 
-VisionView::~VisionView()
-{
+VisionView::~VisionView() {
 }
 
 void VisionView::init()
@@ -185,22 +181,6 @@ void VisionView::createStatusBar()
 	//statusBar()->showMessage(tr("Ready"));
 	//statusBar()->hide();
 	//statusBar()->setSizeGripEnabled(false);
-}
-
-void VisionView::onThreadState(const QVariantList &data)
-{
-    if (data.size() <= 0) return;
-
-    int iEvent = data[0].toInt();
-
-    switch (iEvent)
-    {
-    case MAIN_THREAD_CLOSED:
-        onStopLive();
-        break;
-    default:
-        break;
-    }
 }
 
 void VisionView::openFile()

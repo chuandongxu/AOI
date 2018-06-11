@@ -59,9 +59,6 @@ public:
 	void setHeightData(const cv::Mat& matHeight);
 	cv::Mat getHeightData() const;
 
-public slots:
-    void onThreadState(const QVariantList &data);
-
 private slots:
 	void openFile();
 	void cameraFile();

@@ -3,6 +3,7 @@
 #include <QThreadPool>
 #include <QObject>
 #include <atomic>
+#include <condition_variable>
 
 #include "VisionAPI.h"
 #include "BoardInspResult.h"
@@ -57,8 +58,10 @@ public:
 	
     static bool captureAllImages(QVector<cv::Mat>& imageMats);
     cv::Mat getBigImage() const { return m_vecMatBigImage[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]; }
+    QString getErrorMsg() const { return m_strErrorMsg; }
+    void nofityResponse(bool bExit);
 
-public slots:
+protected slots:
     void onThreadState(const QVariantList &data);
 
 protected:
@@ -96,6 +99,7 @@ private:
     Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
     cv::Mat _combineBigImage(const Vision::VectorOfMat &vecMatImages);
     void _generateResultBigImage(cv::Mat matBigImage, BoardInspResultPtr ptrBoardInspResult);
+    void _sendErrorAndWaitForResponse();
 
 private:
     std::atomic<bool>               m_exit;
@@ -130,6 +134,9 @@ private:
     Vision::VectorOfMat             m_vecMatBigImage;
     cv::Mat                         m_matWhole3DHeight;
     Vision::PR_SCAN_IMAGE_DIR       m_enScanDir;
+    QString                         m_strErrorMsg;
+    std::condition_variable         m_conditionVariable;
+    std::mutex                      m_mutex;
 };
 
 

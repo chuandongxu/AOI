@@ -523,7 +523,7 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
             else
             {
                 imageMats.push_back(m_imageMats[nIndex - DLP_SEQ_PATTERN_IMG_NUM * nDlpNum]);
-            }            
+            }
         }
         else
         {
@@ -532,7 +532,6 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 	}
 
 	return m_bStopFlag ? false : true;
-
 }
 
 void DalsaCameraDevice::stopGrabing()
