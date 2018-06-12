@@ -115,7 +115,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     {
         nCaptureLightNum = 1;
         nStationNum = 0;
-        for (int i = 0; i < _CHN_NUM; i++)
+        for (int i = 0; i < _CHN_NUM; ++ i)
         {
             plus[i] = 0;
         }
@@ -126,7 +126,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     {
         nCaptureLightNum = 1;
         nStationNum = 0;
-        for (int i = 0; i < _CHN_NUM; i++)
+        for (int i = 0; i < _CHN_NUM; ++ i)
         {
             plus[i] = 0;
         }
@@ -137,7 +137,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     {
         nCaptureLightNum = 1;
         nStationNum = 0;
-        for (int i = 0; i < _CHN_NUM; i++)
+        for (int i = 0; i < _CHN_NUM; ++ i)
         {
             plus[i] = 0;
         }
@@ -148,7 +148,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     { 
         nCaptureLightNum = 1;
         nStationNum = 0;
-        for (int i = 0; i < _CHN_NUM; i++)
+        for (int i = 0; i < _CHN_NUM; ++ i)
         {
             plus[i] = 0;
         }
@@ -186,9 +186,6 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     }
 
     //DLP参数设定
-    szCmd = "SetPWM" + QString::number(9) + " " + QString::number(nPatternExposure) + "\r\n";
-    writeCmd(szCmd);
-
     szCmd = "SetT" + QString::number(1) + " " + QString::number(nPatternPeriod) + "\r\n";
     writeCmd(szCmd);
     

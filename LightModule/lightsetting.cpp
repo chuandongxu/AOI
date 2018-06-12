@@ -2,16 +2,16 @@
 #include "../Common/SystemData.h"
 #include "LightDefine.h"
 
-QLightSetting::QLightSetting(QLightCtrl * pCtrl,QWidget *parent)
+QLightSetting::QLightSetting(QLightCtrl * pCtrl, QWidget *parent)
 	: m_lightCtrl(pCtrl), QWidget(parent)
 {
 	ui.setupUi(this);
 
 	int n = System->getParam(LIGHT_COUNT).toInt();
-	for(int i = 0; i<n; i++)
+	for(int i = 0; i < n; ++ i)
 	{
 		QString str = QString(QStringLiteral("光源控制器%0")).arg(i+1);
-		ui.tabWidget->addTab(new QDeviceFrom(m_lightCtrl->getLightDevice(i),this),str);
+		ui.tabWidget->addTab(new DeviceForm(m_lightCtrl->getLightDevice(i), this),str);
 	}
 
 	connect(ui.pushButton,SIGNAL(clicked()),SLOT(onAddLightCtrl()));
@@ -42,7 +42,7 @@ void QLightSetting::onAddLightCtrl()
     }
 
 	m_lightCtrl->addDevice(pDevice);
-	ui.tabWidget->addTab(new QDeviceFrom(pDevice,this),str);
+	ui.tabWidget->addTab(new DeviceForm(pDevice, this),str);
 
 	System->setParam(LIGHT_COUNT,n+1);
 }

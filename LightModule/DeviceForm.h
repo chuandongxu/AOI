@@ -3,15 +3,15 @@
 
 #include <QWidget>
 #include "lightdevice.h"
-#include "ui_devicefrom.h"
+#include "ui_DeviceForm.h"
 
-class QDeviceFrom : public QWidget
+class DeviceForm : public QWidget
 {
 	Q_OBJECT
 
 public:
-	QDeviceFrom(QLightDevice * device,QWidget *parent = 0);
-	~QDeviceFrom();
+	DeviceForm(QLightDevice * device, QWidget *parent = 0);
+	~DeviceForm();
 	
 public slots:
 	void onOpenCommPort();
@@ -37,9 +37,10 @@ public slots:
 
 	//void onDataReady();
 	void onSaveData();
+
 private:
-	Ui::QDeviceFrom ui;
-	QLightDevice * m_device;
+	Ui::DeviceForm ui;
+	QLightDevice *m_device;
 };
 
 #endif // DEVICEFROM_H

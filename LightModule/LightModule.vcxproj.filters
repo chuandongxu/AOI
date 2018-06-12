@@ -56,15 +56,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_lightdevice.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="devicefrom.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_devicefrom.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_devicefrom.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="lightctrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -101,6 +92,15 @@
     <ClCompile Include="QLightCardDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DeviceForm.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DeviceForm.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceForm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lightmodule.h">
@@ -112,13 +112,13 @@
     <ClInclude Include="GeneratedFiles\ui_lightsetting.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_devicefrom.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="LightDefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_LightWidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_DeviceForm.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,12 +131,6 @@
     </CustomBuild>
     <CustomBuild Include="lightdevice.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="devicefrom.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="devicefrom.ui">
-      <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="lightctrl.h">
       <Filter>Header Files</Filter>
@@ -152,6 +146,12 @@
     </CustomBuild>
     <CustomBuild Include="QLightCardDevice.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DeviceForm.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DeviceForm.ui">
+      <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

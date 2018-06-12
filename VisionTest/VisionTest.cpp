@@ -9,7 +9,6 @@ VisionTest::VisionTest(int id, const QString &name)
 
 VisionTest::~VisionTest()
 {
-
 }
 
 void VisionTest::addSettingWiddget(QTabWidget * tabWidget)

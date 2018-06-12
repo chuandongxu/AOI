@@ -17,11 +17,10 @@ public:
 	~QLightCtrl();
 
     void init();
-	int getDeviceCount(){return m_deviceList.size();};
-	void addDevice(QLightDevice *pDevice){m_deviceList.append(pDevice);};
+	int getDeviceCount() { return m_deviceList.size(); };
+	void addDevice(QLightDevice *pDevice) { m_deviceList.append(pDevice); };
 	void delDevice(int nIndex);
     QLightDevice * getLightDevice(int nIndex);
-
 
     void setLuminance(int nChannel, int nLum);
     QString getChName(int nChannel);
