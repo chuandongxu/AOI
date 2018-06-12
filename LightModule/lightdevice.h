@@ -26,22 +26,22 @@ public:
 	QLightDevice(const QString & devName, int nChnNum, QObject *parent);
 	~QLightDevice();
 
-	QString getDeviceName(){return m_devName;};
+	QString getDeviceName() {return m_devName;};
     int getChnNum(){ return m_nChnNum; }
 
 	static QStringList enumCommPort();
 	static QStringList enumCommBound();
 
-	void openCommPort(const QString & name,int bound);
+	void openCommPort(const QString &name, int bound);
 	void closeCommPort();
-	bool isOpenCommPort(){ return (m_comPort? true : false); };
+	bool isOpenCommPort() { return (m_comPort ? true : false); };
 
 	void openLight(int ch);
 	void closeLight(int ch);
 	bool isOpenLight(int ch);
 
-	virtual void setChLuminance(int ch,int luminance) = 0;
-	void setChName(int ch,const QString & name);
+	virtual void setChLuminance(int ch, int luminance) = 0;
+	void setChName(int ch, const QString &name);
 
     virtual void setupTrigger(ILight::TRIGGER emTrig) = 0;
     virtual bool trigger() = 0;
@@ -74,9 +74,9 @@ public:
 
     virtual void setChLuminance(int ch, int luminance) override;
 
-    virtual void setupTrigger(ILight::TRIGGER emTrig) override{}
+    virtual void setupTrigger(ILight::TRIGGER emTrig) override {}
 
-    virtual bool trigger() override{return true; }
+    virtual bool trigger() override {return true; }
 };
 
 #endif // LIGHTDEVICE_H

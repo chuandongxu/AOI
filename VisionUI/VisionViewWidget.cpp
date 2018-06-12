@@ -573,15 +573,18 @@ void VisionViewWidget::showInspectROI()
 {
     setViewState(MODE_VIEW_SELECT_INSPECT_ROI);
 }
+
 void VisionViewWidget::setImage(const cv::Mat& matImage, bool bDisplay)
 {
-	m_hoImage = matImage.clone();
-	m_imageWidth = m_hoImage.size().width;
-	m_imageHeight = m_hoImage.size().height;
-	if (bDisplay)
-	{
-		repaintAll();
-	}
+    m_hoImage = matImage.clone();
+
+    if (m_hoImage.type() == CV_8UC1)
+		cv::cvtColor(m_hoImage, m_hoImage, CV_GRAY2BGR);
+
+    m_imageWidth  = m_hoImage.size().width;
+    m_imageHeight = m_hoImage.size().height;
+    if (bDisplay)
+        repaintAll();
 }
 
 cv::Mat VisionViewWidget::getImage()

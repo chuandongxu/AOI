@@ -198,7 +198,7 @@ bool CameraCtrl::initial()
 						QString szModuleName = cameras[i].GetDeviceInfo().GetModelName();
 						cameras[i].DetachDevice();
 
-						((DalsaCameraDevice*)(m_CameraList[i]))->setCamera(dev);						
+						((DalsaCameraDevice*)(m_CameraList[i]))->setCamera(dev);
 					}
 				}
 			}
@@ -206,7 +206,6 @@ bool CameraCtrl::initial()
 			{
 				qDebug() << "Acq and Camera_t Number is wrong!";
 			}
-
 		}
 		catch (GenICam::GenericException &e)
 		{
@@ -235,17 +234,19 @@ void CameraCtrl::unInit()
 	m_CameraList.clear();
 }
 
-int  CameraCtrl::getCameraCount()
+int CameraCtrl::getCameraCount()
 {
-	return m_CameraList.length();
+    if (! System->isRunOffline())
+        return m_CameraList.length();
+    else
+        return 1;
 }
 
-CameraDevice * CameraCtrl::getCamera( int n)
+CameraDevice * CameraCtrl::getCamera(int n)
 {
-	if ( n < m_CameraList.length() )
-	{
-		return m_CameraList[n];
-	}
-	
-	return NULL;
+    if (n < m_CameraList.length()) {
+        return m_CameraList[n];
+    }
+
+    return NULL;
 }

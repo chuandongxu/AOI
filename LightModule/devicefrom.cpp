@@ -42,9 +42,9 @@ QDeviceFrom::QDeviceFrom(QLightDevice * device,QWidget *parent)
 		editLums[i]->setText(data.toString());
 	}
 	//connect(m_device,SIGNAL(dataReady()),SLOT(onDataReady()));
-	connect(ui.pushButton,SIGNAL(clicked()),SLOT(onOpenCommPort()));
-	connect(ui.pushButton_2,SIGNAL(clicked()),SLOT(onSendTestData()));
-	connect(ui.pushButton_3,SIGNAL(clicked()),SLOT(onSaveData()));
+	connect(ui.pushButton, SIGNAL(clicked()), SLOT(onOpenCommPort()));
+	connect(ui.pushButton_2, SIGNAL(clicked()), SLOT(onSendTestData()));
+	connect(ui.pushButton_3, SIGNAL(clicked()), SLOT(onSaveData()));
 
 	connect(ui.horizontalSlider_1,SIGNAL(valueChanged(int)),SLOT(onSliderChanged1(int)));
 	connect(ui.horizontalSlider_2,SIGNAL(valueChanged(int)),SLOT(onSliderChanged2(int)));
@@ -126,6 +126,7 @@ void QDeviceFrom::onSaveData()
 		System->setParam(key, data);
 	}
 }
+
 void QDeviceFrom::onSliderChanged1(int lum)
 {
 	QString str = QString::number(lum);

@@ -117,7 +117,7 @@ void QLightModule::addSettingWiddget(QTabWidget *tabWidget)
 	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
 	if(ctrl)
 	{
-		tabWidget->addTab(new QLightSetting(ctrl),QStringLiteral("灯光控制"));
+		tabWidget->addTab(new QLightSetting(ctrl), QStringLiteral("灯光控制"));
 	}
 }
 

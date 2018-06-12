@@ -40,6 +40,8 @@ QMainProcess::~QMainProcess()
 
 bool QMainProcess::startCapturing()
 {
+    if (System->isRunOffline()) return true;
+
 	if (m_pCameraCtrl->getCameraCount() <= 0) return false;
 	
 	m_imageMats.clear();
@@ -68,10 +70,10 @@ bool QMainProcess::getImages(QVector<cv::Mat>& imageMats)
 	if (m_pCameraCtrl->getCamera(0)->captureImageByFrameTrig(m_imageMats))
 	{
 		bufferImages();
-		saveImages(m_imageMats);		
+		saveImages(m_imageMats);
 	}
 	else
-	{		
+	{
 		System->setTrackInfo("Capture Images Stopped or Time Out.");
 		return false;
 	}
@@ -90,7 +92,7 @@ bool QMainProcess::getImages(QVector<cv::Mat>& imageMats)
 		QString fileDir = capturePath + "/" + dtm.toString("MMddhhmmss") + "/";
 		QDir dir; dir.mkdir(fileDir);
 
-		for (size_t i = 0; i < m_bufferImages.size(); ++i) {
+		for (size_t i = 0; i < m_bufferImages.size(); ++ i) {
 			QString name = QString("%1").arg(i + 1, 2, 10, QChar('0')) + QStringLiteral(".bmp");
 			cv::imwrite((fileDir + name).toStdString().c_str(), m_bufferImages[i]);
 		}
@@ -158,7 +160,7 @@ bool QMainProcess::startUpCapture(bool bHWTrigger)
 
 	selectCaptureMode(m_emCaptureMode, false);
 
-	m_bHWTrigger = bHWTrigger;	
+	m_bHWTrigger = bHWTrigger;
 
 	return true;
 }
@@ -182,7 +184,7 @@ bool QMainProcess::endUpCapture()
 
 bool QMainProcess::selectCaptureMode(ICamera::TRIGGER emCaptureMode, bool reStartUp)
 {
-    const int nLightCaptureNum = 6; // image num triggered by lighting IO 
+    const int nLightCaptureNum = 6; // image num triggered by lighting IO
 
     bool bMotionCardTrigger = System->isHardwareTrigger();
 	if (bMotionCardTrigger)
@@ -195,13 +197,13 @@ bool QMainProcess::selectCaptureMode(ICamera::TRIGGER emCaptureMode, bool reStar
 			m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * nDlpNum + nLightCaptureNum;
 			break;
 		case  ICamera::TRIGGER_DLP_ALL:
-			m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;		
+			m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;
 			break;
 		case  ICamera::TRIGGER_DLP:
-			m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * 1;		
+			m_nCaptureNum = DLP_SEQ_PATTERN_IMG_NUM * 1;
 			break;
 		case  ICamera::TRIGGER_ONE:
-			m_nCaptureNum = 1;			
+			m_nCaptureNum = 1;
 			break;
 		case  ICamera::TRIGGER_LIGHT:
 			m_nCaptureNum = nLightCaptureNum;

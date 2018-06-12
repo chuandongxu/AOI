@@ -372,7 +372,6 @@ void DalsaCameraDevice::setTriggerActive(bool bActiveHigh)
 	}
 }
 
-
 bool DalsaCameraDevice::captureImage(cv::Mat &imageMat)
 {
 	if (!m_bOpen) return false;
