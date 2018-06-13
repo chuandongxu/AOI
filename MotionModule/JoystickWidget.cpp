@@ -26,7 +26,6 @@ JoystickWidget::JoystickWidget(MotionControl* pCtrl, QWidget *parent)
 	connect(ui.pushButton_down, SIGNAL(clicked()), SLOT(onDown()));
 
 	connect(ui.pushButton_ok, SIGNAL(clicked()), SLOT(onOk()));
-	connect(ui.pushButton_cancel, SIGNAL(clicked()), SLOT(onCancel()));
 
 	ui.pushButton_left->setAutoRepeat(true);
 	ui.pushButton_left->setAutoRepeatDelay(50);
@@ -47,6 +46,8 @@ JoystickWidget::JoystickWidget(MotionControl* pCtrl, QWidget *parent)
 	clearJoystick();
 
 	m_nTimerID = this->startTimer(TIMER_TIMEOUT);
+
+    setFixedSize(size());
 }
 
 JoystickWidget::~JoystickWidget()
@@ -237,14 +238,6 @@ void JoystickWidget::onOk()
 	QAutoLocker loacker(&m_mutex);
 
 	this->UpdateResult();
-	this->hide();
-	clearJoystick();
-}
-
-void JoystickWidget::onCancel()
-{
-	QAutoLocker loacker(&m_mutex);
-
 	this->hide();
 	clearJoystick();
 }

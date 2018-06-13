@@ -189,7 +189,8 @@ bool ScanImageThread::captureAllImages(QVector<cv::Mat>& imageMats)
 {
     if (System->isRunOffline()) {
         imageMats.clear();
-        std::string strImagePath("D:/Data/KeyBoard_0602163838/");
+        //std::string strImagePath("D:/BaiduNetdiskDownload/0612181517CAZ/");
+        std::string strImagePath("D:/Data/20180203_TestImageOnKB/0203125013/");
         char strfileName[100];
         for (int i = 1; i <= 54; ++ i) {
             _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);

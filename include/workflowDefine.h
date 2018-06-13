@@ -100,7 +100,6 @@
 #define EVENT_BARCODE_CHANGE            "barCodeChange"
 #define STATION_STATE_BARCODE           190
 
-#define EVENT_AI_STATE                  "AIStateChange"
 #define EVENT_CHANGE_USER               "changeUserLevel"
 
 #define EVENT_INSP_WINDOW_STATE         "eventInspWindowDevice"

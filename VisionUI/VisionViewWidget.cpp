@@ -119,7 +119,7 @@ void CameraOnLive::run()
 			try
 			{
                 //input image is grayscale
-				if (image.type() == CV_8UC1)					
+				if (image.type() == CV_8UC1)
 					cvtColor(image, image, CV_GRAY2RGB);
 
 				drawCross(image);

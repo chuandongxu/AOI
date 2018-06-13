@@ -68,6 +68,8 @@ QColorWeight::QColorWeight(QWidget *parent)
 	initUI();
 	initData();
 
+    setFixedSize(size());
+
     QEos::Attach(EVENT_COLOR_WIDGET_STATE, this, SLOT(onColorWidgetState(const QVariantList &)));
 }
 
@@ -107,9 +109,10 @@ QColorWeight::~QColorWeight()
 
 void QColorWeight::setImage(const cv::Mat& img)
 {
+    if (img.empty()) return;
 	if (img.type() != CV_8UC3) return;
 
-	m_imageMat = img;
+	m_matSrcImage = img;   
 
 	displaySourceImg();
 }
@@ -145,7 +148,7 @@ GrayWeightParams QColorWeight::getGrayParams() const
 
 cv::Mat QColorWeight::generateGrayImage(cv::Point ptPos)
 {
-	//cv::Mat matGray(m_imageMat.size(), CV_8UC3);
+	//cv::Mat matGray(m_matSrcImage.size(), CV_8UC3);
 	ui.tabWidget->setCurrentIndex(0);
 	m_grayGenPt = ptPos;
 
@@ -172,7 +175,7 @@ ColorSpaceParams QColorWeight::getColorParams() const
 
 cv::Mat QColorWeight::generateColorImage(cv::Point ptPos)
 {
-	//cv::Mat matColor(m_imageMat.size(), CV_8UC3);
+	//cv::Mat matColor(m_matSrcImage.size(), CV_8UC3);
 	ui.tabWidget->setCurrentIndex(1);
 	m_colorGenPt = ptPos;
 
@@ -184,8 +187,8 @@ cv::Mat QColorWeight::generateColorImage(cv::Point ptPos)
 void QColorWeight::setColorImagePos(cv::Point ptMousePos)
 {
 	ui.tabWidget->setCurrentIndex(1);
-	m_colorGenPt.x = ptMousePos.x * m_imageMat.size().width / IMG_DISPLAY_WIDTH;
-	m_colorGenPt.y = ptMousePos.y * m_imageMat.size().height / IMG_DISPLAY_HEIGHT;
+	m_colorGenPt.x = ptMousePos.x * m_matSrcImage.size().width  / IMG_DISPLAY_WIDTH;
+	m_colorGenPt.y = ptMousePos.y * m_matSrcImage.size().height / IMG_DISPLAY_HEIGHT;
 
 	generateColorPlot();
 }
@@ -212,9 +215,9 @@ void QColorWeight::initUI()
 	ui.horizontalSlider_grayLeft->setValue(0);
 	ui.horizontalSlider_grayRight->setValue(255);
 
-	ui.horizontalSlider_R->setValue(33);
-	ui.horizontalSlider_G->setValue(33);
-	ui.horizontalSlider_B->setValue(33);
+	ui.horizontalSlider_R->setValue(100);
+	ui.horizontalSlider_G->setValue(100);
+	ui.horizontalSlider_B->setValue(100);
 
 	m_customPlot = std::make_shared<QCustomPlot>(this);
 	setupDateDemo(m_customPlot);
@@ -347,6 +350,8 @@ std::string QColorWeight::getJsonFormattedParams() const
 
 	json.insert("ColorRThreshold", stColorParams.nRThreshold);
 	json.insert("ColorTThreshold", stColorParams.nTThreshold);
+    json.insert("PickPointX", m_colorGenPt.x);
+	json.insert("PickPointY", m_colorGenPt.y);
 
 	QJsonDocument document;
 	document.setObject(json);
@@ -524,39 +529,51 @@ int QColorWeight::calcGrayValue(cv::Scalar& pixel)
 	return nGrayValue;
 }
 
-cv::Mat QColorWeight::_convertToGrayImage()
+cv::Mat QColorWeight::_transformColorImage(const cv::Mat &matInput)
 {
+    if (matInput.type() != CV_8UC3)
+        return matInput;
+
+    std::vector<cv::Mat> vecChannels;
+    cv::split(matInput, vecChannels);
+
     int nScaleR = ui.horizontalSlider_R->value();
 	int nScaleG = ui.horizontalSlider_G->value();
 	int nScaleB = ui.horizontalSlider_B->value();
-
-	bool bEnableR = ui.checkBox_R->isChecked();
+    bool bEnableR = ui.checkBox_R->isChecked();
 	bool bEnableG = ui.checkBox_G->isChecked();
 	bool bEnableB = ui.checkBox_B->isChecked();
 
-    Vision::PR_COLOR_TO_GRAY_CMD stCmd;
-	Vision::PR_COLOR_TO_GRAY_RPY stRpy;
+    float fRatioR = bEnableR ? nScaleR / 100.0f : 0.f;
+    float fRatioG = bEnableG ? nScaleG / 100.0f : 0.f;
+    float fRatioB = bEnableB ? nScaleB / 100.0f : 0.f;
 
-    stCmd.stRatio.fRatioR = bEnableR ? nScaleR / 100.0f : 0.f;
-    stCmd.stRatio.fRatioG = bEnableG ? nScaleG / 100.0f : 0.f;
-    stCmd.stRatio.fRatioB = bEnableB ? nScaleB / 100.0f : 0.f;
-    stCmd.matInputImg = m_imageMat;
+    vecChannels[0] = vecChannels[0] * fRatioB;
+    vecChannels[1] = vecChannels[1] * fRatioG;
+    vecChannels[2] = vecChannels[2] * fRatioR;
 
-    Vision::PR_ColorToGray(&stCmd, &stRpy);
+    cv::Mat matResult;
+    cv::merge(vecChannels, matResult);
+    return matResult;
+}
 
-	return stRpy.matResultImg;
+cv::Mat QColorWeight::_convertToGrayImage()
+{
+    cv::Mat matResult;
+    cv::cvtColor(m_matSrcTransform, matResult, CV_BGR2GRAY);
+    return matResult;
 }
 
 void QColorWeight::generateGrayPlot()
 {
-	if (m_imageMat.empty()) return;
+	if (m_matSrcTransform.empty()) return;
 
 	clearGrayData();
 
     cv::Mat matGrayLocal = _convertToGrayImage();
 
-	for (int y = 0; y < m_imageMat.rows; y++)
-		for (int x = 0; x < m_imageMat.cols; x++)
+	for (int y = 0; y < m_matSrcImage.rows; y++)
+		for (int x = 0; x < m_matSrcImage.cols; x++)
 			incrementGrayValue(matGrayLocal.at<uchar>(y,x));
 
 	if (m_customPlot)
@@ -730,62 +747,56 @@ void QColorWeight::setupDateColor(std::shared_ptr<QCustomPlot> customPlot, int n
 
 void QColorWeight::generateColorPlot()
 {
-	if (m_imageMat.empty()) return;
+    if (m_matSrcImage.empty()) return;
 
-	clearColorData(0);
-	clearColorData(1);
-	clearColorData(2);
-	clearColorData(3);
+    clearColorData(0);
+    clearColorData(1);
+    clearColorData(2);
+    clearColorData(3);
 
-	unsigned char grayValueB, grayValueG, grayValueR;
-	for (int y = 0; y < m_imageMat.rows; y++)
-	{
-		for (int x = 0; x < m_imageMat.cols; x++)
-		{
-			cv::Vec3b& pixel = m_imageMat.at<cv::Vec3b>(y, x);
+    unsigned char grayValueB, grayValueG, grayValueR;
+    for (int y = 0; y < m_matSrcImage.rows; y++) {
+        for (int x = 0; x < m_matSrcImage.cols; x++) {
+            cv::Vec3b& pixel = m_matSrcImage.at<cv::Vec3b>(y, x);
 
-			grayValueB = pixel[0];
-			grayValueG = pixel[1];
-			grayValueR = pixel[2];
+            grayValueB = pixel[0];
+            grayValueG = pixel[1];
+            grayValueR = pixel[2];
 
-			int nGrayValue = calcGrayValue(cv::Scalar(grayValueB, grayValueG, grayValueR));
+            int nGrayValue = calcGrayValue(cv::Scalar(grayValueB, grayValueG, grayValueR));
 
-			incrementColorValue(0, grayValueR);
-			incrementColorValue(1, grayValueG);
-			incrementColorValue(2, grayValueB);
-			incrementColorValue(3, nGrayValue);
-		}
-	}
+            incrementColorValue(0, grayValueR);
+            incrementColorValue(1, grayValueG);
+            incrementColorValue(2, grayValueB);
+            incrementColorValue(3, nGrayValue);
+        }
+    }
 
-	if (m_customPlotR)
-	{		
-		m_customPlotR = std::make_shared<QCustomPlot>(this);	
-		setupDateColor(m_customPlotR, 0);
-		ui.verticalLayout_R->addWidget(m_customPlotR.get());
-	}
+    if (m_customPlotR) {
+        m_customPlotR = std::make_shared<QCustomPlot>(this);
+        setupDateColor(m_customPlotR, 0);
+        ui.verticalLayout_R->addWidget(m_customPlotR.get());
+    }
 
-	if (m_customPlotG)
-	{		
-		m_customPlotG = std::make_shared<QCustomPlot>(this);	
-		setupDateColor(m_customPlotG, 1);
-		ui.verticalLayout_G->addWidget(m_customPlotG.get());
-	}
+    if (m_customPlotG) {
+        m_customPlotG = std::make_shared<QCustomPlot>(this);
+        setupDateColor(m_customPlotG, 1);
+        ui.verticalLayout_G->addWidget(m_customPlotG.get());
+    }
 
-	if (m_customPlotB)
-	{	
-		m_customPlotB = std::make_shared<QCustomPlot>(this);	
-		setupDateColor(m_customPlotB, 2);
-		ui.verticalLayout_B->addWidget(m_customPlotB.get());
-	}
+    if (m_customPlotB) {
+        m_customPlotB = std::make_shared<QCustomPlot>(this);
+        setupDateColor(m_customPlotB, 2);
+        ui.verticalLayout_B->addWidget(m_customPlotB.get());
+    }
 
-	if (m_customPlotGray)
-	{		
-		m_customPlotGray = std::make_shared<QCustomPlot>(this);	
-		setupDateColor(m_customPlotGray, 3);
-		ui.verticalLayout_Gray->addWidget(m_customPlotGray.get());
-	}
+    if (m_customPlotGray) {
+        m_customPlotGray = std::make_shared<QCustomPlot>(this);
+        setupDateColor(m_customPlotGray, 3);
+        ui.verticalLayout_Gray->addWidget(m_customPlotGray.get());
+    }
 
-	displayColorImg();
+    displayColorImg();
 }
 
 void QColorWeight::clearGrayData()
@@ -900,7 +911,12 @@ int QColorWeight::incrementColorValue(int nColorIndex, int nGrayLevel)
 
 void QColorWeight::displaySourceImg()
 {
-	cv::Mat matSourceImg = m_imageMat.clone();
+    if (m_matSrcImage.empty())
+        return;
+
+    m_matSrcTransform = _transformColorImage(m_matSrcImage);
+
+	cv::Mat matSourceImg = m_matSrcTransform.clone();
 
 	cv::cvtColor(matSourceImg, matSourceImg, CV_BGR2RGB);
 	QImage img = QImage((uchar*)matSourceImg.data, matSourceImg.cols, matSourceImg.rows, ToInt(matSourceImg.step), QImage::Format_RGB888);
@@ -910,7 +926,7 @@ void QColorWeight::displaySourceImg()
 
 void QColorWeight::displayGrayImg()
 {
-	cv::Mat matGrayImg = m_imageMat.clone();
+	cv::Mat matGrayImg = m_matSrcImage.clone();
 	cv::Mat maskMat = cv::Mat::zeros(matGrayImg.rows, matGrayImg.cols, CV_8UC1);
 	
 	int nIndex = ui.comboBox_selectMode->currentIndex();
@@ -976,7 +992,7 @@ void QColorWeight::displayGrayImg()
 
 void QColorWeight::displayColorImg()
 {
-	cv::Mat matColorImg = m_imageMat.clone();
+	cv::Mat matColorImg = m_matSrcImage.clone();
 
 	int nRn = ui.horizontalSlider_Rn->value();
 	int nTn = ui.horizontalSlider_Tn->value();
@@ -1058,6 +1074,7 @@ void QColorWeight::onGrayRSliderChanged(int i)
 	QString str = QString::number(i);
 	ui.lineEdit_R->setText(str);
 
+    displaySourceImg();
 	generateGrayPlot();
 }
 
@@ -1066,6 +1083,7 @@ void QColorWeight::onGrayGSliderChanged(int i)
 	QString str = QString::number(i);
 	ui.lineEdit_G->setText(str);
 
+    displaySourceImg();
 	generateGrayPlot();
 }
 
@@ -1074,6 +1092,7 @@ void QColorWeight::onGrayBSliderChanged(int i)
 	QString str = QString::number(i);
 	ui.lineEdit_B->setText(str);
 
+    displaySourceImg();
 	generateGrayPlot();
 }
 
@@ -1095,7 +1114,7 @@ void QColorWeight::onColorTnSliderChanged(int i)
 
 cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage)
 {
-	if (m_imageMat.empty()) return cv::Mat();
+	if (m_matSrcImage.empty()) return cv::Mat();
 
 	int m = matImage.rows;
 	int n = matImage.cols;
@@ -1245,8 +1264,8 @@ cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage)
 	m_maxT = maxT;
 	m_minT = minT;
 
-	double dXScale = m_imageMat.size().width * 1.0 / IMG_DISPLAY_WIDTH;
-	double dYScale = m_imageMat.size().height * 1.0 / IMG_DISPLAY_HEIGHT;
+	double dXScale = m_matSrcImage.size().width * 1.0 / IMG_DISPLAY_WIDTH;
+	double dYScale = m_matSrcImage.size().height * 1.0 / IMG_DISPLAY_HEIGHT;
 	double dScale = qMax(dXScale, dYScale);
 
 	cv::circle(matImage, m_colorGenPt, 3.5 * dScale, cv::Scalar(0, 0, 255), 1 * dScale, 8);

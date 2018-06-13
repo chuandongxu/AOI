@@ -24,8 +24,6 @@ using namespace Basler_CLCameraParams;
 // Namespace for using pylon objects.
 using namespace Pylon;
 
-using namespace cv;
-
 class DalsaCameraDevice : public CameraDevice
 {
 public:
@@ -71,7 +69,7 @@ private:
 	//SapAcqDevice	*m_AcqDevice;
 	SapBuffer		*m_Buffers;
 	SapTransfer		*m_Xfer;
-	SapFeature     *m_Feature;
+	SapFeature      *m_Feature;
 	//SapView			*m_View;
 
 	QVector<cv::Mat> m_imageMats;

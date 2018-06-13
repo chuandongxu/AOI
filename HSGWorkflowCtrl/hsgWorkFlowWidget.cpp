@@ -24,7 +24,6 @@ QWorkFlowWidget::QWorkFlowWidget(QWidget *parent)
 
 	QEos::Attach(EVENT_CHECK_STATE,this,SLOT(onCheckerStateChange(const QVariantList &)));
 	QEos::Attach(EVENT_BARCODE_CHANGE,this,SLOT(onBarCodeChange(const QVariantList &)));
-	QEos::Attach(EVENT_AI_STATE,this,SLOT(onAIStateChange(const QVariantList &)));	
 	QEos::Attach(EVENT_CHANGE_USER,this,SLOT(onChangeUser(const QVariantList &)));
 
 	IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
@@ -61,7 +60,7 @@ QWorkFlowWidget::~QWorkFlowWidget()
 
 void QWorkFlowWidget::onCheckerStateChange(const QVariantList &vars)
 {
-	if(vars.size() < 3)return;
+	if(vars.size() < 3) return;
 
 	int iStation = vars[0].toInt();
 	int iEvent = vars[1].toInt();

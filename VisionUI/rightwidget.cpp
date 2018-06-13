@@ -85,32 +85,32 @@ void QRightWidget::onRunState(const QVariantList &data)
 
 void QRightWidget::onUIState(const QVariantList &data)
 {
-	int iBoard = data[0].toInt();
-	int iEvent = data[1].toInt();
-	//if (iEvent != RUN_UI_STATE_SETTING) return;
+    int iBoard = data[0].toInt();
+    int iEvent = data[1].toInt();
+    //if (iEvent != RUN_UI_STATE_SETTING) return;
 
-	switch (iEvent)
-	{
-	case RUN_UI_STATE_HARDWARE:
-		ui.stackedWidget->setCurrentIndex(0);
-		break;
-	case RUN_UI_STATE_SETTING:
-		ui.stackedWidget->setCurrentIndex(1);
-		break;
-	case RUN_UI_STATE_TOOLS:
-		ui.stackedWidget->setCurrentIndex(2);
-		break;
-	case RUN_UI_STATE_CALI:
-		ui.stackedWidget->setCurrentIndex(3);
-		break;
+    switch (iEvent)
+    {
+    case RUN_UI_STATE_HARDWARE:
+        ui.stackedWidget->setCurrentIndex(0);
+        break;
+    case RUN_UI_STATE_SETTING:
+        ui.stackedWidget->setCurrentIndex(1);
+        break;
+    case RUN_UI_STATE_TOOLS:
+        ui.stackedWidget->setCurrentIndex(2);
+        break;
+    case RUN_UI_STATE_CALI:
+        ui.stackedWidget->setCurrentIndex(3);
+        break;
     case RUN_UI_STATE_DATA:
         ui.stackedWidget->setCurrentIndex(4);
-		break;	
-	case RUN_UI_STATE_AUTORUN:
-		ui.stackedWidget->setCurrentIndex(5);
-		break;
-	default:
-		break;
-	}
+        break;
+    case RUN_UI_STATE_AUTORUN:
+        ui.stackedWidget->setCurrentIndex(5);
+        break;
+    default:
+        break;
+    }
 }
 
