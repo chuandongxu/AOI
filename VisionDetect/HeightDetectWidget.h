@@ -31,4 +31,6 @@ private:
 	std::unique_ptr<QCheckBox>  m_pCheckBoxMeasure;
 	std::unique_ptr<QLineEdit>  m_pEditMinRange;
 	std::unique_ptr<QLineEdit>  m_pEditMaxRange;
+    std::unique_ptr<QLineEdit>  m_pEditMaxRelHt;
+    std::unique_ptr<QLineEdit>  m_pEditMinRelHt;
 };

@@ -121,6 +121,8 @@ bool QMainProcess::getLastImages(QVector<cv::Mat>& imageMats)
 	}
 	else
 	{
+        QString msg = QString("Wait for image time out, wait for capture count ") + QString::number(m_nCaptureNum);
+        System->setTrackInfo(msg);
 		bRet = false;
 	}	
 	m_waitMutex.unlock();
@@ -130,6 +132,9 @@ bool QMainProcess::getLastImages(QVector<cv::Mat>& imageMats)
 
 bool QMainProcess::stopCapturing()
 {
+    if (System->isRunOffline())
+        return true;
+
 	m_pCameraCtrl->getCamera(0)->stopGrabing();
 	m_pCameraCtrl->getCamera(0)->clearGrabing();
 
