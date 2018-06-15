@@ -154,6 +154,9 @@ void DalsaCameraDevice::updateGrabCount(cv::Mat& imgMat)
 	m_nGrabCount += 1;
 	if (m_nGrabCount >= m_nGrabNum)
 	{
+        if (m_nGrabNum < 2)
+            QThread::msleep(50); // To avoid the capture image done before start to wait.
+
 		m_waitCon.wakeAll();
 	}
 	m_waitMutex.unlock();

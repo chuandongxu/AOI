@@ -676,7 +676,6 @@ void CameraSetting::onCaptureLight()
         break;
     }
 
-    QThread::msleep(50); // To avoid the capture image done before start to wait.
     ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
     if (pCam)
     {
