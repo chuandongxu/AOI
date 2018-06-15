@@ -55,9 +55,9 @@ bool ScanImageThread::preRunning()
 
 void ScanImageThread::run()
 {
-	if (! preRunning()) return;
+    if (! preRunning()) return;
 
-	double dtime_start = 0, dtime_movePos = 0;
+    double dtime_start = 0, dtime_movePos = 0;
     if (m_vecVecFrameCtr.empty())
         return;
 
@@ -65,8 +65,8 @@ void ScanImageThread::run()
     int COLS = m_vecVecFrameCtr[0].size();
     int TOTAL = ROWS * COLS;
     Vision::VectorOfVectorOfMat vecVecFrameImages(PROCESSED_IMAGE_SEQUENCE::TOTAL_COUNT, Vision::VectorOfMat(TOTAL, cv::Mat()));
-	Vision::VectorOfMat vecFrame3DHeight(TOTAL, cv::Mat());
-    
+    Vision::VectorOfMat vecFrame3DHeight(TOTAL, cv::Mat());
+
     m_bGood = true;
     for (int row = 0; row < ROWS; ++ row) {
         for (int col = 0; col < COLS; ++ col) {
@@ -81,6 +81,12 @@ void ScanImageThread::run()
 
             QVector<cv::Mat> vecMatImages;
             if (! captureAllImages(vecMatImages)) {
+                m_bGood = false;
+                break;
+            }
+
+            if (vecMatImages.size() < (m_nDLPCount * DLP_IMG_COUNT + CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT)) {
+                System->setTrackInfo(QStringLiteral("Capture image count (%1) is invalid.").arg(vecMatImages.size()));
                 m_bGood = false;
                 break;
             }
@@ -128,9 +134,9 @@ void ScanImageThread::run()
     stCmd.nCountOfImgPerRow = m_vecVecFrameCtr[0].size();
     stCmd.enScanDir = m_enScanDir;
 
-    for (int i = 0; i < 4; ++ i) {        
+    for (int i = 0; i < 4; ++ i) {
         stCmd.vecInputImages = vecVecFrameImages[i];
-        if ( Vision::VisionStatus::OK == Vision::PR_CombineImg(&stCmd, &stRpy))
+        if (Vision::VisionStatus::OK == Vision::PR_CombineImg(&stCmd, &stRpy))
             m_vecCombinedBigImages.push_back(stRpy.vecResultImages[0]);
         else {
             System->setTrackInfo(QString(QStringLiteral("合并大图失败.")));
@@ -149,17 +155,18 @@ void ScanImageThread::run()
         cv::Mat matNewPhase = m_matCombinedBigHeight - dMinValue;
 
         float dRatio = 255.f / ToFloat(dMaxValue - dMinValue);
-		matNewPhase = matNewPhase * dRatio;
+        matNewPhase = matNewPhase * dRatio;
 
         cv::Mat matHeightGrayImg;
         matNewPhase.convertTo(matHeightGrayImg, CV_8UC1);
         m_vecCombinedBigImages.push_back(matHeightGrayImg);
-    }else {
+    }
+    else {
         System->setTrackInfo(QString(QStringLiteral("合并大图失败.")));
         m_bGood = false;
     }
 
-	System->setTrackInfo(QString(QStringLiteral("扫描图片完成")));
+    System->setTrackInfo(QString(QStringLiteral("扫描图片完成")));
 }
 
 bool ScanImageThread::moveToCapturePos(float fPosX, float fPosY)
@@ -182,7 +189,8 @@ bool ScanImageThread::captureAllImages(QVector<cv::Mat>& imageMats)
 {
     if (System->isRunOffline()) {
         imageMats.clear();
-        std::string strImagePath("D:/Data/KeyBoard_0602163838/");
+        //std::string strImagePath("D:/BaiduNetdiskDownload/0612181517CAZ/");
+        std::string strImagePath("D:/Data/20180203_TestImageOnKB/0203125013/");
         char strfileName[100];
         for (int i = 1; i <= 54; ++ i) {
             _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);

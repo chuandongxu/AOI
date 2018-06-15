@@ -11,7 +11,7 @@ typedef Pylon::CBaslerCameraLinkInstantCamera Camera_t;
 
 const QString g_szDefaultDalsaHWConfigFile = "N_AOI_Default_Default_HW_TRIGGER.ccf";
 const QString g_szDefaultDalsaSWConfigFile = "N_AOI_Default_Default_SW_TRIGGER.ccf";
-const int g_nBufferSize = 2;
+const int g_nBufferSize = 4;
 
 int DalsaCameraDevice::_sXferIndex = 0;
 DalsaCameraDevice::DalsaCameraDevice(SapLocation* loc, QString cameraName, QString  cameraID)
@@ -38,7 +38,6 @@ DalsaCameraDevice::DalsaCameraDevice(SapLocation* loc, QString cameraName, QStri
 	m_cameraID = cameraID;
 
 	openDevice(cameraName, cameraID);
-
 }
 
 DalsaCameraDevice::~DalsaCameraDevice(void)
@@ -124,29 +123,23 @@ void DalsaCameraDevice::XferCallback(SapXferCallbackInfo *pInfo)
 	{
 		//int pitch = pDalsaCam->m_Buffers->GetPitch();
 
-		// Get the buffer data address  		
+		// Get the buffer data address
 		BYTE pData;
 		void* pDataAddr = &pData;
 		bool success = pDalsaCam->m_Buffers->GetAddress(pDalsaCam->_sXferIndex, &pDataAddr);
 
-		int width = pDalsaCam->m_Buffers->GetWidth();
+		int width  = pDalsaCam->m_Buffers->GetWidth();
 		int height = pDalsaCam->m_Buffers->GetHeight();
 
-		Mat imageNew = Mat::zeros(cv::Size(width, height), CV_8U);
-		memcpy(imageNew.data, pDataAddr, width*height);
+		cv::Mat imageNew = cv::Mat::zeros(cv::Size(width, height), CV_8U);
+		memcpy(imageNew.data, pDataAddr, width * height);
 
-		pDalsaCam->updateGrabCount(imageNew);	
+		pDalsaCam->updateGrabCount(imageNew);
 
-		if (0 == pDalsaCam->_sXferIndex)
-		{			
-			pDalsaCam->_sXferIndex = 1;
-		}
-		else if (1 == pDalsaCam->_sXferIndex)
-		{			
-			pDalsaCam->_sXferIndex = 0;
-		}		
+        ++ pDalsaCam->_sXferIndex;
+        pDalsaCam->_sXferIndex %= g_nBufferSize;
 
-		success = pDalsaCam->m_Buffers->ReleaseAddress(pDataAddr);		
+		success = pDalsaCam->m_Buffers->ReleaseAddress(pDataAddr);
 
 		pDalsaCam->m_bCapturedImage = true;
 	}
@@ -161,7 +154,10 @@ void DalsaCameraDevice::updateGrabCount(cv::Mat& imgMat)
 	m_nGrabCount += 1;
 	if (m_nGrabCount >= m_nGrabNum)
 	{
-		m_waitCon.wakeAll();		
+        if (m_nGrabNum < 2)
+            QThread::msleep(50); // To avoid the capture image done before start to wait.
+
+		m_waitCon.wakeAll();
 	}
 	m_waitMutex.unlock();
     qDebug() << "Grab Image Count: " << m_nGrabCount;
@@ -372,7 +368,6 @@ void DalsaCameraDevice::setTriggerActive(bool bActiveHigh)
 	}
 }
 
-
 bool DalsaCameraDevice::captureImage(cv::Mat &imageMat)
 {
 	if (!m_bOpen) return false;
@@ -457,19 +452,19 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
 	int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
     bool bTriggerBoard = System->isTriggerBoard();
 
-    int nImageNum = m_imageMats.size();
+    int nTotalImageNum = m_imageMats.size();
 
 	imageMats.clear();
-    for (int i = 0; i < nImageNum; i++)
+    for (int i = 0; i < nTotalImageNum; ++ i)
 	{
 		int nIndex = i;
-        if (bCaptureImageAsMatlab && nImageNum >= DLP_SEQ_PATTERN_IMG_NUM)
+        if (bCaptureImageAsMatlab && nTotalImageNum >= DLP_SEQ_PATTERN_IMG_NUM)
 		{
             if (bTriggerBoard)
             {
-                if (nImageNum <= DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
+                if (nTotalImageNum <= DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
                 {
-                    int nImgIndex = nIndex%DLP_SEQ_PATTERN_IMG_NUM;
+                    int nImgIndex = nIndex % DLP_SEQ_PATTERN_IMG_NUM;
                     if (5 == nImgIndex)// 5 Pattern Sequence Special Index
                     {
                         nIndex += 1;
@@ -481,10 +476,10 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
                 }
                 else // 48 + 6 pics
                 {
-                    int nLightImgNum = nImageNum - DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;
+                    int nLightImgNum = nTotalImageNum - DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;
                     if (nIndex < DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
                     {
-                        int nImgIndex = nIndex%DLP_SEQ_PATTERN_IMG_NUM;
+                        int nImgIndex = nIndex % DLP_SEQ_PATTERN_IMG_NUM;
                         if (5 == nImgIndex)// 5 Pattern Sequence Special Index
                         {
                             nIndex += 1;
@@ -500,7 +495,7 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
             {
                 if (nIndex <= DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
                 {
-                    int nImgIndex = nIndex%DLP_SEQ_PATTERN_IMG_NUM;
+                    int nImgIndex = nIndex % DLP_SEQ_PATTERN_IMG_NUM;
                     if (5 == nImgIndex)// 5 Pattern Sequence Special Index
                     {
                         nIndex += 1;
@@ -513,9 +508,9 @@ bool DalsaCameraDevice::captureImageByFrameTrig(QVector<cv::Mat>& imageMats)
             }			
 		}
 
-        if (bTriggerBoard && (nImageNum > DLP_SEQ_PATTERN_IMG_NUM * nDlpNum))
+        if (bTriggerBoard && (nTotalImageNum > DLP_SEQ_PATTERN_IMG_NUM * nDlpNum))
         {
-            int nLightImgNum = nImageNum - DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;
+            int nLightImgNum = nTotalImageNum - DLP_SEQ_PATTERN_IMG_NUM * nDlpNum;
             if (nIndex < DLP_SEQ_PATTERN_IMG_NUM * nDlpNum)
             {
                 imageMats.push_back(m_imageMats[nIndex + nLightImgNum]);
@@ -539,7 +534,7 @@ void DalsaCameraDevice::stopGrabing()
 	if (!m_bOpen) return;
 
 	BOOL success = m_Xfer->Freeze();	
-	success = m_Xfer->Wait(1000);	
+	success = m_Xfer->Wait(1000);
 
 	m_waitMutex.lock();
 	m_bStopFlag = true;

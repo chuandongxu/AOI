@@ -90,4 +90,16 @@ public:
     };
 };
 
+class CAPTURE_NUM_MODE {
+public:
+    enum {
+        ALL_DLP_AND_LIGHT_54,
+        ALL_DLP_48,
+        SINGLE_DLP_12,
+        SINGLE_FRAME_1,
+        LIGHT_6,
+        TOTAL_COUNT
+    };
+};
+
 #endif //_AOI_CONSTANTS_H_

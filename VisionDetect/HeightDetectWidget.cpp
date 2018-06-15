@@ -16,26 +16,36 @@ using namespace NFG::AOI;
 using namespace AOI;
 
 enum BASIC_PARAM {
-	MEASURE_TYPE_ATTRI,
-	RANGE_MIN_ATTRI,
-	RANGE_MAX_ATTRI,	
+    MEASURE_TYPE_ATTRI,
+    RANGE_MIN_ATTRI,
+    RANGE_MAX_ATTRI,
+    MAX_REL_HT,
+    MIN_REL_HT,
 };
 
 HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
 	:EditInspWindowBaseWidget(parent)
 {
-	ui.setupUi(this);
+    ui.setupUi(this);
 
-	m_pCheckBoxMeasure = std::make_unique<QCheckBox>(ui.tableWidget);
-	ui.tableWidget->setCellWidget(MEASURE_TYPE_ATTRI, DATA_COLUMN, m_pCheckBoxMeasure.get());
+    m_pCheckBoxMeasure = std::make_unique<QCheckBox>(ui.tableWidget);
+    ui.tableWidget->setCellWidget(MEASURE_TYPE_ATTRI, DATA_COLUMN, m_pCheckBoxMeasure.get());
 
-	m_pEditMinRange = std::make_unique<QLineEdit>(ui.tableWidget);
-	m_pEditMinRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinRange.get()));
-	ui.tableWidget->setCellWidget(RANGE_MIN_ATTRI, DATA_COLUMN, m_pEditMinRange.get());
+    m_pEditMinRange = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditMinRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinRange.get()));
+    ui.tableWidget->setCellWidget(RANGE_MIN_ATTRI, DATA_COLUMN, m_pEditMinRange.get());
 
-	m_pEditMaxRange = std::make_unique<QLineEdit>(ui.tableWidget);
-	m_pEditMaxRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMaxRange.get()));
-	ui.tableWidget->setCellWidget(RANGE_MAX_ATTRI, DATA_COLUMN, m_pEditMaxRange.get());
+    m_pEditMaxRange = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditMaxRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMaxRange.get()));
+    ui.tableWidget->setCellWidget(RANGE_MAX_ATTRI, DATA_COLUMN, m_pEditMaxRange.get());
+
+    m_pEditMaxRelHt = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditMaxRelHt->setValidator(new QDoubleValidator(0, 10, -10, m_pEditMaxRelHt.get()));
+    ui.tableWidget->setCellWidget(MAX_REL_HT, DATA_COLUMN, m_pEditMaxRelHt.get());
+
+    m_pEditMinRelHt = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditMinRelHt->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinRelHt.get()));
+    ui.tableWidget->setCellWidget(MIN_REL_HT, DATA_COLUMN, m_pEditMinRelHt.get());
 }
 
 HeightDetectWidget::~HeightDetectWidget()
@@ -99,9 +109,12 @@ void HeightDetectWidget::tryInsp()
         }
     }
 
+    float fMaxHeight = m_pEditMaxRelHt->text().toFloat();
+    float fMinHeigth = m_pEditMinRelHt->text().toFloat();
 	Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
+    bool bPassed = (stRpy.fHeightDiff < fMaxHeight) && (stRpy.fHeightDiff > fMinHeigth);
 	QString strMsg;
-	strMsg.sprintf("Inspect Status %d, height(%f)", Vision::ToInt32(stRpy.enStatus), stRpy.fHeightDiff);
+	strMsg.sprintf("Inspect Status %d, %s, height (%f)", Vision::ToInt32(stRpy.enStatus), bPassed ? "pass" : "not pass", stRpy.fHeightDiff);
 	QMessageBox::information(this, "Height Detect", strMsg);
 }
 
@@ -115,6 +128,8 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation)
 	QJsonObject json;
 	json.insert("MinRange", m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT);
 	json.insert("MaxRange", m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT);
+    json.insert("MaxRelHt", m_pEditMaxRelHt->text().toFloat());
+	json.insert("MinRelHt", m_pEditMinRelHt->text().toFloat());
 
 	QJsonDocument document;
 	document.setObject(json);
@@ -201,28 +216,25 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation)
 
 void HeightDetectWidget::setCurrentWindow(const Engine::Window &window)
 {
-	m_currentWindow = window;
+    m_currentWindow = window;
 
-	auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-	m_pCheckBoxMeasure->setChecked(window.usage == Engine::Window::Usage::HEIGHT_MEASURE);
+    m_pCheckBoxMeasure->setChecked(window.usage == Engine::Window::Usage::HEIGHT_MEASURE);
 
-	QString szBaseIDs = "";
+    QJsonParseError json_error;
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError)
+        return;
 
-	QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error == QJsonParseError::NoError)
-	{
-		if (parse_doucment.isObject())
-		{
-			QJsonObject obj = parse_doucment.object();
+    if (parse_doucment.isObject()) {
+        QJsonObject obj = parse_doucment.object();
 
-			m_pEditMinRange->setText(QString::number(obj.take("MinRange").toDouble() * ONE_HUNDRED_PERCENT));
-			m_pEditMaxRange->setText(QString::number(obj.take("MaxRange").toDouble() * ONE_HUNDRED_PERCENT));
-
-			szBaseIDs = obj.take("BaseIDs").toString();
-		}
-	}	
+        m_pEditMinRange->setText(QString::number(obj.take("MinRange").toDouble() * ONE_HUNDRED_PERCENT));
+        m_pEditMaxRange->setText(QString::number(obj.take("MaxRange").toDouble() * ONE_HUNDRED_PERCENT));
+        m_pEditMaxRelHt->setText(QString::number(obj.take("MaxRelHt").toDouble()));
+        m_pEditMinRelHt->setText(QString::number(obj.take("MinRelHt").toDouble()));
+    }
 }
 

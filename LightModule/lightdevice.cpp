@@ -152,7 +152,6 @@ QLightDerivedDevice::QLightDerivedDevice(const QString & devName, int nChnNum, Q
 
 QLightDerivedDevice::~QLightDerivedDevice()
 {
-   
 }
 
 void QLightDerivedDevice::setChLuminance(int ch, int luminance)

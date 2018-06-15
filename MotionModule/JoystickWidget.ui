@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>365</width>
-    <height>400</height>
+    <height>392</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,51 +24,91 @@
     <rect>
      <x>130</x>
      <y>130</y>
-     <width>80</width>
-     <height>60</height>
+     <width>70</width>
+     <height>70</height>
     </rect>
    </property>
    <property name="text">
-    <string>up</string>
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>./Image/Up.png</normaloff>./Image/Up.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>65</width>
+     <height>65</height>
+    </size>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_left">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>180</y>
-     <width>80</width>
-     <height>60</height>
+     <x>50</x>
+     <y>200</y>
+     <width>70</width>
+     <height>70</height>
     </rect>
    </property>
    <property name="text">
-    <string>left</string>
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>./Image/Left.png</normaloff>./Image/Left.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>65</width>
+     <height>65</height>
+    </size>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_down">
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>230</y>
-     <width>80</width>
-     <height>60</height>
+     <y>270</y>
+     <width>70</width>
+     <height>70</height>
     </rect>
    </property>
    <property name="text">
-    <string>down</string>
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>./Image/Down.png</normaloff>./Image/Down.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>65</width>
+     <height>65</height>
+    </size>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_right">
    <property name="geometry">
     <rect>
-     <x>230</x>
-     <y>180</y>
-     <width>80</width>
-     <height>60</height>
+     <x>210</x>
+     <y>200</y>
+     <width>70</width>
+     <height>70</height>
     </rect>
    </property>
    <property name="text">
-    <string>right</string>
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>./Image/Right.png</normaloff>./Image/Right.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>65</width>
+     <height>65</height>
+    </size>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -276,7 +316,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>300</y>
+     <y>340</y>
      <width>331</width>
      <height>16</height>
     </rect>
@@ -285,30 +325,17 @@
     <enum>Qt::Horizontal</enum>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_cancel">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>358</y>
-     <width>330</width>
-     <height>35</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>CANCEL</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pushButton_ok">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>316</y>
+     <y>350</y>
      <width>330</width>
      <height>35</height>
     </rect>
    </property>
    <property name="text">
-    <string>OK</string>
+    <string>Close</string>
    </property>
   </widget>
  </widget>

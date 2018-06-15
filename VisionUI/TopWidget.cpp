@@ -20,44 +20,44 @@ QTopWidget::QTopWidget(QWidget *parent) :
 {
     m_titleLabel = new QLabel();
     m_titleLabel->setObjectName("tp_title");
-	m_titleLabel->setFixedHeight(50);
+    m_titleLabel->setFixedHeight(50);
     //m_titleLabel->setFixedSize(800,50);
 
-	m_versionLabel = new QLabel();
-	m_versionLabel->setObjectName("tp_ver");
+    m_versionLabel = new QLabel();
+    m_versionLabel->setObjectName("tp_ver");
 
-	QFont font = m_titleLabel->font();
-	font.setPointSize(20);
-	font.setWeight(62);
-	m_titleLabel->setFont(font);
-	m_titleLabel->setText(tr("vision soft"));
-	m_versionLabel->setText(tr("soft ver"));
+    QFont font = m_titleLabel->font();
+    font.setPointSize(20);
+    font.setWeight(62);
+    m_titleLabel->setFont(font);
+    m_titleLabel->setText(tr("vision soft"));
+    m_versionLabel->setText(tr("soft ver"));
 
     m_exitBtn = new QPushButton();
     m_exitBtn->setObjectName("exit_btn");
-    m_exitBtn->setFixedSize(24,24);
+    m_exitBtn->setFixedSize(24, 24);
 
     m_mainLayout = new QHBoxLayout;
     m_titleLayout = new QHBoxLayout;
-	m_toolLayout = new QHBoxLayout;
-	m_verLayout = new QVBoxLayout;
+    m_toolLayout = new QHBoxLayout;
+    m_verLayout = new QVBoxLayout;
 
-	m_verLayout->addStretch();
-	m_verLayout->addWidget(m_versionLabel,0,Qt::AlignBottom);
-	m_verLayout->addSpacing(5);
- 
-    m_mainLayout->setContentsMargins(0,0,0,0);
-    m_titleLayout->setContentsMargins(0,0,0,0);
-	m_toolLayout->setContentsMargins(0, 0, 0, 0);
+    m_verLayout->addStretch();
+    m_verLayout->addWidget(m_versionLabel, 0, Qt::AlignBottom);
+    m_verLayout->addSpacing(5);
 
-	m_titleLayout->addSpacing(420);
-	//m_titleLayout->addWidget(m_titleLabel,0,Qt::AlignHCenter);
-	//m_titleLayout->addLayout(m_verLayout);
-	m_titleLayout->addStretch(0);
-    m_titleLayout->addWidget(m_exitBtn,0,Qt::AlignRight|Qt::AlignTop);
+    m_mainLayout->setContentsMargins(0, 0, 0, 0);
+    m_titleLayout->setContentsMargins(0, 0, 0, 0);
+    m_toolLayout->setContentsMargins(0, 0, 0, 0);
+
+    m_titleLayout->addSpacing(420);
+    //m_titleLayout->addWidget(m_titleLabel,0,Qt::AlignHCenter);
+    //m_titleLayout->addLayout(m_verLayout);
+    m_titleLayout->addStretch(0);
+    m_titleLayout->addWidget(m_exitBtn, 0, Qt::AlignRight | Qt::AlignTop);
 
     const QSize szBtn(50, 50);
-	QString stytleStr = "background-color: rgb(32, 105, 138);color:white;";
+    QString stytleStr = "background-color: rgb(32, 105, 138);color:white;";
 
     m_toolBtnAbout = new QPushButton();
     m_toolBtnAbout->setFixedSize(szBtn);
@@ -83,58 +83,58 @@ QTopWidget::QTopWidget(QWidget *parent) :
     m_toolBtnOpenProject->setIconSize(szBtn);
     m_toolBtnOpenProject->setToolTip(QStringLiteral("Open Project"));
 
-	m_toolBtnAutoRun = new QPushButton();
-	m_toolBtnAutoRun->setFixedSize(100, 25);
-	m_toolBtnAutoRun->setText(QStringLiteral("开始运行"));
-	m_toolBtnAutoRun->setStyleSheet(stytleStr);
-	m_toolBtnSys = new QPushButton();
-	m_toolBtnSys->setFixedSize(100, 25);
-	m_toolBtnSys->setText(QStringLiteral("系统标定"));
-	m_toolBtnSys->setStyleSheet(stytleStr);
-	m_toolBtnHw = new QPushButton();
-	m_toolBtnHw->setFixedSize(100, 25);
-	m_toolBtnHw->setText(QStringLiteral("保留选项（硬件）"));
-	m_toolBtnHw->setStyleSheet(stytleStr);
-	m_toolBtnTools = new QPushButton();
-	m_toolBtnTools->setFixedSize(100, 25);
-	m_toolBtnTools->setText(QStringLiteral("编辑检测框"));
-	m_toolBtnTools->setStyleSheet(stytleStr);
-	m_toolBtnSetting = new QPushButton();
-	m_toolBtnSetting->setFixedSize(100, 25);
-	m_toolBtnSetting->setText(QStringLiteral("检测设置"));
-	m_toolBtnSetting->setStyleSheet(stytleStr);
-	m_toolBtnData = new QPushButton();
-	m_toolBtnData->setFixedSize(100, 25);
-	m_toolBtnData->setText(QStringLiteral("元件资料"));
-	m_toolBtnData->setStyleSheet(stytleStr);
+    m_toolBtnAutoRun = new QPushButton();
+    m_toolBtnAutoRun->setFixedSize(100, 25);
+    m_toolBtnAutoRun->setText(QStringLiteral("开始运行"));
+    m_toolBtnAutoRun->setStyleSheet(stytleStr);
+    m_toolBtnSys = new QPushButton();
+    m_toolBtnSys->setFixedSize(100, 25);
+    m_toolBtnSys->setText(QStringLiteral("系统标定"));
+    m_toolBtnSys->setStyleSheet(stytleStr);
+    m_toolBtnHw = new QPushButton();
+    m_toolBtnHw->setFixedSize(100, 25);
+    m_toolBtnHw->setText(QStringLiteral("保留选项（硬件）"));
+    m_toolBtnHw->setStyleSheet(stytleStr);
+    m_toolBtnTools = new QPushButton();
+    m_toolBtnTools->setFixedSize(100, 25);
+    m_toolBtnTools->setText(QStringLiteral("编辑检测框"));
+    m_toolBtnTools->setStyleSheet(stytleStr);
+    m_toolBtnSetting = new QPushButton();
+    m_toolBtnSetting->setFixedSize(100, 25);
+    m_toolBtnSetting->setText(QStringLiteral("检测设置"));
+    m_toolBtnSetting->setStyleSheet(stytleStr);
+    m_toolBtnData = new QPushButton();
+    m_toolBtnData->setFixedSize(100, 25);
+    m_toolBtnData->setText(QStringLiteral("元件资料"));
+    m_toolBtnData->setStyleSheet(stytleStr);
 
     m_toolLayout->addWidget(m_toolBtnAbout, 0, Qt::AlignLeft | Qt::AlignBottom);
-	m_toolLayout->addSpacing(500);
+    m_toolLayout->addSpacing(500);
     m_toolLayout->addWidget(m_toolBtnNewProject, 0, Qt::AlignLeft | Qt::AlignBottom);
     m_toolLayout->addWidget(m_toolBtnOpenProject, 0, Qt::AlignLeft | Qt::AlignBottom);
-	m_toolLayout->addWidget(m_toolBtnAutoRun, 0, Qt::AlignLeft | Qt::AlignBottom);
-	m_toolLayout->addWidget(m_toolBtnSys, 0, Qt::AlignLeft | Qt::AlignBottom);
-	m_toolLayout->addWidget(m_toolBtnHw, 0, Qt::AlignLeft | Qt::AlignBottom);
-	m_toolLayout->addWidget(m_toolBtnTools, 0, Qt::AlignLeft | Qt::AlignBottom);
-	m_toolLayout->addWidget(m_toolBtnSetting, 0, Qt::AlignLeft | Qt::AlignBottom);
-	m_toolLayout->addWidget(m_toolBtnData, 0, Qt::AlignLeft | Qt::AlignBottom);
+    m_toolLayout->addWidget(m_toolBtnAutoRun, 0, Qt::AlignLeft | Qt::AlignBottom);
+    m_toolLayout->addWidget(m_toolBtnSys, 0, Qt::AlignLeft | Qt::AlignBottom);
+    m_toolLayout->addWidget(m_toolBtnHw, 0, Qt::AlignLeft | Qt::AlignBottom);
+    m_toolLayout->addWidget(m_toolBtnTools, 0, Qt::AlignLeft | Qt::AlignBottom);
+    m_toolLayout->addWidget(m_toolBtnSetting, 0, Qt::AlignLeft | Qt::AlignBottom);
+    m_toolLayout->addWidget(m_toolBtnData, 0, Qt::AlignLeft | Qt::AlignBottom);
 
-	m_mainLayout->addLayout(m_toolLayout);
-	m_mainLayout->addLayout(m_titleLayout);
+    m_mainLayout->addLayout(m_toolLayout);
+    m_mainLayout->addLayout(m_titleLayout);
     this->setLayout(m_mainLayout);
-	
-	m_nTimerId = this->startTimer(100);
-    connect(m_exitBtn,SIGNAL(clicked()),this,SIGNAL(closeBtnclick()));
-	
+
+    m_nTimerId = this->startTimer(100);
+    connect(m_exitBtn, SIGNAL(clicked()), this, SIGNAL(closeBtnclick()));
+
     connect(m_toolBtnAbout, SIGNAL(clicked()), this, SLOT(onAbout()));
     connect(m_toolBtnNewProject, SIGNAL(clicked()), this, SLOT(onNewProject()));
     connect(m_toolBtnOpenProject, SIGNAL(clicked()), this, SLOT(onOpenProject()));
-	connect(m_toolBtnAutoRun, SIGNAL(clicked()), this, SLOT(onAutoRun()));
-	connect(m_toolBtnSys, SIGNAL(clicked()), this, SLOT(onSystem()));
-	connect(m_toolBtnHw, SIGNAL(clicked()), this, SLOT(onHardware()));
-	connect(m_toolBtnTools, SIGNAL(clicked()), this, SLOT(onTools()));
-	connect(m_toolBtnSetting, SIGNAL(clicked()), this, SLOT(onSetting()));
-	connect(m_toolBtnData, SIGNAL(clicked()), this, SLOT(onData()));	
+    connect(m_toolBtnAutoRun, SIGNAL(clicked()), this, SLOT(onAutoRun()));
+    connect(m_toolBtnSys, SIGNAL(clicked()), this, SLOT(onSystem()));
+    connect(m_toolBtnHw, SIGNAL(clicked()), this, SLOT(onHardware()));
+    connect(m_toolBtnTools, SIGNAL(clicked()), this, SLOT(onTools()));
+    connect(m_toolBtnSetting, SIGNAL(clicked()), this, SLOT(onSetting()));
+    connect(m_toolBtnData, SIGNAL(clicked()), this, SLOT(onData()));
 }
 
 void QTopWidget::paintEvent(QPaintEvent *event)

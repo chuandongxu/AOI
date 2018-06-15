@@ -42,7 +42,6 @@ private slots:
 	void onDown();
 
 	void onOk();
-	void onCancel();
 
 private:
 	void updateMtrStatus();

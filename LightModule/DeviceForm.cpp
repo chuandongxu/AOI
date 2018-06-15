@@ -1,11 +1,11 @@
-﻿#include "devicefrom.h"
+﻿#include "DeviceForm.h"
 #include "LightDefine.h"
 #include "SystemData.h"
 
 #include "lightmodule_global.h"
 
-QDeviceFrom::QDeviceFrom(QLightDevice * device,QWidget *parent)
-	: m_device(device),QWidget(parent)
+DeviceForm::DeviceForm(QLightDevice * device, QWidget *parent)
+	: m_device(device), QWidget(parent)
 {
 	ui.setupUi(this);
 	//ui.pushButton_3->setDisabled(true);
@@ -42,9 +42,9 @@ QDeviceFrom::QDeviceFrom(QLightDevice * device,QWidget *parent)
 		editLums[i]->setText(data.toString());
 	}
 	//connect(m_device,SIGNAL(dataReady()),SLOT(onDataReady()));
-	connect(ui.pushButton,SIGNAL(clicked()),SLOT(onOpenCommPort()));
-	connect(ui.pushButton_2,SIGNAL(clicked()),SLOT(onSendTestData()));
-	connect(ui.pushButton_3,SIGNAL(clicked()),SLOT(onSaveData()));
+	connect(ui.pushButton, SIGNAL(clicked()), SLOT(onOpenCommPort()));
+	connect(ui.pushButton_2, SIGNAL(clicked()), SLOT(onSendTestData()));
+	connect(ui.pushButton_saveData, SIGNAL(clicked()), SLOT(onSaveData()));
 
 	connect(ui.horizontalSlider_1,SIGNAL(valueChanged(int)),SLOT(onSliderChanged1(int)));
 	connect(ui.horizontalSlider_2,SIGNAL(valueChanged(int)),SLOT(onSliderChanged2(int)));
@@ -71,12 +71,12 @@ QDeviceFrom::QDeviceFrom(QLightDevice * device,QWidget *parent)
     }
 }
 
-QDeviceFrom::~QDeviceFrom()
+DeviceForm::~DeviceForm()
 {
 	//disconnect(m_device,SIGNAL(dataReady()),this,SLOT(onDataReady()));
 }
 
-void QDeviceFrom::onOpenCommPort()
+void DeviceForm::onOpenCommPort()
 {
 	QString name = ui.comboBox->currentText();
 	int bound = ui.comboBox_2->currentText().toInt();
@@ -89,20 +89,20 @@ void QDeviceFrom::onOpenCommPort()
 	else ui.pushButton->setText(QStringLiteral("打开"));
 }
 
-void QDeviceFrom::onSendTestData()
+void DeviceForm::onSendTestData()
 {
 	//QString str = ui.lineEdit_5->text();
 	//m_device->sendTestData(str);
 }
 
-//void QDeviceFrom::onDataReady()
+//void DeviceForm::onDataReady()
 //{
 //	//QString str;
 //	//m_device->recvHexData(str);
 //	//ui.textEdit->setText(str);
 //}
 
-void QDeviceFrom::onSaveData()
+void DeviceForm::onSaveData()
 {
 	QString data = ui.comboBox->currentText();
 	QString key = QString("%0-%1").arg(m_device->getDeviceName()).arg(COMM_PORT);
@@ -125,8 +125,11 @@ void QDeviceFrom::onSaveData()
 		data = QString("%1").arg(sliderCtrls[i]->value());
 		System->setParam(key, data);
 	}
+
+    m_device->setupTrigger(ILight::TRIGGER::TRIGGER_ALL);
 }
-void QDeviceFrom::onSliderChanged1(int lum)
+
+void DeviceForm::onSliderChanged1(int lum)
 {
 	QString str = QString::number(lum);
     ui.lineEdit_1_value->setText(str);
@@ -134,7 +137,7 @@ void QDeviceFrom::onSliderChanged1(int lum)
 	m_device->setChLuminance(0,lum);
 }
 
-void QDeviceFrom::onSliderChanged2(int lum)
+void DeviceForm::onSliderChanged2(int lum)
 {
 	QString str = QString::number(lum);
     ui.lineEdit_2_value->setText(str);
@@ -142,7 +145,7 @@ void QDeviceFrom::onSliderChanged2(int lum)
 	m_device->setChLuminance(1,lum);
 }
 
-void QDeviceFrom::onSliderChanged3(int lum)
+void DeviceForm::onSliderChanged3(int lum)
 {
 	QString str = QString::number(lum);
     ui.lineEdit_3_value->setText(str);
@@ -150,7 +153,7 @@ void QDeviceFrom::onSliderChanged3(int lum)
 	m_device->setChLuminance(2,lum);
 }
 
-void QDeviceFrom::onSliderChanged4(int lum)
+void DeviceForm::onSliderChanged4(int lum)
 {
 	QString str = QString::number(lum);
     ui.lineEdit_4_value->setText(str);
@@ -158,7 +161,7 @@ void QDeviceFrom::onSliderChanged4(int lum)
 	m_device->setChLuminance(3,lum);
 }
 
-void QDeviceFrom::onSliderChanged5(int lum)
+void DeviceForm::onSliderChanged5(int lum)
 {
     QString str = QString::number(lum);
     ui.lineEdit_5_value->setText(str);
@@ -166,7 +169,7 @@ void QDeviceFrom::onSliderChanged5(int lum)
     m_device->setChLuminance(4, lum);
 }
 
-void QDeviceFrom::onSliderChanged6(int lum)
+void DeviceForm::onSliderChanged6(int lum)
 {
     QString str = QString::number(lum);
     ui.lineEdit_6_value->setText(str);
@@ -174,7 +177,7 @@ void QDeviceFrom::onSliderChanged6(int lum)
     m_device->setChLuminance(5, lum);
 }
 
-void QDeviceFrom::onSliderChanged7(int lum)
+void DeviceForm::onSliderChanged7(int lum)
 {
     QString str = QString::number(lum);
     ui.lineEdit_7_value->setText(str);
@@ -182,7 +185,7 @@ void QDeviceFrom::onSliderChanged7(int lum)
     m_device->setChLuminance(6, lum);
 }
 
-void QDeviceFrom::onSliderChanged8(int lum)
+void DeviceForm::onSliderChanged8(int lum)
 {
     QString str = QString::number(lum);
     ui.lineEdit_8_value->setText(str);
@@ -190,42 +193,42 @@ void QDeviceFrom::onSliderChanged8(int lum)
     m_device->setChLuminance(7, lum);
 }
 
-void QDeviceFrom::onTextChanged1(const QString &text)
+void DeviceForm::onTextChanged1(const QString &text)
 {
 	m_device->setChName(0,text);
 }
 	
-void QDeviceFrom::onTextChanged2(const QString &text)
+void DeviceForm::onTextChanged2(const QString &text)
 {
 	m_device->setChName(1,text);
 }
 	
-void QDeviceFrom::onTextChanged3(const QString &text)
+void DeviceForm::onTextChanged3(const QString &text)
 {
 	m_device->setChName(2,text);
 }
 	
-void QDeviceFrom::onTextChanged4(const QString &text)
+void DeviceForm::onTextChanged4(const QString &text)
 {
 	m_device->setChName(3,text);
 }
 
-void QDeviceFrom::onTextChanged5(const QString &text)
+void DeviceForm::onTextChanged5(const QString &text)
 {
     m_device->setChName(4, text);
 }
 
-void QDeviceFrom::onTextChanged6(const QString &text)
+void DeviceForm::onTextChanged6(const QString &text)
 {
     m_device->setChName(5, text);
 }
 
-void QDeviceFrom::onTextChanged7(const QString &text)
+void DeviceForm::onTextChanged7(const QString &text)
 {
     m_device->setChName(6, text);
 }
 
-void QDeviceFrom::onTextChanged8(const QString &text)
+void DeviceForm::onTextChanged8(const QString &text)
 {
     m_device->setChName(7, text);
 }

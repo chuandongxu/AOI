@@ -11,6 +11,8 @@
 #include "../include/IMotion.h"
 #include "../include/IDlp.h"
 #include "../include/ILight.h"
+#include "../include/constants.h"
+
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QDebug>
@@ -510,7 +512,7 @@ void CameraSetting::onCaptureDLP()
 
     switch (nCaptureNumMode)
     {
-    case 0:
+    case CAPTURE_NUM_MODE::ALL_DLP_AND_LIGHT_54:
     {
         bool bTriggerBoard = System->isTriggerBoard();
         if (bTriggerBoard)
@@ -529,7 +531,7 @@ void CameraSetting::onCaptureDLP()
         }
     }
     break;
-    case 1:
+    case CAPTURE_NUM_MODE::ALL_DLP_48:
     {
         bool bTriggerBoard = System->isTriggerBoard();
         if (bTriggerBoard)
@@ -548,7 +550,7 @@ void CameraSetting::onCaptureDLP()
         }
     }
     break;
-    case 2:
+    case CAPTURE_NUM_MODE::SINGLE_DLP_12:
     {
         bool bTriggerBoard = System->isTriggerBoard();
         if (bTriggerBoard)
@@ -607,9 +609,8 @@ void CameraSetting::onCaptureLight()
 
     switch (nCaptureNumMode)
     {
-    case 3:
+    case CAPTURE_NUM_MODE::SINGLE_FRAME_1:
     {
-
         bool bTriggerBoard = System->isTriggerBoard();
         if (bTriggerBoard)
         {          
@@ -652,7 +653,7 @@ void CameraSetting::onCaptureLight()
         }
     }
     break;
-    case 4:
+    case CAPTURE_NUM_MODE::LIGHT_6:
     {
         bool bTriggerBoard = System->isTriggerBoard();
         if (bTriggerBoard)

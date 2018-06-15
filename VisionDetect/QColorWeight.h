@@ -65,6 +65,7 @@ private:
 
 	void setupDateDemo(std::shared_ptr<QCustomPlot> customPlot);
 	int calcGrayValue(cv::Scalar& pixel);
+    cv::Mat _transformColorImage(const cv::Mat &matInput);
     cv::Mat _convertToGrayImage();
 	void generateGrayPlot();
 
@@ -111,7 +112,8 @@ private:
 
 	// Gray Weight
 	std::shared_ptr<QCustomPlot> m_customPlot;
-	cv::Mat m_imageMat;
+	cv::Mat m_matSrcImage;
+    cv::Mat m_matSrcTransform;
 	cv::Mat m_maskMat;
 	QMap<int, int> m_grayHitDatas;
 

@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "ui_lightsetting.h"
-#include "devicefrom.h"
+#include "DeviceForm.h"
 #include "lightctrl.h"
 
 class QLightSetting : public QWidget
@@ -19,7 +19,7 @@ protected slots:
 	void onDelLightCtrl();
 
 private:
-	//QList<QDeviceFrom*> m_forms;
+	//QList<DeviceForm*> m_forms;
 	Ui::QLightSetting ui;
 	QLightCtrl * m_lightCtrl;
 };

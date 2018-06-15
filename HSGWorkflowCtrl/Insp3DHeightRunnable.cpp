@@ -92,6 +92,8 @@ void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowG
 
     stCmd.fEffectHRatioStart = jsonValue["MinRange"].toDouble();
 	stCmd.fEffectHRatioEnd = jsonValue["MaxRange"].toDouble();
+    float fMaxRelHt = jsonValue["MaxRelHt"].toDouble();
+	float fMinRelHt = jsonValue["MinRelHt"].toDouble();
 
     stCmd.rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(windowInsp.x, windowInsp.y),
         windowInsp.width,
@@ -129,6 +131,13 @@ void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowG
         }
     }
 
+    const int HEIGHT_INSP_FAIL = 1000;
+    int status = Vision::ToInt32(stRpy.enStatus);
+    if (Vision::VisionStatus::OK == stRpy.enStatus) {
+        if (stRpy.fHeightDiff > fMaxRelHt || stRpy.fHeightDiff < fMinRelHt)
+            status = HEIGHT_INSP_FAIL;
+    }
+    
     for (const auto &window : windowGroup.vecWindows)
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+        m_ptrBoardInspResult->addWindowStatus(window.Id, status);
 }

@@ -109,47 +109,97 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
         m_nImageHeightPixel,
         m_dResolutionX,
         m_dResolutionY);
+    cv::Mat matROI(matImage, rectROI);
 
-    QJsonObject obj = parse_doucment.object();
+    QJsonObject jsonObj = parse_doucment.object();
 
-    auto enMethod = static_cast<GRAY_WEIGHT_METHOD>(obj["Method"].toInt());
-    auto bEnableB = obj["EnableB"].toBool();
-    auto bEnableG = obj["EnableG"].toBool();
-    auto bEnableR = obj["EnableR"].toBool();
-    auto nScaleB = obj["GrayScaleB"].toInt();
-    auto nScaleG = obj["GrayScaleG"].toInt();
-    auto nScaleR = obj["GrayScaleR"].toInt();
-    auto nThreshold1 = obj["GrayThreshold1"].toInt();
-    auto nThreshold2 = obj["GrayThreshold2"].toInt();
+    auto enMethod = static_cast<GRAY_WEIGHT_METHOD>(jsonObj["Method"].toInt());
 
-    Vision::PR_COLOR_TO_GRAY_CMD stCmd;
-	Vision::PR_COLOR_TO_GRAY_RPY stRpy;
+    if (GRAY_WEIGHT_METHOD::EM_MODE_PT_THRESHOLD == enMethod) {
+        cv::Point ptPick;
+        ptPick.x = jsonObj["PickPointX"].toInt();
+        ptPick.y = jsonObj["PickPointY"].toInt();
+        auto nRThreshold = jsonObj["ColorRThreshold"].toInt();
+        auto nTThreshold = jsonObj["ColorTThreshold"].toInt();
 
-    stCmd.stRatio.fRatioR = bEnableR ? nScaleR / 100.0f : 0.f;
-    stCmd.stRatio.fRatioG = bEnableG ? nScaleG / 100.0f : 0.f;
-    stCmd.stRatio.fRatioB = bEnableB ? nScaleB / 100.0f : 0.f;
-    stCmd.matInputImg = matImage;
+        Vision::PR_PICK_COLOR_CMD stCmd;
+        Vision::PR_PICK_COLOR_RPY stRpy;
 
-    Vision::PR_ColorToGray(&stCmd, &stRpy);
-    if (Vision::VisionStatus::OK != stRpy.enStatus) {
-        m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
-        return false;
+        cv::Mat matColor;
+        if (matROI.type() == CV_8UC1)
+            cv::cvtColor(matROI, matColor, CV_GRAY2BGR);
+        else if (matROI.type() == CV_8UC3)
+            matColor = matROI;
+
+        stCmd.matInputImg = matColor;
+        stCmd.rectROI = cv::Rect(0, 0, rectROI.width, rectROI.height);
+        stCmd.ptPick = ptPick;
+        stCmd.nColorDiff = nRThreshold;
+        stCmd.nGrayDiff = nTThreshold;
+        
+        Vision::PR_PickColor(&stCmd, &stRpy);
+        if (Vision::VisionStatus::OK != stRpy.enStatus) {
+            Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+            Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+            if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+                std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+                m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+                m_ptrBoardInspResult->setFatalError();
+            }
+            return false;
+        }
+        matOutput = stRpy.matResultImg;
     }
+    else {
+        auto bEnableB = jsonObj["EnableB"].toBool();
+        auto bEnableG = jsonObj["EnableG"].toBool();
+        auto bEnableR = jsonObj["EnableR"].toBool();
+        auto nScaleB = jsonObj["GrayScaleB"].toInt();
+        auto nScaleG = jsonObj["GrayScaleG"].toInt();
+        auto nScaleR = jsonObj["GrayScaleR"].toInt();
+        auto nThreshold1 = jsonObj["GrayThreshold1"].toInt();
+        auto nThreshold2 = jsonObj["GrayThreshold2"].toInt();
 
-    matImage = stRpy.matResultImg;
+        Vision::PR_COLOR_TO_GRAY_CMD stCmd;
+        Vision::PR_COLOR_TO_GRAY_RPY stRpy;
 
-    auto nRThreshold = obj["ColorRThreshold"].toInt();
-    auto nTThreshold = obj["ColorTThreshold"].toInt();
+        stCmd.stRatio.fRatioR = bEnableR ? nScaleR / 100.0f : 0.f;
+        stCmd.stRatio.fRatioG = bEnableG ? nScaleG / 100.0f : 0.f;
+        stCmd.stRatio.fRatioB = bEnableB ? nScaleB / 100.0f : 0.f;
+        stCmd.matInputImg = matImage;
 
-    if (EM_MODE_ONE_THRESHOLD == enMethod || EM_MODE_TWO_THRESHOLD == enMethod) {
+        Vision::PR_ColorToGray(&stCmd, &stRpy);
+        if (Vision::VisionStatus::OK != stRpy.enStatus) {
+            Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+            Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+            if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+                std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+                m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+                m_ptrBoardInspResult->setFatalError();
+            }
+            return false;
+        }
+
+        matImage = stRpy.matResultImg;
+
         Vision::PR_THRESHOLD_CMD stThresholdCmd;
         Vision::PR_THRESHOLD_RPY stThresholdRpy;
         stThresholdCmd.bDoubleThreshold = EM_MODE_TWO_THRESHOLD == enMethod;
-        stThresholdCmd.matInputImg = cv::Mat(matImage, rectROI);
+        stThresholdCmd.matInputImg = matROI;
         stThresholdCmd.nThreshold1 = nThreshold1;
         stThresholdCmd.nThreshold2 = nThreshold2;
 
         Vision::PR_Threshold(&stThresholdCmd, &stThresholdRpy);
+        if (Vision::VisionStatus::OK != stRpy.enStatus) {
+            Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+            Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+            if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+                std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+                m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+                m_ptrBoardInspResult->setFatalError();
+            }
+            return false;
+        }
         matOutput = stThresholdRpy.matResultImg;
     }
 
@@ -196,6 +246,16 @@ void Insp2DRunnable::_inspChip(const Engine::Window &window) {
     stCmd.enInspMode = static_cast<Vision::PR_INSP_CHIP_MODE>(jsonValue["InspMode"].toInt()); 
 
     Vision::PR_InspChip(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+            return;
+        }
+    }
     m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }
 
@@ -232,6 +292,16 @@ void Insp2DRunnable::_inspHole(const Engine::Window &window) {
     }
 
     Vision::PR_InspHole(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+            return;
+        }
+    }
     m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }
 

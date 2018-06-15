@@ -656,7 +656,7 @@ int QSystem::getSysRunMode()
 bool QSystem::isHardwareTrigger()
 {
     int nRunMode = getSysRunMode();
-    if ((1 == nRunMode) || (2 == nRunMode))return true;
+    if ((1 == nRunMode) || (2 == nRunMode)) return true;
 
     return false;
 }
@@ -664,7 +664,7 @@ bool QSystem::isHardwareTrigger()
 bool QSystem::isTriggerBoard()
 {
     int nRunMode = getSysRunMode();
-    if (2 == nRunMode)return true;
+    if (2 == nRunMode) return true;
 
     return false;
 }

@@ -19,13 +19,11 @@ QLightCardDevice::QLightCardDevice(const QString & devName, int nChnNum, QObject
 
 QLightCardDevice::~QLightCardDevice()
 {
-
 }
 
 void QLightCardDevice::setChLuminance(int ch, int luminance)
 {
     m_data[ch].iLuminance = luminance;
- 
 }
 
 void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
@@ -117,7 +115,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     {
         nCaptureLightNum = 1;
         nStationNum = 0;
-        for (int i = 0; i < _CHN_NUM; i++)
+        for (int i = 0; i < _CHN_NUM; ++ i)
         {
             plus[i] = 0;
         }
@@ -128,7 +126,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     {
         nCaptureLightNum = 1;
         nStationNum = 0;
-        for (int i = 0; i < _CHN_NUM; i++)
+        for (int i = 0; i < _CHN_NUM; ++ i)
         {
             plus[i] = 0;
         }
@@ -139,7 +137,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     {
         nCaptureLightNum = 1;
         nStationNum = 0;
-        for (int i = 0; i < _CHN_NUM; i++)
+        for (int i = 0; i < _CHN_NUM; ++ i)
         {
             plus[i] = 0;
         }
@@ -150,7 +148,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     { 
         nCaptureLightNum = 1;
         nStationNum = 0;
-        for (int i = 0; i < _CHN_NUM; i++)
+        for (int i = 0; i < _CHN_NUM; ++ i)
         {
             plus[i] = 0;
         }
@@ -188,9 +186,6 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     }
 
     //DLP参数设定
-    szCmd = "SetPWM" + QString::number(9) + " " + QString::number(nPatternExposure) + "\r\n";
-    writeCmd(szCmd);
-
     szCmd = "SetT" + QString::number(1) + " " + QString::number(nPatternPeriod) + "\r\n";
     writeCmd(szCmd);
     
@@ -228,7 +223,7 @@ bool QLightCardDevice::trigger()
         m_bSetChn = true;
     }
 
-    szCmd = "Start" + QString("") + " " + QString::number(getPatternNum() + 2) + "\r\n";
+    szCmd = "Start" + QString("") + " " + QString::number(getPatternNum()) + "\r\n";
     writeCmd(szCmd);
 
     return true;
@@ -238,7 +233,7 @@ void QLightCardDevice::writeCmd(const QString& szCmd)
 {
     if (m_comPort)
     {
-        qDebug() << "LiCard, write cmd";
+        qDebug() << "LiCard, write cmd: " << szCmd;
         m_comPort->write(szCmd.toLocal8Bit());
 
         int nWaitTime = 1 * 100;
@@ -293,6 +288,7 @@ int QLightCardDevice::getPatternNum()
         int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
         nPatternNum *= nStationNum;
         nPatternNum += _CHN_NUM;
+        nPatternNum += 2;   // There are two image need to trigger two channels.
     }
     break;
     case ILight::TRIGGER_DLP:
@@ -312,8 +308,8 @@ int QLightCardDevice::getPatternNum()
     break;
     case ILight::TRIGGER_LIGHT:
     {
-
         nPatternNum = _CHN_NUM;
+        nPatternNum += 2; // There are two image need to trigger two channels.
     }
     break;
     case ILight::TRIGGER_ONE_CH1:
