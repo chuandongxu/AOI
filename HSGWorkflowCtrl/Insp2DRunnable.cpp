@@ -228,8 +228,8 @@ void Insp2DRunnable::_inspChip(const Engine::Window &window) {
 
     stCmd.matInputImg = m_vec2DImages[nImageIndex];
     stCmd.rectSrchWindow = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
-        jsonValue["SrchWinWidth"].toDouble(),
-        jsonValue["SrchWinHeight"].toDouble(),
+        window.srchWidth,
+        window.srchHeight,
         m_ptFramePos,
         m_nImageWidthPixel,
         m_nImageHeightPixel,
@@ -576,8 +576,8 @@ Vision::VisionStatus Insp2DRunnable::_alignment(const Engine::Window &window, De
 
     stCmd.matInputImg = m_vec2DImages[nImageIndex];
     stCmd.rectSrchWindow = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
-        jsonValue["SrchWinWidth"].toDouble(),
-        jsonValue["SrchWinHeight"].toDouble(),
+        window.srchWidth,
+        window.srchHeight,
         m_ptFramePos,
         m_nImageWidthPixel,
         m_nImageHeightPixel,

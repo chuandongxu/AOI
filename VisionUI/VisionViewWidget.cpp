@@ -894,7 +894,10 @@ void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
                 if(_checkSelectedDevice(cv::Point(pos.x(), pos.y())))
                     QEos::Notify(EVENT_INSP_WINDOW_STATE, 0);
             }else
-                QEos::Notify(EVENT_COLOR_WIDGET_STATE, 0);
+                QEos::Notify(EVENT_COLOR_WIDGET_STATE, CHANGE_SELECTED_ROI);
+            break;
+        case MODE_VIEW_EDIT_SRCH_WINDOW:
+            QEos::Notify(EVENT_COLOR_WIDGET_STATE, CHANGE_SRCH_WINDOW);
             break;
 		case MODE_VIEW_NONE:
 			break;
@@ -1068,12 +1071,8 @@ void VisionViewWidget::loadImage(QString& fileName)
 	displayImage(m_hoImage);
 }
 
-void VisionViewWidget::repaintAll()
-{
+void VisionViewWidget::repaintAll() {
     cv::Mat matImage = m_hoImage.clone();
-
-    _drawSelectedROI(matImage);
-
     displayImage(matImage);
 }
 
@@ -1095,7 +1094,7 @@ void VisionViewWidget::_drawSelectedROI(cv::Mat &matImage)
         }
     }
 
-    if (MODE_VIEW_EDIT_SRCH_WINDOW == m_stateView) {
+    if (MODE_VIEW_EDIT_SRCH_WINDOW == m_stateView || MODE_VIEW_EDIT_INSP_WINDOW == m_stateView) {
         cv::rectangle(matImage, m_rectSrchWindow, _constOrchidScalar, 2);
     }
 }
@@ -1168,6 +1167,7 @@ void VisionViewWidget::displayImage(cv::Mat& image)
 	cv::Mat matDisplay;
 	_drawDeviceWindows(m_dispImage);
     _drawDetectObjs();
+    _drawSelectedROI(m_dispImage);
 	_cutImageForDisplay(m_dispImage, matDisplay);
 
 	if (matDisplay.type() == CV_8UC3)
@@ -1724,66 +1724,16 @@ void VisionViewWidget::_drawDetectObjs()
         cv::Point2f vertices[4];
         obj.getFrame().points(vertices);
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; ++ i)
         {
-            cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], scalarWindowColor, 5);
+            cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], scalarWindowColor, 4);
         }
 
-        obj.getLoc().points(vertices);
+        obj.getSrchWindow().points(vertices);
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; ++ i)
         {
-            cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 255, 0), 5);
-        }
-
-        for (int j = 0; j < obj.getHeightBaseNum(); j++)
-        {
-            obj.getHeightBase(j).points(vertices);
-
-            if (bShowNumber)
-            {
-                const int ImageWidth = 2048;
-                double dScaleFactor = (double)m_imageWidth / ImageWidth;
-
-                cv::Point p1;
-                p1.x = obj.getHeightBase(j).center.x;
-                p1.y = obj.getHeightBase(j).center.y;
-
-                cv::String text = QString("%1").arg(j + 1).toStdString();
-
-                double fontScale = dScaleFactor*2.0f;
-                cv::putText(m_dispImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
-            }
-
-            for (int i = 0; i < 4; i++)
-            {
-                cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 0, 0), 5);
-            }
-        }
-
-        for (int j = 0; j < obj.getHeightDetectNum(); ++ j )
-        {
-            obj.getHeightDetect(j).points(vertices);
-
-            if (bShowNumber)
-            {
-                const int ImageWidth = 2048;
-                double dScaleFactor = (double)m_imageWidth / ImageWidth;
-
-                cv::Point p1;
-                p1.x = obj.getHeightDetect(j).center.x;
-                p1.y = obj.getHeightDetect(j).center.y;
-
-                cv::String text = QString("%1").arg(j + 1).toStdString();
-
-                double fontScale = dScaleFactor*2.0f;
-                cv::putText(m_dispImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
-            }
-
-            for (int i = 0; i < 4; i++)
-            {
-                cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], cv::Scalar(0, 255, 0), 5);
-            }
+            cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], _constGreenScalar, 2);
         }
     }
 }

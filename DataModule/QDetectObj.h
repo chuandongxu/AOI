@@ -51,13 +51,13 @@ public:
 
 public:
 	QString getName() const { return m_objName; }
-	void setName(QString& name){ m_objName = name; }
+	void setName(QString& name) { m_objName = name; }
 	int		getID() const { return m_nID; }
 
-	void setType(QString& szType){ m_objType = szType; }
+	void setType(QString& szType) { m_objType = szType; }
 	QString getType(){ return m_objType; }
 
-	void setBitmap(QString& szFilePath){m_objBitmap = szFilePath;}
+	void setBitmap(QString& szFilePath) {m_objBitmap = szFilePath;}
 	QString getBitmap(){ return m_objBitmap; }
 
 	void setObjPos(double posX, double posY);
@@ -70,6 +70,8 @@ public:
 	bool isFrameCreated();
 	void setFrame(cv::RotatedRect& rect);
 	cv::RotatedRect getFrame() const;
+    void setSrchWindow(const cv::RotatedRect &rect) { m_rectSrchWindow = rect; }
+    cv::RotatedRect getSrchWindow() const { return  m_rectSrchWindow; }
 
 	bool isLocCreated();
 	void setLoc(cv::RotatedRect& rect);
@@ -123,6 +125,7 @@ private:
 
 	bool m_bframeCreated;	
 	cv::RotatedRect m_frameRect;
+    cv::RotatedRect m_rectSrchWindow;
 
 	bool m_bLocCreated;
 	cv::RotatedRect m_locationRect;

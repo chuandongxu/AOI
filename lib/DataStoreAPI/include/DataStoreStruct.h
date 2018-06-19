@@ -118,6 +118,7 @@ struct Window {
         FIND_CIRCLE,
         INSP_POLARITY,
         INSP_POLARITY_REF,
+        INSP_BRIDGE,
     };
     Window() :
         Id          (0),
@@ -127,6 +128,8 @@ struct Window {
         y           (0),
         width       (0),
         height      (0),
+        srchWidth   (0),
+        srchHeight  (0),
         angle       (0),
         usage       (Usage::UNDEFINED),
         recordId    (0),
@@ -140,6 +143,8 @@ struct Window {
     float               y;
     float               width;
     float               height;
+    float               srchWidth;
+    float               srchHeight;
     float               angle;
     Usage               usage;
     Int32               recordId;

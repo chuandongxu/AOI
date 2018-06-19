@@ -15,7 +15,8 @@
 using namespace NFG::AOI;
 using namespace AOI;
 
-enum BASIC_PARAM {
+enum BASIC_PARAM
+{
     FIND_PAIR,
     FIND_DIRECTION,
     CALIPER_COUNT,
@@ -34,8 +35,7 @@ enum BASIC_PARAM {
 };
 
 FindLineWidget::FindLineWidget(InspWindowWidget *parent)
-    : EditInspWindowBaseWidget(parent)
-{
+: EditInspWindowBaseWidget(parent) {
     ui.setupUi(this);
 
     m_pCheckBoxFindPair = std::make_unique<QCheckBox>(ui.tableWidget);
@@ -98,12 +98,10 @@ FindLineWidget::FindLineWidget(InspWindowWidget *parent)
     ui.tableWidget->setCellWidget(ANGLE_DIFF_TOL, DATA_COLUMN, m_pEditAngleDiffTolerance.get());
 }
 
-FindLineWidget::~FindLineWidget()
-{
+FindLineWidget::~FindLineWidget() {
 }
 
-void FindLineWidget::setDefaultValue()
-{
+void FindLineWidget::setDefaultValue() {
     m_pCheckBoxFindPair->setChecked(false);
     m_pComboBoxFindLineDirection->setCurrentIndex(0);
     m_pEditCaliperCount->setText("20");
@@ -120,8 +118,7 @@ void FindLineWidget::setDefaultValue()
     m_pEditAngleDiffTolerance->setText("1");
 }
 
-void FindLineWidget::tryInsp()
-{
+void FindLineWidget::tryInsp() {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
@@ -161,15 +158,14 @@ void FindLineWidget::tryInsp()
     QMessageBox::information(this, "Find Line", strMsg);
 }
 
-void FindLineWidget::confirmWindow(OPERATION enOperation)
-{
+void FindLineWidget::confirmWindow(OPERATION enOperation) {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
 
     QJsonObject jsonValue;
-    
+
     jsonValue["Algorithm"] = Vision::ToInt32(Vision::PR_FIND_LINE_ALGORITHM::CALIPER);
     jsonValue["FindPair"] = m_pCheckBoxFindPair->isChecked();
     jsonValue["DetectDir"] = m_pComboBoxFindLineDirection->currentIndex();
@@ -188,12 +184,12 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
     jsonValue["AngleDiffTolerance"] = m_pEditAngleDiffTolerance->text().toFloat();
 
     QJsonDocument document;
-	document.setObject(jsonValue);
-	QByteArray byteArray = document.toJson(QJsonDocument::Compact);
+    document.setObject(jsonValue);
+    QByteArray byteArray = document.toJson(QJsonDocument::Compact);
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     auto rectROI = pUI->getSelectedROI();
-    if ( rectROI.width <= 0 || rectROI.height <= 0 ) {
+    if (rectROI.width <= 0 || rectROI.height <= 0) {
         QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI first to add inspection window."));
         return;
     }
@@ -202,9 +198,9 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
     window.usage = Engine::Window::Usage::FIND_LINE;
     window.inspParams = byteArray;
 
-    cv::Point2f ptWindowCtr(rectROI.x + rectROI.width  / 2.f, rectROI.y + rectROI.height / 2.f);
+    cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();
-    int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;
+    int nBigImgWidth = matBigImage.cols / dCombinedImageScale;
     int nBigImgHeight = matBigImage.rows / dCombinedImageScale;
     if (bBoardRotated) {
         window.x = (nBigImgWidth - ptWindowCtr.x)  * dResolutionX;
@@ -214,30 +210,31 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
         window.x = ptWindowCtr.x * dResolutionX;
         window.y = (nBigImgHeight - ptWindowCtr.y) * dResolutionY;
     }
-    window.width  = rectROI.width  * dResolutionX;
+    window.width = rectROI.width  * dResolutionX;
     window.height = rectROI.height * dResolutionY;
     window.deviceId = pUI->getSelectedDevice().getId();
     window.angle = 0;
     int result = Engine::OK;
-    if ( OPERATION::ADD == enOperation ) {
+    if (OPERATION::ADD == enOperation) {
         window.deviceId = pUI->getSelectedDevice().getId();
         char windowName[100];
         _snprintf(windowName, sizeof(windowName), "FindLine [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
         window.name = windowName;
-        result = Engine::CreateWindow ( window );
+        result = Engine::CreateWindow(window);
         if (result != Engine::OK) {
-		    String errorType, errorMessage;
-		    Engine::GetErrorDetail(errorType, errorMessage);
-		    System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-		    return;
-	    }else {
-            System->setTrackInfo(QString("Success to Create Window: %1.").arg ( window.name.c_str() ) );
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+            return;
+        }
+        else {
+            System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
         }
 
         QDetectObj detectObj(window.Id, window.name.c_str());
         cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
         if (bBoardRotated)
-            ptCenter.x = nBigImgWidth  - ptCenter.x;
+            ptCenter.x = nBigImgWidth - ptCenter.x;
         else
             ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
         cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
@@ -245,16 +242,18 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
         auto vecDetectObjs = pUI->getDetectObjs();
         vecDetectObjs.push_back(detectObj);
         pUI->setDetectObjs(vecDetectObjs);
-    }else {
+    }
+    else {
         window.Id = m_currentWindow.Id;
         window.name = m_currentWindow.name;
-        result = Engine::UpdateWindow ( window );
+        result = Engine::UpdateWindow(window);
         if (result != Engine::OK) {
-		    String errorType, errorMessage;
-		    Engine::GetErrorDetail(errorType, errorMessage);
-		    System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-		    return;
-	    }else {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+            return;
+        }
+        else {
             System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
         }
     }
@@ -262,18 +261,17 @@ void FindLineWidget::confirmWindow(OPERATION enOperation)
     m_pParent->UpdateInspWindowList();
 }
 
-void FindLineWidget::setCurrentWindow(const Engine::Window &window)
-{
+void FindLineWidget::setCurrentWindow(const Engine::Window &window) {
     m_currentWindow = window;
 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error != QJsonParseError::NoError) {
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
         System->setTrackInfo(QString("Invalid inspection parameter encounted."));
-		return;
+        return;
     }
 
     QJsonObject jsonValue = parse_doucment.object();

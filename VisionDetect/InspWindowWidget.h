@@ -18,6 +18,7 @@ enum class INSP_WIDGET_INDEX {
     INSP_POLARITY,
     INSP_CONTOUR,
     INSP_CHIP,
+    INSP_BRIDGE,
     SIZE,
 };
 

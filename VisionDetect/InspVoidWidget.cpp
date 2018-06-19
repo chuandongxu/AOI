@@ -162,7 +162,7 @@ void InspVoidWidget::tryInsp() {
         return;
     }
 
-    Vision::PR_InspHole ( &stCmd, &stRpy );
+    Vision::PR_InspHole(&stCmd, &stRpy);
     QString strMsg;
     strMsg.sprintf("Inspect Status %d", Vision::ToInt32(stRpy.enStatus));
     if ( Vision::PR_INSP_HOLE_MODE::RATIO == stCmd.enInspMode )
@@ -174,8 +174,7 @@ void InspVoidWidget::tryInsp() {
 
 void InspVoidWidget::confirmWindow(OPERATION enOperation)
 {
-    auto pComboBoxInspMode = dynamic_cast<QComboBox *>(ui.tableWidget->cellWidget(INSP_MODE, 1));
-    auto enInspMode = static_cast<Vision::PR_INSP_HOLE_MODE>(pComboBoxInspMode->currentIndex());
+    auto enInspMode = static_cast<Vision::PR_INSP_HOLE_MODE>(m_pComboBoxInspMode->currentIndex());
 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
@@ -184,8 +183,8 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
 
     QJsonObject jsonValue;
 
-    jsonValue["InspMode"] = pComboBoxInspMode->currentIndex();
-    if ( Vision::PR_INSP_HOLE_MODE::RATIO == static_cast<Vision::PR_INSP_HOLE_MODE>( pComboBoxInspMode->currentIndex() ) ) {
+    jsonValue["InspMode"] = m_pComboBoxInspMode->currentIndex();
+    if (Vision::PR_INSP_HOLE_MODE::RATIO == static_cast<Vision::PR_INSP_HOLE_MODE>(m_pComboBoxInspMode->currentIndex())) {
         QJsonObject jsonRatioMode;
         jsonRatioMode["MaxAreaRatio"] = m_pEditMaxAreaRatio->text().toFloat();
         jsonRatioMode["MinAreaRatio"] = m_pEditMinAreaRatio->text().toFloat();

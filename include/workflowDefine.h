@@ -107,6 +107,7 @@
 
 #define EVENT_COLOR_WIDGET_STATE        "eventColorWidget"
 #define CHANGE_SELECTED_ROI             230
+#define CHANGE_SRCH_WINDOW              231
 
 #define EVENT_THREAD_STATE              "eventThreadState"
 #define SHUTDOWN_MAIN_THREAD            300
