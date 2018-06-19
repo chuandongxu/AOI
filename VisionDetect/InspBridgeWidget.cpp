@@ -257,9 +257,9 @@ void InspBridgeWidget::confirmWindow(OPERATION enOperation) {
         window.x = ptWindowCtr.x * dResolutionX;
         window.y = (nBigImgHeight - ptWindowCtr.y) * dResolutionY;
     }
-    window.width = rectROI.width  * dResolutionX;
+    window.width  = rectROI.width  * dResolutionX;
     window.height = rectROI.height * dResolutionY;
-    window.srchWidth = rectSrchWindow.width  * dResolutionX;
+    window.srchWidth  = rectSrchWindow.width  * dResolutionX;
     window.srchHeight = rectSrchWindow.height * dResolutionY;
     window.deviceId = pUI->getSelectedDevice().getId();
     window.angle = 0;

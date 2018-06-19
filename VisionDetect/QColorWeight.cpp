@@ -1614,6 +1614,13 @@ void QColorWeight::onColorWidgetState(const QVariantList &data)
         break;
     }
 
+    if (rectROI.x < 0) rectROI.x = 0;
+    if (rectROI.y < 0) rectROI.y = 0;
+    if ((rectROI.x + rectROI.width) > matImage.cols)
+        rectROI.width = matImage.cols - rectROI.x;
+    if ((rectROI.y + rectROI.height) > matImage.rows)
+        rectROI.height = matImage.rows - rectROI.y;
+
     cv::Mat matROI(matImage, rectROI);
     setImage(matROI);
 
