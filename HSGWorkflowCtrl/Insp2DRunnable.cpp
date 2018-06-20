@@ -111,6 +111,12 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
         m_dResolutionY);
     cv::Mat matROI(matImage, rectROI);
 
+    cv::Mat matColor;
+    if (matROI.type() == CV_8UC1)
+        cv::cvtColor(matROI, matColor, CV_GRAY2BGR);
+    else if (matROI.type() == CV_8UC3)
+        matColor = matROI;
+
     QJsonObject jsonObj = parse_doucment.object();
 
     auto enMethod = static_cast<GRAY_WEIGHT_METHOD>(jsonObj["Method"].toInt());
@@ -123,13 +129,7 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
         auto nTThreshold = jsonObj["ColorTThreshold"].toInt();
 
         Vision::PR_PICK_COLOR_CMD stCmd;
-        Vision::PR_PICK_COLOR_RPY stRpy;
-
-        cv::Mat matColor;
-        if (matROI.type() == CV_8UC1)
-            cv::cvtColor(matROI, matColor, CV_GRAY2BGR);
-        else if (matROI.type() == CV_8UC3)
-            matColor = matROI;
+        Vision::PR_PICK_COLOR_RPY stRpy;        
 
         stCmd.matInputImg = matColor;
         stCmd.rectROI = cv::Rect(0, 0, rectROI.width, rectROI.height);
@@ -166,7 +166,7 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
         stCmd.stRatio.fRatioR = bEnableR ? nScaleR / 100.0f : 0.f;
         stCmd.stRatio.fRatioG = bEnableG ? nScaleG / 100.0f : 0.f;
         stCmd.stRatio.fRatioB = bEnableB ? nScaleB / 100.0f : 0.f;
-        stCmd.matInputImg = matImage;
+        stCmd.matInputImg = matColor;
 
         Vision::PR_ColorToGray(&stCmd, &stRpy);
         if (Vision::VisionStatus::OK != stRpy.enStatus) {
@@ -180,12 +180,12 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
             return false;
         }
 
-        matImage = stRpy.matResultImg;
+        cv::Mat matGray = stRpy.matResultImg;
 
         Vision::PR_THRESHOLD_CMD stThresholdCmd;
         Vision::PR_THRESHOLD_RPY stThresholdRpy;
         stThresholdCmd.bDoubleThreshold = EM_MODE_TWO_THRESHOLD == enMethod;
-        stThresholdCmd.matInputImg = matROI;
+        stThresholdCmd.matInputImg = matGray;
         stThresholdCmd.nThreshold1 = nThreshold1;
         stThresholdCmd.nThreshold2 = nThreshold2;
 

@@ -86,7 +86,7 @@ void HeightDetectWidget::tryInsp() {
     stCmd.rectROI = rectROI;
 
     auto matImage = pUI->getImage();
-    int nBigImgWidth = matImage.cols / dCombinedImageScale;
+    int nBigImgWidth  = matImage.cols / dCombinedImageScale;
     int nBigImgHeight = matImage.rows / dCombinedImageScale;
 
     for (const auto &window : m_windowGroup.vecWindows) {
