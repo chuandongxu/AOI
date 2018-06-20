@@ -40,11 +40,11 @@ HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
     ui.tableWidget->setCellWidget(RANGE_MAX_ATTRI, DATA_COLUMN, m_pEditMaxRange.get());
 
     m_pEditMaxRelHt = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditMaxRelHt->setValidator(new QDoubleValidator(0, 10, -10, m_pEditMaxRelHt.get()));
+    m_pEditMaxRelHt->setValidator(new QDoubleValidator(-10, 10, 2, m_pEditMaxRelHt.get()));
     ui.tableWidget->setCellWidget(MAX_REL_HT, DATA_COLUMN, m_pEditMaxRelHt.get());
 
     m_pEditMinRelHt = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditMinRelHt->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinRelHt.get()));
+    m_pEditMinRelHt->setValidator(new QDoubleValidator(-10, 10, 2, m_pEditMinRelHt.get()));
     ui.tableWidget->setCellWidget(MIN_REL_HT, DATA_COLUMN, m_pEditMinRelHt.get());
 }
 

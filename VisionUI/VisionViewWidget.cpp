@@ -748,8 +748,8 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
 						select.height = (select.y + select.height) > m_hoImage.size().height ? (m_hoImage.size().height - select.y) : select.height;
 					}
 
-					if (MODE_VIEW_SELECT_3D_ROI == m_stateView && select.width  > 500) select.width  = 500;
-					if (MODE_VIEW_SELECT_3D_ROI == m_stateView && select.height > 500) select.height = 500;
+					if (MODE_VIEW_SELECT_3D_ROI == m_stateView && select.width  > 1000) select.width  = 1000;
+					if (MODE_VIEW_SELECT_3D_ROI == m_stateView && select.height > 1000) select.height = 1000;
 
 					m_selectROI = select;
 
