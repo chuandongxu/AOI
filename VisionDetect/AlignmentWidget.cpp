@@ -209,6 +209,8 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
     QByteArray byte_array = document.toJson(QJsonDocument::Compact);
 
     Engine::Window window;
+    if (OPERATION::EDIT == enOperation)
+        window = m_currentWindow;
     window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = Engine::Window::Usage::ALIGNMENT;
     window.inspParams = byte_array;
@@ -269,8 +271,6 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
         vecDetectObjs.push_back(detectObj);
     }
     else {
-        window.Id = m_currentWindow.Id;
-        window.name = m_currentWindow.name;
         result = Engine::UpdateWindow(window);
         if (result != Engine::OK) {
             String errorType, errorMessage;
@@ -311,4 +311,6 @@ void AlignmentWidget::setCurrentWindow(const Engine::Window &window) {
     m_pEditMinScore->setText(QString::number(obj.take("MinScore").toDouble()));
 
     m_pEditRecordID->setText(QString::number(window.recordId));
+
+    m_bIsTryInspected = false;
 }
