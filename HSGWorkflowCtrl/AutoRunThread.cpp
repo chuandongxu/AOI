@@ -397,6 +397,12 @@ bool AutoRunThread::_doAlignment()
 
     QThreadPool::globalInstance()->waitForDone();
     TimeLogInstance->addTimeLog("Search for alignment point done.");
+
+    if (!bResult) {
+        m_strErrorMsg = "Alignment fail";
+        _sendErrorAndWaitForResponse();
+        return false;
+    }
     
     for (size_t i = 0; i < m_vecAlignments.size(); ++ i) {
         if (Vision::VisionStatus::OK != vecAlignmentRunnable[i]->getStatus()) {
