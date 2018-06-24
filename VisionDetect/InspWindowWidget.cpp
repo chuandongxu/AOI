@@ -639,7 +639,7 @@ void InspWindowWidget::onSelectedWindowChanged() {
     if (INSP_WIDGET_INDEX::INSP_HOLE == m_enCurrentInspWidget ||
         INSP_WIDGET_INDEX::INSP_BRIDGE == m_enCurrentInspWidget) {
         cv::Mat matImage = pUI->getImage();
-        cv::Rect rectROI = cv::RotatedRect(cv::Point(x, y), cv::Size(width, height), window.angle).boundingRect();
+        cv::Rect rectROI = cv::Rect2f(x - width / 2.f, y - height / 2.f, width, height);
         cv::Mat matROI(matImage, rectROI);
         m_pColorWidget->setImage(matROI);
         m_pColorWidget->setJsonFormattedParams(window.colorParams);

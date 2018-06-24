@@ -26,8 +26,8 @@ enum BASIC_PARAM
     REMOVE_STRAY_POINT_RATIO,
     GAUSSIAN_DIFF_HALF_WIDTH,
     GAUSSIAN_DIFF_SIGMA,
-    CHECK_LINERITY,
     POINT_MAX_OFFSET,
+    CHECK_LINERITY,    
     MIN_LINERITY,
     CHECK_ANGLE,
     EXPECTED_ANGLE,
@@ -75,27 +75,24 @@ FindLineWidget::FindLineWidget(InspWindowWidget *parent)
     m_pEditDiffFilterSigma->setValidator(new QDoubleValidator(0.1, 100, 2, m_pEditDiffFilterSigma.get()));
     ui.tableWidget->setCellWidget(GAUSSIAN_DIFF_SIGMA, DATA_COLUMN, m_pEditDiffFilterSigma.get());
 
-    m_pCheckLinerity = std::make_unique<QCheckBox>(ui.tableWidget);
-    ui.tableWidget->setCellWidget(CHECK_LINERITY, DATA_COLUMN, m_pCheckLinerity.get());
-
     m_pEditPointMaxOffset = std::make_unique<QLineEdit>(ui.tableWidget);
     m_pEditPointMaxOffset->setValidator(new QDoubleValidator(1, 5000, 2, m_pEditPointMaxOffset.get()));
     ui.tableWidget->setCellWidget(POINT_MAX_OFFSET, DATA_COLUMN, m_pEditPointMaxOffset.get());
 
-    m_pEditMinLinearity = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditMinLinearity->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinLinearity.get()));
-    ui.tableWidget->setCellWidget(MIN_LINERITY, DATA_COLUMN, m_pEditMinLinearity.get());
+    m_pCheckLinerity = std::make_unique<QCheckBox>(ui.tableWidget);
+    ui.tableWidget->setCellWidget(CHECK_LINERITY, DATA_COLUMN, m_pCheckLinerity.get());
+
+    m_pSpecAndResultMinLinearity = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 0, 100);
+    ui.tableWidget->setCellWidget(MIN_LINERITY, DATA_COLUMN, m_pSpecAndResultMinLinearity.get());
 
     m_pEditCheckAngle = std::make_unique<QCheckBox>(ui.tableWidget);
     ui.tableWidget->setCellWidget(CHECK_ANGLE, DATA_COLUMN, m_pEditCheckAngle.get());
 
-    m_pEditExpectedAngle = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditExpectedAngle->setValidator(new QDoubleValidator(-360, 360, 2, m_pEditExpectedAngle.get()));
-    ui.tableWidget->setCellWidget(EXPECTED_ANGLE, DATA_COLUMN, m_pEditExpectedAngle.get());
+    m_pSpecAndResultAngle = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -360, 360);
+    ui.tableWidget->setCellWidget(EXPECTED_ANGLE, DATA_COLUMN, m_pSpecAndResultAngle.get());
 
-    m_pEditAngleDiffTolerance = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditAngleDiffTolerance->setValidator(new QDoubleValidator(-100, 100, 2, m_pEditAngleDiffTolerance.get()));
-    ui.tableWidget->setCellWidget(ANGLE_DIFF_TOL, DATA_COLUMN, m_pEditAngleDiffTolerance.get());
+    m_pSpecAndResultAngleDiffTol = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -100, 100);
+    ui.tableWidget->setCellWidget(ANGLE_DIFF_TOL, DATA_COLUMN, m_pSpecAndResultAngleDiffTol.get());
 }
 
 FindLineWidget::~FindLineWidget() {
@@ -112,10 +109,10 @@ void FindLineWidget::setDefaultValue() {
     m_pEditDiffFilterSigma->setText("1");
     m_pCheckLinerity->setChecked(true);
     m_pEditPointMaxOffset->setText("100");
-    m_pEditMinLinearity->setText("80");
+    m_pSpecAndResultMinLinearity->setSpec(80);
     m_pEditCheckAngle->setChecked(true);
-    m_pEditExpectedAngle->setText("0");
-    m_pEditAngleDiffTolerance->setText("1");
+    m_pSpecAndResultAngle->setSpec(0);
+    m_pSpecAndResultAngleDiffTol->setSpec(1);
 }
 
 void FindLineWidget::tryInsp() {
@@ -137,10 +134,10 @@ void FindLineWidget::tryInsp() {
     stCmd.fDiffFilterSigma = m_pEditDiffFilterSigma->text().toFloat();
     stCmd.bCheckLinearity = m_pCheckLinerity->isChecked();
     stCmd.fPointMaxOffset = m_pEditPointMaxOffset->text().toFloat() / dResolutionX;
-    stCmd.fMinLinearity = m_pEditMinLinearity->text().toFloat() / ONE_HUNDRED_PERCENT;
+    stCmd.fMinLinearity = m_pSpecAndResultMinLinearity->getSpec() / ONE_HUNDRED_PERCENT;
     stCmd.bCheckAngle = m_pEditCheckAngle->isChecked();
-    stCmd.fExpectedAngle = m_pEditExpectedAngle->text().toFloat();
-    stCmd.fAngleDiffTolerance = m_pEditAngleDiffTolerance->text().toFloat();
+    stCmd.fExpectedAngle = m_pSpecAndResultAngle->getSpec();
+    stCmd.fAngleDiffTolerance = m_pSpecAndResultAngleDiffTol->getSpec();
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     stCmd.matInputImg = pUI->getImage();
@@ -153,8 +150,11 @@ void FindLineWidget::tryInsp() {
     stCmd.rectRotatedROI.center = cv::Point2f(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2);
     stCmd.rectRotatedROI.size = rectROI.size();
     Vision::PR_FindLine(&stCmd, &stRpy);
+    m_pSpecAndResultMinLinearity->setResult(stRpy.fLinearity * ONE_HUNDRED_PERCENT);
+    m_pSpecAndResultAngle->setResult(stRpy.fAngle);
+    m_pSpecAndResultAngleDiffTol->setResult(stRpy.fAngle - stCmd.fExpectedAngle);
     QString strMsg;
-    strMsg.sprintf("Inspect Status %d, linearity %f pass %d, angle %f pass %d", Vision::ToInt32(stRpy.enStatus), stRpy.fLinearity, stRpy.bLinearityCheckPass, stRpy.fAngle, stRpy.bAngleCheckPass);
+    strMsg.sprintf("Inspect Status %d, linearity %.2f %, angle %f", Vision::ToInt32(stRpy.enStatus), stRpy.fLinearity * ONE_HUNDRED_PERCENT, stRpy.fAngle);
     QMessageBox::information(this, "Find Line", strMsg);
 }
 
@@ -178,10 +178,10 @@ void FindLineWidget::confirmWindow(OPERATION enOperation) {
     jsonValue["DiffFilterSigma"] = m_pEditDiffFilterSigma->text().toFloat();
     jsonValue["CheckLinerity"] = m_pCheckLinerity->isChecked();
     jsonValue["PointMaxOffset"] = m_pEditPointMaxOffset->text().toFloat();
-    jsonValue["MinLinearity"] = m_pEditMinLinearity->text().toFloat() / ONE_HUNDRED_PERCENT;
+    jsonValue["MinLinearity"] = m_pSpecAndResultMinLinearity->getSpec() / ONE_HUNDRED_PERCENT;
     jsonValue["CheckAngle"] = m_pEditCheckAngle->isChecked();
-    jsonValue["ExpectedAngle"] = m_pEditExpectedAngle->text().toFloat();
-    jsonValue["AngleDiffTolerance"] = m_pEditAngleDiffTolerance->text().toFloat();
+    jsonValue["ExpectedAngle"] = m_pSpecAndResultAngle->getSpec();
+    jsonValue["AngleDiffTolerance"] = m_pSpecAndResultAngleDiffTol->getSpec();
 
     QJsonDocument document;
     document.setObject(jsonValue);
@@ -200,7 +200,7 @@ void FindLineWidget::confirmWindow(OPERATION enOperation) {
 
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();
-    int nBigImgWidth = matBigImage.cols / dCombinedImageScale;
+    int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;
     int nBigImgHeight = matBigImage.rows / dCombinedImageScale;
     if (bBoardRotated) {
         window.x = (nBigImgWidth - ptWindowCtr.x)  * dResolutionX;
@@ -287,8 +287,10 @@ void FindLineWidget::setCurrentWindow(const Engine::Window &window) {
     m_pEditDiffFilterSigma->setText(QString::number(jsonValue["DiffFilterSigma"].toDouble()));
     m_pCheckLinerity->setChecked(jsonValue["CheckLinerity"].toBool());
     m_pEditPointMaxOffset->setText(QString::number(jsonValue["PointMaxOffset"].toDouble()));
-    m_pEditMinLinearity->setText(QString::number(jsonValue["MinLinearity"].toDouble() * ONE_HUNDRED_PERCENT));
+    m_pSpecAndResultMinLinearity->setSpec(jsonValue["MinLinearity"].toDouble() * ONE_HUNDRED_PERCENT);
     m_pEditCheckAngle->setChecked(jsonValue["CheckAngle"].toBool());
-    m_pEditExpectedAngle->setText(QString::number(jsonValue["ExpectedAngle"].toDouble()));
-    m_pEditAngleDiffTolerance->setText(QString::number(jsonValue["AngleDiffTolerance"].toDouble()));
+    m_pSpecAndResultAngle->setSpec(jsonValue["ExpectedAngle"].toDouble());
+    m_pSpecAndResultAngle->clearResult();
+    m_pSpecAndResultAngleDiffTol->setSpec(jsonValue["AngleDiffTolerance"].toDouble());
+    m_pSpecAndResultAngleDiffTol->clearResult();
 }

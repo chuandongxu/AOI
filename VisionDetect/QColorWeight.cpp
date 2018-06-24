@@ -371,32 +371,36 @@ void QColorWeight::setJsonFormattedParams(const std::string &jsonParams)
         return;
     }
 
-    if (parse_doucment.isObject()) {
-        QJsonObject obj = parse_doucment.object();
+    if (! parse_doucment.isObject())
+        return;
 
-        stGrayParams.enMethod = static_cast<GRAY_WEIGHT_METHOD>(obj["Method"].toInt());
-        stGrayParams.bEnableB = obj["EnableB"].toBool();
-        stGrayParams.bEnableG = obj["EnableG"].toBool();
-        stGrayParams.bEnableR = obj["EnableR"].toBool();
-        stGrayParams.nBScale = obj["GrayScaleB"].toInt();
-        stGrayParams.nGScale = obj["GrayScaleG"].toInt();
-        stGrayParams.nRScale = obj["GrayScaleR"].toInt();
-        stGrayParams.nThreshold1 = obj["GrayThreshold1"].toInt();
-        stGrayParams.nThreshold2 = obj["GrayThreshold2"].toInt();
-        
-        stColorParams.nRThreshold = obj["ColorRThreshold"].toInt();
-        stColorParams.nTThreshold = obj["ColorTThreshold"].toInt();
-        
-	    setGrayParams(stGrayParams);
-	    setColorParams(stColorParams);
+    QJsonObject obj = parse_doucment.object();
 
-        if(GRAY_WEIGHT_METHOD::EM_MODE_ONE_THRESHOLD == stGrayParams.enMethod || GRAY_WEIGHT_METHOD::EM_MODE_TWO_THRESHOLD == stGrayParams.enMethod) {
-            ui.tabWidget->setCurrentIndex(0);
-            generateGrayPlot();
-        }else {
-            ui.tabWidget->setCurrentIndex(1);
-            generateColorPlot();
-        }
+    stGrayParams.enMethod = static_cast<GRAY_WEIGHT_METHOD>(obj["Method"].toInt());
+    stGrayParams.bEnableB = obj["EnableB"].toBool();
+    stGrayParams.bEnableG = obj["EnableG"].toBool();
+    stGrayParams.bEnableR = obj["EnableR"].toBool();
+    stGrayParams.nBScale = obj["GrayScaleB"].toInt();
+    stGrayParams.nGScale = obj["GrayScaleG"].toInt();
+    stGrayParams.nRScale = obj["GrayScaleR"].toInt();
+    stGrayParams.nThreshold1 = obj["GrayThreshold1"].toInt();
+    stGrayParams.nThreshold2 = obj["GrayThreshold2"].toInt();
+
+    stColorParams.nRThreshold = obj["ColorRThreshold"].toInt();
+    stColorParams.nTThreshold = obj["ColorTThreshold"].toInt();
+    m_colorGenPt.x = obj["PickPointX"].toInt();
+	m_colorGenPt.y = obj["PickPointY"].toInt();
+
+    setGrayParams(stGrayParams);
+    setColorParams(stColorParams);
+
+    if (GRAY_WEIGHT_METHOD::EM_MODE_ONE_THRESHOLD == stGrayParams.enMethod || GRAY_WEIGHT_METHOD::EM_MODE_TWO_THRESHOLD == stGrayParams.enMethod) {
+        ui.tabWidget->setCurrentIndex(0);
+        generateGrayPlot();
+    }
+    else {
+        ui.tabWidget->setCurrentIndex(1);
+        generateColorPlot();
     }
 }
 

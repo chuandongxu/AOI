@@ -24,6 +24,9 @@ enum BASIC_PARAM
     SUBPIXEL_ATTRI,
     MOTION_ATTRI,
     MINSCORE_ATTRI,
+    MAX_OFFSET_X,
+    MAX_OFFSET_Y,
+    MAX_ROTATION,
 };
 
 AlignmentWidget::AlignmentWidget(InspWindowWidget *parent)
@@ -51,9 +54,17 @@ AlignmentWidget::AlignmentWidget(InspWindowWidget *parent)
     m_pComboBoxMotion->addItem("HOMOGRAPHY");
     ui.tableWidget->setCellWidget(MOTION_ATTRI, DATA_COLUMN, m_pComboBoxMotion.get());
 
-    m_pEditMinScore = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditMinScore->setValidator(new QIntValidator(1, 100, m_pEditMinScore.get()));
-    ui.tableWidget->setCellWidget(MINSCORE_ATTRI, DATA_COLUMN, m_pEditMinScore.get());
+    m_pSpecAndResultMinScore = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 40, 100);
+    ui.tableWidget->setCellWidget(MINSCORE_ATTRI, DATA_COLUMN, m_pSpecAndResultMinScore.get());
+
+    m_pSpecAndResultMaxOffsetX = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 1, 10000);
+    ui.tableWidget->setCellWidget(MAX_OFFSET_X, DATA_COLUMN, m_pSpecAndResultMaxOffsetX.get());
+
+    m_pSpecAndResultMaxOffsetY = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 1, 10000);
+    ui.tableWidget->setCellWidget(MAX_OFFSET_Y, DATA_COLUMN, m_pSpecAndResultMaxOffsetY.get());
+
+    m_pSpecAndResultMaxRotation = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 0.01, 100);
+    ui.tableWidget->setCellWidget(MAX_ROTATION, DATA_COLUMN, m_pSpecAndResultMaxRotation.get());
 }
 
 AlignmentWidget::~AlignmentWidget() {
@@ -65,7 +76,10 @@ void AlignmentWidget::setDefaultValue() {
 
     m_pCheckBoxSubPixel->setChecked(false);
     m_pComboBoxMotion->setCurrentIndex(0);
-    m_pEditMinScore->setText("60");
+    m_pSpecAndResultMinScore->setSpec(60);
+    m_pSpecAndResultMaxOffsetX->setSpec(100);
+    m_pSpecAndResultMaxOffsetY->setSpec(100);
+    m_pSpecAndResultMaxRotation->setSpec(5);
 
     m_bIsTryInspected = false;
     m_currentWindow.recordId = 0;
@@ -105,7 +119,7 @@ bool AlignmentWidget::_srchTemplate(int recordId, bool bShowResult) {
     stCmd.enAlgorithm = static_cast<Vision::PR_MATCH_TMPL_ALGORITHM>(m_pComboBoxAlgorithm->currentIndex());
     stCmd.bSubPixelRefine = m_pCheckBoxSubPixel->isChecked();
     stCmd.enMotion = static_cast<Vision::PR_OBJECT_MOTION>(m_pComboBoxMotion->currentIndex());
-    stCmd.fMinMatchScore = m_pEditMinScore->text().toFloat();
+    stCmd.fMinMatchScore = m_pSpecAndResultMinScore->getSpec();
     stCmd.nRecordId = recordId;
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
@@ -120,8 +134,16 @@ bool AlignmentWidget::_srchTemplate(int recordId, bool bShowResult) {
 
     Vision::PR_MatchTmpl(&stCmd, &stRpy);
     if (bShowResult) {
+        auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+        auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+        float fOffsetX = (stRpy.ptObjPos.x - (stCmd.rectSrchWindow.x + stCmd.rectSrchWindow.width  / 2)) * dResolutionX;
+        float fOffsetY = (stRpy.ptObjPos.y - (stCmd.rectSrchWindow.y + stCmd.rectSrchWindow.height / 2)) * dResolutionY;
+        m_pSpecAndResultMinScore->setResult(stRpy.fMatchScore);
+        m_pSpecAndResultMaxOffsetX->setResult(fOffsetX);
+        m_pSpecAndResultMaxOffsetY->setResult(fOffsetY);
+        m_pSpecAndResultMaxRotation->setResult(stRpy.fRotation);
         QString strMsg;
-        strMsg.sprintf("Inspect Status %d, center(%f, %f), rotation(%f), score(%f)", Vision::ToInt32(stRpy.enStatus), stRpy.ptObjPos.x, stRpy.ptObjPos.y, stRpy.fRotation, stRpy.fMatchScore);
+        strMsg.sprintf("Inspect Status %d, offset(%f, %f), rotation(%f), score(%f)", Vision::ToInt32(stRpy.enStatus), fOffsetX, fOffsetY, stRpy.fRotation, stRpy.fMatchScore);
         QMessageBox::information(this, "Alignment", strMsg);
     }
 
@@ -202,7 +224,10 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
     json.insert("Algorithm", m_pComboBoxAlgorithm->currentIndex());
     json.insert("SubPixel", m_pCheckBoxSubPixel->isChecked());
     json.insert("Motion", m_pComboBoxMotion->currentIndex());
-    json.insert("MinScore", m_pEditMinScore->text().toFloat());
+    json.insert("MinScore", m_pSpecAndResultMinScore->getSpec());
+    json.insert("MaxOffsetX", m_pSpecAndResultMaxOffsetX->getSpec());
+    json.insert("MaxOffsetY", m_pSpecAndResultMaxOffsetY->getSpec());
+    json.insert("MaxRotation", m_pSpecAndResultMaxRotation->getSpec());
 
     QJsonDocument document;
     document.setObject(json);
@@ -305,12 +330,13 @@ void AlignmentWidget::setCurrentWindow(const Engine::Window &window) {
     QJsonObject obj = parse_doucment.object();
 
     m_pComboBoxAlgorithm->setCurrentIndex(obj.take("Algorithm").toInt());
-
+    m_pEditRecordID->setText(QString::number(window.recordId));
     m_pCheckBoxSubPixel->setChecked(obj.take("SubPixel").toBool());
     m_pComboBoxMotion->setCurrentIndex(obj.take("Motion").toInt());
-    m_pEditMinScore->setText(QString::number(obj.take("MinScore").toDouble()));
-
-    m_pEditRecordID->setText(QString::number(window.recordId));
+    m_pSpecAndResultMinScore->setSpec(obj.take("MinScore").toDouble());
+    m_pSpecAndResultMaxOffsetX->setSpec(obj["MaxOffsetX"].toDouble());
+    m_pSpecAndResultMaxOffsetY->setSpec(obj["MaxOffsetY"].toDouble());
+    m_pSpecAndResultMaxRotation->setSpec(obj["MaxRotation"].toDouble());
 
     m_bIsTryInspected = false;
 }

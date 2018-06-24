@@ -18,6 +18,9 @@
 #ifndef _AOI_VERSION_H_
 #define _AOI_VERSION_H_
 
-#define AOI_SW_VERSION			"1.00.01"		//Current S/W version
+//2018-06-24 (XSG) Support display window inspect result in text.
+#define AOI_SW_VERSION			"1.00.02"		//Current S/W version
+
+//#define AOI_SW_VERSION			"1.00.01"		//Current S/W version
 
 #endif /*_AOI_VERSION_H_*/

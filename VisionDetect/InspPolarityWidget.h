@@ -2,8 +2,11 @@
 
 #include <QComboBox>
 #include <QLineEdit>
-#include "EditInspWindowBaseWidget.h"
+
 #include "ui_InspPolarityWidget.h"
+#include "EditInspWindowBaseWidget.h"
+#include "SpecAndResultWidget.h"
+
 
 class InspPolarityWidget : public EditInspWindowBaseWidget
 {
@@ -18,9 +21,12 @@ public:
     virtual void tryInsp() override;
     virtual void confirmWindow(OPERATION enOperation) override;
 
+protected slots:
+    void onTypeChange(int index);
+
 private:
     Ui::InspPolarityWidget ui;
     std::unique_ptr<QComboBox>	m_pComboBoxType;
     std::unique_ptr<QComboBox>	m_pComboBoxAttribute;
-    std::unique_ptr<QLineEdit>  m_pEditIntensityDiffTol;
+    SpecAndResultWidgetPtr      m_pSpecAndResultIntensityDiffTol;
 };

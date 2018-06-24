@@ -30,16 +30,17 @@ InspPolarityWidget::InspPolarityWidget(InspWindowWidget *parent)
     m_pComboBoxType->addItem(QStringLiteral("检测"));
     m_pComboBoxType->addItem(QStringLiteral("基准"));
     ui.tableWidget->setCellWidget(WINDOW_TYPE, DATA_COLUMN, m_pComboBoxType.get());
+    connect(m_pComboBoxType.get(), SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeChange(int)));
 
     m_pComboBoxAttribute = std::make_unique<QComboBox>(ui.tableWidget);
     m_pComboBoxAttribute->addItem("Bright");
     m_pComboBoxAttribute->addItem("Dark");
     ui.tableWidget->setCellWidget(ATTRIBUTE, DATA_COLUMN, m_pComboBoxAttribute.get());
 
-    m_pEditIntensityDiffTol = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditIntensityDiffTol->setValidator(new QIntValidator(1, 255, m_pEditIntensityDiffTol.get()));
-    m_pEditIntensityDiffTol->setText("50");
-    ui.tableWidget->setCellWidget(INTENSITY_DIFF_TOL, DATA_COLUMN, m_pEditIntensityDiffTol.get());
+    m_pSpecAndResultIntensityDiffTol = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 1, 255, 0);
+    ui.tableWidget->setCellWidget(INTENSITY_DIFF_TOL, DATA_COLUMN, m_pSpecAndResultIntensityDiffTol.get());
+
+    setDefaultValue();
 }
 
 InspPolarityWidget::~InspPolarityWidget() {
@@ -48,7 +49,7 @@ InspPolarityWidget::~InspPolarityWidget() {
 void InspPolarityWidget::setDefaultValue() {
     m_pComboBoxType->setCurrentIndex(0);
     m_pComboBoxAttribute->setCurrentIndex(0);
-    m_pEditIntensityDiffTol->setText("50");
+    m_pSpecAndResultIntensityDiffTol->setSpec(50);
 }
 
 void InspPolarityWidget::setCurrentWindow(const Engine::Window &window) {
@@ -70,7 +71,8 @@ void InspPolarityWidget::setCurrentWindow(const Engine::Window &window) {
 
     m_pComboBoxType->setCurrentIndex(obj.take("Type").toInt());
     m_pComboBoxAttribute->setCurrentIndex(obj.take("Attribute").toInt());
-    m_pEditIntensityDiffTol->setText(QString::number(obj.take("IntensityDiffTol").toInt()));
+    m_pSpecAndResultIntensityDiffTol->setSpec(obj.take("IntensityDiffTol").toInt());
+    m_pSpecAndResultIntensityDiffTol->clearResult();
 }
 
 void InspPolarityWidget::tryInsp() {
@@ -90,7 +92,7 @@ void InspPolarityWidget::tryInsp() {
     Vision::PR_INSP_POLARITY_RPY stRpy;
 
     stCmd.enInspROIAttribute = static_cast<Vision::PR_OBJECT_ATTRIBUTE>(m_pComboBoxAttribute->currentIndex());
-    stCmd.nGrayScaleDiffTol = m_pEditIntensityDiffTol->text().toInt();
+    stCmd.nGrayScaleDiffTol = Vision::ToInt32(m_pSpecAndResultIntensityDiffTol->getSpec());
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     stCmd.matInputImg = pUI->getImage();
@@ -137,7 +139,7 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
     QJsonObject json;
     json.insert("Type", m_pComboBoxType->currentIndex());
     json.insert("Attribute", m_pComboBoxAttribute->currentIndex());
-    json.insert("IntensityDiffTol", m_pEditIntensityDiffTol->text().toInt());
+    json.insert("IntensityDiffTol", Vision::ToInt32(m_pSpecAndResultIntensityDiffTol->getSpec()));
 
     QJsonDocument document;
     document.setObject(json);
@@ -220,4 +222,15 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
     }
 
     m_pParent->UpdateInspWindowList();
+}
+
+void InspPolarityWidget::onTypeChange(int index) {
+    if (0 == index) {
+        ui.tableWidget->showRow(ATTRIBUTE);
+        ui.tableWidget->showRow(INTENSITY_DIFF_TOL);
+    }
+    else {
+        ui.tableWidget->hideRow(ATTRIBUTE);
+        ui.tableWidget->hideRow(INTENSITY_DIFF_TOL);
+    }
 }

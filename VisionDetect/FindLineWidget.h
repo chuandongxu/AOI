@@ -1,11 +1,13 @@
 #pragma once
 
-#include "EditInspWindowBaseWidget.h"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
 #include <memory>
+
 #include "ui_FindLineWidget.h"
+#include "EditInspWindowBaseWidget.h"
+#include "SpecAndResultWidget.h"
 
 class FindLineWidget : public EditInspWindowBaseWidget
 {
@@ -31,10 +33,10 @@ private:
     std::unique_ptr<QLineEdit>  m_pEditRmStrayPointRatio;
     std::unique_ptr<QLineEdit>  m_pEditDiffFilterHalfW;
     std::unique_ptr<QLineEdit>  m_pEditDiffFilterSigma;
-    std::unique_ptr<QCheckBox>  m_pCheckLinerity;
     std::unique_ptr<QLineEdit>  m_pEditPointMaxOffset;
-    std::unique_ptr<QLineEdit>  m_pEditMinLinearity;
+    std::unique_ptr<QCheckBox>  m_pCheckLinerity;    
+    SpecAndResultWidgetPtr      m_pSpecAndResultMinLinearity;
     std::unique_ptr<QCheckBox>  m_pEditCheckAngle;
-    std::unique_ptr<QLineEdit>  m_pEditExpectedAngle;
-    std::unique_ptr<QLineEdit>  m_pEditAngleDiffTolerance;
+    SpecAndResultWidgetPtr      m_pSpecAndResultAngle;
+    SpecAndResultWidgetPtr      m_pSpecAndResultAngleDiffTol;
 };
