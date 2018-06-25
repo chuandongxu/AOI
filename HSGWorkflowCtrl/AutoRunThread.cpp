@@ -738,7 +738,7 @@ void AutoRunThread::_generateResultBigImage(cv::Mat matBigImage, BoardInspResult
             else
                 scalar = scalarRed;
             cv::rectangle(matBigImage, rectROI, scalar, 2);
-            drawText(matBigImage, rectROI, window.name);
+            //drawText(matBigImage, rectROI, window.name);
         }
 
         for (const auto &windowGroup : deviceInspWindow.vecWindowGroup) {
@@ -760,7 +760,7 @@ void AutoRunThread::_generateResultBigImage(cv::Mat matBigImage, BoardInspResult
                 else
                     scalar = scalarRed;
                 cv::rectangle(matBigImage, rectROI, scalar, 2);
-                drawText(matBigImage, rectROI, window.name);
+                //drawText(matBigImage, rectROI, window.name);
             }
         }
     }
