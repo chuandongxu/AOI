@@ -51,6 +51,7 @@ private slots:
     void on_btnAddWindow_clicked();
     void on_btnRemoveWindow_clicked();
     void on_btnCreateGroup_clicked();
+    void on_btnCopyToAll_clicked();
     void on_btnTryInsp_clicked();
     void on_btnConfirmWindow_clicked();
     void on_regrouped();

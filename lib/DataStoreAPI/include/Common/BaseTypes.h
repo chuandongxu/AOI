@@ -1,5 +1,5 @@
-#ifndef AGILENT_BBOX_COMMON_BASETYPES_H
-#define AGILENT_BBOX_COMMON_BASETYPES_H
+#ifndef AOI_ENGINE_CORE_COMMON_BASETYPES_H
+#define AOI_ENGINE_CORE_COMMON_BASETYPES_H
 //****************************************************************************
 // BaseTypes.h -- $Id$
 //
@@ -151,4 +151,4 @@ namespace AOI
     };
 }
 }
-#endif//AGILENT_BBOX_COMMON_BASETYPES_H
+#endif//AOI_ENGINE_CORE_COMMON_BASETYPES_H
