@@ -1,9 +1,11 @@
 #pragma once
 
-#include "EditInspWindowBaseWidget.h"
 #include <QComboBox>
 #include <memory>
+
 #include "ui_InspVoidWidget.h"
+#include "EditInspWindowBaseWidget.h"
+#include "SpecAndResultWidget.h"
 
 class InspVoidWidget : public EditInspWindowBaseWidget
 {
@@ -23,10 +25,10 @@ private slots:
 private:
     Ui::InspVoidWidget          ui;
     std::unique_ptr<QComboBox>  m_pComboBoxInspMode;
-    std::unique_ptr<QLineEdit>  m_pEditMaxAreaRatio;
-    std::unique_ptr<QLineEdit>  m_pEditMinAreaRatio;
-    std::unique_ptr<QLineEdit>  m_pEditMaxHoleCount;
-    std::unique_ptr<QLineEdit>  m_pEditMinHoleCount;
+    SpecAndResultWidgetPtr      m_pSpecAndResultMaxAreaRatio;
+    SpecAndResultWidgetPtr      m_pSpecAndResultMinAreaRatio;
     std::unique_ptr<QLineEdit>  m_pEditMaxHoleArea;
     std::unique_ptr<QLineEdit>  m_pEditMinHoleArea;
+    SpecAndResultWidgetPtr      m_pSpecAndResultMaxHoleCount;
+    SpecAndResultWidgetPtr      m_pSpecAndResultMinHoleCount;    
 };

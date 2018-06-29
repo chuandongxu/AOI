@@ -1,13 +1,13 @@
 #pragma once
 
-#include <QWidget>
-#include "ui_AlignmentWidget.h"
-
-#include "EditInspWindowBaseWidget.h"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
 #include <memory>
+
+#include "ui_AlignmentWidget.h"
+#include "EditInspWindowBaseWidget.h"
+#include "SpecAndResultWidget.h"
 
 class AlignmentWidget : public EditInspWindowBaseWidget
 {
@@ -32,6 +32,9 @@ private:
 	std::unique_ptr<QLineEdit>  m_pEditRecordID;
 	std::unique_ptr<QCheckBox>  m_pCheckBoxSubPixel;
 	std::unique_ptr<QComboBox>	m_pComboBoxMotion;
-	std::unique_ptr<QLineEdit>  m_pEditMinScore;
+	SpecAndResultWidgetPtr      m_pSpecAndResultMinScore;
+    SpecAndResultWidgetPtr      m_pSpecAndResultMaxOffsetX;
+    SpecAndResultWidgetPtr      m_pSpecAndResultMaxOffsetY;
+    SpecAndResultWidgetPtr      m_pSpecAndResultMaxRotation;
     bool                        m_bIsTryInspected = false;
 };

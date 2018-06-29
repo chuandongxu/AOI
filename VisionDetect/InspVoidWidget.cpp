@@ -18,10 +18,10 @@ enum BASIC_PARAM {
     INSP_MODE,
     MAX_AREA_RATIO,
     MIN_AREA_RATIO,
-    MAX_HOLE_COUNT,
-    MIN_HOLE_COUNT,
     MAX_HOLE_AREA,
     MIN_HOLE_AREA,
+    MAX_HOLE_COUNT,
+    MIN_HOLE_COUNT,    
 };
 
 InspVoidWidget::InspVoidWidget(InspWindowWidget *parent)
@@ -35,21 +35,11 @@ InspVoidWidget::InspVoidWidget(InspWindowWidget *parent)
     ui.tableWidget->setCellWidget(INSP_MODE, DATA_COLUMN, m_pComboBoxInspMode.get());
     connect(m_pComboBoxInspMode.get(), SIGNAL(currentIndexChanged(int)), this, SLOT(on_inspModeChanged(int)));
 
-    m_pEditMaxAreaRatio = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditMaxAreaRatio->setValidator(new QDoubleValidator(1, 100, 2, m_pEditMaxAreaRatio.get()));
-    ui.tableWidget->setCellWidget(MAX_AREA_RATIO, DATA_COLUMN, m_pEditMaxAreaRatio.get());
+    m_pSpecAndResultMaxAreaRatio = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 1, 1000000);
+    ui.tableWidget->setCellWidget(MAX_AREA_RATIO, DATA_COLUMN, m_pSpecAndResultMaxAreaRatio.get());
 
-    m_pEditMinAreaRatio = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditMinAreaRatio->setValidator(new QDoubleValidator(0, 99, 2, m_pEditMinAreaRatio.get()));
-    ui.tableWidget->setCellWidget(MIN_AREA_RATIO, DATA_COLUMN, m_pEditMinAreaRatio.get());
-
-    m_pEditMaxHoleCount = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditMaxHoleCount->setValidator(new QIntValidator(1, 1000, m_pEditMaxHoleCount.get()));
-    ui.tableWidget->setCellWidget(MAX_HOLE_COUNT, DATA_COLUMN, m_pEditMaxHoleCount.get());
-
-    m_pEditMinHoleCount = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditMinHoleCount->setValidator(new QIntValidator(m_pEditMinHoleCount.get()));
-    ui.tableWidget->setCellWidget(MIN_HOLE_COUNT, DATA_COLUMN, m_pEditMinHoleCount.get());
+    m_pSpecAndResultMinAreaRatio = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 1, 1000000);
+    ui.tableWidget->setCellWidget(MIN_AREA_RATIO, DATA_COLUMN, m_pSpecAndResultMinAreaRatio.get());    
 
     m_pEditMaxHoleArea = std::make_unique<QLineEdit>(ui.tableWidget);
     m_pEditMaxHoleArea->setValidator(new QDoubleValidator(m_pEditMaxHoleArea.get()));
@@ -58,6 +48,12 @@ InspVoidWidget::InspVoidWidget(InspWindowWidget *parent)
     m_pEditMinHoleArea = std::make_unique<QLineEdit>(ui.tableWidget);
     m_pEditMinHoleArea->setValidator(new QDoubleValidator(m_pEditMinHoleArea.get()));
     ui.tableWidget->setCellWidget(MIN_HOLE_AREA, DATA_COLUMN, m_pEditMinHoleArea.get());
+
+    m_pSpecAndResultMaxHoleCount = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 0, 1000, 0);
+    ui.tableWidget->setCellWidget(MAX_HOLE_COUNT, DATA_COLUMN, m_pSpecAndResultMaxHoleCount.get());
+
+    m_pSpecAndResultMinHoleCount = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 0, 100, 0);
+    ui.tableWidget->setCellWidget(MIN_HOLE_COUNT, DATA_COLUMN, m_pSpecAndResultMinHoleCount.get());
 }
 
 InspVoidWidget::~InspVoidWidget() {
@@ -88,12 +84,12 @@ void InspVoidWidget::on_inspModeChanged(int index)
 void InspVoidWidget::setDefaultValue()
 {
     m_pComboBoxInspMode->setCurrentIndex(0);
-    m_pEditMaxAreaRatio->setText("100");
-    m_pEditMinAreaRatio->setText("80");
-    m_pEditMaxHoleCount->setText("10");
-    m_pEditMinHoleCount->setText("1");
+    m_pSpecAndResultMaxAreaRatio->setSpec(100);
+    m_pSpecAndResultMaxAreaRatio->setSpec(80);    
     m_pEditMaxHoleArea->setText("5000");
     m_pEditMinHoleArea->setText("500");
+    m_pSpecAndResultMaxHoleCount->setSpec(10);
+    m_pSpecAndResultMinHoleCount->setSpec(1);
 
     on_inspModeChanged(m_pComboBoxInspMode->currentIndex());
 }
@@ -117,14 +113,18 @@ void InspVoidWidget::setCurrentWindow(const Engine::Window &window)
     
     if ( Vision::PR_INSP_HOLE_MODE::RATIO == static_cast<Vision::PR_INSP_HOLE_MODE>( jsonValue["InspMode"].toInt() ) ) {
         QJsonObject jsonRatioMode = jsonValue["RatioMode"].toObject();
-        m_pEditMaxAreaRatio->setText(QString::number(jsonRatioMode["MaxAreaRatio"].toDouble()));
-        m_pEditMinAreaRatio->setText(QString::number(jsonRatioMode["MinAreaRatio"].toDouble()));
+        m_pSpecAndResultMaxAreaRatio->setSpec(jsonRatioMode["MaxAreaRatio"].toDouble());
+        m_pSpecAndResultMaxAreaRatio->clearResult();
+        m_pSpecAndResultMinAreaRatio->setSpec(jsonRatioMode["MinAreaRatio"].toDouble());
+        m_pSpecAndResultMinAreaRatio->clearResult();
     }else {
-        QJsonObject jsonBlobMode = jsonValue["BlobMode"].toObject();
-        m_pEditMaxHoleCount->setText(QString::number(jsonBlobMode["MaxHoleCount"].toInt()));
-        m_pEditMinHoleCount->setText(QString::number(jsonBlobMode["MinHoleCount"].toInt()));
+        QJsonObject jsonBlobMode = jsonValue["BlobMode"].toObject();        
         m_pEditMaxHoleArea->setText(QString::number(jsonBlobMode["MaxHoleArea"].toDouble()));
         m_pEditMinHoleArea->setText(QString::number(jsonBlobMode["MinHoleArea"].toDouble()));
+        m_pSpecAndResultMaxHoleCount->setSpec(jsonBlobMode["MaxHoleCount"].toInt());
+        m_pSpecAndResultMaxHoleCount->clearResult();
+        m_pSpecAndResultMinHoleCount->setSpec(jsonBlobMode["MinHoleCount"].toInt());
+        m_pSpecAndResultMinHoleCount->clearResult();
     }
 
     on_inspModeChanged(m_pComboBoxInspMode->currentIndex());
@@ -140,11 +140,11 @@ void InspVoidWidget::tryInsp() {
     stCmd.enInspMode = static_cast<Vision::PR_INSP_HOLE_MODE>(m_pComboBoxInspMode->currentIndex());
     
     if ( Vision::PR_INSP_HOLE_MODE::RATIO == stCmd.enInspMode ) {
-        stCmd.stRatioModeCriteria.fMaxRatio = m_pEditMaxAreaRatio->text().toFloat() / ONE_HUNDRED_PERCENT;
-        stCmd.stRatioModeCriteria.fMinRatio = m_pEditMinAreaRatio->text().toFloat() / ONE_HUNDRED_PERCENT;
+        stCmd.stRatioModeCriteria.fMaxRatio = m_pSpecAndResultMaxAreaRatio->getSpec() / ONE_HUNDRED_PERCENT;
+        stCmd.stRatioModeCriteria.fMinRatio = m_pSpecAndResultMinAreaRatio->getSpec() / ONE_HUNDRED_PERCENT;
     }else {
-        stCmd.stBlobModeCriteria.nMaxBlobCount = m_pEditMaxHoleCount->text().toInt();
-        stCmd.stBlobModeCriteria.nMinBlobCount = m_pEditMinHoleCount->text().toInt();
+        stCmd.stBlobModeCriteria.nMaxBlobCount = Vision::ToInt32(m_pSpecAndResultMaxHoleCount->getSpec());
+        stCmd.stBlobModeCriteria.nMinBlobCount = Vision::ToInt32(m_pSpecAndResultMinHoleCount->getSpec());
         stCmd.stBlobModeCriteria.fMaxArea = m_pEditMaxHoleArea->text().toFloat() / dResolutionX / dResolutionX;
         stCmd.stBlobModeCriteria.fMinArea = m_pEditMinHoleArea->text().toFloat() / dResolutionY / dResolutionY;
     }
@@ -162,20 +162,24 @@ void InspVoidWidget::tryInsp() {
         return;
     }
 
-    Vision::PR_InspHole ( &stCmd, &stRpy );
+    Vision::PR_InspHole(&stCmd, &stRpy);
     QString strMsg;
     strMsg.sprintf("Inspect Status %d", Vision::ToInt32(stRpy.enStatus));
-    if ( Vision::PR_INSP_HOLE_MODE::RATIO == stCmd.enInspMode )
+    if (Vision::PR_INSP_HOLE_MODE::RATIO == stCmd.enInspMode) {
         strMsg += QString(", ratio mode result: bright area ratio %1").arg(stRpy.stRatioModeResult.fRatio);
-    else
+        m_pSpecAndResultMaxAreaRatio->setResult(stRpy.stRatioModeResult.fRatio);
+        m_pSpecAndResultMinAreaRatio->setResult(stRpy.stRatioModeResult.fRatio);
+    }else {
         strMsg += QString(", blob mode result: blob counts %1").arg(stRpy.stBlobModeResult.vecBlobs.size());
+        m_pSpecAndResultMaxHoleCount->setResult(stRpy.stBlobModeResult.vecBlobs.size());
+        m_pSpecAndResultMinHoleCount->setResult(stRpy.stBlobModeResult.vecBlobs.size());
+    }
     QMessageBox::information(this, "Insp void", strMsg);
 }
 
 void InspVoidWidget::confirmWindow(OPERATION enOperation)
 {
-    auto pComboBoxInspMode = dynamic_cast<QComboBox *>(ui.tableWidget->cellWidget(INSP_MODE, 1));
-    auto enInspMode = static_cast<Vision::PR_INSP_HOLE_MODE>(pComboBoxInspMode->currentIndex());
+    auto enInspMode = static_cast<Vision::PR_INSP_HOLE_MODE>(m_pComboBoxInspMode->currentIndex());
 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
@@ -184,16 +188,16 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
 
     QJsonObject jsonValue;
 
-    jsonValue["InspMode"] = pComboBoxInspMode->currentIndex();
-    if ( Vision::PR_INSP_HOLE_MODE::RATIO == static_cast<Vision::PR_INSP_HOLE_MODE>( pComboBoxInspMode->currentIndex() ) ) {
+    jsonValue["InspMode"] = m_pComboBoxInspMode->currentIndex();
+    if (Vision::PR_INSP_HOLE_MODE::RATIO == static_cast<Vision::PR_INSP_HOLE_MODE>(m_pComboBoxInspMode->currentIndex())) {
         QJsonObject jsonRatioMode;
-        jsonRatioMode["MaxAreaRatio"] = m_pEditMaxAreaRatio->text().toFloat();
-        jsonRatioMode["MinAreaRatio"] = m_pEditMinAreaRatio->text().toFloat();
+        jsonRatioMode["MaxAreaRatio"] = m_pSpecAndResultMaxAreaRatio->getSpec();
+        jsonRatioMode["MinAreaRatio"] = m_pSpecAndResultMinAreaRatio->getSpec();
         jsonValue["RatioMode"] = jsonRatioMode;
     }else {
         QJsonObject jsonBlobMode;
-        jsonBlobMode["MaxHoleCount"] = m_pEditMaxHoleCount->text().toInt();
-        jsonBlobMode["MinHoleCount"] = m_pEditMinHoleCount->text().toInt();
+        jsonBlobMode["MaxHoleCount"] = m_pSpecAndResultMaxHoleCount->getSpec();
+        jsonBlobMode["MinHoleCount"] = m_pSpecAndResultMinHoleCount->getSpec();
         jsonBlobMode["MaxHoleArea"] = m_pEditMaxHoleArea->text().toFloat();
         jsonBlobMode["MinHoleArea"] = m_pEditMinHoleArea->text().toFloat();
         jsonValue["BlobMode"] = jsonBlobMode;

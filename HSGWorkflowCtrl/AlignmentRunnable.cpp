@@ -8,8 +8,7 @@ AlignmentRunnable::AlignmentRunnable(const cv::Mat &matImage, const Engine::Alig
 {
 }
 
-AlignmentRunnable::~AlignmentRunnable()
-{
+AlignmentRunnable::~AlignmentRunnable() {
 }
 
 void AlignmentRunnable::run()
@@ -39,8 +38,8 @@ void AlignmentRunnable::_srchStandardFM()
 
     m_enVisionStatus = Vision::PR_SrchFiducialMark(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK == m_enVisionStatus) {
-        m_ptResultCtrOffset.x =  (stRpy.ptPos.x - m_matImage.cols / 2) * m_dResolutionX;
-        m_ptResultCtrOffset.y = -(stRpy.ptPos.y - m_matImage.rows / 2) * m_dResolutionY;    //The direction of image Y and table Y are inversed.
+        m_ptResultCtrOffset.x =  (stRpy.ptPos.x - (m_rectSrchWindow.x + m_rectSrchWindow.width  / 2)) * m_dResolutionX;
+        m_ptResultCtrOffset.y = -(stRpy.ptPos.y - (m_rectSrchWindow.y + m_rectSrchWindow.height / 2)) * m_dResolutionY;    //The direction of image Y and table Y are inversed.
     }else {
         Vision::PR_GET_ERROR_INFO_RPY stErrStrRpy;
         Vision::PR_GetErrorInfo(stRpy.enStatus, &stErrStrRpy);

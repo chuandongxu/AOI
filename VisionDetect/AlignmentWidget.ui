@@ -35,14 +35,17 @@
      <height>291</height>
     </rect>
    </property>
+   <property name="autoScroll">
+    <bool>false</bool>
+   </property>
    <property name="rowCount">
-    <number>5</number>
+    <number>8</number>
    </property>
    <attribute name="horizontalHeaderVisible">
     <bool>false</bool>
    </attribute>
    <attribute name="horizontalHeaderDefaultSectionSize">
-    <number>210</number>
+    <number>160</number>
    </attribute>
    <attribute name="horizontalHeaderStretchLastSection">
     <bool>true</bool>
@@ -60,6 +63,9 @@
      <string>新建行</string>
     </property>
    </row>
+   <row/>
+   <row/>
+   <row/>
    <row/>
    <row/>
    <row/>
@@ -106,6 +112,21 @@
    <item row="4" column="1">
     <property name="text">
      <string>50</string>
+    </property>
+   </item>
+   <item row="5" column="0">
+    <property name="text">
+     <string>最大X方向偏移量(um)</string>
+    </property>
+   </item>
+   <item row="6" column="0">
+    <property name="text">
+     <string>最大Y方向偏移量(um)</string>
+    </property>
+   </item>
+   <item row="7" column="0">
+    <property name="text">
+     <string>最大旋转角度（度°)</string>
     </property>
    </item>
   </widget>

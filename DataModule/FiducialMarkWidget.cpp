@@ -812,6 +812,7 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked() {
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     pUI->setDeviceWindows(vecVisionViewDevices);
 
+    QString strTitle(QStringLiteral("更新定位块"));
     //Update the offset to board.
     for (auto &board : vecBoard) {
         if (bBoardRotated) {
@@ -828,7 +829,7 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked() {
             String errorType, errorMessage;
             Engine::GetErrorDetail(errorType, errorMessage);
             errorMessage = "Failed to update board, error message " + errorMessage;
-            QMessageBox::critical(nullptr, QStringLiteral("Scan Image"), errorMessage.c_str(), QStringLiteral("Quit"));
+            QMessageBox::critical(nullptr, strTitle, errorMessage.c_str(), QStringLiteral("Quit"));
             return;
         }
     }
@@ -850,7 +851,29 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked() {
             Engine::GetErrorDetail(errorType, errorMessage);
             QString strMsg(QStringLiteral("更新定位块失败, 错误消息: "));
             strMsg += errorMessage.c_str();
-            System->showMessage(QStringLiteral("Fiducial Mark"), strMsg);
+            System->showMessage(strTitle, strMsg);
+            return;
+        }
+    }
+
+    Engine::WindowVector vecWindow;
+    Engine::GetAllWindows(vecWindow);
+    for (auto &window : vecWindow) {
+        if (bBoardRotated) {
+            window.x += -m_fCadOffsetX;
+            window.y +=  m_fCadOffsetY;
+        }
+        else {
+            window.x +=  m_fCadOffsetX;
+            window.y += -m_fCadOffsetY;
+        }
+        result = Engine::UpdateWindow(window);
+        if (Engine::OK != result) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString strMsg(QStringLiteral("更新检测框坐标失败, 错误消息: "));
+            strMsg += errorMessage.c_str();
+            System->showMessage(strTitle, strMsg);
             return;
         }
     }

@@ -29,7 +29,6 @@ QWarringWidget::QWarringWidget(QWidget *parent)
 
 QWarringWidget::~QWarringWidget()
 {
-
 }
 
 void QWarringWidget::loadData()

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SpecAndResultWidget</class>
+ <widget class="QTableWidget" name="SpecAndResultWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>240</width>
+    <height>85</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SpecAndResultWidget</string>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::NoFrame</enum>
+  </property>
+  <property name="rowCount">
+   <number>1</number>
+  </property>
+  <property name="columnCount">
+   <number>2</number>
+  </property>
+  <attribute name="horizontalHeaderVisible">
+   <bool>false</bool>
+  </attribute>
+  <attribute name="horizontalHeaderDefaultSectionSize">
+   <number>120</number>
+  </attribute>
+  <attribute name="horizontalHeaderStretchLastSection">
+   <bool>true</bool>
+  </attribute>
+  <attribute name="verticalHeaderVisible">
+   <bool>false</bool>
+  </attribute>
+  <attribute name="verticalHeaderStretchLastSection">
+   <bool>false</bool>
+  </attribute>
+  <row/>
+  <column/>
+  <column/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

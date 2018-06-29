@@ -32,7 +32,7 @@
     <bool>false</bool>
    </attribute>
    <attribute name="horizontalHeaderDefaultSectionSize">
-    <number>210</number>
+    <number>160</number>
    </attribute>
    <attribute name="horizontalHeaderStretchLastSection">
     <bool>true</bool>
@@ -85,7 +85,7 @@
    </item>
    <item row="3" column="0">
     <property name="text">
-     <string>孔洞数量上限</string>
+     <string>孔洞面积上限(um^2)</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -98,7 +98,7 @@
    </item>
    <item row="4" column="0">
     <property name="text">
-     <string>孔洞数量下限</string>
+     <string>孔洞面积下限(um^2)</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -111,7 +111,7 @@
    </item>
    <item row="5" column="0">
     <property name="text">
-     <string>孔洞面积上限(um^2)</string>
+     <string>孔洞数量上限</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -124,7 +124,7 @@
    </item>
    <item row="6" column="0">
     <property name="text">
-     <string>孔洞面积下限(um^2)</string>
+     <string>孔洞数量下限</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>

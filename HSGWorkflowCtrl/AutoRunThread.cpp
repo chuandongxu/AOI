@@ -90,6 +90,7 @@ bool AutoRunThread::preRunning()
     m_dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     m_dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     m_nDLPCount = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+    m_nTotalImageCount = m_nDLPCount * DLP_IMG_COUNT + CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT;
     m_fFovWidthUm  = m_nImageWidthPixel  * m_dResolutionX;
     m_fFovHeightUm = m_nImageHeightPixel * m_dResolutionY;
 	return true;
@@ -229,12 +230,14 @@ bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
 	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
 	if (!pCam) return false;
 
-	return pCam->captureAllImages(imageMats);
-}
+	bool bResult = pCam->captureAllImages(imageMats);
+    if (! bResult)
+        return bResult;
 
-bool AutoRunThread::mergeImages(QString& szImagePath)
-{
-	return true;
+    if (imageMats.size() != m_nTotalImageCount)
+        return false;
+
+    return true;
 }
 
 bool AutoRunThread::isExit()
@@ -394,6 +397,12 @@ bool AutoRunThread::_doAlignment()
 
     QThreadPool::globalInstance()->waitForDone();
     TimeLogInstance->addTimeLog("Search for alignment point done.");
+
+    if (!bResult) {
+        m_strErrorMsg = "Alignment fail";
+        _sendErrorAndWaitForResponse();
+        return false;
+    }
     
     for (size_t i = 0; i < m_vecAlignments.size(); ++ i) {
         if (Vision::VisionStatus::OK != vecAlignmentRunnable[i]->getStatus()) {
@@ -504,7 +513,6 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
                 m_strErrorMsg = ptrBoardInspResult->getErrorMsg();
                 _sendErrorAndWaitForResponse();
                 bGood = false;
-                break;
             }
 
             std::vector<Calc3DHeightRunnablePtr> vecCalc3dHeightRunnable;
@@ -550,12 +558,16 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
             break;
     }
 
-    for (int i = 0; i < 4; ++ i)
-        m_vecMatBigImage[i] = _combineBigImage(m_vecVecFrameImages[i]);
+    for (int i = 0; i < 4; ++ i) {
+        if (! _combineBigImage(m_vecVecFrameImages[i], m_vecMatBigImage[i]))
+            return false;
+    }
     QEos::Notify(EVENT_THREAD_STATE, REFRESH_BIG_IMAGE);
 
     QThreadPool::globalInstance()->waitForDone();
-    m_matWhole3DHeight = _combineBigImage(m_vecFrame3DHeight);
+
+    if (!_combineBigImage(m_vecFrame3DHeight, m_matWhole3DHeight))
+        return false;
 
     auto vecNotInspectedDeviceWindow = _getNotInspectedDeviceWindow();
     if (! vecNotInspectedDeviceWindow.empty()) {
@@ -665,7 +677,7 @@ Vision::VectorOfMat AutoRunThread::_generate2DImages(const Vision::VectorOfMat &
     return vecResultImages;
 }
 
-cv::Mat AutoRunThread::_combineBigImage(const Vision::VectorOfMat &vecMatImages) {
+bool AutoRunThread::_combineBigImage(const Vision::VectorOfMat &vecMatImages, cv::Mat &matBigImage) {
     Vision::PR_COMBINE_IMG_CMD stCmd;
     Vision::PR_COMBINE_IMG_RPY stRpy;
     stCmd.nCountOfImgPerFrame = 1;
@@ -678,10 +690,12 @@ cv::Mat AutoRunThread::_combineBigImage(const Vision::VectorOfMat &vecMatImages)
 
     stCmd.vecInputImages = vecMatImages;
     if (Vision::VisionStatus::OK == Vision::PR_CombineImg(&stCmd, &stRpy)) {
-        return stRpy.vecResultImages[0];
+        matBigImage = stRpy.vecResultImages[0];
+        return true;
     }else {
         System->setTrackInfo(QString(QStringLiteral("合并大图失败.")));
-        return cv::Mat();
+        matBigImage = cv::Mat();
+        return false;
     }
 }
 
@@ -724,7 +738,7 @@ void AutoRunThread::_generateResultBigImage(cv::Mat matBigImage, BoardInspResult
             else
                 scalar = scalarRed;
             cv::rectangle(matBigImage, rectROI, scalar, 2);
-            drawText(matBigImage, rectROI, window.name);
+            //drawText(matBigImage, rectROI, window.name);
         }
 
         for (const auto &windowGroup : deviceInspWindow.vecWindowGroup) {
@@ -746,7 +760,7 @@ void AutoRunThread::_generateResultBigImage(cv::Mat matBigImage, BoardInspResult
                 else
                     scalar = scalarRed;
                 cv::rectangle(matBigImage, rectROI, scalar, 2);
-                drawText(matBigImage, rectROI, window.name);
+                //drawText(matBigImage, rectROI, window.name);
             }
         }
     }

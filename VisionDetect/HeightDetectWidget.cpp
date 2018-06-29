@@ -15,7 +15,8 @@
 using namespace NFG::AOI;
 using namespace AOI;
 
-enum BASIC_PARAM {
+enum BASIC_PARAM
+{
     MEASURE_TYPE_ATTRI,
     RANGE_MIN_ATTRI,
     RANGE_MAX_ATTRI,
@@ -24,12 +25,12 @@ enum BASIC_PARAM {
 };
 
 HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
-	:EditInspWindowBaseWidget(parent)
-{
+:EditInspWindowBaseWidget(parent) {
     ui.setupUi(this);
 
     m_pCheckBoxMeasure = std::make_unique<QCheckBox>(ui.tableWidget);
     ui.tableWidget->setCellWidget(MEASURE_TYPE_ATTRI, DATA_COLUMN, m_pCheckBoxMeasure.get());
+    connect(m_pCheckBoxMeasure.get(), SIGNAL(toggled(bool)), this, SLOT(onTypeChanged(bool)));
 
     m_pEditMinRange = std::make_unique<QLineEdit>(ui.tableWidget);
     m_pEditMinRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinRange.get()));
@@ -39,55 +40,51 @@ HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
     m_pEditMaxRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMaxRange.get()));
     ui.tableWidget->setCellWidget(RANGE_MAX_ATTRI, DATA_COLUMN, m_pEditMaxRange.get());
 
-    m_pEditMaxRelHt = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditMaxRelHt->setValidator(new QDoubleValidator(0, 10, -10, m_pEditMaxRelHt.get()));
-    ui.tableWidget->setCellWidget(MAX_REL_HT, DATA_COLUMN, m_pEditMaxRelHt.get());
+    m_pSpecAndResultMaxRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10, 10);
+    ui.tableWidget->setCellWidget(MAX_REL_HT, DATA_COLUMN, m_pSpecAndResultMaxRelHt.get());
 
-    m_pEditMinRelHt = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditMinRelHt->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinRelHt.get()));
-    ui.tableWidget->setCellWidget(MIN_REL_HT, DATA_COLUMN, m_pEditMinRelHt.get());
+    m_pSpecAndResultMinRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10, 10);
+    ui.tableWidget->setCellWidget(MIN_REL_HT, DATA_COLUMN, m_pSpecAndResultMinRelHt.get());
 }
 
-HeightDetectWidget::~HeightDetectWidget()
-{
+HeightDetectWidget::~HeightDetectWidget() {
 }
 
-void HeightDetectWidget::setDefaultValue()
-{
-	m_pCheckBoxMeasure->setChecked(true);
-	m_pEditMinRange->setText("30");
-	m_pEditMaxRange->setText("70");
+void HeightDetectWidget::setDefaultValue() {
+    m_pCheckBoxMeasure->setChecked(true);
+    m_pEditMinRange->setText("30");
+    m_pEditMaxRange->setText("70");
+    m_pSpecAndResultMaxRelHt->setSpec(3);
+    m_pSpecAndResultMinRelHt->setSpec(1);
 }
 
-void HeightDetectWidget::tryInsp()
-{
-	if (!m_pCheckBoxMeasure->isChecked())
-	{
-		QString strMsg;
-		strMsg.sprintf("Select Measure Window to measure height!");
-		QMessageBox::information(this, "Measure Height", strMsg);
-		return;
-	}
+void HeightDetectWidget::tryInsp() {
+    if (!m_pCheckBoxMeasure->isChecked()) {
+        QString strMsg;
+        strMsg.sprintf("Select Measure Window to measure height!");
+        QMessageBox::information(this, "Measure Height", strMsg);
+        return;
+    }
 
-	auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
 
-	Vision::PR_CALC_3D_HEIGHT_DIFF_CMD stCmd;
-	Vision::PR_CALC_3D_HEIGHT_DIFF_RPY stRpy;
+    Vision::PR_CALC_3D_HEIGHT_DIFF_CMD stCmd;
+    Vision::PR_CALC_3D_HEIGHT_DIFF_RPY stRpy;
 
-	stCmd.fEffectHRatioStart = m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT;
-	stCmd.fEffectHRatioEnd = m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT;
+    stCmd.fEffectHRatioStart = m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT;
+    stCmd.fEffectHRatioEnd = m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT;
 
-	auto pUI = getModule<IVisionUI>(UI_MODEL);
-	stCmd.matHeight = pUI->getHeightData();
-	cv::Rect rectROI = pUI->getSelectedROI();
-	if (rectROI.width <= 0 || rectROI.height <= 0) {
-		QMessageBox::critical(this, QStringLiteral("高度检测框"), QStringLiteral("Please select a ROI to do inspection."));
-		return;
-	}
-	stCmd.rectROI = rectROI;
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    stCmd.matHeight = pUI->getHeightData();
+    cv::Rect rectROI = pUI->getSelectedROI();
+    if (rectROI.width <= 0 || rectROI.height <= 0) {
+        QMessageBox::critical(this, QStringLiteral("高度检测框"), QStringLiteral("Please select a ROI to do inspection."));
+        return;
+    }
+    stCmd.rectROI = rectROI;
 
     auto matImage = pUI->getImage();
     int nBigImgWidth  = matImage.cols / dCombinedImageScale;
@@ -98,7 +95,7 @@ void HeightDetectWidget::tryInsp()
             auto x = window.x / dResolutionX;
             auto y = window.y / dResolutionY;
             if (bBoardRotated)
-                x = nBigImgWidth  - x;
+                x = nBigImgWidth - x;
             else
                 y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
 
@@ -109,47 +106,50 @@ void HeightDetectWidget::tryInsp()
         }
     }
 
-    float fMaxHeight = m_pEditMaxRelHt->text().toFloat();
-    float fMinHeigth = m_pEditMinRelHt->text().toFloat();
-	Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
+    float fMaxHeight = m_pSpecAndResultMaxRelHt->getSpec();
+    float fMinHeigth = m_pSpecAndResultMinRelHt->getSpec();
+    Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
+    m_pSpecAndResultMaxRelHt->setResult(stRpy.fHeightDiff);
+    m_pSpecAndResultMinRelHt->setResult(stRpy.fHeightDiff);
     bool bPassed = (stRpy.fHeightDiff < fMaxHeight) && (stRpy.fHeightDiff > fMinHeigth);
-	QString strMsg;
-	strMsg.sprintf("Inspect Status %d, %s, height (%f)", Vision::ToInt32(stRpy.enStatus), bPassed ? "pass" : "not pass", stRpy.fHeightDiff);
-	QMessageBox::information(this, "Height Detect", strMsg);
+    if (! bPassed) {
+        QString strMsg;
+        strMsg.sprintf("Inspect Status %d, %s, height (%f)", Vision::ToInt32(stRpy.enStatus), bPassed ? "pass" : "not pass", stRpy.fHeightDiff);
+        QMessageBox::information(this, "Height Detect", strMsg);
+    }
 }
 
-void HeightDetectWidget::confirmWindow(OPERATION enOperation)
-{
-	auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
 
-	QJsonObject json;
-	json.insert("MinRange", m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT);
-	json.insert("MaxRange", m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT);
-    json.insert("MaxRelHt", m_pEditMaxRelHt->text().toFloat());
-	json.insert("MinRelHt", m_pEditMinRelHt->text().toFloat());
+    QJsonObject json;
+    json.insert("MinRange", m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT);
+    json.insert("MaxRange", m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT);
+    json.insert("MaxRelHt", m_pSpecAndResultMaxRelHt->getSpec());
+    json.insert("MinRelHt", m_pSpecAndResultMinRelHt->getSpec());
 
-	QJsonDocument document;
-	document.setObject(json);
-	QByteArray byte_array = document.toJson(QJsonDocument::Compact);
+    QJsonDocument document;
+    document.setObject(json);
+    QByteArray byte_array = document.toJson(QJsonDocument::Compact);
 
-	auto pUI = getModule<IVisionUI>(UI_MODEL);
-	auto rectROI = pUI->getSelectedROI();
-	if (rectROI.width <= 0 || rectROI.height <= 0) {
-		QMessageBox::critical(this, QStringLiteral("Add Height Detect Window"), QStringLiteral("Please select a ROI to do inspection."));
-		return;
-	}
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    auto rectROI = pUI->getSelectedROI();
+    if (rectROI.width <= 0 || rectROI.height <= 0) {
+        QMessageBox::critical(this, QStringLiteral("Add Height Detect Window"), QStringLiteral("Please select a ROI to do inspection."));
+        return;
+    }
 
-	Engine::Window window;
-	window.lightId = m_pParent->getSelectedLighting() + 1;
-	window.usage = m_pCheckBoxMeasure->isChecked() ? Engine::Window::Usage::HEIGHT_MEASURE : Engine::Window::Usage::HEIGHT_BASE;
-	window.inspParams = byte_array;
-	
-    cv::Point2f ptWindowCtr(rectROI.x + rectROI.width  / 2.f, rectROI.y + rectROI.height / 2.f);
+    Engine::Window window;
+    window.lightId = m_pParent->getSelectedLighting() + 1;
+    window.usage = m_pCheckBoxMeasure->isChecked() ? Engine::Window::Usage::HEIGHT_MEASURE : Engine::Window::Usage::HEIGHT_BASE;
+    window.inspParams = byte_array;
+
+    cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();
-    int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;
+    int nBigImgWidth = matBigImage.cols / dCombinedImageScale;
     int nBigImgHeight = matBigImage.rows / dCombinedImageScale;
     if (bBoardRotated) {
         window.x = (nBigImgWidth - ptWindowCtr.x)  * dResolutionX;
@@ -159,63 +159,62 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation)
         window.x = ptWindowCtr.x * dResolutionX;
         window.y = (nBigImgHeight - ptWindowCtr.y) * dResolutionY;
     }
-	window.width = rectROI.width  * dResolutionX;
-	window.height = rectROI.height * dResolutionY;
-	window.deviceId = pUI->getSelectedDevice().getId();
-	window.angle = 0;
+    window.width = rectROI.width  * dResolutionX;
+    window.height = rectROI.height * dResolutionY;
+    window.deviceId = pUI->getSelectedDevice().getId();
+    window.angle = 0;
 
-	int result = Engine::OK;
-	if (OPERATION::ADD == enOperation) {
-		window.deviceId = pUI->getSelectedDevice().getId();
-		char windowName[100];
+    int result = Engine::OK;
+    if (OPERATION::ADD == enOperation) {
+        window.deviceId = pUI->getSelectedDevice().getId();
+        char windowName[100];
         if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage)
-		    _snprintf(windowName, sizeof(windowName), "Height Detect [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
+            _snprintf(windowName, sizeof(windowName), "Height Detect [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
         else
             _snprintf(windowName, sizeof(windowName), "Height Detect Base [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
 
-		window.name = windowName;
-		result = Engine::CreateWindow(window);
-		if (result != Engine::OK) {
-			String errorType, errorMessage;
-			Engine::GetErrorDetail(errorType, errorMessage);
-			System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-			return;
-		}
-		else
-			System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
+        window.name = windowName;
+        result = Engine::CreateWindow(window);
+        if (result != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+            return;
+        }
+        else
+            System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
 
-		QDetectObj detectObj(window.Id, window.name.c_str());
-		cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
+        QDetectObj detectObj(window.Id, window.name.c_str());
+        cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
         if (bBoardRotated)
-            ptCenter.x = nBigImgWidth  - ptCenter.x;
+            ptCenter.x = nBigImgWidth - ptCenter.x;
         else
             ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
-		cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
-		detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
-		auto vecDetectObjs = pUI->getDetectObjs();
-		vecDetectObjs.push_back(detectObj);
-		pUI->setDetectObjs(vecDetectObjs);
-	}
-	else {
-		window.Id = m_currentWindow.Id;
-		window.name = m_currentWindow.name;
-		result = Engine::UpdateWindow(window);
-		if (result != Engine::OK) {
-			String errorType, errorMessage;
-			Engine::GetErrorDetail(errorType, errorMessage);
-			System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-			return;
-		}
-		else {
-			System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
-		}
-	}
+        cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
+        detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
+        auto vecDetectObjs = pUI->getDetectObjs();
+        vecDetectObjs.push_back(detectObj);
+        pUI->setDetectObjs(vecDetectObjs);
+    }
+    else {
+        window.Id = m_currentWindow.Id;
+        window.name = m_currentWindow.name;
+        result = Engine::UpdateWindow(window);
+        if (result != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+            return;
+        }
+        else {
+            System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
+        }
+    }
 
-	m_pParent->UpdateInspWindowList();
+    m_pParent->UpdateInspWindowList();
 }
 
-void HeightDetectWidget::setCurrentWindow(const Engine::Window &window)
-{
+void HeightDetectWidget::setCurrentWindow(const Engine::Window &window) {
     m_currentWindow = window;
 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
@@ -233,8 +232,19 @@ void HeightDetectWidget::setCurrentWindow(const Engine::Window &window)
 
         m_pEditMinRange->setText(QString::number(obj.take("MinRange").toDouble() * ONE_HUNDRED_PERCENT));
         m_pEditMaxRange->setText(QString::number(obj.take("MaxRange").toDouble() * ONE_HUNDRED_PERCENT));
-        m_pEditMaxRelHt->setText(QString::number(obj.take("MaxRelHt").toDouble()));
-        m_pEditMinRelHt->setText(QString::number(obj.take("MinRelHt").toDouble()));
+        m_pSpecAndResultMaxRelHt->setSpec(obj.take("MaxRelHt").toDouble());
+        m_pSpecAndResultMaxRelHt->clearResult();
+        m_pSpecAndResultMinRelHt->setSpec(obj.take("MinRelHt").toDouble());
+        m_pSpecAndResultMinRelHt->clearResult();
     }
 }
 
+void HeightDetectWidget::onTypeChanged(bool bInsp) {
+    if (bInsp) {
+        ui.tableWidget->showRow(MAX_REL_HT);
+        ui.tableWidget->showRow(MIN_REL_HT);
+    }else {
+        ui.tableWidget->hideRow(MAX_REL_HT);
+        ui.tableWidget->hideRow(MIN_REL_HT);
+    }
+}

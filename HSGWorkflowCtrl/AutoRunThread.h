@@ -56,7 +56,7 @@ public:
                   MapBoardInspResult                    *pMapBoardInspResult);
     ~AutoRunThread();
 	
-    static bool captureAllImages(QVector<cv::Mat>& imageMats);
+    bool captureAllImages(QVector<cv::Mat>& imageMats);
     cv::Mat getBigImage() const { return m_vecMatBigImage[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]; }
     QString getErrorMsg() const { return m_strErrorMsg; }
     void nofityResponse(bool bExit);
@@ -75,7 +75,6 @@ protected:
 
     bool waitStartBtn();
     bool moveToCapturePos(float fPosX, float fPosY);
-    bool mergeImages(QString& szImagePath);
     bool isExit();
 
 private:	
@@ -97,7 +96,7 @@ private:
     DeviceInspWindowVector _getDeviceWindowInFrame(const cv::Point2f &ptFrameCtr);
     DeviceInspWindowVector _getNotInspectedDeviceWindow() const;
     Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
-    cv::Mat _combineBigImage(const Vision::VectorOfMat &vecMatImages);
+    bool _combineBigImage(const Vision::VectorOfMat &vecMatImages, cv::Mat &matBigImage);
     void _generateResultBigImage(cv::Mat matBigImage, BoardInspResultPtr ptrBoardInspResult);
     void _sendErrorAndWaitForResponse();
 
@@ -105,11 +104,10 @@ private:
     std::atomic<bool>               m_exit;
     cv::Mat                         m_3DMatHeight;
     Engine::AlignmentVector         m_vecAlignments;
-    //Engine::WindowVector            m_vecWindows;
-    //Engine::WindowVector            m_vecAlignedWindows;
     double                          m_dResolutionX;
     double                          m_dResolutionY;
     int                             m_nDLPCount;
+    int                             m_nTotalImageCount;
     cv::Mat                         m_matTransform;
     Vision::VectorOfVectorOfPoint2f m_vecVecFrameCtr;
     QThreadPool                     m_threadPoolCalc3DInsp2D;

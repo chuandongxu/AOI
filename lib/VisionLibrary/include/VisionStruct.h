@@ -375,9 +375,7 @@ struct PR_FIND_LINE_RPY {
     float                   fIntercept2;    //When the find pair is enabled, it will return the second line intercept.
     PR_Line2f               stLine2;        //When the find pair is enabled, it will return the second line.
     float                   fDistance;      //When the find pair is enabled, it will return the distance of two lines.
-    bool                    bLinearityCheckPass;
     float                   fLinearity;
-    bool                    bAngleCheckPass;
     float                   fAngle;
     cv::Mat                 matResultImg;
 };
@@ -606,7 +604,7 @@ struct PR_CROSS_SECTION_AREA_RPY {
 };
 
 struct PR_RGB_RATIO {
-    PR_RGB_RATIO() : fRatioR(0.299f), fRatioG(0.587f), fRatioB(0.114f) {}
+    PR_RGB_RATIO() : fRatioR(1.f), fRatioG(1.f), fRatioB(1.f) {}
     PR_RGB_RATIO(float fRatioR, float fRatioG, float fRatioB ) : fRatioR(fRatioR), fRatioG(fRatioG), fRatioB(fRatioB)   {}
     float                   fRatioR;
     float                   fRatioG;
@@ -779,27 +777,19 @@ struct PR_INSP_BRIDGE_CMD {
         float                   fMaxLengthY;
     };
     using INSP_DIRECTION_VECTOR = std::vector<PR_INSP_BRIDGE_DIRECTION>;
-    struct INSP_ITEM {
-        cv::Rect                rectInnerWindow;
-        cv::Rect                rectOuterWindow;
-        PR_INSP_BRIDGE_MODE     enMode;
-        INSP_DIRECTION_VECTOR   vecOuterInspDirection;
-        INNER_INSP_CRITERIA     stInnerInspCriteria;
-    };
-    using INSP_ITEM_VECTOR = std::vector<INSP_ITEM>;
+
     cv::Mat                 matInputImg;
-    INSP_ITEM_VECTOR        vecInspItems;
+    cv::Rect                rectROI;
+    PR_INSP_BRIDGE_MODE     enInspMode;
+    INSP_DIRECTION_VECTOR   vecOuterInspDirection;
+    cv::Rect                rectOuterSrchWindow;
+    INNER_INSP_CRITERIA     stInnerInspCriteria;
 };
 
 struct PR_INSP_BRIDGE_RPY {
-    struct ITEM_RESULT {
-        bool                bWithBridge;
-        VectorOfRect        vecBridgeWindow;
-    };
-    using ITEM_RESULT_VECTOR = std::vector<ITEM_RESULT>;
     VisionStatus            enStatus;
     cv::Mat                 matResultImg;
-    ITEM_RESULT_VECTOR      vecInspResults;
+    VectorOfRect            vecBridgeWindow;
 };
 
 /******************************************

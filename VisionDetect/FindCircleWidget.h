@@ -1,11 +1,12 @@
 #pragma once
 
-#include "EditInspWindowBaseWidget.h"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
 #include <memory>
+
 #include "ui_FindCircleWidget.h"
+#include "EditInspWindowBaseWidget.h"
 
 class FindCircleWidget : public EditInspWindowBaseWidget
 {

@@ -45,7 +45,7 @@
     <bool>false</bool>
    </attribute>
    <attribute name="horizontalHeaderDefaultSectionSize">
-    <number>210</number>
+    <number>160</number>
    </attribute>
    <attribute name="horizontalHeaderStretchLastSection">
     <bool>true</bool>
@@ -158,7 +158,7 @@
    </item>
    <item row="7" column="0">
     <property name="text">
-     <string>高斯差值器半宽度(pixel)</string>
+     <string>高斯差值器半宽(pixel)</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -184,7 +184,7 @@
    </item>
    <item row="9" column="0">
     <property name="text">
-     <string>检查线性度</string>
+     <string>最大点偏移量(um)</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -192,7 +192,7 @@
    </item>
    <item row="10" column="0">
     <property name="text">
-     <string>最大点偏移量(um)</string>
+     <string>检查线性度</string>
     </property>
     <property name="flags">
      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>

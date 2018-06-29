@@ -19,6 +19,7 @@
 #include "InspPolarityWidget.h"
 #include "InspContourWidget.h"
 #include "InspChipWidget.h"
+#include "InspBridgeWidget.h" 
 #include "TreeWidgetInspWindow.h"
 #include "VisionAPI.h"
 
@@ -32,9 +33,26 @@ static const QString DEFAULT_WINDOW_NAME[] =
     "Inspect Polarity",
     "Inspect Contour",
     "Inspect Chip",
+    "Inspect Bridge",
 };
 
 static_assert (static_cast<size_t>(INSP_WIDGET_INDEX::SIZE) == sizeof(DEFAULT_WINDOW_NAME) / sizeof(DEFAULT_WINDOW_NAME[0]), "The window name size is not correct");
+
+static const char *WINDOW_USAGE_NAME[] {
+    "Alignment",
+    "Height Detect Base",
+    "Height Detect",
+    "Inspect Lead",
+    "Inspect Chip",
+    "Inspect Contour",
+    "Inspect Hole",
+    "Find Line",
+    "Find Circle",
+    "Inspect Polarity",
+    "Inspect Polarity Ref",
+    "Inspect Bridge",
+};
+
 
 InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
 : QWidget(parent), m_pColorWidget(pColorWidget) {
@@ -48,6 +66,7 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_POLARITY)] = std::make_unique<InspPolarityWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CONTOUR)] = std::make_unique<InspContourWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CHIP)] = std::make_unique<InspChipWidget>(this);
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_BRIDGE)] = std::make_unique<InspBridgeWidget>(this);
 
     for (const auto &ptrInspWindowWidget : m_arrInspWindowWidget)
         ui.stackedWidget->addWidget(ptrInspWindowWidget.get());
@@ -78,8 +97,20 @@ void InspWindowWidget::UpdateInspWindowList() {
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     auto deviceId = pUI->getSelectedDevice().getId();
 
+    Engine::Device device;
+    auto result = Engine::GetDevice(deviceId, device);
+    if (result != Engine::OK) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString msg(QStringLiteral("Failed to get device database, error message "));
+        msg += errorMessage.c_str();
+        System->showMessage(QStringLiteral("检测框"), msg);
+        return;
+    }
+    ui.labelDeviceName->setText(device.name.c_str());
+
     Int64Vector vecGroupId;
-    auto result = Engine::GetDeviceWindowGroups(deviceId, vecGroupId);
+    result = Engine::GetDeviceWindowGroups(deviceId, vecGroupId);
     if (result != Engine::OK) {
         String errorType, errorMessage;
         Engine::GetErrorDetail(errorType, errorMessage);
@@ -126,10 +157,9 @@ void InspWindowWidget::UpdateInspWindowList() {
         return;
     }
 
-    m_mapIdWindow.clear();
-    for(const auto &window : vecCurrentDeviceWindows)
-        m_mapIdWindow.insert(std::pair<Int64, Engine::Window>(window.Id, window));
+    m_mapIdWindow.clear();        
     for (const auto &window : vecCurrentDeviceWindows) {
+        m_mapIdWindow.insert(std::pair<Int64, Engine::Window>(window.Id, window));
         QTreeWidgetItem *pItem = new QTreeWidgetItem(QStringList{window.name.c_str()}, TREE_ITEM_WINDOW);
         pItem->setData(0, Qt::UserRole, window.Id);
         ui.treeWidget->addTopLevelItem(pItem);
@@ -179,9 +209,13 @@ void InspWindowWidget::showEvent(QShowEvent *event) {
 
         auto width  = window.width  / dResolutionX;
         auto height = window.height / dResolutionY;
+        auto srchWidth  = window.srchWidth  / dResolutionX;
+        auto srchHeight = window.srchHeight / dResolutionY;
         cv::RotatedRect detectObjWin(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
+        cv::RotatedRect detectSrchWin(cv::Point2f(x, y), cv::Size2f(srchWidth, srchHeight), window.angle);
         QDetectObj detectObj(window.Id, window.name.c_str());
         detectObj.setFrame(detectObjWin);
+        detectObj.setSrchWindow(detectSrchWin);
         vecDetectObjs.push_back(detectObj);
     }
 
@@ -222,7 +256,8 @@ void InspWindowWidget::on_btnAddWindow_clicked() {
     ui.labelWindowName->setText(DEFAULT_WINDOW_NAME[index]);
     m_enOperation = OPERATION::ADD;
 
-    if (INSP_WIDGET_INDEX::INSP_HOLE == m_enCurrentInspWidget) {
+    if (INSP_WIDGET_INDEX::INSP_HOLE == m_enCurrentInspWidget ||
+        INSP_WIDGET_INDEX::INSP_BRIDGE == m_enCurrentInspWidget) {
         m_pColorWidget->show();
     }
     else {
@@ -300,7 +335,7 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
             }
 
             ui.treeWidget->takeTopLevelItem(ui.treeWidget->indexOfTopLevelItem(pItem));
-        }        
+        }
     }
 
     UpdateInspWindowList();    
@@ -358,10 +393,85 @@ void InspWindowWidget::on_btnCreateGroup_clicked() {
     UpdateInspWindowList();
 }
 
+void InspWindowWidget::on_btnCopyToAll_clicked() {
+    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    auto deviceId = pUI->getSelectedDevice().getId();
+    if (deviceId <= 0)
+        return;
+
+    if (m_vecWindowGroup.empty() && m_mapIdWindow.empty())
+        return;
+
+    Engine::DeviceVector vecDevices;
+    QString strTitle(QStringLiteral("复制检测框"));
+    auto result = Engine::GetAllDevices(vecDevices);
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString strMsg(QStringLiteral("读取元件信息失败, 错误消息: "));
+        strMsg += errorMessage.c_str();
+        System->showMessage(strTitle, strMsg);
+        return;
+    }
+    auto iterDevice = std::find_if(vecDevices.begin(), vecDevices.end(), [deviceId](const Engine::Device &device) { return device.Id == deviceId;});
+    if (vecDevices.end() == iterDevice) {
+        QString strMsg(QStringLiteral("查询选择的元件失败."));
+        System->showMessage(strTitle, strMsg);
+        return;
+    }
+
+    auto currentDevice = *iterDevice;
+
+    if (currentDevice.type.empty()) {
+        QString strMsg(QStringLiteral("选中的元件类型为空."));
+        System->showMessage(strTitle, strMsg);
+        return;
+    }
+
+    int nAppliedDeviceCount = 0;
+    for (const auto &device : vecDevices) {
+        if (device.type.empty() || device.type != currentDevice.type)
+            continue;
+
+        Engine::WindowVector vecWindows;
+        Engine::GetDeviceWindows(device.Id, vecWindows);
+        if (! vecWindows.empty())
+            continue;
+
+        auto offsetX = device.x - currentDevice.x;
+        auto offsetY = device.y - currentDevice.y;
+        for (const auto &pairIdWindow : m_mapIdWindow) {
+            Engine::Window window = pairIdWindow.second;
+            window.deviceId = device.Id;
+            window.x += offsetX;
+            window.y += offsetY;
+            char windowName[100];
+            _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), device.name.c_str());
+            window.name = windowName;
+            Engine::CreateWindow(window);
+        }
+
+        for (auto windowGroup : m_vecWindowGroup) {
+            for (auto &window : windowGroup.vecWindows) {
+                 window.deviceId = device.Id;
+                 window.x += offsetX;
+                 window.y += offsetY;
+                 char windowName[100];
+                 _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), device.name.c_str());
+                 window.name = windowName;
+                 Engine::CreateWindow(window);
+            }
+            windowGroup.deviceId = device.Id;
+            Engine::CreateWindowGroup(windowGroup);
+        }
+    }
+}
+
 void InspWindowWidget::on_btnTryInsp_clicked() {
     if (INSP_WIDGET_INDEX::UNDEFINED == m_enCurrentInspWidget)
         return;
 
+    ui.btnTryInsp->setEnabled(false);
     if (INSP_WIDGET_INDEX::HEIGHT_DETECT == m_enCurrentInspWidget)
         _tryInspHeight();
     else if(INSP_WIDGET_INDEX::INSP_POLARITY == m_enCurrentInspWidget)
@@ -369,6 +479,7 @@ void InspWindowWidget::on_btnTryInsp_clicked() {
     else
         m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
 
+    ui.btnTryInsp->setEnabled(true);
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
 }
@@ -549,26 +660,49 @@ void InspWindowWidget::onSelectedWindowChanged() {
     if (pItem)
         pItem->setSelected(true);
 
-    if (Engine::Window::Usage::FIND_LINE == window.usage)
+    switch(window.usage)
+    {
+    case Engine::Window::Usage::FIND_LINE:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::FIND_LINE;
-    else if (Engine::Window::Usage::INSP_HOLE == window.usage)
+        break;
+
+    case Engine::Window::Usage::INSP_HOLE:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_HOLE;
-    else if (Engine::Window::Usage::FIND_CIRCLE == window.usage)
+        break;
+
+    case Engine::Window::Usage::FIND_CIRCLE:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::CALIPER_CIRCLE;
-    else if (Engine::Window::Usage::ALIGNMENT == window.usage)
+        break;
+
+    case Engine::Window::Usage::ALIGNMENT:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::ALIGNMENT;
-    else if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage)
+        break;
+
+    case Engine::Window::Usage::HEIGHT_MEASURE:
+    case Engine::Window::Usage::HEIGHT_BASE:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_DETECT;
-    else if (Engine::Window::Usage::HEIGHT_BASE == window.usage)
-        m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_DETECT;
-    else if (Engine::Window::Usage::INSP_POLARITY == window.usage || Engine::Window::Usage::INSP_POLARITY_REF == window.usage)
+        break;
+
+    case Engine::Window::Usage::INSP_POLARITY:
+    case Engine::Window::Usage::INSP_POLARITY_REF:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_POLARITY;
-    else if (Engine::Window::Usage::INSP_CONTOUR == window.usage)
+        break;
+
+    case Engine::Window::Usage::INSP_CONTOUR:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_CONTOUR;
-    else if (Engine::Window::Usage::INSP_CHIP == window.usage)
+        break;
+
+    case Engine::Window::Usage::INSP_CHIP:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_CHIP;
-    else
-        assert(0);
+        break;
+
+    case Engine::Window::Usage::INSP_BRIDGE:
+        m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_BRIDGE;
+        break;
+
+    default:
+        assert(0); break;
+    }
 
     ui.labelWindowName->setText(window.name.c_str());
 
@@ -590,17 +724,23 @@ void InspWindowWidget::onSelectedWindowChanged() {
 
     auto width  = window.width  / dResolutionX;
     auto height = window.height / dResolutionY;
+    auto srchWidth  = window.srchWidth / dResolutionX;
+    auto srchHeight = window.srchHeight / dResolutionY;
     cv::RotatedRect detectObjWin(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
+    cv::RotatedRect detectSrchWin(cv::Point2f(x, y), cv::Size2f(srchWidth, srchHeight), window.angle);
     QDetectObj detectObj(window.Id, window.name.c_str());
     detectObj.setFrame(detectObjWin);
+    detectObj.setSrchWindow(detectSrchWin);
 
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     pUI->setCurrentDetectObj(detectObj);
+    pUI->setSrchWindow(detectSrchWin.boundingRect());
     m_enOperation = OPERATION::EDIT;
 
-    if (INSP_WIDGET_INDEX::INSP_HOLE == m_enCurrentInspWidget) {
+    if (INSP_WIDGET_INDEX::INSP_HOLE == m_enCurrentInspWidget ||
+        INSP_WIDGET_INDEX::INSP_BRIDGE == m_enCurrentInspWidget) {
         cv::Mat matImage = pUI->getImage();
-        cv::Rect rectROI = cv::RotatedRect(cv::Point(x, y), cv::Size(width, height), window.angle).boundingRect();
+        cv::Rect rectROI = cv::Rect2f(x - width / 2.f, y - height / 2.f, width, height);
         cv::Mat matROI(matImage, rectROI);
         m_pColorWidget->setImage(matROI);
         m_pColorWidget->setJsonFormattedParams(window.colorParams);
