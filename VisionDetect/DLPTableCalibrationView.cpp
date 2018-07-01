@@ -13,12 +13,16 @@
 #include "ScanImageThread.h"
 #include "DLPTableCalibrationRstWidget.h"
 
+#include "TableCaliDataStorage.h"
+
 DLPTableCalibrationView::DLPTableCalibrationView(QWidget *parent)
     : QWidget(parent)
 {
     ui.setupUi(this);
 
     m_pDisplayWidget = std::make_shared<DLPTableCalibrationRstWidget>();
+
+    TableCalData->loadData();
 }
 
 DLPTableCalibrationView::~DLPTableCalibrationView()
