@@ -195,6 +195,8 @@ bool ScanImageThread::captureAllImages(QVector<cv::Mat>& imageMats)
         for (int i = 1; i <= 54; ++ i) {
             _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
             cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
+            if (matImage.empty())
+                return false;
             imageMats.push_back(matImage);
         }
         return true;

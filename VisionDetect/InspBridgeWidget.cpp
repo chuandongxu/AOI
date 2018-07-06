@@ -156,13 +156,13 @@ void InspBridgeWidget::tryInsp() {
         stCmd.rectOuterSrchWindow = pUI->getSrchWindow();
 
         if (m_pCheckLeft->isChecked())
-            stCmd.vecOuterInspDirection.push_back(Vision::PR_INSP_BRIDGE_DIRECTION::LEFT);
+            stCmd.vecOuterInspDirection.push_back(Vision::PR_DIRECTION::LEFT);
         if (m_pCheckRight->isChecked())
-            stCmd.vecOuterInspDirection.push_back(Vision::PR_INSP_BRIDGE_DIRECTION::RIGHT);
+            stCmd.vecOuterInspDirection.push_back(Vision::PR_DIRECTION::RIGHT);
         if (m_pCheckUp->isChecked())
-            stCmd.vecOuterInspDirection.push_back(Vision::PR_INSP_BRIDGE_DIRECTION::UP);
+            stCmd.vecOuterInspDirection.push_back(Vision::PR_DIRECTION::UP);
         if (m_pCheckDown->isChecked())
-            stCmd.vecOuterInspDirection.push_back(Vision::PR_INSP_BRIDGE_DIRECTION::DOWN);
+            stCmd.vecOuterInspDirection.push_back(Vision::PR_DIRECTION::DOWN);
     }
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);

@@ -19,7 +19,8 @@
 #include "InspPolarityWidget.h"
 #include "InspContourWidget.h"
 #include "InspChipWidget.h"
-#include "InspBridgeWidget.h" 
+#include "InspBridgeWidget.h"
+#include "InspLeadWidget.h"
 #include "TreeWidgetInspWindow.h"
 #include "VisionAPI.h"
 
@@ -34,6 +35,7 @@ static const QString DEFAULT_WINDOW_NAME[] =
     "Inspect Contour",
     "Inspect Chip",
     "Inspect Bridge",
+    "Insp Lead",
 };
 
 static_assert (static_cast<size_t>(INSP_WIDGET_INDEX::SIZE) == sizeof(DEFAULT_WINDOW_NAME) / sizeof(DEFAULT_WINDOW_NAME[0]), "The window name size is not correct");
@@ -51,8 +53,8 @@ static const char *WINDOW_USAGE_NAME[] {
     "Inspect Polarity",
     "Inspect Polarity Ref",
     "Inspect Bridge",
+    "Insp Lead",
 };
-
 
 InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
 : QWidget(parent), m_pColorWidget(pColorWidget) {
@@ -67,6 +69,7 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CONTOUR)] = std::make_unique<InspContourWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CHIP)] = std::make_unique<InspChipWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_BRIDGE)] = std::make_unique<InspBridgeWidget>(this);
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_LEAD)] = std::make_unique<InspLeadWidget>(this);
 
     for (const auto &ptrInspWindowWidget : m_arrInspWindowWidget)
         ui.stackedWidget->addWidget(ptrInspWindowWidget.get());
@@ -698,6 +701,10 @@ void InspWindowWidget::onSelectedWindowChanged() {
 
     case Engine::Window::Usage::INSP_BRIDGE:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_BRIDGE;
+        break;
+
+    case Engine::Window::Usage::INSP_LEAD:
+        m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_LEAD;
         break;
 
     default:

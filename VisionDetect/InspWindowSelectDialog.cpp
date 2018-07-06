@@ -57,6 +57,11 @@ void InspWindowSelectDialog::on_btnInspChipWindow_clicked()
     m_enInspWidgetIndex = INSP_WIDGET_INDEX::INSP_CHIP;
 }
 
+void InspWindowSelectDialog::on_btnInspLeadWindow_clicked()
+{
+    m_enInspWidgetIndex = INSP_WIDGET_INDEX::INSP_LEAD;
+}
+
 void InspWindowSelectDialog::on_btnInspBridgeWindow_clicked()
 {
     m_enInspWidgetIndex = INSP_WIDGET_INDEX::INSP_BRIDGE;
