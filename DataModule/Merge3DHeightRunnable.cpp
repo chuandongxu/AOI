@@ -37,7 +37,7 @@ void Merge3DHeightRunnable::run()
 	if (!pVision) return;
 
     cv::Mat matMerged3DHeight;
-    pVision->setInspect3DHeight(vecMatHeight);
+    pVision->setInspect3DHeight(vecMatHeight, m_nRow, m_nCol, m_nTotalRows, m_nTotalCols);
     pVision->merge3DHeight(vecMatHeight, matMerged3DHeight);
 
     (*m_pVec3DFrameImages)[m_nRow * m_nTotalCols + m_nCol] = matMerged3DHeight;

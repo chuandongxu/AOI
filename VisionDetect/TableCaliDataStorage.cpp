@@ -4,6 +4,10 @@
 #include <QApplication>
 
 #include "../Common/SystemData.h"
+#include "../Common/ModuleMgr.h"
+#include "../include/IdDefine.h"
+#include "../include/ICamera.h"
+#include "../include/constants.h"
 
 const QString _TBCDataFile = QString("TBCData");
 
@@ -135,6 +139,9 @@ TableCaliDataStorage::TableCaliDataStorage(QObject *parent)
     path += "/3D/data/";
 
     m_fileStorage = std::make_shared<TBCDataStorageFile>(path);
+
+    m_nScreenWidth = 0;
+    m_nScreenHeight = 0;
 }
 
 TableCaliDataStorage::~TableCaliDataStorage()
@@ -262,10 +269,32 @@ bool TableCaliDataStorage::loadData()
         }  
     }
 
+    auto pCamera = getModule<ICamera>(CAMERA_MODEL);
+    int nImageWidth = 0, nImageHeight = 0;
+    pCamera->getCameraScreenSize(nImageWidth, nImageHeight);
+
+    m_nScreenWidth = nImageWidth;
+    m_nScreenHeight = nImageHeight;
+
     return true;
 }
 
-bool TableCaliDataStorage::getFrameOffset(cv::Point2f& pt, float* fOffsetValue)
+bool TableCaliDataStorage::getFrameOffsetByPixel(cv::Point2f& pt, float* fOffsetValue)
+{
+    double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    double dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();    
+
+    double dTopLeftCtrX = m_vecVecFrameCtr[0][0].x;
+    double dTopLeftCtrY = m_vecVecFrameCtr[0][0].y;
+
+    cv::Point2f ptUm;
+    ptUm.x = dTopLeftCtrX + (pt.x - m_nScreenWidth/2) * dResolutionX * UM_TO_MM;
+    ptUm.y = dTopLeftCtrY + (pt.y - m_nScreenHeight/2) * dResolutionY * UM_TO_MM;
+
+    return getFrameOffsetByUm(ptUm, fOffsetValue);
+}
+
+bool TableCaliDataStorage::getFrameOffsetByUm(cv::Point2f& pt, float* fOffsetValue)
 {
     Vision::PR_CALC_FRAME_VALUE_CMD stCmd;
     Vision::PR_CALC_FRAME_VALUE_RPY stRpy;
@@ -284,7 +313,7 @@ bool TableCaliDataStorage::getFrameOffset(cv::Point2f& pt, float* fOffsetValue)
             System->setTrackInfo(QString(QStringLiteral("PR_CalcFrameValue error!")));
             return false;
         }
-    } 
+    }
 
     return true;
 }

@@ -42,7 +42,7 @@ public:
     virtual QString getVisionLibraryVersion() const = 0;
 
 
-    virtual bool setInspect3DHeight(QVector<cv::Mat>& matHeights) = 0;
+    virtual bool setInspect3DHeight(QVector<cv::Mat>& matHeights, int nRow, int nCol, int nTotalRow, int nTotalCol) = 0;
     virtual void inspect3DProfile(cv::Rect& rectROI) = 0;
 };
 

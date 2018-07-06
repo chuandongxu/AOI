@@ -61,7 +61,8 @@ public:
 
 
     bool loadData();
-    bool getFrameOffset(cv::Point2f& pt, float* fOffsetValue);// fOffsetValue[4] values
+    bool getFrameOffsetByPixel(cv::Point2f& pt, float* fOffsetValue);// fOffsetValue[4] values
+    bool getFrameOffsetByUm(cv::Point2f& pt, float* fOffsetValue);// fOffsetValue[4] values
 
 private:
     static void desstory();
@@ -72,6 +73,8 @@ private:
 
 private:
     std::shared_ptr<TBCDataStorageFile> m_fileStorage;
+    int m_nScreenWidth;
+    int m_nScreenHeight;
 
 private:
     static TableCaliDataStorage * _instance_;

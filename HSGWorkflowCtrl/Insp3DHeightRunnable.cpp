@@ -52,7 +52,7 @@ void Insp3DHeightRunnable::run()
         IVision* pVision = getModule<IVision>(VISION_MODEL);
         if (!pVision) return;
 
-        pVision->setInspect3DHeight(vecMatHeight);
+        pVision->setInspect3DHeight(vecMatHeight, m_nRow, m_nCol, m_nTotalRows, m_nTotalCols);
         pVision->merge3DHeight(vecMatHeight, m_mat3DHeight);
         (*m_pVec3DFrameImages)[m_nRow * m_nTotalCols + m_nCol] = m_mat3DHeight;
     }
