@@ -4,6 +4,8 @@
 
 #include "../Common/SystemData.h"
 
+#include "TableCaliDataStorage.h"
+
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 
@@ -52,6 +54,11 @@ Inspect3DProfileWidget::Inspect3DProfileWidget(QWidget *parent)
     ui.setupUi(this);
 
     initUI();
+
+    m_vecFrame3DHeights.resize(4);
+    m_matHeights.resize(4);
+    m_nTotalRow = 0;
+    m_nTotalCol = 0;
 }
 
 Inspect3DProfileWidget::~Inspect3DProfileWidget()
@@ -121,16 +128,67 @@ void Inspect3DProfileWidget::onInspect()
     doInspect();
 }
 
-bool Inspect3DProfileWidget::set3DHeight(QVector<cv::Mat>& matHeights)
+bool Inspect3DProfileWidget::set3DHeight(QVector<cv::Mat>& matHeights, int nRow, int nCol, int nTotalRow, int nTotalCol)
 {
-    m_matHeights = matHeights;
-    System->setTrackInfo("Inspect 3D data loaded!");
+    int ROWS = nTotalRow;
+    int COLS = nTotalCol;
+    int TOTAL = ROWS * COLS;
+
+    if (m_nTotalRow < nTotalRow) m_nTotalRow = nTotalRow;
+    if (m_nTotalCol < nTotalCol) m_nTotalCol = nTotalCol;
+
+    int nImageNum = qMin(4, matHeights.size());
+    for (int i = 0; i < nImageNum; i++)
+    {
+        if (m_vecFrame3DHeights[i].size() < TOTAL)
+        {
+            m_vecFrame3DHeights[i].resize(TOTAL, cv::Mat());
+        }
+    }
+    m_matHeights.resize(matHeights.size());
+  
+    for (int i = 0; i < nImageNum; i++)
+    {
+        m_vecFrame3DHeights[i][nRow * COLS + nCol] = matHeights[i];
+    } 
+    //m_matHeights = matHeights;
+    //System->setTrackInfo("Inspect 3D data loaded!");
     return true;
 }
 
 void Inspect3DProfileWidget::inspect(cv::Rect& rectROI)
 {
     m_rectROI = rectROI;
+
+    double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    double dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+
+    double fOverlapUmX = System->getParam("scan_image_OverlapX").toDouble();
+    double fOverlapUmY = System->getParam("scan_image_OverlapY").toDouble();
+
+    Vision::PR_SCAN_IMAGE_DIR enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(System->getParam("scan_image_Direction").toInt());
+
+    Vision::PR_COMBINE_IMG_CMD stCmd;
+    Vision::PR_COMBINE_IMG_RPY stRpy;
+    stCmd.nCountOfImgPerFrame = 1;
+    stCmd.nCountOfFrameX = m_nTotalCol;
+    stCmd.nCountOfFrameY = m_nTotalRow;
+    stCmd.nOverlapX = fOverlapUmX / dResolutionX;
+    stCmd.nOverlapY = fOverlapUmY / dResolutionY;
+    stCmd.nCountOfImgPerRow = m_nTotalCol;
+    stCmd.enScanDir = enScanDir;
+
+    int nImageNum = qMin(4, m_matHeights.size());
+    for (int i = 0; i < nImageNum; ++i) {
+        stCmd.vecInputImages = m_vecFrame3DHeights[i];
+        if (Vision::VisionStatus::OK == Vision::PR_CombineImg(&stCmd, &stRpy))
+            m_matHeights[i] = stRpy.vecResultImages[0];
+        else {
+            System->setTrackInfo(QString(QStringLiteral("合并大图失败.")));
+            return;
+        }
+    }  
+
     doInspect();   
 }
 
@@ -227,6 +285,8 @@ void Inspect3DProfileWidget::generateProfData(bool bRow, int nIndex, QVector<cv:
 
     int nSlopNum = matHeights.size();
 
+    bool bAutoCompOffset = ui.checkBoxAutoCompOffset->isChecked();
+
     for (int i = 0; i < nSlopNum; i++)
     {
         QVector<cv::Point2d> points;
@@ -248,6 +308,26 @@ void Inspect3DProfileWidget::generateProfData(bool bRow, int nIndex, QVector<cv:
             {
                dHeight = matImg.at<float>(j, nIndex);
             } 
+
+            if (bAutoCompOffset)
+            {
+                cv::Point2f ptPos;
+                if (bRow)
+                { 
+                    ptPos.x = m_rectROI.x + nIndex;
+                    ptPos.y = m_rectROI.y + j;
+                }
+                else 
+                {
+                    ptPos.x = m_rectROI.x + j;
+                    ptPos.y = m_rectROI.y + nIndex;
+                }
+
+                float offsets[4];
+                TableCalData->getFrameOffsetByPixel(ptPos, offsets);
+
+                dHeight -= offsets[i];
+            }
 
             cv::Point2d pt;
             pt.x = j;

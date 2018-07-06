@@ -210,6 +210,19 @@
     <string>范围：</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="checkBoxAutoCompOffset">
+   <property name="geometry">
+    <rect>
+     <x>1180</x>
+     <y>700</y>
+     <width>101</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>自动补偿偏移</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
