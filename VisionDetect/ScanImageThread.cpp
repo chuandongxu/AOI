@@ -24,6 +24,8 @@
 #include "../DataModule/DataUtils.h"
 #include "../HSGWorkflowCtrl/Calc3DHeightRunnable.h"
 
+#include "TableCaliDataStorage.h"
+
 #define ToInt(value)                (static_cast<int>(value))
 
 ScanImageThread::ScanImageThread(const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr, float fLeft, float fTop, float fRight, float fBottom) :
@@ -136,6 +138,13 @@ void ScanImageThread::run()
         if (! m_bGood)
             break;
     }
+
+    TableCalData->setFrame(m_vecVecFrameCtr);
+    TableCalData->setData(0, vecVecFrameDLP1);
+    TableCalData->setData(1, vecVecFrameDLP2);
+    TableCalData->setData(2, vecVecFrameDLP3);
+    TableCalData->setData(3, vecVecFrameDLP4);
+    TableCalData->saveData();
 
     QThreadPool::globalInstance()->waitForDone();
 

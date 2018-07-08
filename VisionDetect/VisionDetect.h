@@ -57,7 +57,7 @@ public:
     virtual cv::Mat getColorWidgetProcessedImage() override;
     virtual QString getVisionLibraryVersion() const { return m_ctrl.getVisionLibraryVersion(); }
 
-    virtual bool setInspect3DHeight(QVector<cv::Mat>& matHeights) override;
+    virtual bool setInspect3DHeight(QVector<cv::Mat>& matHeights, int nRow, int nCol, int nTotalRow, int nTotalCol) override;
     virtual void inspect3DProfile(cv::Rect& rectROI) override;
 
 private:

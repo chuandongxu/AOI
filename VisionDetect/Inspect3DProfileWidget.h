@@ -3,9 +3,13 @@
 #include <QWidget>
 #include "ui_Inspect3DProfileWidget.h"
 
+#include "VisionAPI.h"
+
 #include <memory>
 
 #include "opencv/cv.h"
+
+using namespace AOI;
 
 using InspectProfDataVector = QVector < QVector<cv::Point2d> > ;
 
@@ -19,7 +23,7 @@ public:
     Inspect3DProfileWidget(QWidget *parent = Q_NULLPTR);
     ~Inspect3DProfileWidget();
 
-    bool set3DHeight(QVector<cv::Mat>& matHeights);
+    bool set3DHeight(QVector<cv::Mat>& matHeights, int nRow, int nCol, int nTotalRow, int nTotalCol);
     void inspect(cv::Rect& rectROI);
 
     void setInspectPos(double dX, double dY);
@@ -54,4 +58,8 @@ private:
 
     std::shared_ptr<QCustomPlot> m_pInspectRowPlot; 
     std::shared_ptr<QCustomPlot> m_pInspectColPlot;
+
+    QVector<Vision::VectorOfMat> m_vecFrame3DHeights;
+    int m_nTotalRow;
+    int m_nTotalCol;
 };

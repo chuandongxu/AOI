@@ -27,14 +27,14 @@
 #include <string>
 
 #define AT                                          __FILE__, __LINE__
-const float MIL_TO_UM =                             ( 25.4f );
-const float UM_TO_MIL =                             ( 1.f / MIL_TO_UM );
-const float INCH_TO_UM =                            ( 25.4f * 1000.f);
-const float UM_TO_INCH =                            ( 1.f / INCH_TO_UM );
-const float MM_TO_UM =                              ( 1000.f );
-const float UM_TO_MM =                              ( 1.f / MM_TO_UM );
+const float MIL_TO_UM =                             (25.4f);
+const float UM_TO_MIL =                             (1.f / MIL_TO_UM);
+const float INCH_TO_UM =                            (25.4f * 1000.f);
+const float UM_TO_INCH =                            (1.f / INCH_TO_UM);
+const float MM_TO_UM =                              (1000.f);
+const float UM_TO_MM =                              (1.f / MM_TO_UM);
 const float CM_TO_UM =                              (1000000.f);
-const float UM_TO_CM  =                             (1.f / CM_TO_UM );
+const float UM_TO_CM  =                             (1.f / CM_TO_UM);
 const float ONE_HUNDRED_PERCENT =                   (100.f);
 const std::string DEFAULT_PROJECT =                 "./data/DefaultProject.aoi";
 const std::string PROJECT_EXT =                     ".aoi";

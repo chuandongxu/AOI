@@ -184,6 +184,8 @@ void InspBridgeWidget::tryInsp() {
     }
 
     Vision::PR_InspBridge(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK == stRpy.enStatus)
+        pUI->displayImage(stRpy.matResultImg);
     QString strMsg;
     strMsg.sprintf("Inspect Status %d, bridge count %d", Vision::ToInt32(stRpy.enStatus), stRpy.vecBridgeWindow.size());
     QMessageBox::information(this, "Insp void", strMsg);

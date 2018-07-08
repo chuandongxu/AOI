@@ -163,6 +163,8 @@ void InspVoidWidget::tryInsp() {
     }
 
     Vision::PR_InspHole(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK == stRpy.enStatus)
+        pUI->displayImage(stRpy.matResultImg);
     QString strMsg;
     strMsg.sprintf("Inspect Status %d", Vision::ToInt32(stRpy.enStatus));
     if (Vision::PR_INSP_HOLE_MODE::RATIO == stCmd.enInspMode) {

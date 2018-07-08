@@ -133,6 +133,8 @@ bool AlignmentWidget::_srchTemplate(int recordId, bool bShowResult) {
     stCmd.rectSrchWindow = pUI->getSrchWindow();
 
     Vision::PR_MatchTmpl(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK == stRpy.enStatus)
+        pUI->displayImage(stRpy.matResultImg);
     if (bShowResult) {
         auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
         auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();

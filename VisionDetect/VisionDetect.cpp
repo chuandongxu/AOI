@@ -209,11 +209,11 @@ cv::Mat VisionDetect::getColorWidgetProcessedImage()
     return m_pColorWeightView->getProcessedImage();
 }
 
-bool VisionDetect::setInspect3DHeight(QVector<cv::Mat>& matHeights)
+bool VisionDetect::setInspect3DHeight(QVector<cv::Mat>& matHeights, int nRow, int nCol, int nTotalRow, int nTotalCol)
 {
     if (m_pInspect3DProfileView)
     {
-        return m_pInspect3DProfileView->set3DHeight(matHeights);
+        return m_pInspect3DProfileView->set3DHeight(matHeights, nRow, nCol, nTotalRow, nTotalCol);
     }
     return false;
 }
