@@ -161,6 +161,8 @@ bool InspContourWidget::_inspContour(int recordId, bool bShowResult /*= true*/) 
     stCmd.rectROI = rectROI;
 
     Vision::PR_InspContour(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK == stRpy.enStatus)
+        pUI->displayImage(stRpy.matResultImg);
     if (bShowResult) {
         QString strMsg;
         strMsg.sprintf("Inspect contour status %d, defect count %d.", Vision::ToInt32(stRpy.enStatus), stRpy.vecDefectContour.size());

@@ -94,6 +94,8 @@ bool InspChipWidget::_inspChip(int recordId, bool bShowResult) {
     stCmd.rectSrchWindow = pUI->getSrchWindow();
 
     Vision::PR_InspChip(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK == stRpy.enStatus)
+        pUI->displayImage(stRpy.matResultImg);
     if (bShowResult) {
         QString strMsg;
         strMsg.sprintf("Inspect Status %d, center(%f, %f), rotation(%f), score(%f)", Vision::ToInt32(stRpy.enStatus), stRpy.rotatedRectResult.center.x, stRpy.rotatedRectResult.center.y, stRpy.rotatedRectResult.angle);
@@ -197,7 +199,7 @@ void InspChipWidget::confirmWindow(OPERATION enOperation) {
         window.x = ptWindowCtr.x * dResolutionX;
         window.y = (nBigImgHeight - ptWindowCtr.y) * dResolutionY;
     }
-    window.width = rectROI.width  * dResolutionX;
+    window.width  = rectROI.width  * dResolutionX;
     window.height = rectROI.height * dResolutionY;
     window.srchWidth = rectSrchWindow.width  * dResolutionX;
     window.srchHeight = rectSrchWindow.height * dResolutionY;
@@ -221,7 +223,8 @@ void InspChipWidget::confirmWindow(OPERATION enOperation) {
         if (result != Engine::OK) {
             String errorType, errorMessage;
             Engine::GetErrorDetail(errorType, errorMessage);
-            System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+            QString strMsg = QStringLiteral("创建检测框失败, 错误消息: ") + errorMessage.c_str();
+            System->showMessage(QStringLiteral("创建元件检测框"), strMsg);
             return;
         }
         else {

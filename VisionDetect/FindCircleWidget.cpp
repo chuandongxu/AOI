@@ -128,6 +128,8 @@ void FindCircleWidget::tryInsp() {
     stCmd.fMaxSrchRadius = qMin(rectROI.width / 2.0f, rectROI.height / 2.0f);
     stCmd.fMinSrchRadius = qMin(rectROI.width / 2.0f, rectROI.height / 2.0f) / 3.0f;
     Vision::PR_FindCircle(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK == stRpy.enStatus)
+        pUI->displayImage(stRpy.matResultImg);
     QString strMsg;
     strMsg.sprintf("Inspect Status %d, center(%f, %f) radius1# %f, radius2# %f", Vision::ToInt32(stRpy.enStatus), stRpy.ptCircleCtr.x, stRpy.ptCircleCtr.y, stRpy.fRadius, stRpy.fRadius2);
     QMessageBox::information(this, "Find Circle", strMsg);

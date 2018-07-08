@@ -22,6 +22,7 @@ private slots:
     void on_btnInspPolarityWindow_clicked();
     void on_btnInspContourWindow_clicked();
     void on_btnInspChipWindow_clicked();
+    void on_btnInspLeadWindow_clicked();
     void on_btnInspBridgeWindow_clicked();
     void on_accept();
 

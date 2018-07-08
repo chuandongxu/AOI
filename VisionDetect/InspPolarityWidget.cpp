@@ -125,6 +125,8 @@ void InspPolarityWidget::tryInsp() {
     }
 
     Vision::PR_InspPolarity(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK == stRpy.enStatus)
+        pUI->displayImage(stRpy.matResultImg);
     QString strMsg;
     strMsg.sprintf("Inspect Status %d, Intensity difference(%d)", Vision::ToInt32(stRpy.enStatus), stRpy.nGrayScaleDiff);
     QMessageBox::information(this, "Inspect Polarity", strMsg);

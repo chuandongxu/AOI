@@ -8,6 +8,7 @@
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IVisionUI.h"
+#include "../DataModule/CalcUtils.hpp"
 
 Insp2DRunnable::Insp2DRunnable(const Vision::VectorOfMat    &vec2DImages,
                                const DeviceInspWindowVector &vecDeviceWindows,
@@ -72,6 +73,14 @@ void Insp2DRunnable::_inspWindow(const Engine::Window &window)
         _inspContour(window);
         break;
 
+    case Engine::Window::Usage::INSP_BRIDGE:
+        _inspBridge(window);
+        break;
+
+    case Engine::Window::Usage::INSP_LEAD:
+        _inspLead(window);
+        break;
+
     default:
         break;
     }
@@ -100,10 +109,24 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
         return false;
     }
 
+    QJsonObject jsonObj = parse_doucment.object();
+
     cv::Mat matImage = m_vec2DImages[nImageIndex];
+    bool bUseSrchWidth = false;
+    if (Engine::Window::Usage::INSP_BRIDGE == window.usage) {
+        if (window.srchWidth > window.width && window.srchHeight > window.height)
+            bUseSrchWidth = true;
+    }
+
+    float fWidth = window.width, fHeight = window.height;
+    if (bUseSrchWidth) {
+        fWidth  = window.srchWidth;
+        fHeight = window.srchHeight;
+    }
+
     auto rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
-        window.width,
-        window.height,
+        fWidth,
+        fHeight,
         m_ptFramePos,
         m_nImageWidthPixel,
         m_nImageHeightPixel,
@@ -115,9 +138,7 @@ bool Insp2DRunnable::_preprocessImage(const Engine::Window &window, cv::Mat &mat
     if (matROI.type() == CV_8UC1)
         cv::cvtColor(matROI, matColor, CV_GRAY2BGR);
     else if (matROI.type() == CV_8UC3)
-        matColor = matROI;
-
-    QJsonObject jsonObj = parse_doucment.object();
+        matColor = matROI;    
 
     auto enMethod = static_cast<GRAY_WEIGHT_METHOD>(jsonObj["Method"].toInt());
 
@@ -546,6 +567,106 @@ void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) 
     }
     for (const auto &window : windowGroup.vecWindows)
         m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+}
+
+void Insp2DRunnable::_inspBridge(const Engine::Window &window) {
+    QJsonParseError json_error;
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
+        m_ptrBoardInspResult->setFatalError();
+        return;
+    }
+    QJsonObject jsonValue = parse_doucment.object();
+
+    Vision::PR_INSP_BRIDGE_CMD stCmd;
+    Vision::PR_INSP_BRIDGE_RPY stRpy;
+
+    stCmd.enInspMode = static_cast<Vision::PR_INSP_BRIDGE_MODE>(jsonValue["InspMode"].toInt());
+
+    // The preprocessed image returns the image of ROI.
+    if (! _preprocessImage(window, stCmd.matInputImg))
+        return;
+    
+    if (Vision::PR_INSP_BRIDGE_MODE::INNER == stCmd.enInspMode) {
+        QJsonObject jsonInnerMode = jsonValue["InnerMode"].toObject();
+        stCmd.rectROI = cv::Rect(0, 0, stCmd.matInputImg.cols, stCmd.matInputImg.rows);
+        stCmd.stInnerInspCriteria.fMaxLengthX = jsonInnerMode["MaxWidth"].toDouble();
+        stCmd.stInnerInspCriteria.fMaxLengthY = jsonInnerMode["MaxHeight"].toDouble();
+    } else {
+        stCmd.rectOuterSrchWindow = cv::Rect(0, 0, stCmd.matInputImg.cols, stCmd.matInputImg.rows);
+        stCmd.rectROI = CalcUtils::resizeRect(stCmd.rectOuterSrchWindow, cv::Size(window.width / m_dResolutionX, window.height / m_dResolutionY));
+        QJsonObject jsonOuterMode = jsonValue["OuterMode"].toObject();
+        if (jsonOuterMode["CheckLeft"].toBool())
+            stCmd.vecOuterInspDirection.push_back(Vision::PR_DIRECTION::LEFT);
+        if (jsonOuterMode["CheckRight"].toBool())
+            stCmd.vecOuterInspDirection.push_back(Vision::PR_DIRECTION::RIGHT);
+        if (jsonOuterMode["CheckUp"].toBool())
+            stCmd.vecOuterInspDirection.push_back(Vision::PR_DIRECTION::UP);
+        if (jsonOuterMode["CheckDown"].toBool())
+            stCmd.vecOuterInspDirection.push_back(Vision::PR_DIRECTION::DOWN);
+    }
+
+    Vision::PR_InspBridge(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+            return;
+        }
+    }
+    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+}
+
+void Insp2DRunnable::_inspLead(const Engine::Window &window) {
+    QJsonParseError json_error;
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
+        m_ptrBoardInspResult->setFatalError();
+        return;
+    }
+    QJsonObject jsonValue = parse_doucment.object();
+
+    Vision::PR_INSP_LEAD_TMPL_CMD stCmd;
+    Vision::PR_INSP_LEAD_TMPL_RPY stRpy;
+
+    int nImageIndex = window.lightId - 1;
+    if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
+        std::string strErrorMsg = "Window \"" + window.name + "\" image id " + std::to_string(window.lightId) + " is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+        m_ptrBoardInspResult->setFatalError();
+        return;
+    }
+
+    stCmd.matInputImg = m_vec2DImages[nImageIndex];
+    stCmd.rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
+        window.width,
+        window.height,
+        m_ptFramePos,
+        m_nImageWidthPixel,
+        m_nImageHeightPixel,
+        m_dResolutionX,
+        m_dResolutionY);
+    stCmd.nPadRecordId = jsonValue["PadRecordId"].toInt();
+    stCmd.nLeadRecordId = jsonValue["LeadRecordId"].toInt();
+    stCmd.fLrnedPadLeadDist = jsonValue["PadLeadDist"].toDouble() / m_dResolutionX;
+    stCmd.fMaxLeadOffsetX = jsonValue["MaxOffsetX"].toDouble() / m_dResolutionX;
+    stCmd.fMaxLeadOffsetY = jsonValue["MaxOffsetY"].toDouble() / m_dResolutionX;
+
+    Vision::PR_InspLeadTmpl(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+            return;
+        }
+    }
+    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
 }
 
 Vision::VisionStatus Insp2DRunnable::_alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow) {

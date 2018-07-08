@@ -29,6 +29,8 @@ private:
     void _findCircle(const Engine::Window &window);
     void _inspContour(const Engine::Window &window);
     void _inspPolarityGroup(const Engine::WindowGroup &windowGroup);
+    void _inspBridge(const Engine::Window &window);
+    void _inspLead(const Engine::Window &window);
     Vision::VisionStatus _alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow);
 
 private:

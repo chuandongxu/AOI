@@ -150,12 +150,14 @@ void FindLineWidget::tryInsp() {
     stCmd.rectRotatedROI.center = cv::Point2f(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2);
     stCmd.rectRotatedROI.size = rectROI.size();
     Vision::PR_FindLine(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK == stRpy.enStatus)
+        pUI->displayImage(stRpy.matResultImg);
     m_pSpecAndResultMinLinearity->setResult(stRpy.fLinearity * ONE_HUNDRED_PERCENT);
     m_pSpecAndResultAngle->setResult(stRpy.fAngle);
     m_pSpecAndResultAngleDiffTol->setResult(stRpy.fAngle - stCmd.fExpectedAngle);
     QString strMsg;
     strMsg.sprintf("Inspect Status %d, linearity %.2f %, angle %f", Vision::ToInt32(stRpy.enStatus), stRpy.fLinearity * ONE_HUNDRED_PERCENT, stRpy.fAngle);
-    QMessageBox::information(this, "Find Line", strMsg);
+    QMessageBox::information(this, "Find Line", strMsg);    
 }
 
 void FindLineWidget::confirmWindow(OPERATION enOperation) {
