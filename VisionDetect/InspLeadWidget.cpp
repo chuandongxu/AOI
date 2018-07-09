@@ -56,7 +56,7 @@ void InspLeadWidget::setDefaultValue() {
     m_pEditLeadRecordID->clear();
     m_pEditPadLeadDist->clear();
     m_pSpecAndResultMaxOffsetX->setSpec(500.f);
-    m_pSpecAndResultMaxOffsetX->setSpec(500.f);
+    m_pSpecAndResultMaxOffsetY->setSpec(500.f);
 }
 
 void InspLeadWidget::setCurrentWindow(const Engine::Window &window) {
@@ -167,7 +167,6 @@ void InspLeadWidget::on_btnAutoLocateLead_clicked() {
             return;
         }
         _autoAddInspWindows(stRpy);
-
     }else {
         QString strMsg = QStringLiteral("自动定位引脚框失败, 错误消息: ");
         Vision::PR_GET_ERROR_INFO_RPY stErrorRpy;
