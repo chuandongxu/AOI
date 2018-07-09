@@ -113,7 +113,7 @@ void ScanImageThread::run()
             for (size_t i = 0; i < vec2DImage.size(); ++ i)
                 vecVecFrameImages[i][row * COLS + col] = vec2DImage[i];
 
-            Merge3DHeightRunnable *pMerge3DHeightRunnable = new Merge3DHeightRunnable(&m_threadPoolCalc3DHeight, vecCalc3dHeightRunnable,
+            Merge3DHeightRunnable *pMerge3DHeightRunnable = new Merge3DHeightRunnable(&m_threadPoolCalc3DHeight, vecCalc3dHeightRunnable, ptFrameCtr,
                 &vecFrame3DHeight, row, col, ROWS, COLS);
             QThreadPool::globalInstance()->start(pMerge3DHeightRunnable);
         }

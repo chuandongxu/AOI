@@ -146,9 +146,9 @@ bool VisionDetect::calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*
 	return m_ctrl.calculateDetectHeight(matHeight, objTests);
 }
 
-bool VisionDetect::merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight)
+bool VisionDetect::merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight, cv::Point2f& ptFramePos)
 {
-	return m_ctrl.merge3DHeight(matHeights, matHeight);
+    return m_ctrl.merge3DHeight(matHeights, matHeight, ptFramePos);
 }
 
 bool VisionDetect::mergeImage(QVector<cv::Mat>& matInputImages, QVector<cv::Mat>& matOutputImages)

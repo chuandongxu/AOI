@@ -5,6 +5,7 @@
 
 #include "VLCellEditor.h"
 #include "VLProfileEditor.h"
+#include "TableCaliDataStorage.h"
 
 #include <QDateTime>
 #include <QApplication>
@@ -484,7 +485,7 @@ bool VisionCtrl::calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>&
 	return true;
 }
 
-bool VisionCtrl::merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight)
+bool VisionCtrl::merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight, cv::Point2f& ptFramePos)
 {
 	if (2 == matHeights.size())
 	{
@@ -510,8 +511,16 @@ bool VisionCtrl::merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight)
 			System->setTrackInfo(QString("Error at PR_Merge3DHeight, error code = %1").arg((int)retStatus));
 		}
 	}
-	else // 4 DLPs
+    else if (4 == matHeights.size())
 	{
+        float offsets[4];
+        TableCalData->getFrameOffsetByUm(ptFramePos, offsets);
+
+        for (int i = 0; i < 4; i++)
+        {
+            matHeights[i] -= offsets[i];
+        }        
+
 		cv::Mat matHeightMerges[2];
 		for (int j = 0; j < 2; j++)
 		{

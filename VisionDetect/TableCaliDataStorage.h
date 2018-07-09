@@ -61,8 +61,9 @@ public:
 
 
     bool loadData();
-    bool getFrameOffsetByPixel(cv::Point2f& pt, float* fOffsetValue);// fOffsetValue[4] values
+    bool getFrameOffsetByPixel(cv::Point2f& pt, float* fOffsetValue);// fOffsetValue[4] values   
     bool getFrameOffsetByUm(cv::Point2f& pt, float* fOffsetValue);// fOffsetValue[4] values
+    bool getFrameOffsetByMm(cv::Point2f& pt, float* fOffsetValue);// fOffsetValue[4] values
 
 private:
     static void desstory();
