@@ -18,8 +18,8 @@ Calc3DHeightRunnable::~Calc3DHeightRunnable()
 
 void Calc3DHeightRunnable::run()
 {
-	IVision* pVision = getModule<IVision>(VISION_MODEL);
-	if (!pVision) return;
+    IVision* pVision = getModule<IVision>(VISION_MODEL);
+    if (!pVision) return;
 
     pVision->calculate3DHeight(m_nDlpId, m_vecMatImages, m_mat3DHeight, m_matHeightResultImg);
 }

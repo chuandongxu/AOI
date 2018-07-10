@@ -213,30 +213,30 @@ void InspContourWidget::confirmWindow(OPERATION enOperation) {
         return;
     }
 
-	QJsonObject json;
-	json.insert("DefectThreshold", m_pEditDefectThreshold->text().toInt());
-	json.insert("MinDefectArea", m_pEditMinDefectArea->text().toFloat());
+    QJsonObject json;
+    json.insert("DefectThreshold", m_pEditDefectThreshold->text().toInt());
+    json.insert("MinDefectArea", m_pEditMinDefectArea->text().toFloat());
     json.insert("DefectInnerLengthTol", m_pEditDefectInnerLengthTol->text().toFloat());
     json.insert("DefectOuterLengthTol", m_pEditDefectOuterLengthTol->text().toInt());
     json.insert("InnerMaskDepth", m_pEditInnerMaskDepth->text().toFloat());
     json.insert("OuterMaskDepth", m_pEditOuterMaskDepth->text().toFloat());
 
-	QJsonDocument document;
-	document.setObject(json);
-	QByteArray byte_array = document.toJson(QJsonDocument::Compact);
+    QJsonDocument document;
+    document.setObject(json);
+    QByteArray byte_array = document.toJson(QJsonDocument::Compact);
 
-	auto pUI = getModule<IVisionUI>(UI_MODEL);
-	auto rectROI = pUI->getSelectedROI();
-	if (rectROI.width <= 0 || rectROI.height <= 0) {
-		QMessageBox::critical(this, strTitle, QStringLiteral("Please select a ROI to do inspection."));
-		return;
-	}
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    auto rectROI = pUI->getSelectedROI();
+    if (rectROI.width <= 0 || rectROI.height <= 0) {
+        QMessageBox::critical(this, strTitle, QStringLiteral("Please select a ROI to do inspection."));
+        return;
+    }
 
-	Engine::Window window;
-	window.lightId = m_pParent->getSelectedLighting() + 1;
-	window.usage = Engine::Window::Usage::INSP_CONTOUR;
-	window.inspParams = byte_array;
-	
+    Engine::Window window;
+    window.lightId = m_pParent->getSelectedLighting() + 1;
+    window.usage = Engine::Window::Usage::INSP_CONTOUR;
+    window.inspParams = byte_array;
+
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width  / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();
     int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;
@@ -249,60 +249,61 @@ void InspContourWidget::confirmWindow(OPERATION enOperation) {
         window.x = ptWindowCtr.x * dResolutionX;
         window.y = (nBigImgHeight - ptWindowCtr.y) * dResolutionY;
     }
-	window.width = rectROI.width   * dResolutionX;
-	window.height = rectROI.height * dResolutionY;
-	window.deviceId = pUI->getSelectedDevice().getId();
-	window.angle = 0;
+    window.width = rectROI.width   * dResolutionX;
+    window.height = rectROI.height * dResolutionY;
+    window.deviceId = pUI->getSelectedDevice().getId();
+    window.angle = 0;
 
     window.recordId = nRecordId;
     if (ReadBinaryFile(FormatRecordName(window.recordId), window.recordData) != 0) {
         QMessageBox::critical(this, strTitle, QStringLiteral("Failed to read record data."));
-	    return;
+        return;
     }
     m_pEditRecordID->setText(QString::number(nRecordId));
 
-	int result = Engine::OK;
-	if (OPERATION::ADD == enOperation) {
-		window.deviceId = pUI->getSelectedDevice().getId();
-		char windowName[100];
-		_snprintf(windowName, sizeof(windowName), "Inspect Contour [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
+    int result = Engine::OK;
+    if (OPERATION::ADD == enOperation) {
+        window.deviceId = pUI->getSelectedDevice().getId();
+        char windowName[100];
+        _snprintf(windowName, sizeof(windowName), "Inspect Contour [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
 
-		window.name = windowName;
-		result = Engine::CreateWindow(window);
-		if (result != Engine::OK) {
-			String errorType, errorMessage;
-			Engine::GetErrorDetail(errorType, errorMessage);
-			System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-			return;
-		}
-		else
-			System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
+        window.name = windowName;
+        result = Engine::CreateWindow(window);
+        if (result != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+            return;
+        }
+        else
+            System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
 
-		QDetectObj detectObj(window.Id, window.name.c_str());
-		cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
+        QDetectObj detectObj(window.Id, window.name.c_str());
+        cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
         if (bBoardRotated)
-            ptCenter.x = nBigImgWidth  - ptCenter.x;
+            ptCenter.x = nBigImgWidth - ptCenter.x;
         else
             ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
-		cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
-		detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
-		auto vecDetectObjs = pUI->getDetectObjs();
-		vecDetectObjs.push_back(detectObj);
-		pUI->setDetectObjs(vecDetectObjs);
-	}else {
-		window.Id = m_currentWindow.Id;
-		window.name = m_currentWindow.name;
-		result = Engine::UpdateWindow(window);
-		if (result != Engine::OK) {
-			String errorType, errorMessage;
-			Engine::GetErrorDetail(errorType, errorMessage);
-			System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-			return;
-		}
-		else {
-			System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
-		}
-	}
+        cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
+        detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
+        auto vecDetectObjs = pUI->getDetectObjs();
+        vecDetectObjs.push_back(detectObj);
+        pUI->setDetectObjs(vecDetectObjs);
+    }
+    else {
+        window.Id = m_currentWindow.Id;
+        window.name = m_currentWindow.name;
+        result = Engine::UpdateWindow(window);
+        if (result != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            System->setTrackInfo(QString("Error at UpdateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+            return;
+        }
+        else {
+            System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
+        }
+    }
 
-	m_pParent->UpdateInspWindowList();
+    m_pParent->UpdateInspWindowList();
 }

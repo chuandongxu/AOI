@@ -51,14 +51,14 @@ bool ScanImageThread::preRunning()
     m_dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     m_dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     m_nDLPCount = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-	return true;
+    return true;
 }
 
 void ScanImageThread::run()
 {
-	if (! preRunning()) return;
+    if (!preRunning()) return;
 
-	double dtime_start = 0, dtime_movePos = 0;
+    double dtime_start = 0, dtime_movePos = 0;
     if (m_vecVecFrameCtr.empty())
         return;
 
@@ -258,18 +258,18 @@ void ScanImageThread::run()
         }
     }
 
-	System->setTrackInfo(QString(QStringLiteral("扫描区域完成")));
+    System->setTrackInfo(QString(QStringLiteral("扫描区域完成")));
 }
 
 bool ScanImageThread::moveToCapturePos(float fPosX, float fPosY)
 {
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
-	if (!pMotion) return false;   
+    if (!pMotion) return false;
 
-    if (! pMotion->moveToGroup(std::vector<int>({AXIS_MOTOR_X, AXIS_MOTOR_Y}), std::vector<double>({fPosX, fPosY}), std::vector<int>({0, 0}), true))
+    if (!pMotion->moveToGroup(std::vector<int>({ AXIS_MOTOR_X, AXIS_MOTOR_Y }), std::vector<double>({ fPosX, fPosY }), std::vector<int>({ 0, 0 }), true))
     {
         System->setTrackInfo(QString("move to position error"));
-		return false;
+        return false;
     }
     return true;
 }
@@ -280,7 +280,7 @@ bool ScanImageThread::captureAllImages(QVector<cv::Mat>& imageMats)
         imageMats.clear();
         std::string strImagePath("D:/Data/20180203_TestImageOnKB/0203125013/");
         char strfileName[100];
-        for (int i = 1; i <= 54; ++ i) {
+        for (int i = 1; i <= 54; ++i) {
             _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
             cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
             imageMats.push_back(matImage);
@@ -288,13 +288,13 @@ bool ScanImageThread::captureAllImages(QVector<cv::Mat>& imageMats)
         return true;
     }
 
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return false;
+    ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+    if (!pCam) return false;
 
-	return pCam->captureAllImages(imageMats);
+    return pCam->captureAllImages(imageMats);
 }
 
 bool ScanImageThread::isExit()
 {
-	return m_exit;
+    return m_exit;
 }

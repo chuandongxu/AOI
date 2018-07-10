@@ -77,7 +77,7 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     QEos::Attach(EVENT_INSP_WINDOW_STATE, this, SLOT(onInspWindowState(const QVariantList &)));
 
     connect(ui.treeWidget, SIGNAL(regrouped()), this, SLOT(on_regrouped()));
-    connect(ui.treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectedWindowChanged()));    
+    connect(ui.treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectedWindowChanged()));
 
     m_pComboBoxLighting = std::make_unique<QComboBox>(this);
     QStringList ls;
