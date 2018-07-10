@@ -326,7 +326,7 @@ void Inspect3DProfileWidget::generateProfData(bool bRow, int nIndex, QVector<cv:
                 float offsets[4];
                 TableCalData->getFrameOffsetByPixel(ptPos, offsets);
 
-                dHeight -= offsets[i];
+                dHeight += offsets[i];
             }
 
             cv::Point2d pt;

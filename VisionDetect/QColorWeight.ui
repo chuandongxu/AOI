@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>720</width>
-    <height>577</height>
+    <height>580</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>170</y>
      <width>720</width>
-     <height>401</height>
+     <height>411</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -29,26 +29,6 @@
     <attribute name="title">
      <string>灰度权重</string>
     </attribute>
-    <widget class="QDockWidget" name="dockWidget_grayHitChart">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>10</y>
-       <width>350</width>
-       <height>200</height>
-      </rect>
-     </property>
-     <property name="features">
-      <set>QDockWidget::NoDockWidgetFeatures</set>
-     </property>
-     <property name="allowedAreas">
-      <set>Qt::NoDockWidgetArea</set>
-     </property>
-     <property name="windowTitle">
-      <string/>
-     </property>
-     <widget class="QWidget" name="dockWidgetContents"/>
-    </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
@@ -407,6 +387,16 @@
       <string>红(R)</string>
      </property>
     </widget>
+    <widget class="QGraphicsView" name="graphicsView_grayHitChart">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>350</width>
+       <height>200</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
@@ -421,50 +411,6 @@
        <height>300</height>
       </rect>
      </property>
-    </widget>
-    <widget class="QWidget" name="verticalLayoutWidget_5">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>0</y>
-       <width>361</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_R"/>
-    </widget>
-    <widget class="QWidget" name="verticalLayoutWidget_6">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>90</y>
-       <width>361</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_G"/>
-    </widget>
-    <widget class="QWidget" name="verticalLayoutWidget_7">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>180</y>
-       <width>361</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_B"/>
-    </widget>
-    <widget class="QWidget" name="verticalLayoutWidget_8">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>270</y>
-       <width>361</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_Gray"/>
     </widget>
     <widget class="QLabel" name="label_8">
      <property name="geometry">
@@ -559,6 +505,46 @@
        <y>308</y>
        <width>35</width>
        <height>21</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicsView_R">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>0</y>
+       <width>360</width>
+       <height>90</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicsView_G">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>95</y>
+       <width>360</width>
+       <height>90</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicsView_B">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>190</y>
+       <width>360</width>
+       <height>90</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="graphicsView_Gray">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>285</y>
+       <width>360</width>
+       <height>90</height>
       </rect>
      </property>
     </widget>

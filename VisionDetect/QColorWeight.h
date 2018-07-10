@@ -63,13 +63,13 @@ private:
 	void initUI();
 	void initData();
 
-	void setupDateDemo(std::shared_ptr<QCustomPlot> customPlot);
+    void setupDateDemo(std::shared_ptr<QCustomPlot> customPlot, bool bCreate = false);
 	int calcGrayValue(cv::Scalar& pixel);
     cv::Mat _transformColorImage(const cv::Mat &matInput);
     cv::Mat _convertToGrayImage();
 	void generateGrayPlot();
 
-	void setupDateColor(std::shared_ptr<QCustomPlot> customPlot, int nColorIndex);
+    void setupDateColor(std::shared_ptr<QCustomPlot> customPlot, QCPBars *regen, int nColorIndex, bool bCreate = false);
 	void generateColorPlot();
 	void clearGrayData();
 	int getGrayValue(int nGrayLevel);	
@@ -111,6 +111,7 @@ private:
 	Ui::QColorWeight ui;
 
 	// Gray Weight
+    std::shared_ptr<QGraphicsScene> m_plotSeneGrayWeight;
 	std::shared_ptr<QCustomPlot> m_customPlot;
 	cv::Mat m_matSrcImage;
     cv::Mat m_matSrcTransform;
@@ -131,6 +132,10 @@ private:
 	std::shared_ptr<QCustomPlot> m_customPlotG;
 	std::shared_ptr<QCustomPlot> m_customPlotB;
 	std::shared_ptr<QCustomPlot> m_customPlotGray;
+    QCPBars *m_regenR;
+    QCPBars *m_regenG;
+    QCPBars *m_regenB;
+    QCPBars *m_regenGray;
 	QMap<int, int> m_colorRHitDatas;
 	QMap<int, int> m_colorGHitDatas;
 	QMap<int, int> m_colorBHitDatas;
@@ -148,4 +153,9 @@ private:
 	QGraphicsScene * m_sourceImgScene;
 	QGraphicsScene * m_grayImgScene;
 	ColorScene * m_colorImgScene;
+
+    std::shared_ptr<QGraphicsScene> m_plotSeneR;
+    std::shared_ptr<QGraphicsScene> m_plotSeneG;
+    std::shared_ptr<QGraphicsScene> m_plotSeneB;
+    std::shared_ptr<QGraphicsScene> m_plotSeneGray;
 };

@@ -23,6 +23,7 @@ Insp3DHeightRunnable::Insp3DHeightRunnable(
         m_pThreadPoolCalc3DInsp2D   (pCalc3DHeightThreadPool),
         m_vecCalc3DHeightRunnable   (vecCalc3DHeightRunnable),
         m_ptrInsp2DRunnable         (ptrInsp2DRunnable),
+        m_ptFramePos                (ptFramePos),
         m_pVec3DFrameImages         (pVec3DFrameImages),
         m_nRow                      (nRow),
         m_nCol                      (nCol),
@@ -53,7 +54,7 @@ void Insp3DHeightRunnable::run()
         if (!pVision) return;
 
         pVision->setInspect3DHeight(vecMatHeight, m_nRow, m_nCol, m_nTotalRows, m_nTotalCols);
-        pVision->merge3DHeight(vecMatHeight, m_mat3DHeight);
+        pVision->merge3DHeight(vecMatHeight, m_mat3DHeight, m_ptFramePos);
         (*m_pVec3DFrameImages)[m_nRow * m_nTotalCols + m_nCol] = m_mat3DHeight;
     }
 

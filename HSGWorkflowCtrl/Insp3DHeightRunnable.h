@@ -32,5 +32,6 @@ private:
     Insp2DRunnablePtr                     m_ptrInsp2DRunnable;
     cv::Mat                               m_mat3DHeight;
     Vision::VectorOfMat                  *m_pVec3DFrameImages;
+    cv::Point2f                           m_ptFramePos;
     int                                   m_nRow, m_nCol, m_nTotalRows, m_nTotalCols;
 };

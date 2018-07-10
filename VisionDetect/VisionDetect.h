@@ -44,7 +44,7 @@ public:
 	virtual bool generateAverageImage(const QVector<cv::Mat>& imageMats, cv::Mat& grayMat) override;
 	virtual bool matchPosition(cv::Mat& matDisplay, QVector<QDetectObj*>& objTests);
 	virtual bool calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>& objTests);
-	virtual bool merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight);
+    virtual bool merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight, cv::Point2f& ptFramePos);
 	virtual bool mergeImage(QVector<cv::Mat>& matInputImages, QVector<cv::Mat>& matOutputImages);
 
 	virtual bool matchAlignment(cv::Mat& matDisplay, QVector<QProfileObj*>& objProfTests);

@@ -291,10 +291,17 @@ bool TableCaliDataStorage::getFrameOffsetByPixel(cv::Point2f& pt, float* fOffset
     ptUm.x = dTopLeftCtrX + (pt.x - m_nScreenWidth/2) * dResolutionX * UM_TO_MM;
     ptUm.y = dTopLeftCtrY + (pt.y - m_nScreenHeight/2) * dResolutionY * UM_TO_MM;
 
-    return getFrameOffsetByUm(ptUm, fOffsetValue);
+    return getFrameOffsetByMm(ptUm, fOffsetValue);
 }
 
 bool TableCaliDataStorage::getFrameOffsetByUm(cv::Point2f& pt, float* fOffsetValue)
+{
+    pt.x *= UM_TO_MM;
+    pt.y *= UM_TO_MM;
+    return getFrameOffsetByMm(pt, fOffsetValue);
+}
+
+bool TableCaliDataStorage::getFrameOffsetByMm(cv::Point2f& pt, float* fOffsetValue)
 {
     Vision::PR_CALC_FRAME_VALUE_CMD stCmd;
     Vision::PR_CALC_FRAME_VALUE_RPY stRpy;

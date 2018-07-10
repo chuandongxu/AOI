@@ -36,7 +36,7 @@ public:
 	bool generateAverageImage(const QVector<cv::Mat>& imageMats, cv::Mat& grayMat);
 	bool matchPosition(cv::Mat& matDisplay, QVector<QDetectObj*>& objTests);
 	bool calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>& objTests);
-	bool merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight);
+    bool merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight, cv::Point2f& ptFramePos);
 	bool mergeImage(QVector<cv::Mat>& matInputImages, QVector<cv::Mat>& matOutputImages);
 
 	bool matchAlignment(cv::Mat& matDisplay, QVector<QProfileObj*>& objProfTests);
