@@ -219,9 +219,15 @@ void QColorWeight::initUI()
 	ui.horizontalSlider_G->setValue(100);
 	ui.horizontalSlider_B->setValue(100);
 
-	m_customPlot = std::make_shared<QCustomPlot>(this);
-	setupDateDemo(m_customPlot);
-	ui.dockWidget_grayHitChart->setWidget(m_customPlot.get());
+	m_customPlot = std::make_shared<QCustomPlot>();    
+	setupDateDemo(m_customPlot, true);
+    m_customPlot->setFixedSize(350, 200);
+    m_plotSeneGrayWeight = std::make_shared<QGraphicsScene>();
+    ui.graphicsView_grayHitChart->setScene(m_plotSeneGrayWeight.get());
+    ui.graphicsView_grayHitChart->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_grayHitChart->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_grayHitChart->setFixedSize(350, 200);
+    m_plotSeneGrayWeight->addPixmap(m_customPlot->grab());   
 
 	m_grayScene = new QGraphicsScene();
 	ui.graphicsView_gray->setScene(m_grayScene);
@@ -277,21 +283,49 @@ void QColorWeight::initUI()
 	QImage imageColor = QImage((uchar*)matGrayColor.data, matGrayColor.cols, matGrayColor.rows, ToInt(matGrayColor.step), QImage::Format_RGB888);
 	m_grayColorScene->addPixmap(QPixmap::fromImage(imageColor));
 
-	m_customPlotR = std::make_shared<QCustomPlot>(this);
-	setupDateColor(m_customPlotR, 0);
-	ui.verticalLayout_R->addWidget(m_customPlotR.get());
+	m_customPlotR = std::make_shared<QCustomPlot>();
+    m_regenR = new QCPBars(m_customPlotR->xAxis, m_customPlotR->yAxis);
+    setupDateColor(m_customPlotR, m_regenR, 0, true);
+    m_customPlotR->setFixedSize(360, 90);
+    m_plotSeneR = std::make_shared<QGraphicsScene>();
+    ui.graphicsView_R->setScene(m_plotSeneR.get());
+    ui.graphicsView_R->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_R->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_R->setFixedSize(360, 90);
+    m_plotSeneR->addPixmap(m_customPlotR->grab());
 
-	m_customPlotG = std::make_shared<QCustomPlot>(this);	
-	setupDateColor(m_customPlotG, 1);
-	ui.verticalLayout_G->addWidget(m_customPlotG.get());
+	m_customPlotG = std::make_shared<QCustomPlot>();
+    m_regenG = new QCPBars(m_customPlotG->xAxis, m_customPlotG->yAxis);
+    setupDateColor(m_customPlotG, m_regenG, 1, true);
+    m_customPlotG->setFixedSize(360, 90);
+    m_plotSeneG = std::make_shared<QGraphicsScene>();
+    ui.graphicsView_G->setScene(m_plotSeneG.get());
+    ui.graphicsView_G->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_G->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_G->setFixedSize(360, 90);
+    m_plotSeneG->addPixmap(m_customPlotG->grab());
 
-	m_customPlotB = std::make_shared<QCustomPlot>(this);
-	setupDateColor(m_customPlotB, 2);
-	ui.verticalLayout_B->addWidget(m_customPlotB.get());
+	m_customPlotB = std::make_shared<QCustomPlot>();
+    m_regenB = new QCPBars(m_customPlotB->xAxis, m_customPlotB->yAxis);
+    setupDateColor(m_customPlotB, m_regenB, 2, true);
+    m_customPlotB->setFixedSize(360, 90);
+    m_plotSeneB = std::make_shared<QGraphicsScene>();
+    ui.graphicsView_B->setScene(m_plotSeneB.get());
+    ui.graphicsView_B->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_B->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_B->setFixedSize(360, 90);
+    m_plotSeneB->addPixmap(m_customPlotB->grab());
 
-	m_customPlotGray = std::make_shared<QCustomPlot>(this);	
-	setupDateColor(m_customPlotGray, 3);
-	ui.verticalLayout_Gray->addWidget(m_customPlotGray.get());
+	m_customPlotGray = std::make_shared<QCustomPlot>();	
+    m_regenGray = new QCPBars(m_customPlotGray->xAxis, m_customPlotGray->yAxis);
+    setupDateColor(m_customPlotGray, m_regenGray, 3, true);
+    m_customPlotGray->setFixedSize(360, 90);
+    m_plotSeneGray = std::make_shared<QGraphicsScene>();
+    ui.graphicsView_Gray->setScene(m_plotSeneGray.get());
+    ui.graphicsView_Gray->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_Gray->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui.graphicsView_Gray->setFixedSize(360, 90);
+    m_plotSeneGray->addPixmap(m_customPlotGray->grab());
 
 	// Image Display
 	m_sourceImgScene = new QGraphicsScene();
@@ -404,100 +438,112 @@ void QColorWeight::setJsonFormattedParams(const std::string &jsonParams)
     }
 }
 
-void QColorWeight::setupDateDemo(std::shared_ptr<QCustomPlot> customPlot)
-{	
-	// set locale to english, so we get english month names:
-	customPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
-	
-	customPlot->addGraph();
-	QPen pen;
-	pen.setColor(QColor(0, 0, 255, 200));
-	customPlot->graph()->setLineStyle(QCPGraph::lsLine);
-	customPlot->graph()->setPen(pen);
-	customPlot->graph()->setBrush(QBrush(QColor(0, 0, 150, 200)));
+void QColorWeight::setupDateDemo(std::shared_ptr<QCustomPlot> customPlot, bool bCreate)
+{
+    if (bCreate)
+    {
+        // set locale to english, so we get english month names:
+        customPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
+    }
 
-	// generate random walk data:
-	QVector<double> keys; QVector<double> values;
-	for (int i = 0; i < m_grayHitDatas.size(); ++i)
-	{
-		keys.push_back(i);
-		values.push_back(getGrayValue(i));
-	}
-	customPlot->graph()->setData(keys, values);
+    customPlot->clearGraphs();
 
-	int nMaxValue = 0;
-	for (int i = 0; i < values.size(); i++)
-	{
-		if (values[i] > nMaxValue) nMaxValue = values[i];
-	}
+    customPlot->addGraph();
+    QPen pen;
+    pen.setColor(QColor(0, 0, 255, 200));
+    customPlot->graph()->setLineStyle(QCPGraph::lsLine);
+    customPlot->graph()->setPen(pen);
+    customPlot->graph()->setBrush(QBrush(QColor(0, 0, 150, 200)));
 
-	if (m_nGrayLevelThreshold1 > 0 && m_nGrayLevelThreshold1 < 255)
-	{
-		customPlot->addGraph();
-		QPen pen;
-		pen.setColor(QColor(255, 0, 0, 200));
-		customPlot->graph()->setLineStyle(QCPGraph::lsLine);
-		customPlot->graph()->setPen(pen);
-		customPlot->graph()->setBrush(QBrush(QColor(255, 0, 0, 200)));
+    // generate random walk data:
+    QVector<double> keys; QVector<double> values;
+    for (int i = 0; i < m_grayHitDatas.size(); ++i)
+    {
+        keys.push_back(i);
+        values.push_back(getGrayValue(i));
+    }
+    customPlot->graph()->setData(keys, values);
 
-		// generate random walk data:
-		QVector<double> keys; QVector<double> values;
-		keys.push_back(m_nGrayLevelThreshold1-1);
-		keys.push_back(m_nGrayLevelThreshold1);
-		keys.push_back(m_nGrayLevelThreshold1+1);
-		values.push_back(nMaxValue);
-		values.push_back(nMaxValue);
-		values.push_back(nMaxValue);
-		customPlot->graph()->setData(keys, values);
-	}
+    int nMaxValue = 0;
+    for (int i = 0; i < values.size(); i++)
+    {
+        if (values[i] > nMaxValue) nMaxValue = values[i];
+    }
 
-	if (m_nGrayLevelThreshold2 > 0 && m_nGrayLevelThreshold2 < 255)
-	{
-		customPlot->addGraph();
-		QPen pen;
-		pen.setColor(QColor(255, 0, 0, 200));
-		customPlot->graph()->setLineStyle(QCPGraph::lsLine);
-		customPlot->graph()->setPen(pen);
-		customPlot->graph()->setBrush(QBrush(QColor(255, 0, 0, 200)));
+    if (m_nGrayLevelThreshold1 > 0 && m_nGrayLevelThreshold1 < 255)
+    {
+        customPlot->addGraph();
+        QPen pen;
+        pen.setColor(QColor(255, 0, 0, 200));
+        customPlot->graph()->setLineStyle(QCPGraph::lsLine);
+        customPlot->graph()->setPen(pen);
+        customPlot->graph()->setBrush(QBrush(QColor(255, 0, 0, 200)));
 
-		// generate random walk data:
-		QVector<double> keys; QVector<double> values;
-		keys.push_back(m_nGrayLevelThreshold2 - 1);
-		keys.push_back(m_nGrayLevelThreshold2);
-		keys.push_back(m_nGrayLevelThreshold2 + 1);
-		values.push_back(nMaxValue);
-		values.push_back(nMaxValue);
-		values.push_back(nMaxValue);
-		customPlot->graph()->setData(keys, values);
-	}
+        // generate random walk data:
+        QVector<double> keys; QVector<double> values;
+        keys.push_back(m_nGrayLevelThreshold1 - 1);
+        keys.push_back(m_nGrayLevelThreshold1);
+        keys.push_back(m_nGrayLevelThreshold1 + 1);
+        values.push_back(nMaxValue);
+        values.push_back(nMaxValue);
+        values.push_back(nMaxValue);
+        customPlot->graph()->setData(keys, values);
+    }
 
-	//// configure bottom axis to show date and time instead of number:
-	//customPlot->xAxis->setTickLabelType(QCPAxis::ltDateTime);
-	//customPlot->xAxis->setDateTimeFormat("MMMM\nyyyy");
-	//// set a more compact font size for bottom and left axis tick labels:
-	//customPlot->xAxis->setTickLabelFont(QFont(QFont().family(), 8));
-	//customPlot->yAxis->setTickLabelFont(QFont(QFont().family(), 8));
-	//// set a fixed tick-step to one tick per month:
-	//customPlot->xAxis->setAutoTickStep(false);
-	//customPlot->xAxis->setTickStep(2628000); // one month in seconds
-	//customPlot->xAxis->setSubTickCount(3);
-	//// apply manual tick and tick label for left axis:
-	//customPlot->yAxis->setAutoTicks(false);
-	//customPlot->yAxis->setAutoTickLabels(false);
-	//customPlot->yAxis->setTickVector(QVector<double>() << 5 << 55);
-	//customPlot->yAxis->setTickVectorLabels(QVector<QString>() << "Not so\nhigh" << "Very\nhigh");
+    if (m_nGrayLevelThreshold2 > 0 && m_nGrayLevelThreshold2 < 255)
+    {
+        customPlot->addGraph();
+        QPen pen;
+        pen.setColor(QColor(255, 0, 0, 200));
+        customPlot->graph()->setLineStyle(QCPGraph::lsLine);
+        customPlot->graph()->setPen(pen);
+        customPlot->graph()->setBrush(QBrush(QColor(255, 0, 0, 200)));
 
-	// set axis labels:
-	customPlot->xAxis->setLabel("Gray Level");
-	customPlot->yAxis->setLabel("Pixel count");
+        // generate random walk data:
+        QVector<double> keys; QVector<double> values;
+        keys.push_back(m_nGrayLevelThreshold2 - 1);
+        keys.push_back(m_nGrayLevelThreshold2);
+        keys.push_back(m_nGrayLevelThreshold2 + 1);
+        values.push_back(nMaxValue);
+        values.push_back(nMaxValue);
+        values.push_back(nMaxValue);
+        customPlot->graph()->setData(keys, values);
+    }
 
-	// make top and right axes visible but without ticks and labels:
-	customPlot->xAxis->setVisible(true);
-	customPlot->yAxis->setVisible(true);
-	customPlot->xAxis->setTicks(true);
-	customPlot->yAxis->setTicks(false);
-	customPlot->xAxis->setTickLabels(true);
-	customPlot->yAxis->setTickLabels(false);
+    //// configure bottom axis to show date and time instead of number:
+    //customPlot->xAxis->setTickLabelType(QCPAxis::ltDateTime);
+    //customPlot->xAxis->setDateTimeFormat("MMMM\nyyyy");
+    //// set a more compact font size for bottom and left axis tick labels:
+    //customPlot->xAxis->setTickLabelFont(QFont(QFont().family(), 8));
+    //customPlot->yAxis->setTickLabelFont(QFont(QFont().family(), 8));
+    //// set a fixed tick-step to one tick per month:
+    //customPlot->xAxis->setAutoTickStep(false);
+    //customPlot->xAxis->setTickStep(2628000); // one month in seconds
+    //customPlot->xAxis->setSubTickCount(3);
+    //// apply manual tick and tick label for left axis:
+    //customPlot->yAxis->setAutoTicks(false);
+    //customPlot->yAxis->setAutoTickLabels(false);
+    //customPlot->yAxis->setTickVector(QVector<double>() << 5 << 55);
+    //customPlot->yAxis->setTickVectorLabels(QVector<QString>() << "Not so\nhigh" << "Very\nhigh");
+
+    if (bCreate)
+    {
+        // set axis labels:
+        customPlot->xAxis->setLabel("Gray Level");
+        customPlot->yAxis->setLabel("Pixel count");
+
+        // make top and right axes visible but without ticks and labels:
+        customPlot->xAxis->setVisible(true);
+        customPlot->yAxis->setVisible(true);
+        customPlot->xAxis->setTicks(true);
+        customPlot->yAxis->setTicks(false);
+        customPlot->xAxis->setTickLabels(true);
+        customPlot->yAxis->setTickLabels(false);
+
+        // show legend:
+        customPlot->legend->setVisible(false);
+        customPlot->axisRect()->setupFullAxesBox();
+    }
 
 	// set axis ranges to show all data:
 	customPlot->xAxis->setRange(0, 255);
@@ -506,11 +552,6 @@ void QColorWeight::setupDateDemo(std::shared_ptr<QCustomPlot> customPlot)
 	// zoom out a bit:
 	customPlot->yAxis->scaleRange(1.1, customPlot->yAxis->range().center());
 	customPlot->xAxis->scaleRange(1.0, customPlot->xAxis->range().center());
-
-	// show legend:
-	customPlot->legend->setVisible(false);
-
-	customPlot->axisRect()->setupFullAxesBox();
 }
 
 int QColorWeight::calcGrayValue(cv::Scalar& pixel)
@@ -580,37 +621,39 @@ void QColorWeight::generateGrayPlot()
 		for (int x = 0; x < m_matSrcImage.cols; x++)
 			incrementGrayValue(matGrayLocal.at<uchar>(y,x));
 
-	if (m_customPlot)
-	{
-		m_customPlot = std::make_shared<QCustomPlot>(this);
-		setupDateDemo(m_customPlot);
-		ui.dockWidget_grayHitChart->setWidget(m_customPlot.get());
-	}
+    setupDateDemo(m_customPlot);
+    m_customPlot->setFixedSize(350, 200);
+    m_plotSeneGrayWeight->clear();
+    m_plotSeneGrayWeight->addPixmap(m_customPlot->grab());
+    ui.graphicsView_grayHitChart->update();
 
 	displayGrayImg();
 }
 
-void QColorWeight::setupDateColor(std::shared_ptr<QCustomPlot> customPlot, int nColorIndex)
+void QColorWeight::setupDateColor(std::shared_ptr<QCustomPlot> customPlot, QCPBars *regen, int nColorIndex, bool bCreate)
 {
 	// create empty bar chart objects:
-	QCPBars *regen = new QCPBars(customPlot->xAxis, customPlot->yAxis);	
+	//QCPBars *regen = new QCPBars(customPlot->xAxis, customPlot->yAxis);
 	
-	// set names and colors:
-	QPen pen;
-	pen.setWidthF(1.2);	
-	regen->setName("Regenerative");
-	pen.setColor(QColor(150, 222, 0));
-	regen->setPen(pen);
-	regen->setBrush(QColor(150, 222, 0, 70));
-	regen->setStackingGap(10);
-	regen->setWidth(3);
+    QPen pen;
+    if (bCreate)
+    {
+        // set names and colors:       
+        pen.setWidthF(1.2);
+        regen->setName("Regenerative");
+        pen.setColor(QColor(150, 222, 0));
+        regen->setPen(pen);
+        regen->setBrush(QColor(150, 222, 0, 70));
+        regen->setStackingGap(10);
+        regen->setWidth(3);
+
+        // set locale to english, so we get english month names:
+        customPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
+    }	
 
 	// prepare x axis with country labels:
 	QVector<double> ticks;	
 	QVector<double> regenData;
-
-	// set locale to english, so we get english month names:
-	customPlot->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
 
 	int nRangeXMin = 0;
 	int nRangeXMax = 255;
@@ -671,7 +714,9 @@ void QColorWeight::setupDateColor(std::shared_ptr<QCustomPlot> customPlot, int n
 		}
 	}
 
-	// Plot line
+    customPlot->clearGraphs();
+  
+    // Plot line
 	customPlot->addGraph();
 	//QPen pen;
 	pen.setColor(color);
@@ -724,29 +769,32 @@ void QColorWeight::setupDateColor(std::shared_ptr<QCustomPlot> customPlot, int n
 	customPlot->graph()->setPen(pen);
 	customPlot->graph()->setData(keys, values);	
 
-	// set axis labels:
-	customPlot->xAxis->setLabel(label);
-	customPlot->yAxis->setLabel("Pixel count");
+    if (bCreate)
+    {
+        // set axis labels:
+        customPlot->xAxis->setLabel(label);
+        customPlot->yAxis->setLabel("Pixel count");
 
-	// make top and right axes visible but without ticks and labels:
-	customPlot->xAxis->setVisible(true);
-	customPlot->yAxis->setVisible(true);
-	customPlot->xAxis->setTicks(true);
-	customPlot->yAxis->setTicks(false);
-	customPlot->xAxis->setTickLabels(true);
-	customPlot->yAxis->setTickLabels(false);
+        // make top and right axes visible but without ticks and labels:
+        customPlot->xAxis->setVisible(true);
+        customPlot->yAxis->setVisible(true);
+        customPlot->xAxis->setTicks(true);
+        customPlot->yAxis->setTicks(false);
+        customPlot->xAxis->setTickLabels(true);
+        customPlot->yAxis->setTickLabels(false);       
 
-	// set axis ranges to show all data:
-	customPlot->xAxis->setRange(0, 255);
-	customPlot->yAxis->setRange(0, nMaxValue);
+        // show legend:
+        customPlot->legend->setVisible(false);
+        customPlot->axisRect()->setupFullAxesBox();
+    }
 
-	// zoom out a bit:
-	customPlot->yAxis->scaleRange(1.2, customPlot->yAxis->range().center());
-	customPlot->xAxis->scaleRange(1.0, customPlot->xAxis->range().center());
+    // set axis ranges to show all data:
+    customPlot->xAxis->setRange(0, 255);
+    customPlot->yAxis->setRange(0, nMaxValue);
 
-	// show legend:
-	customPlot->legend->setVisible(false);
-	customPlot->axisRect()->setupFullAxesBox();
+    // zoom out a bit:
+    customPlot->yAxis->scaleRange(1.2, customPlot->yAxis->range().center());
+    customPlot->xAxis->scaleRange(1.0, customPlot->xAxis->range().center());
 }
 
 void QColorWeight::generateColorPlot()
@@ -776,29 +824,29 @@ void QColorWeight::generateColorPlot()
         }
     }
 
-    if (m_customPlotR) {
-        m_customPlotR = std::make_shared<QCustomPlot>(this);
-        setupDateColor(m_customPlotR, 0);
-        ui.verticalLayout_R->addWidget(m_customPlotR.get());
-    }
+    setupDateColor(m_customPlotR, m_regenR, 0);
+    m_customPlotR->setFixedSize(360, 90);
+    m_plotSeneR->clear();    
+    m_plotSeneR->addPixmap(m_customPlotR->grab());
+    ui.graphicsView_R->update();
 
-    if (m_customPlotG) {
-        m_customPlotG = std::make_shared<QCustomPlot>(this);
-        setupDateColor(m_customPlotG, 1);
-        ui.verticalLayout_G->addWidget(m_customPlotG.get());
-    }
+    setupDateColor(m_customPlotG, m_regenG, 1);
+    m_customPlotG->setFixedSize(360, 90);
+    m_plotSeneG->clear();   
+    m_plotSeneG->addPixmap(m_customPlotG->grab());
+    ui.graphicsView_G->update();
 
-    if (m_customPlotB) {
-        m_customPlotB = std::make_shared<QCustomPlot>(this);
-        setupDateColor(m_customPlotB, 2);
-        ui.verticalLayout_B->addWidget(m_customPlotB.get());
-    }
+    setupDateColor(m_customPlotB, m_regenB, 2);
+    m_customPlotB->setFixedSize(360, 90);
+    m_plotSeneB->clear();   
+    m_plotSeneB->addPixmap(m_customPlotB->grab());
+    ui.graphicsView_B->update();
 
-    if (m_customPlotGray) {
-        m_customPlotGray = std::make_shared<QCustomPlot>(this);
-        setupDateColor(m_customPlotGray, 3);
-        ui.verticalLayout_Gray->addWidget(m_customPlotGray.get());
-    }
+    setupDateColor(m_customPlotGray, m_regenGray, 3);
+    m_customPlotGray->setFixedSize(360, 90);
+    m_plotSeneGray->clear();    
+    m_plotSeneGray->addPixmap(m_customPlotGray->grab());  
+    ui.graphicsView_Gray->update();
 
     displayColorImg();
 }
@@ -867,7 +915,7 @@ int QColorWeight::getColorValue(int nColorIndex, int nGrayLevel)
 
 	if (0 == nColorIndex)
 	{
-		return m_grayHitDatas.value(nGrayLevel);
+        return m_colorRHitDatas.value(nGrayLevel);
 	}
 	else if (1 == nColorIndex)
 	{
@@ -891,8 +939,8 @@ int QColorWeight::incrementColorValue(int nColorIndex, int nGrayLevel)
 
 	if (0 == nColorIndex)
 	{
-		m_grayHitDatas[nGrayLevel] = m_grayHitDatas[nGrayLevel] + 1;
-		return m_grayHitDatas[nGrayLevel];
+        m_colorRHitDatas[nGrayLevel] = m_colorRHitDatas[nGrayLevel] + 1;
+        return m_colorRHitDatas[nGrayLevel];
 	}
 	else if (1 == nColorIndex)
 	{
