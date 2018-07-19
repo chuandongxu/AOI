@@ -30,6 +30,7 @@ public:
 
 
     virtual bool triggerCapturing(TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig) override;
+    virtual void setupTrigger(ILight::TRIGGER emTrig) override;
 
 private:
 	void * m_devCtrl;

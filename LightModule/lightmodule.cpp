@@ -132,5 +132,14 @@ bool QLightModule::triggerCapturing(TRIGGER emTrig, bool bWaitDone, bool bClearS
     return false;
 }
 
+void QLightModule::setupTrigger(TRIGGER emTrig)
+{
+    QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
+    if (ctrl)
+    {
+        ctrl->setupTrigger(emTrig);
+    }
+}
+
 
 QMOUDLE_INSTANCE(QLightModule)

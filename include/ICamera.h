@@ -47,8 +47,10 @@ public:
 	virtual bool getImages(QVector<cv::Mat>& imageMats) = 0;
 	virtual bool getLastImages(QVector<cv::Mat>& imageMats) = 0;
 	virtual bool stopCapturing() = 0;
+    virtual bool isStopped() = 0;
 
     virtual bool captureAllImages(QVector<cv::Mat>& imageMats) = 0;
+    virtual bool captureLightImages(QVector<cv::Mat>& imageMats) = 0;
 
 	/************************************************************************/
 	/*  ¸¨Öú¹¦ÄÜ   */

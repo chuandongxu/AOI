@@ -36,6 +36,7 @@ public:
 
     // light card trigger functions
     virtual bool triggerCapturing(TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig = false) = 0;
+    virtual void setupTrigger(ILight::TRIGGER emTrig) = 0;
 };
 
 #endif

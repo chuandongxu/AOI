@@ -121,7 +121,7 @@ bool MotionControl::init()
 
 	for (int j = 0; j < 16; j++)
 	{
-		rtn += GT_SetDoBit(MC_GPO, j, 0);
+		rtn += GT_SetDoBit(MC_GPO, j, 1);
 	}
 	commandhandler("GT_SetDoBit", rtn);
 

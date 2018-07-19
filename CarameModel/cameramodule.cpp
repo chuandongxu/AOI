@@ -142,6 +142,11 @@ bool CameraModule::stopCapturing()
 	return m_pMainProcess->stopCapturing();
 }
 
+bool CameraModule::isStopped()
+{
+    return m_pMainProcess->isStopped();
+}
+
 bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
 {
 	IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
@@ -182,6 +187,42 @@ bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
 	}
 
 	return true;
+}
+
+bool CameraModule::captureLightImages(QVector<cv::Mat>& imageMats)
+{
+    IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
+    if (!pMotion) return false;
+
+    ILight* pLight = getModule<ILight>(LIGHT_MODEL);
+    if (!pLight) return false;
+
+    imageMats.clear();   
+
+    bool bTriggerBoard = System->isTriggerBoard();
+    if (bTriggerBoard)
+    {
+        if (!pLight->triggerCapturing(ILight::TRIGGER_LIGHT, true))
+        {
+            System->setTrackInfo(QString("triggerCapturing error!"));
+        }
+    }
+    else
+    {
+        if (!pMotion->triggerCapturing(IMotion::TRIGGER_LIGHT, true))
+        {
+            System->setTrackInfo(QString("triggerCapturing error."));
+            return false;
+        }
+    }
+
+    if (!getLastImages(imageMats))
+    {
+        System->setTrackInfo(QString("getLastImages error."));
+        return false;
+    }
+
+    return true;
 }
 
 bool CameraModule::getCameraScreenSize(int& nWidth, int& nHeight)

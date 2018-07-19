@@ -41,7 +41,6 @@ protected slots:
 	void onCheckSafeGrating(int iState);
 
 	void onDlpModeIndexChanged(int index);
-    void onTriggerModeIndexChanged(int index);
 	void onDlpModeSave();
 
 	void onTriggerNumIndexChanged(int iIndex);

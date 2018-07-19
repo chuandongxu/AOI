@@ -86,7 +86,7 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     break;
     case ILight::TRIGGER_LIGHT:
     { 
-        nStationNum = 0;
+        //nStationNum = 0;// parameters of 6 pics light be same as trigger all mode;
     }
     break;
     case ILight::TRIGGER_ONE_CH1:
@@ -202,6 +202,9 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     //设置控制参数
     szCmd = "SetIdle" + QString("") + " " + QString::number(200) + "\r\n";
     writeCmd(szCmd);
+
+    //szCmd = "SetCh" + QString::number(7) + " " + QString::number(1) + "\r\n";
+    //writeCmd(szCmd);
 
     szCmd = "SetCh" + QString::number(8) + " " + QString::number(1) + "\r\n";
     writeCmd(szCmd);
