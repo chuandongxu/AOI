@@ -14,6 +14,7 @@
 #include "../include/IData.h"
 #include "../include/IDlp.h"
 #include "../include/ICamera.h"
+#include "../include/ILight.h"
 #include "../include/IVision.h"
 #include "../include/IVisionUI.h"
 #include "../include/IdDefine.h"
@@ -212,6 +213,9 @@ void QFlowCtrl::start()
     ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
     if (!pCam) return;
 
+    ILight* pLight = getModule<ILight>(LIGHT_MODEL);
+    if (!pLight) return;
+
     IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
     if (!pDlp) return;
 
@@ -236,6 +240,7 @@ void QFlowCtrl::start()
 
     if (! System->isRunOffline()) {
         pCam->selectCaptureMode(ICamera::TRIGGER_ALL);
+        pLight->setupTrigger(ILight::TRIGGER_ALL);
         if (pCam->getCameraNum() > 0) {
             if (!pUI->startUpCapture(false)) {
                 QSystem::closeMessage();
@@ -278,13 +283,45 @@ void QFlowCtrl::start()
 	
 void QFlowCtrl::stop()
 {		
-	//m_isHome = false;
-
+	//m_isHome = false;   
 	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在停止中..."), 0);
 	QApplication::processEvents();
 
 	//if (m_pAutoRunThread) m_pAutoRunThread->quit();
     QEos::Notify(EVENT_THREAD_STATE, SHUTDOWN_MAIN_THREAD);
+
+    ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+    if (!pCam) return;
+
+    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    if (!pUI) return;
+
+    IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
+    if (!pDlp) return;
+
+    if (!System->isRunOffline()) {       
+        if (pCam->getCameraNum() > 0) {
+            if (!pUI->endUpCapture()) {
+                QSystem::closeMessage();
+                QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("相机初始化问题。"));
+                return;
+            }
+        }
+        else {
+            QSystem::closeMessage();
+            QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("请检查相机是否连接。"));
+            return;
+        } 
+
+        int nStationNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+        for (int i = 0; i < nStationNum; i++)
+        {
+            if (pDlp->isConnected(i))
+            {
+                if (!pDlp->endUpCapture(i)) continue;
+            }
+        }
+    }
 
 	IMotion * p = getModule<IMotion>(MOTION_MODEL);
 	if(p)
