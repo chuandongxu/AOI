@@ -82,7 +82,10 @@ void CameraOnLive::run()
 
 			if (!pCam->getImages(imageMats))
 			{
-				System->setTrackInfo(QString("getImages error"));
+                if (!pCam->isStopped())
+                {
+                    System->setTrackInfo(QString("getImages error"));
+                }				
 				continue;
 			}
 			if (m_bQuit) break;

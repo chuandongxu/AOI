@@ -74,7 +74,10 @@ bool QMainProcess::getImages(QVector<cv::Mat>& imageMats)
 	}
 	else
 	{
-		System->setTrackInfo("Capture Images Stopped or Time Out.");
+        if (!isStopped())
+        {
+            System->setTrackInfo("Capture Images Time Out.");            
+        }		
 		return false;
 	}
 
@@ -148,6 +151,11 @@ bool QMainProcess::stopCapturing()
 bool QMainProcess::isStartCapturing()
 {
 	return m_pCameraCtrl->getCamera(0)->isGrabing();
+}
+
+bool QMainProcess::isStopped()
+{
+    return m_pCameraCtrl->getCamera(0)->isStopped();
 }
 
 bool QMainProcess::startUpCapture(bool bHWTrigger)
