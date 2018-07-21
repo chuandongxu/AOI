@@ -209,6 +209,12 @@ void QLightCardDevice::setupTrigger(ILight::TRIGGER emTrig)
     szCmd = "SetCh" + QString::number(8) + " " + QString::number(1) + "\r\n";
     writeCmd(szCmd);
 
+    szCmd = "Ch" + QString::number(7) + "step" + " " + QString::number(_CHN_NUM + 2) + "\r\n";
+    writeCmd(szCmd);
+
+    szCmd = "Ch" + QString::number(8) + "step" + " " + QString::number(getPatternNum()) + "\r\n";
+    writeCmd(szCmd);
+
     m_bSetChn = false;
 }
 
