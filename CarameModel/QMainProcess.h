@@ -29,6 +29,7 @@ public:
 	bool getLastImages(QVector<cv::Mat>& imageMats);
 	bool stopCapturing();
 	bool isStartCapturing();
+    bool isStopped();
 
 private:
 	void saveImages(QVector<cv::Mat>& images);

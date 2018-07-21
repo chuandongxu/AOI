@@ -28,8 +28,6 @@ public:
     void saveLuminance(int nChannel);
 
     bool triggerCapturing(ILight::TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig);
-
-private:
     void setupTrigger(ILight::TRIGGER emTrig);
 
 private:

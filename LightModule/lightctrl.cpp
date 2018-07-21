@@ -159,28 +159,56 @@ bool QLightCtrl::triggerCapturing(ILight::TRIGGER emTrig, bool bWaitDone, bool b
 {
     if (bClearSetupConfig) m_bSetupTriggerConfig = false;
     if (!m_bSetupTriggerConfig)
-    {
-        m_bSetupTriggerConfig = true;
+    {       
         setupTrigger(emTrig);
     }
-
-    int nTriggerMode = System->getParam("lighting_trigger_mode").toInt();
-    bool bHWTrigger = (0 == nTriggerMode);
+   
+    bool bHWTrigger = false;
+    switch (emTrig)
+    {
+    case ILight::TRIGGER_ALL:
+    case ILight::TRIGGER_LIGHT:
+        bHWTrigger = true;
+        break;
+    default:
+        break;
+    }
 
     if (bHWTrigger)
     {
-        IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
-        if (pMotion)
+        switch (emTrig)
         {
-            QVector<int> nPorts;
-           
-            nPorts.push_back(DO_LIGHT1_CH1);           
-            //nPorts.push_back(DO_CAMERA_TRIGGER2);
+        case ILight::TRIGGER_ALL:
+        {
+            IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
+            if (pMotion)
+            {
+                QVector<int> nPorts;
+                nPorts.push_back(DO_CAMERA_TRIGGER1);
 
-            pMotion->setDOs(nPorts, 1);
-            QThread::msleep(10);
-            pMotion->setDOs(nPorts, 0);
+                pMotion->setDOs(nPorts, 0);
+                QThread::msleep(10);
+                pMotion->setDOs(nPorts, 1);
+            }
         }
+        break;
+        case ILight::TRIGGER_LIGHT:
+        {
+            IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
+            if (pMotion)
+            {
+                QVector<int> nPorts;
+                nPorts.push_back(DO_CAMERA_TRIGGER2);
+
+                pMotion->setDOs(nPorts, 0);
+                QThread::msleep(10);
+                pMotion->setDOs(nPorts, 1);
+            }
+        }
+        break;
+        default:
+            break;
+        }        
     }
     else
     {
@@ -202,5 +230,7 @@ void QLightCtrl::setupTrigger(ILight::TRIGGER emTrig)
         int nChnNum = pDevice->getChnNum();  
 
         pDevice->setupTrigger(emTrig);
+
+        m_bSetupTriggerConfig = true;
     }
 }

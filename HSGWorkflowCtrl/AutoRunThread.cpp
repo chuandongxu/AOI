@@ -243,6 +243,38 @@ bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
     return true;
 }
 
+bool AutoRunThread::captureLightImages(QVector<cv::Mat>& imageMats)
+{
+    if (System->isRunOffline()) {
+        static QVector<cv::Mat> vecLocalImages;
+        if (vecLocalImages.empty()) {         
+            std::string strImagePath("C:/Data/PartDemoBoard/0614211519/");
+            char strfileName[100];
+            for (int i = 1; i <= 6; ++i) {
+                _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
+                cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
+                if (matImage.empty())
+                    return false;
+                vecLocalImages.push_back(matImage);
+            }
+        }
+        imageMats = vecLocalImages;
+        return true;
+    }
+
+    ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+    if (!pCam) return false;
+
+    bool bResult = pCam->captureLightImages(imageMats);
+    if (!bResult)
+        return bResult;
+
+    if (imageMats.size() != CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT)
+        return false;
+
+    return true;
+}
+
 bool AutoRunThread::isExit()
 {
 	return m_exit;
@@ -346,8 +378,10 @@ bool AutoRunThread::_readBarcode()
     return true;
 }
 
-bool AutoRunThread::_doAlignment()
-{
+bool AutoRunThread::_doAlignment(){
+    auto pCam = getModule<ICamera>(CAMERA_MODEL);
+    pCam->selectCaptureMode(ICamera::TRIGGER_LIGHT, true);
+
     bool bResult = true;
     std::vector<AlignmentRunnablePtr> vecAlignmentRunnable;
     Vision::VectorOfPoint2f vecCadPoint, vecSrchPoint;
@@ -363,13 +397,13 @@ bool AutoRunThread::_doAlignment()
         TimeLogInstance->addTimeLog("Move to capture position.");
         
         QVector<cv::Mat> vecMatImages;
-        if (! captureAllImages(vecMatImages)) {
+        if (! captureLightImages(vecMatImages)) {
             bResult = false;
             break;
         }
-        TimeLogInstance->addTimeLog("Capture all images.");
+        TimeLogInstance->addTimeLog("Capture Light images.");
 
-        cv::Mat matAlignmentImg = vecMatImages[m_nDLPCount * DLP_IMG_COUNT];
+        cv::Mat matAlignmentImg = vecMatImages[0];
         cv::Point2f ptFrameCtr(alignment.tmplPosX, alignment.tmplPosY), ptAlignment(alignment.tmplPosX, alignment.tmplPosY);
         if (System->isRunOffline()) {
             //Here is just for offline test.
@@ -479,6 +513,9 @@ bool AutoRunThread::_alignWindows()
 }
 
 bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
+    auto pCam = getModule<ICamera>(CAMERA_MODEL);
+    pCam->selectCaptureMode(ICamera::TRIGGER_ALL, true);
+
     bool bGood = true;
     int ROWS = m_vecVecFrameCtr.size();
     int COLS = m_vecVecFrameCtr[0].size();
@@ -779,6 +816,7 @@ void AutoRunThread::_sendErrorAndWaitForResponse() {
 }
 
 void AutoRunThread::nofityResponse(bool bExit) {
-    m_exit = bExit;
+    //m_exit = bExit;
+    if (bExit) System->userStop();
     m_conditionVariable.notify_one();
 }

@@ -154,13 +154,6 @@ void QWorkSetting::initUI()
     int nDlpMode = System->getSysRunMode();
 	ui.comboBox_dlpMode->setCurrentIndex(nDlpMode);
 
-    connect(ui.comboBox_triggerMode, SIGNAL(currentIndexChanged(int)), SLOT(onTriggerModeIndexChanged(int)));
-    ls.clear();
-    ls << QStringLiteral("Lighting卡硬触发") << QStringLiteral("Lighting卡软触发");
-    ui.comboBox_triggerMode->addItems(ls);
-    int nTriggerMode = System->getParam("lighting_trigger_mode").toInt();
-    ui.comboBox_triggerMode->setCurrentIndex(nTriggerMode);
-
 	connect(ui.pushButton_DlpSave, SIGNAL(clicked()), SLOT(onDlpModeSave()));
 
 	// Motion
@@ -405,18 +398,10 @@ void QWorkSetting::onDlpModeIndexChanged(int index)
 	int nIndex = index;
 }
 
-void QWorkSetting::onTriggerModeIndexChanged(int index)
-{
-    int nIndex = index;
-}
-
 void QWorkSetting::onDlpModeSave()
 {
 	int nDlpMode = ui.comboBox_dlpMode->currentIndex();
     System->setSysRunMode(nDlpMode);
-
-    int nTriggerMode = ui.comboBox_triggerMode->currentIndex();
-    System->setParam("lighting_trigger_mode", nTriggerMode);
 
 	if (QMessageBox::Ok == QMessageBox::warning(NULL, QStringLiteral("提示"),
 		QStringLiteral("系统配置已修改，请务必关闭软件并重新启动!"), QMessageBox::Ok))
