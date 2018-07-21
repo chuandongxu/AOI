@@ -115,4 +115,8 @@
 #define REFRESH_BIG_IMAGE               302
 #define AUTO_RUN_WITH_ERROR             303
 
+#define EVENT_SEARCH_DEVICE_STATE		 "eventSearchDeviceState"
+#define SEARCH_ALL_DEVICE   			 400
+#define SEARCH_ONE_DEVICE   			 401
+
 #endif

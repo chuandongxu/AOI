@@ -105,6 +105,7 @@ protected:
 
 private slots:
 	void onResultEvent(const QVariantList &data);
+    void onSearchDeviceState(const QVariantList &data);
 
 private:
 	void init();	
@@ -132,6 +133,8 @@ private:
     void _drawDetectObjs();
 	void _calcMoveRange();
 	bool _checkSelectedDevice(const cv::Point &ptMousePos);
+
+    void _moveToSelectDevice(const QString& name);
 
 private:
     Ui::VisionViewWidget    ui;

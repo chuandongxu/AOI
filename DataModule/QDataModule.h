@@ -7,6 +7,7 @@
 #include "DataCtrl.h"
 #include "DataWidget.h"
 
+class SearchDeviceWidget;
 class QDataModule : public QModuleBase, public IData
 {
 public:
@@ -17,6 +18,7 @@ public:
 
 	virtual QWidget* getDataEditor() override;
     virtual QWidget* getDataWidget() override;
+    virtual QWidget* getDataList() override;
 
 	virtual void incrementCycleTests();
 	virtual void decrementCycleTests();
@@ -57,5 +59,6 @@ private:
 	DataCtrl m_ctrl;
 	QWidget *m_pDataEditor;
     QWidget *m_pDataWidget;
+    SearchDeviceWidget *m_pDataList;
     QString  m_strCurrentProject;
 };

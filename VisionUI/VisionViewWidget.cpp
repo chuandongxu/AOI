@@ -213,6 +213,7 @@ VisionViewWidget::VisionViewWidget(QWidget *parent)
 	ui.setupUi(this);
 
 	QEos::Attach(EVENT_RESULT_DISPLAY, this, SLOT(onResultEvent(const QVariantList &)));
+    QEos::Attach(EVENT_SEARCH_DEVICE_STATE, this, SLOT(onSearchDeviceState(const QVariantList &)));
 
 	setAcceptDrops(true);
 
@@ -291,6 +292,26 @@ void VisionViewWidget::onResultEvent(const QVariantList &data)
 	if (iEvent != STATION_RESULT_IMAGE_DISPLAY)return;
 
 	displayImage(m_hoImage);
+}
+
+void VisionViewWidget::onSearchDeviceState(const QVariantList &data)
+{
+    if (data.size() < 3) return;
+
+    int iBoard = data[0].toInt();
+    int iEvent = data[1].toInt();
+    QString name = data[2].toString();
+
+    switch (iEvent)
+    {
+    case SEARCH_ONE_DEVICE:
+    {
+        _moveToSelectDevice(name);
+    }
+    break;
+    default:
+        break;
+    }
 }
 
 void VisionViewWidget::openFile()
@@ -1798,4 +1819,31 @@ bool VisionViewWidget::_checkSelectedDevice(const cv::Point &ptMousePos) {
 	if (bFoundDevice)
 		repaintAll();
     return bFoundDevice;
+}
+
+void VisionViewWidget::_moveToSelectDevice(const QString& name)
+{
+    fullImage();
+
+    for (const auto &vvDevice : m_vecDevices) {
+        auto localRotateRect(vvDevice.getWindow());
+        localRotateRect.center.x += m_szCadOffset.width;
+        localRotateRect.center.y += m_szCadOffset.height;
+        if (QString::fromStdString(vvDevice.getName()) == name)
+        {
+            cv::Point2f ptPos = localRotateRect.center;
+
+            const auto COLS = m_hoImage.cols;
+            const auto ROWS = m_hoImage.rows;
+
+            cv::Point ptMousePos;
+            ptMousePos.x = ptPos.x * m_dScale + (LABEL_IMAGE_WIDTH - COLS * m_dScale) / 2 + m_dMovedX;
+            ptMousePos.y = ptPos.y * m_dScale + (LABEL_IMAGE_HEIGHT - ROWS * m_dScale) / 2 + m_dMovedY;          
+
+            moveImage(-(ptMousePos.x - LABEL_IMAGE_WIDTH / 2), -(ptMousePos.y - LABEL_IMAGE_HEIGHT / 2));
+            m_selectedDevice = vvDevice;
+            //QEos::Notify(EVENT_INSP_WINDOW_STATE, 0);
+            break;
+        }
+    }
 }

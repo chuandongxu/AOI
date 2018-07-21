@@ -20,6 +20,7 @@ class IData
 public:	
 	virtual QWidget* getDataEditor() = 0;
     virtual QWidget* getDataWidget() = 0;
+    virtual QWidget* getDataList() = 0;
 
 	virtual void incrementCycleTests() = 0;
 	virtual void decrementCycleTests() = 0;

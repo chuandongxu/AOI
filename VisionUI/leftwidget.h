@@ -27,6 +27,7 @@ public slots:
 	void onManageUser();
 	void onChangeLang(const QString &text);
 	void onRunState(const QVariantList &data);
+    void onUIState(const QVariantList &data);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -37,9 +38,9 @@ private:
 	Ui::leftWidget ui;
 	QVBoxLayout * m_subLayout;
 	QWidget * m_stateWidget;
+    QWidget * m_dataListWidget;
 	int m_timerId;
 	QSettingDialog m_dlgSetting;
-
 };
 
 #endif // LEFTWIDGET_H
