@@ -1831,14 +1831,8 @@ void VisionViewWidget::_moveToSelectDevice(const QString& name)
         localRotateRect.center.y += m_szCadOffset.height;
         if (QString::fromStdString(vvDevice.getName()) == name)
         {
-            cv::Point2f ptPos = localRotateRect.center;
-
-            const auto COLS = m_hoImage.cols;
-            const auto ROWS = m_hoImage.rows;
-
-            cv::Point ptMousePos;
-            ptMousePos.x = ptPos.x * m_dScale + (LABEL_IMAGE_WIDTH - COLS * m_dScale) / 2 + m_dMovedX;
-            ptMousePos.y = ptPos.y * m_dScale + (LABEL_IMAGE_HEIGHT - ROWS * m_dScale) / 2 + m_dMovedY;          
+            cv::Point2f ptImgPos = localRotateRect.center;         
+            cv::Point ptMousePos = convertToMousePos(ptImgPos);
 
             moveImage(-(ptMousePos.x - LABEL_IMAGE_WIDTH / 2), -(ptMousePos.y - LABEL_IMAGE_HEIGHT / 2));
             m_selectedDevice = vvDevice;
@@ -1846,4 +1840,7 @@ void VisionViewWidget::_moveToSelectDevice(const QString& name)
             break;
         }
     }
+
+    //m_vecDetectObjs.clear();
+    repaintAll();
 }
