@@ -48,6 +48,22 @@ QVariant DeviceItemModel::data(const QModelIndex &index, int role /*= Qt::Displa
     return QVariant();
 }
 
+static const char *WINDOW_USAGE_NAME[] {
+    "Alignment",
+        "Height Detect Base",
+        "Height Detect",
+        "Inspect Lead",
+        "Inspect Chip",
+        "Inspect Contour",
+        "Inspect Hole",
+        "Find Line",
+        "Find Circle",
+        "Inspect Polarity",
+        "Inspect Polarity Ref",
+        "Inspect Bridge",
+        "Insp Lead",
+};
+
 SearchDeviceWidget::SearchDeviceWidget(QWidget *parent)
     : QWidget(parent)
 {
@@ -58,6 +74,132 @@ SearchDeviceWidget::SearchDeviceWidget(QWidget *parent)
 
 SearchDeviceWidget::~SearchDeviceWidget()
 {
+}
+
+QString SearchDeviceWidget::getDeviceType(long deviceID) const
+{
+    for (const auto &device : m_vecDevice) {
+        if (device.Id == deviceID)
+        {
+            return QString::fromStdString(device.type);
+        }
+    }
+
+    return "";
+}
+
+bool SearchDeviceWidget::copyDevice(long srcID, long destID)
+{
+    auto deviceId = srcID;
+    if (deviceId <= 0)
+        return false;
+
+    Engine::DeviceVector vecDevices;
+    QString strTitle(QStringLiteral("复制检测框"));
+    auto result = Engine::GetAllDevices(vecDevices);
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString strMsg(QStringLiteral("读取元件信息失败, 错误消息: "));
+        strMsg += errorMessage.c_str();
+        System->showMessage(strTitle, strMsg);
+        return false;
+    }
+
+    auto iterDevice = std::find_if(vecDevices.begin(), vecDevices.end(), [deviceId](const Engine::Device &device) { return device.Id == deviceId; });
+    if (vecDevices.end() == iterDevice) {
+        QString strMsg(QStringLiteral("查询选择的元件失败."));
+        System->showMessage(strTitle, strMsg);
+        return false;
+    }
+    auto currentDevice = *iterDevice;
+
+    Engine::WindowVector vecCurrentDeviceWindows;
+    result = Engine::GetDeviceUngroupedWindows(deviceId, vecCurrentDeviceWindows);
+    if (result != Engine::OK) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString msg(QStringLiteral("Failed to get inspect windows from database, error message "));
+        msg += errorMessage.c_str();
+        System->showMessage(QStringLiteral("检测框"), msg);
+        return false;
+    }
+
+    Int64Vector vecGroupId;
+    result = Engine::GetDeviceWindowGroups(deviceId, vecGroupId);
+    if (result != Engine::OK) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString msg(QStringLiteral("Failed to get device groups from database, error message "));
+        msg += errorMessage.c_str();
+        System->showMessage(QStringLiteral("检测框"), msg);
+        return false;
+    }
+
+    std::vector<Engine::WindowGroup> vecWindowGroup;
+    for (const auto groupId : vecGroupId) {
+        Engine::WindowGroup windowGroup;
+        auto result = Engine::GetGroupWindows(groupId, windowGroup);
+        if (result != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString msg(QStringLiteral("Failed to get group windows from database, error message "));
+            msg += errorMessage.c_str();
+            System->showMessage(QStringLiteral("检测框"), msg);
+            return false;
+        }
+        vecWindowGroup.push_back(windowGroup);
+    }
+
+    deviceId = destID;
+    if (deviceId <= 0)
+        return false;
+
+    iterDevice = std::find_if(vecDevices.begin(), vecDevices.end(), [deviceId](const Engine::Device &device) { return device.Id == deviceId; });
+    if (vecDevices.end() == iterDevice) {
+        QString strMsg(QStringLiteral("查询选择的元件失败."));
+        System->showMessage(strTitle, strMsg);
+        return false;
+    }
+    auto destDevice = *iterDevice;
+
+    Engine::WindowVector vecWindows;
+    Engine::GetDeviceWindows(destDevice.Id, vecWindows);
+    if (!vecWindows.empty())
+    {
+        QString strMsg(QStringLiteral("目标元件元件有检测框."));
+        System->showMessage(strTitle, strMsg);
+        return false;
+    }      
+
+    auto offsetX = destDevice.x - currentDevice.x;
+    auto offsetY = destDevice.y - currentDevice.y;
+    for (const auto &win : vecCurrentDeviceWindows) {
+        Engine::Window window = win;
+        window.deviceId = destDevice.Id;
+        window.x += offsetX;
+        window.y += offsetY;
+        char windowName[100];
+        _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), destDevice.name.c_str());
+        window.name = windowName;
+        Engine::CreateWindow(window);
+    }
+
+    for (auto windowGroup : vecWindowGroup) {
+        for (auto &window : windowGroup.vecWindows) {
+            window.deviceId = destDevice.Id;
+            window.x += offsetX;
+            window.y += offsetY;
+            char windowName[100];
+            _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), destDevice.name.c_str());
+            window.name = windowName;
+            Engine::CreateWindow(window);
+        }
+        windowGroup.deviceId = destDevice.Id;
+        Engine::CreateWindowGroup(windowGroup);
+    }
+
+    return true;
 }
 
 void SearchDeviceWidget::initUI()
@@ -224,8 +366,8 @@ int SearchDeviceWidget::_prepareRunData()
         return NOK;
     }
 
-    Engine::DeviceVector vecDevice;
-    nResult = Engine::GetAllDevices(vecDevice);
+    m_vecDevice.clear();
+    nResult = Engine::GetAllDevices(m_vecDevice);
     if (Engine::OK != nResult) {
         String errorType, errorMessage;
         Engine::GetErrorDetail(errorType, errorMessage);
@@ -237,7 +379,7 @@ int SearchDeviceWidget::_prepareRunData()
 
     m_vecDeviceType.clear();
     m_vecDeviceInspWindow.clear();
-    for (const auto &device : vecDevice) {
+    for (const auto &device : m_vecDevice) {
         if(!device.type.empty()) m_vecDeviceType.push_back(device.type);
 
         Engine::WindowVector vecWindows;

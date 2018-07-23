@@ -75,6 +75,8 @@ private slots:
     void selectROI();
 	void showSelectROI3D();
     void showInspectROI();
+    void copyDevice();
+    void pasteDevice();
 
 	void showLight();
 	void showColorSpace();
@@ -110,6 +112,8 @@ private:
     std::unique_ptr<QAction> m_pSelectROI;
 	std::unique_ptr<QAction> m_pSelect3DROI;
     std::unique_ptr<QAction> m_pSelectInspectROI;
+    std::unique_ptr<QAction> m_pCopy;
+    std::unique_ptr<QAction> m_pPaste;
 
 	QAction *showLightAct;
 	QAction *showColorSpaceAct;

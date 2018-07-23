@@ -177,4 +177,14 @@ bool QDataModule::doAlignment(const Vision::VectorOfMat &vecFrameImages )
     return m_ctrl.doAlignment(vecFrameImages);
 }
 
+QString QDataModule::getDeviceType(long deviceID) const
+{
+    return m_pDataList->getDeviceType(deviceID);
+}
+
+bool QDataModule::copyDevice(long srcID, long destID)
+{
+    return m_pDataList->copyDevice(srcID, destID);
+}
+
 QMOUDLE_INSTANCE(QDataModule)

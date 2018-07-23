@@ -37,6 +37,9 @@ public:
     SearchDeviceWidget(QWidget *parent = Q_NULLPTR);
     ~SearchDeviceWidget();
 
+    QString getDeviceType(long deviceID) const;
+    bool copyDevice(long srcID, long destID);
+
 private:
     void initUI();
 
@@ -60,6 +63,7 @@ private:
     Ui::SearchDeviceWidget ui;
     DeviceItemModel m_model;
 
+    Engine::DeviceVector            m_vecDevice;
     Engine::AlignmentVector         m_vecAlignments;
     DeviceInspWindowVector          m_vecDeviceInspWindow;
     std::vector<String>             m_vecDeviceType;

@@ -93,6 +93,9 @@ public:
 	void showSelectROI3D();
     void showInspectROI();
 
+    void copyDevice();
+    void pasteDevice();
+
 protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dragMoveEvent(QDragMoveEvent *event);
@@ -135,6 +138,7 @@ private:
 	bool _checkSelectedDevice(const cv::Point &ptMousePos);
 
     void _moveToSelectDevice(const QString& name);
+    bool _pasteSelectedDevice();    
 
 private:
     Ui::VisionViewWidget    ui;
@@ -171,6 +175,7 @@ private:
 	bool                    m_bMainView3DInitial;
 	VisionViewDeviceVector  m_vecDevices;
 	VisionViewDevice        m_selectedDevice;
+    VisionViewDevice        m_selectedCopyDevice;
     VisionViewFMVector      m_vecConfirmedFM;
     VisionViewFM            m_currentFM;
 	cv::Size                m_szCadOffset;

@@ -598,6 +598,24 @@ void VisionViewWidget::showInspectROI()
     setViewState(MODE_VIEW_SELECT_INSPECT_ROI);
 }
 
+void VisionViewWidget::copyDevice()
+{
+    auto pData = getModule<IData>(DATA_MODEL);
+    if (pData->getDeviceType(m_selectedDevice.getId()).isEmpty())
+    {
+        QString strTitle(QStringLiteral("复制检测框"));
+        QString strMsg(QStringLiteral("选中的元件类型为空."));
+        System->showMessage(strTitle, strMsg);
+        return;
+    }
+    m_selectedCopyDevice = m_selectedDevice;
+}
+
+void VisionViewWidget::pasteDevice()
+{
+    _pasteSelectedDevice();
+}
+
 void VisionViewWidget::setImage(const cv::Mat& matImage, bool bDisplay)
 {
     m_hoImage = matImage.clone();
@@ -924,7 +942,7 @@ void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
             break;
         case MODE_VIEW_EDIT_SRCH_WINDOW:
             QEos::Notify(EVENT_COLOR_WIDGET_STATE, CHANGE_SRCH_WINDOW);
-            break;
+            break;       
 		case MODE_VIEW_NONE:
 			break;
 		default:
@@ -1170,7 +1188,7 @@ void VisionViewWidget::setViewState(VISION_VIEW_MODE state)
 		setCursor(Qt::OpenHandCursor);
         if (MODE_VIEW_MOVE != m_stateView)
             m_enPreviousState = m_stateView;
-		break;
+		break;   
 	case MODE_VIEW_NONE:
 		setCursor(Qt::ArrowCursor);
 		break;
@@ -1843,4 +1861,28 @@ void VisionViewWidget::_moveToSelectDevice(const QString& name)
 
     //m_vecDetectObjs.clear();
     repaintAll();
+}
+
+bool VisionViewWidget::_pasteSelectedDevice() {
+    
+    bool bFoundDevice = (m_selectedDevice.getId() != m_selectedCopyDevice.getId());
+    if (bFoundDevice)
+    {
+        VisionViewDevice vvDevicePaste = m_selectedDevice;
+
+        auto pData = getModule<IData>(DATA_MODEL);
+        if (pData->getDeviceType(m_selectedCopyDevice.getId()) == pData->getDeviceType(vvDevicePaste.getId()))
+        {
+            if (pData->copyDevice(m_selectedCopyDevice.getId(), vvDevicePaste.getId()))
+            {   
+                repaintAll();
+            }
+        }
+        else
+        {
+            QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("粘贴的元件类型与复制的不同，请重新选择"));
+        }
+        repaintAll();
+    }        
+    return bFoundDevice;
 }

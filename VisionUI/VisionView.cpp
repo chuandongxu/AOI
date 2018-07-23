@@ -132,6 +132,19 @@ void VisionView::createActions()
     m_pSelectInspectROI->setStatusTip(tr("Show Select Inspect Data"));
     connect(m_pSelectInspectROI.get(), SIGNAL(triggered()), this, SLOT(showInspectROI()));
     addAction(m_pSelectInspectROI.get());
+
+    m_pCopy = std::make_unique<QAction>(QIcon("image/copy.jpg"), tr("&Copy Device"), this);
+    m_pCopy->setShortcuts(QKeySequence::Copy);
+    m_pCopy->setStatusTip(tr("Copy to clipboard"));
+    connect(m_pCopy.get(), SIGNAL(triggered()), this, SLOT(copyDevice()));
+    addAction(m_pCopy.get());
+
+    m_pPaste = std::make_unique<QAction>(QIcon("image/paste.jpg"), tr("&Paste Device"), this);
+    m_pPaste->setShortcuts(QKeySequence::Paste);
+    m_pPaste->setStatusTip(tr("Paste from clipboard"));
+    connect(m_pPaste.get(), SIGNAL(triggered()), this, SLOT(pasteDevice()));
+    addAction(m_pPaste.get());
+
 	setContextMenuPolicy(Qt::ActionsContextMenu);
 
 	showLightAct = new QAction(QIcon("image/busy.png"), QStringLiteral("显示灯光设置"), this);
@@ -275,6 +288,22 @@ void VisionView::showInspectROI()
     if (m_pViewWidget)
     {
         m_pViewWidget->showInspectROI();
+    }
+}
+
+void VisionView::copyDevice()
+{
+    if (m_pViewWidget)
+    {
+        m_pViewWidget->copyDevice();
+    }
+}
+
+void VisionView::pasteDevice()
+{
+    if (m_pViewWidget)
+    {
+        m_pViewWidget->pasteDevice();
     }
 }
 

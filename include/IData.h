@@ -57,6 +57,9 @@ public:
     virtual Vision::VectorOfMat getCombinedBigImages() const = 0;
     virtual cv::Mat getCombinedBigHeight() const = 0;
     virtual QString getCurrentProject() const = 0;
+
+    virtual QString getDeviceType(long deviceID) const = 0;
+    virtual bool copyDevice(long srcID, long destID) = 0;
 };
 
 #endif
