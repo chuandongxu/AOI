@@ -12,7 +12,7 @@
 using IconTypeMap = std::map < QString, QString >;
 using IconTypeMap_value = std::map<QString, QString>::value_type;
 const IconTypeMap_value _init_value[] = {
-    IconTypeMap_value("BGA", "/image/dataimage/BGA.png")
+    IconTypeMap_value("MQFP44", "/image/dataimage/QFN.png")
 };
 const static IconTypeMap _iconTypeMap(_init_value, _init_value + sizeof(_init_value) / sizeof(_init_value[0]));
 
@@ -251,8 +251,8 @@ int SearchDeviceWidget::_prepareRunData()
             return NOK;
         }
 
-        if (vecWindows.empty())
-            continue;
+        //if (vecWindows.empty())
+        //    continue;
 
         DeviceInspWindow deviceInpWindow;
         deviceInpWindow.bInspected = false;

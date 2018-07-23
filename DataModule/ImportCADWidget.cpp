@@ -10,6 +10,7 @@
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../include/IVisionUI.h"
+#include "../Common/eos.h"
 
 using namespace NFG::AOI;
 
@@ -193,4 +194,5 @@ void ImportCADWidget::on_btnImportCAD_clicked() {
         ++ boardIndex;
     }
     QMessageBox::information ( nullptr, QStringLiteral("Import CAD"), QStringLiteral("Import CAD Success"), QStringLiteral("Quit") );
+    QEos::Notify(EVENT_SEARCH_DEVICE_STATE, 0, SEARCH_ALL_DEVICE);
 }
