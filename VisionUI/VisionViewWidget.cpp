@@ -1837,6 +1837,8 @@ void VisionViewWidget::_moveToSelectDevice(const QString& name)
             moveImage(-(ptMousePos.x - LABEL_IMAGE_WIDTH / 2), -(ptMousePos.y - LABEL_IMAGE_HEIGHT / 2));
             m_selectedDevice = vvDevice;
             //QEos::Notify(EVENT_INSP_WINDOW_STATE, 0);
+            auto pVision = getModule<IVision>(VISION_MODEL);
+            pVision->updateInspWindowWidget();
             break;
         }
     }

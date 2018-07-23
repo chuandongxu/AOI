@@ -30,6 +30,8 @@ public:
 	virtual QWidget* getColorWeightView() override;
     virtual QWidget* getInspect3DProfileView() override;
 
+    virtual void updateInspWindowWidget() override;
+
 public:
 	virtual bool loadCmdData(int nStation);
 
