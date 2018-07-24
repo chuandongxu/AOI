@@ -88,7 +88,12 @@ QWidget* VisionDetect::getInspect3DProfileView()
 
 void VisionDetect::updateInspWindowWidget()
 {
-    m_pInspWindowView->UpdateInspWindowList();
+   m_pInspWindowView->UpdateInspWindowList();
+}
+
+void VisionDetect::showInspDetectObjs()
+{
+    m_pInspWindowView->showInspDetectObjs();
 }
 
 bool VisionDetect::loadCmdData(int nStation)

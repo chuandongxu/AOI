@@ -96,6 +96,12 @@ void InspWindowWidget::setCurrentIndex(int index) {
     ui.stackedWidget->setCurrentIndex(index);
 }
 
+void InspWindowWidget::showInspDetectObjs()
+{
+    this->hide();
+    this->show();
+}
+
 void InspWindowWidget::UpdateInspWindowList() {
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     auto deviceId = pUI->getSelectedDevice().getId();
@@ -379,7 +385,9 @@ void InspWindowWidget::on_btnCreateGroup_clicked() {
     Engine::WindowGroup windowGroup;
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     windowGroup.deviceId = pUI->getSelectedDevice().getId();
-    windowGroup.name = dialog.getGroupName().toStdString();
+    char groupName[100];
+    _snprintf(groupName, sizeof(groupName), "%s @ %s", dialog.getGroupName().toStdString().c_str(), pUI->getSelectedDevice().getName().c_str());
+    windowGroup.name = groupName;
     for (const auto &pItem : listOfItems) {
         auto windowId = pItem->data(0, Qt::UserRole).toInt();
         windowGroup.vecWindows.push_back(m_mapIdWindow[windowId]);

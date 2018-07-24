@@ -17,6 +17,7 @@ public:
     virtual QWidget* getInspect3DProfileView() = 0;
 
     virtual void updateInspWindowWidget() = 0;
+    virtual void showInspDetectObjs() = 0;
 
 	virtual bool loadCmdData(int nStation) = 0;
 

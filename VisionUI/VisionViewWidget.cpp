@@ -1878,13 +1878,16 @@ bool VisionViewWidget::_pasteSelectedDevice() {
             if (pData->copyDevice(m_selectedCopyDevice.getId(), vvDevicePaste.getId()))
             {   
                 repaintAll();
+
+                auto pVision = getModule<IVision>(VISION_MODEL);
+                pVision->updateInspWindowWidget();
+                pVision->showInspDetectObjs();
             }
         }
         else
         {
             QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("粘贴的元件类型与复制的不同，请重新选择"));
-        }
-        repaintAll();
+        }       
     }        
     return bFoundDevice;
 }

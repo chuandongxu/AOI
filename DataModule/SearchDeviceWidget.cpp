@@ -4,6 +4,7 @@
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../Common/eos.h"
+#include "../Common/CommonFunc.h"
 
 #include "opencv2/highgui.hpp"
 #include "../DataModule/DataUtils.h"
@@ -90,6 +91,8 @@ QString SearchDeviceWidget::getDeviceType(long deviceID) const
 
 bool SearchDeviceWidget::copyDevice(long srcID, long destID)
 {
+    if (srcID == destID) return false;
+
     auto deviceId = srcID;
     if (deviceId <= 0)
         return false;
@@ -182,7 +185,22 @@ bool SearchDeviceWidget::copyDevice(long srcID, long destID)
         char windowName[100];
         _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), destDevice.name.c_str());
         window.name = windowName;
-        Engine::CreateWindow(window);
+        if (win.recordId > 0)
+        {
+            if (ReadBinaryFile(FormatRecordName(window.recordId), window.recordData) != 0) {
+                System->showMessage(QStringLiteral("Add Alignment Window"), QStringLiteral("Failed to read record data."));
+                return false;
+            }
+        }
+        auto result = Engine::CreateWindow(window);
+        if (result != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString strMsg(QStringLiteral("创建检测框失败, 错误消息: "));
+            strMsg += errorMessage.c_str();
+            System->showMessage(strTitle, strMsg);
+            return false;
+        }
     }
 
     for (auto windowGroup : vecWindowGroup) {
@@ -193,10 +211,39 @@ bool SearchDeviceWidget::copyDevice(long srcID, long destID)
             char windowName[100];
             _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), destDevice.name.c_str());
             window.name = windowName;
-            Engine::CreateWindow(window);
+            auto result = Engine::CreateWindow(window);
+            if (result != Engine::OK) {
+                String errorType, errorMessage;
+                Engine::GetErrorDetail(errorType, errorMessage);
+                QString strMsg(QStringLiteral("创建检测框失败, 错误消息: "));
+                strMsg += errorMessage.c_str();
+                System->showMessage(strTitle, strMsg);
+                return false;
+            }
         }
         windowGroup.deviceId = destDevice.Id;
-        Engine::CreateWindowGroup(windowGroup);
+        int nIndex = windowGroup.name.find_first_of('@');
+        if (nIndex >= 0)
+        {
+            char groupName[100];
+            _snprintf(groupName, sizeof(groupName), "%s @ %s", windowGroup.name.substr(0, nIndex-1).c_str(), destDevice.name.c_str());
+            windowGroup.name = groupName;
+        }
+        else
+        {
+            char groupName[100];
+            _snprintf(groupName, sizeof(groupName), "%s @ %s", windowGroup.name.c_str(), destDevice.name.c_str());
+            windowGroup.name = groupName;
+        }        
+        auto result = Engine::CreateWindowGroup(windowGroup);
+        if (Engine::OK != result) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString strMsg(QStringLiteral("创建检测框组失败, 错误消息: "));
+            strMsg += errorMessage.c_str();
+            System->showMessage(strTitle, strMsg);
+            return false;
+        }
     }
 
     return true;

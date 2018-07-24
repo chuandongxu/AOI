@@ -31,6 +31,7 @@ public:
     virtual QWidget* getInspect3DProfileView() override;
 
     virtual void updateInspWindowWidget() override;
+    virtual void showInspDetectObjs() override;
 
 public:
 	virtual bool loadCmdData(int nStation);
