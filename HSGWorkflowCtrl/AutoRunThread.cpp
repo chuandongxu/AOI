@@ -168,6 +168,9 @@ void AutoRunThread::run()
 
 void AutoRunThread::postRunning()
 {
+    auto pCam = getModule<ICamera>(CAMERA_MODEL);
+    pCam->selectCaptureMode(ICamera::TRIGGER_ALL, true);
+
     QEos::Notify(EVENT_THREAD_STATE, THREAD_CLOSED);
 }
 
