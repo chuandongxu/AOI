@@ -6,6 +6,8 @@
 #include <qstandarditemmodel>
 #include <qmap.h>
 
+#include "opencv/cv.h"
+
 #include "DataStoreAPI.h"
 using namespace NFG::AOI;
 
@@ -58,6 +60,9 @@ private:
 
     void searchUpdateData(int nBoardId, const QString& szType, const QString& name);    
     DeviceInspWindowVector _search(int nBoardId, const QString& szType, const QString& name);
+
+    cv::Rect _calcRectROI(Engine::Window& window);
+    bool _learnTemplate(cv::Rect& rectROI, int &recordId);
 
 private:
     Ui::SearchDeviceWidget ui;
