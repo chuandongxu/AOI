@@ -50,6 +50,10 @@ bool ScanImageThread::preRunning()
     m_dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     m_dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     m_nDLPCount = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+
+    auto pCam = getModule<ICamera>(CAMERA_MODEL);
+    pCam->selectCaptureMode(ICamera::TRIGGER_ALL, true);
+
 	return true;
 }
 
@@ -190,8 +194,8 @@ bool ScanImageThread::captureAllImages(QVector<cv::Mat>& imageMats)
     if (System->isRunOffline()) {
         imageMats.clear();
         //std::string strImagePath("D:/BaiduNetdiskDownload/0612181517CAZ/");
-        //std::string strImagePath("D:/Data/20180203_TestImageOnKB/0203125013/");
-        std::string strImagePath("C:/Data/PartDemoBoard/0614211519/");
+        std::string strImagePath("D:/Data/20180203_TestImageOnKB/0203125013/");
+        //std::string strImagePath("C:/Data/PartDemoBoard/0614211519/");
         char strfileName[100];
         for (int i = 1; i <= 54; ++ i) {
             _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);

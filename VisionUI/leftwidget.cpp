@@ -8,6 +8,8 @@
 #include "WarringWidget.h"
 #include "statewidget.h"
 #include "../include/IdDefine.h"
+#include "../Common/ModuleMgr.h"
+#include "../include/IData.h"
 #include "../Common/eos.h"
 #include <QPainter>
 #include <QDebug>
@@ -20,7 +22,14 @@ QLeftWidget::QLeftWidget(QWidget *parent)
 
 	m_subLayout = new QVBoxLayout;
 	m_stateWidget = new QStateWidget;
+    auto pData = getModule<IData>(DATA_MODEL);
+    m_dataListWidget = pData->getDataList();
+
+    m_stateWidget->setVisible(true);
+    m_dataListWidget->setVisible(false);
+
 	m_subLayout->addWidget(m_stateWidget);
+    m_subLayout->addWidget(m_dataListWidget);
 	m_subLayout->setContentsMargins(0,0,0,0);
 	ui.frame->setLayout(m_subLayout);
 	ui.frame->setContentsMargins(0,0,0,0);
@@ -54,6 +63,7 @@ QLeftWidget::QLeftWidget(QWidget *parent)
 	connect(ui.comboBox,SIGNAL(currentIndexChanged(const QString &)),this,SLOT(onChangeLang(const QString &)));
 
 	QEos::Attach(EVENT_RUN_STATE,this,SLOT(onRunState(const QVariantList &)));
+    QEos::Attach(EVENT_UI_STATE, this, SLOT(onUIState(const QVariantList &)));
 
 	m_timerId = this->startTimer(1000);
 	ui.pushButton->setText("");
@@ -230,4 +240,31 @@ void QLeftWidget::onRunState(const QVariantList &data)
 			}
 		}
 	}
+}
+
+void QLeftWidget::onUIState(const QVariantList &data)
+{
+    int iBoard = data[0].toInt();
+    int iEvent = data[1].toInt();
+    //if (iEvent != RUN_UI_STATE_SETTING) return;
+
+    switch (iEvent)
+    {
+    case RUN_UI_STATE_TOOLS:
+    case RUN_UI_STATE_DATA:
+    {
+        m_stateWidget->setVisible(false);
+        m_dataListWidget->setVisible(true);
+        int nExtHeight = 120;
+        ui.widget_leftbk->setFixedHeight(820 + nExtHeight);
+        ui.frame->setFixedHeight(415 + nExtHeight);
+    }
+    break;
+    default:
+        m_stateWidget->setVisible(true);
+        m_dataListWidget->setVisible(false);
+        ui.widget_leftbk->setFixedHeight(820);
+        ui.frame->setFixedHeight(415);
+        break;
+    }
 }

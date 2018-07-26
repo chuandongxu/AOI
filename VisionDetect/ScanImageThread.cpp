@@ -51,6 +51,10 @@ bool ScanImageThread::preRunning()
     m_dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     m_dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     m_nDLPCount = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+
+    auto pCam = getModule<ICamera>(CAMERA_MODEL);   
+    pCam->selectCaptureMode(ICamera::TRIGGER_ALL, true);
+
     return true;
 }
 

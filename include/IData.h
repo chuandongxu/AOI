@@ -20,6 +20,7 @@ class IData
 public:	
 	virtual QWidget* getDataEditor() = 0;
     virtual QWidget* getDataWidget() = 0;
+    virtual QWidget* getDataList() = 0;
 
 	virtual void incrementCycleTests() = 0;
 	virtual void decrementCycleTests() = 0;
@@ -56,6 +57,9 @@ public:
     virtual Vision::VectorOfMat getCombinedBigImages() const = 0;
     virtual cv::Mat getCombinedBigHeight() const = 0;
     virtual QString getCurrentProject() const = 0;
+
+    virtual QString getDeviceType(long deviceID) const = 0;
+    virtual bool copyDevice(long srcID, long destID) = 0;
 };
 
 #endif

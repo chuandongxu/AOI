@@ -32,7 +32,7 @@
      <x>10</x>
      <y>130</y>
      <width>221</width>
-     <height>821</height>
+     <height>820</height>
     </rect>
    </property>
    <widget class="QFrame" name="frame">

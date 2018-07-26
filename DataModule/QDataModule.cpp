@@ -1,13 +1,17 @@
 #include "QDataModule.h"
 #include "../common/SystemData.h"
+#include "../Common/eos.h"
+#include "../include/IdDefine.h"
 #include "DataSetting.h"
 #include "DataEditor.h"
+#include "SearchDeviceWidget.h"
 
 QDataModule::QDataModule(int id, const QString &name)
 	:QModuleBase(id, name)
 {
 	m_pDataEditor = new DataEditor();
     m_pDataWidget = new DataWidget(&m_ctrl);
+    m_pDataList = new SearchDeviceWidget();
 }
 
 QDataModule::~QDataModule()
@@ -34,6 +38,11 @@ QWidget* QDataModule::getDataEditor()
 QWidget* QDataModule::getDataWidget()
 {
     return m_pDataWidget;
+}
+
+QWidget* QDataModule::getDataList()
+{
+    return m_pDataList;
 }
 
 void QDataModule::incrementCycleTests()
@@ -85,7 +94,10 @@ bool QDataModule::createProject(QString& szFilePath)
 {
     bool bResult = m_ctrl.createProject(szFilePath);
     if (bResult)
+    {
         m_strCurrentProject = szFilePath;
+        QEos::Notify(EVENT_SEARCH_DEVICE_STATE, 0, SEARCH_ALL_DEVICE);
+    }
     return bResult;
 }
 
@@ -93,7 +105,10 @@ bool QDataModule::openProject(QString& szFilePath)
 {
     bool bResult = m_ctrl.openProject(szFilePath);
     if (bResult)
+    {
         m_strCurrentProject = szFilePath;
+        QEos::Notify(EVENT_SEARCH_DEVICE_STATE, 0, SEARCH_ALL_DEVICE);
+    }
     return bResult;
 }
 
@@ -160,6 +175,16 @@ bool QDataModule::loadProfDataBase(QString& szFilePath)
 bool QDataModule::doAlignment(const Vision::VectorOfMat &vecFrameImages )
 {
     return m_ctrl.doAlignment(vecFrameImages);
+}
+
+QString QDataModule::getDeviceType(long deviceID) const
+{
+    return m_pDataList->getDeviceType(deviceID);
+}
+
+bool QDataModule::copyDevice(long srcID, long destID)
+{
+    return m_pDataList->copyDevice(srcID, destID);
 }
 
 QMOUDLE_INSTANCE(QDataModule)

@@ -167,7 +167,7 @@ void AutoRunThread::run()
 }
 
 void AutoRunThread::postRunning()
-{
+{  
     QEos::Notify(EVENT_THREAD_STATE, THREAD_CLOSED);
 }
 

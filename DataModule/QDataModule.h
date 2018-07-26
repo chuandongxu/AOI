@@ -7,6 +7,7 @@
 #include "DataCtrl.h"
 #include "DataWidget.h"
 
+class SearchDeviceWidget;
 class QDataModule : public QModuleBase, public IData
 {
 public:
@@ -17,6 +18,7 @@ public:
 
 	virtual QWidget* getDataEditor() override;
     virtual QWidget* getDataWidget() override;
+    virtual QWidget* getDataList() override;
 
 	virtual void incrementCycleTests();
 	virtual void decrementCycleTests();
@@ -53,9 +55,13 @@ public:
     virtual Vision::VectorOfMat getCombinedBigImages() const override { return m_ctrl.getCombinedBigImages(); }
     virtual cv::Mat getCombinedBigHeight() const override { return m_ctrl.getCombinedBigHeight(); }
     virtual QString getCurrentProject() const override { return m_strCurrentProject; }
+
+    virtual QString getDeviceType(long deviceID) const override;
+    virtual bool copyDevice(long srcID, long destID) override;
 private:
 	DataCtrl m_ctrl;
 	QWidget *m_pDataEditor;
     QWidget *m_pDataWidget;
+    SearchDeviceWidget *m_pDataList;
     QString  m_strCurrentProject;
 };

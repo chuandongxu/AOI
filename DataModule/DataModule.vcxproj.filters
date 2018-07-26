@@ -176,6 +176,15 @@
     <ClCompile Include="Merge3DHeightRunnable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_SearchDeviceWidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_SearchDeviceWidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchDeviceWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="QDataModule.h">
@@ -234,6 +243,9 @@
     </ClInclude>
     <ClInclude Include="..\include\IData.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_SearchDeviceWidget.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -306,6 +318,12 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="BoardWidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SearchDeviceWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SearchDeviceWidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
