@@ -296,9 +296,10 @@ bool TableCaliDataStorage::getFrameOffsetByPixel(cv::Point2f& pt, float* fOffset
 
 bool TableCaliDataStorage::getFrameOffsetByUm(cv::Point2f& pt, float* fOffsetValue)
 {
-    pt.x *= UM_TO_MM;
-    pt.y *= UM_TO_MM;
-    return getFrameOffsetByMm(pt, fOffsetValue);
+    cv::Point2f ptTmp = pt;
+    ptTmp.x *= UM_TO_MM;
+    ptTmp.y *= UM_TO_MM;
+    return getFrameOffsetByMm(ptTmp, fOffsetValue);
 }
 
 bool TableCaliDataStorage::getFrameOffsetByMm(cv::Point2f& pt, float* fOffsetValue)
