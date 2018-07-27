@@ -1422,6 +1422,34 @@ struct PR_HEIGHT_TO_GRAY_RPY {
     cv::Mat                 matGray;
 };
 
+struct PR_LRN_OCV_CMD {
+    cv::Mat                 matInputImg;
+    cv::Rect                rectROI;
+    UInt16                  nCharCount;
+};
+
+struct PR_LRN_OCV_RPY {
+    VisionStatus            enStatus;
+    Int32                   nRecordId;
+    cv::Mat                 matResultImg;
+};
+
+struct PR_OCV_CMD {
+    PR_OCV_CMD() :
+        fMinMatchScore  (60) {}
+    cv::Mat                 matInputImg;
+    cv::Rect                rectROI;
+    std::vector<Int32>      vecRecordId;
+    float                   fMinMatchScore;
+};
+
+struct PR_OCV_RPY {
+    VisionStatus            enStatus;
+    cv::Mat                 matResultImg;
+    float                   fOverallScore;
+    VectorOfFloat           vecCharScore;
+};
+
 }
 }
 #endif /*_AOI_VISION_STRUCT_H_*/

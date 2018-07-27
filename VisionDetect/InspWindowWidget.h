@@ -20,6 +20,7 @@ enum class INSP_WIDGET_INDEX {
     INSP_CHIP,
     INSP_BRIDGE,
     INSP_LEAD,
+    OCV,
     SIZE,
 };
 

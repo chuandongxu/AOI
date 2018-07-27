@@ -24,6 +24,7 @@ private slots:
     void on_btnInspChipWindow_clicked();
     void on_btnInspLeadWindow_clicked();
     void on_btnInspBridgeWindow_clicked();
+    void on_btnOcvWindow_clicked();
     void on_accept();
 
 private:

@@ -1,8 +1,8 @@
-﻿#include "AlignmentWidget.h"
-#include <QMessageBox>
+﻿#include <QMessageBox>
 #include <QJsonObject>
 #include <QJsonDocument>
 
+#include "AlignmentWidget.h"
 #include "../Common/SystemData.h"
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
@@ -40,7 +40,6 @@ AlignmentWidget::AlignmentWidget(InspWindowWidget *parent)
     ui.tableWidget->setCellWidget(ALGORITHM_ATTRI, DATA_COLUMN, m_pComboBoxAlgorithm.get());
 
     m_pEditRecordID = std::make_unique<QLineEdit>(ui.tableWidget);
-    m_pEditRecordID->setValidator(new QIntValidator(0, 1000, m_pEditRecordID.get()));
     ui.tableWidget->setCellWidget(RECORDID_ATTRI, DATA_COLUMN, m_pEditRecordID.get());
     m_pEditRecordID->setEnabled(false);
 
@@ -124,11 +123,6 @@ bool AlignmentWidget::_srchTemplate(int recordId, bool bShowResult) {
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     stCmd.matInputImg = pUI->getImage();
-    cv::Rect rectROI = pUI->getSelectedROI();
-    if (rectROI.width <= 0 || rectROI.height <= 0) {
-        QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Please select a ROI to do inspection."));
-        return false;
-    }
 
     stCmd.rectSrchWindow = pUI->getSrchWindow();
 

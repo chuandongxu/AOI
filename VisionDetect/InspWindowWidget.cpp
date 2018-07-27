@@ -21,6 +21,7 @@
 #include "InspChipWidget.h"
 #include "InspBridgeWidget.h"
 #include "InspLeadWidget.h"
+#include "OcvWidget.h"
 #include "TreeWidgetInspWindow.h"
 #include "VisionAPI.h"
 
@@ -36,6 +37,7 @@ static const QString DEFAULT_WINDOW_NAME[] =
     "Inspect Chip",
     "Inspect Bridge",
     "Insp Lead",
+    "Ocv"
 };
 
 static_assert (static_cast<size_t>(INSP_WIDGET_INDEX::SIZE) == sizeof(DEFAULT_WINDOW_NAME) / sizeof(DEFAULT_WINDOW_NAME[0]), "The window name size is not correct");
@@ -70,6 +72,7 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CHIP)] = std::make_unique<InspChipWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_BRIDGE)] = std::make_unique<InspBridgeWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_LEAD)] = std::make_unique<InspLeadWidget>(this);
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::OCV)] = std::make_unique<OcvWidget>(this);
 
     for (const auto &ptrInspWindowWidget : m_arrInspWindowWidget)
         ui.stackedWidget->addWidget(ptrInspWindowWidget.get());
@@ -173,6 +176,13 @@ void InspWindowWidget::UpdateInspWindowList() {
         pItem->setData(0, Qt::UserRole, window.Id);
         ui.treeWidget->addTopLevelItem(pItem);
     }
+
+    if (vecCurrentDeviceWindows.empty() && vecGroupId.empty()) {
+        _hideWidgets();
+    }else {
+        _showWidgets();
+    }
+
     ui.treeWidget->expandAll();
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
 }
@@ -713,6 +723,10 @@ void InspWindowWidget::onSelectedWindowChanged() {
 
     case Engine::Window::Usage::INSP_LEAD:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_LEAD;
+        break;
+
+    case Engine::Window::Usage::OCV:
+        m_enCurrentInspWidget = INSP_WIDGET_INDEX::OCV;
         break;
 
     default:
