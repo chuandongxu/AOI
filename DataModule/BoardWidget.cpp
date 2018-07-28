@@ -75,6 +75,11 @@ void BoardWidget::on_btnBtmRight_clicked() {
     _displayResult();
 }
 
+void BoardWidget::on_pushButton_lightOnOff_clicked()
+{
+
+}
+
 void BoardWidget::_displayResult() {
     float left = 0.f, top = 0.f, right = 0.f, bottom = 0.f;
     if (Engine::GetBigBoardCoords(left, top, right, bottom) != Engine::OK) {

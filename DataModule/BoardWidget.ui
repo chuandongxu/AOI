@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="btnTopLeft">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>40</y>
+     <x>40</x>
+     <y>60</y>
      <width>60</width>
      <height>60</height>
     </rect>
@@ -39,8 +39,8 @@
   <widget class="QLabel" name="labelUpperLeft">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>110</y>
+     <x>30</x>
+     <y>130</y>
      <width>81</width>
      <height>31</height>
     </rect>
@@ -55,8 +55,8 @@
   <widget class="QLabel" name="labelLowerRight">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>110</y>
+     <x>140</x>
+     <y>130</y>
      <width>81</width>
      <height>31</height>
     </rect>
@@ -71,8 +71,8 @@
   <widget class="QPushButton" name="btnBtmRight">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>40</y>
+     <x>150</x>
+     <y>60</y>
      <width>60</width>
      <height>60</height>
     </rect>
@@ -193,6 +193,19 @@
    </property>
    <property name="text">
     <string>电路板右下角：</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_lightOnOff">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>10</y>
+     <width>351</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>打开灯关</string>
    </property>
   </widget>
  </widget>
