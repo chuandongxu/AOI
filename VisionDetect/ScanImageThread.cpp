@@ -282,7 +282,7 @@ bool ScanImageThread::captureAllImages(QVector<cv::Mat>& imageMats)
 {
     if (System->isRunOffline()) {
         imageMats.clear();
-        std::string strImagePath("D:/Data/20180203_TestImageOnKB/0203125013/");
+        std::string strImagePath = System->getOfflinePath().toStdString();
         char strfileName[100];
         for (int i = 1; i <= 54; ++i) {
             _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);

@@ -174,6 +174,8 @@ public:
 	QString getLangConfig();
 	void setLangConfig(const QString & lang);
     bool isRunOffline() const;
+    QString getOfflinePath();
+    void setOfflinePath(const QString& str);
 
 public:
 	void userGoHome();

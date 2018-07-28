@@ -214,9 +214,8 @@ bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
 {
     if (System->isRunOffline()) {
         static QVector<cv::Mat> vecLocalImages;
-        if (vecLocalImages.empty()) {
-            //std::string strImagePath("D:/Data/20180203_TestImageOnKB/0203125013/");
-            std::string strImagePath("C:/Data/PartDemoBoard/0614211519/");
+        if (vecLocalImages.empty()) {         
+            std::string strImagePath = System->getOfflinePath().toStdString();
             char strfileName[100];
             for (int i = 1; i <= 54; ++ i) {
                 _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
@@ -248,7 +247,7 @@ bool AutoRunThread::captureLightImages(QVector<cv::Mat>& imageMats)
     if (System->isRunOffline()) {
         static QVector<cv::Mat> vecLocalImages;
         if (vecLocalImages.empty()) {         
-            std::string strImagePath("C:/Data/PartDemoBoard/0614211519/");
+            std::string strImagePath = System->getOfflinePath().toStdString();
             char strfileName[100];
             for (int i = 1; i <= 6; ++i) {
                 _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
