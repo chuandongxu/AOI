@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>InspMaskEditorWidget</class>
+ <widget class="QWidget" name="InspMaskEditorWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>976</width>
+    <height>824</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>InspMaskEditorWidget</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>820</x>
+     <y>10</y>
+     <width>140</width>
+     <height>361</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>遮罩编辑</string>
+   </property>
+   <widget class="QPushButton" name="pushButton_addMask">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>200</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>添加区域</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_deleteMask">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>240</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>删除区域</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_maskIndex">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>120</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>120</width>
+      <height>121</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string/>
+    </property>
+    <widget class="QRadioButton" name="radioButton_polyline">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>多边形</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_rect">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>61</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>矩形</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_circle">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>61</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>圆形</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="pushButton_editDone">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>280</y>
+      <width>121</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>编辑完成</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="label_Img">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>800</width>
+     <height>800</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

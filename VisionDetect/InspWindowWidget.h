@@ -28,6 +28,7 @@ static const int DATA_COLUMN = 1;
 const int INSP_WIDGET_INDEX_SIZE = static_cast<int>(INSP_WIDGET_INDEX::SIZE);
 using MapIdWindow = std::map<Int64, Engine::Window>;
 
+class InspMaskEditorWidget;
 class InspWindowWidget : public QWidget
 {
     Q_OBJECT
@@ -54,6 +55,7 @@ private slots:
     void on_btnRemoveWindow_clicked();
     void on_btnCreateGroup_clicked();
     void on_btnCopyToAll_clicked();
+    void on_btnEditMask_clicked();
     void on_btnTryInsp_clicked();
     void on_btnConfirmWindow_clicked();
     void on_regrouped();
@@ -73,4 +75,5 @@ private:
     INSP_WIDGET_INDEX           m_enCurrentInspWidget = INSP_WIDGET_INDEX::UNDEFINED;
     int                         m_nBigImgWidth;
     int                         m_nBigImgHeight;
+    std::unique_ptr<InspMaskEditorWidget> m_pMaskEditorWidget;
 };
