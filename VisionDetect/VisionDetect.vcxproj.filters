@@ -398,7 +398,6 @@
     <ClCompile Include="TableCaliDataStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="OcvWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -408,7 +407,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_OcvWidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-=======
     <ClCompile Include="GeneratedFiles\Debug\moc_InspMaskEditorWidget.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -418,7 +416,6 @@
     <ClCompile Include="InspMaskEditorWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
->>>>>>> master
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VisionDetect.h">
@@ -529,11 +526,10 @@
     <ClInclude Include="GeneratedFiles\ui_InspLeadWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="GeneratedFiles\ui_OcvWidget.h">
-=======
+      <Filter>Generated Files</Filter>
+	</ClInclude>
     <ClInclude Include="GeneratedFiles\ui_InspMaskEditorWidget.h">
->>>>>>> master
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -753,17 +749,16 @@
     <CustomBuild Include="TableCaliDataStorage.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-<<<<<<< HEAD
     <CustomBuild Include="OcvWidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="OcvWidget.ui">
-=======
+      <Filter>Form Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="InspMaskEditorWidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="InspMaskEditorWidget.ui">
->>>>>>> master
       <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>

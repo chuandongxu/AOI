@@ -122,8 +122,6 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
-    auto rectSrchWindow = pUI->getSrchWindow();
-
     QJsonObject json;
     json.insert("CharCount", m_pEditCharCount->text().toInt());
     json.insert("MinScore", m_pSpecAndResultMinScore->getSpec());
@@ -159,8 +157,8 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
     }
     window.width  = rectROI.width  * dResolutionX;
     window.height = rectROI.height * dResolutionY;
-    window.srchWidth  = rectSrchWindow.width  * dResolutionX;
-    window.srchHeight = rectSrchWindow.height * dResolutionY;
+    window.srchWidth  = 0;
+    window.srchHeight = 0;
     window.deviceId = pUI->getSelectedDevice().getId();
     window.angle = 0;
 
@@ -171,7 +169,6 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
     else
         ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
     detectObj.setFrame(cv::RotatedRect(ptCenter, rectROI.size(), window.angle));
-    detectObj.setSrchWindow(cv::RotatedRect(ptCenter, rectSrchWindow.size(), window.angle));
     auto vecDetectObjs = pUI->getDetectObjs();
 
     int result = Engine::OK;
