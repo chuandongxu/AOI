@@ -31,6 +31,7 @@ private:
     void _inspPolarityGroup(const Engine::WindowGroup &windowGroup);
     void _inspBridge(const Engine::Window &window);
     void _inspLead(const Engine::Window &window);
+    void _ocv(const Engine::Window &window);
     Vision::VisionStatus _alignment(const Engine::Window &window, DeviceInspWindow &deviceInspWindow);
 
 private:

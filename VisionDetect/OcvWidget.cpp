@@ -44,6 +44,7 @@ void OcvWidget::setDefaultValue() {
     m_pEditCharCount->setText(QString::number(4));
     m_pSpecAndResultMinScore->setSpec(60);
     ui.listWidgetRecordId->clear();
+    m_bIsTryInspected = false;
 }
 
 void OcvWidget::setCurrentWindow(const Engine::Window &window) {
@@ -65,7 +66,7 @@ void OcvWidget::setCurrentWindow(const Engine::Window &window) {
     ui.listWidgetRecordId->clear();
     auto strRecordList = obj.take("RecordList").toString();
     auto datalist = strRecordList.split(',');
-    for (auto strRecordId : datalist) {
+    for (const auto &strRecordId : datalist) {
         ui.listWidgetRecordId->addItem(strRecordId);
     }
 
@@ -114,9 +115,11 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
         vecRecordId.push_back(ui.listWidgetRecordId->item(i)->text().toInt());
     }
 
-    if (!_inspOcv(vecRecordId, false)) {
-        System->showMessage(strTitle, QStringLiteral("OCV检测失败"));
-        return;
+    if (! m_bIsTryInspected) {
+        if (!_inspOcv(vecRecordId, false)) {
+            System->showMessage(strTitle, QStringLiteral("OCV检测失败"));
+            return;
+        }
     }
 
     auto rectSrchWindow = pUI->getSrchWindow();

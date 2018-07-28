@@ -1,4 +1,5 @@
 ﻿#include <QMessageBox>
+#include <qthread.h>
 
 #include "InspWindowWidget.h"
 #include "../include/IVisionUI.h"
@@ -23,6 +24,7 @@
 #include "InspLeadWidget.h"
 #include "OcvWidget.h"
 #include "TreeWidgetInspWindow.h"
+#include "InspMaskEditorWidget.h"
 #include "VisionAPI.h"
 
 static const QString DEFAULT_WINDOW_NAME[] =
@@ -88,6 +90,8 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     m_pComboBoxLighting->addItems(ls);
     ui.tableWidgetHardware->setCellWidget(0, DATA_COLUMN, m_pComboBoxLighting.get());
     connect(m_pComboBoxLighting.get(), SIGNAL(currentIndexChanged(int)), SLOT(on_comboBoxLighting_indexChanged(int)));
+
+    m_pMaskEditorWidget = std::make_unique<InspMaskEditorWidget>();
 
     _hideWidgets();
 }
@@ -244,6 +248,7 @@ void InspWindowWidget::showEvent(QShowEvent *event) {
 void InspWindowWidget::_showWidgets() {
     ui.stackedWidget->show();
     ui.labelWindowName->show();
+    ui.btnEditMask->show();
     ui.labelHardwareConfig->show();
     ui.tableWidgetHardware->show();
 }
@@ -251,6 +256,7 @@ void InspWindowWidget::_showWidgets() {
 void InspWindowWidget::_hideWidgets() {
     ui.stackedWidget->hide();
     ui.labelWindowName->hide();
+    ui.btnEditMask->hide();
     ui.labelHardwareConfig->hide();
     ui.tableWidgetHardware->hide();
 }
@@ -485,6 +491,77 @@ void InspWindowWidget::on_btnCopyToAll_clicked() {
             windowGroup.deviceId = device.Id;
             Engine::CreateWindowGroup(windowGroup);
         }
+    }
+}
+
+void InspWindowWidget::on_btnEditMask_clicked()
+{
+    auto selectedItems = ui.treeWidget->selectedItems();
+    if (selectedItems.size() <= 0) {       
+        return;
+    }
+
+    Engine::Window window;
+    auto pItem = ui.treeWidget->currentItem();
+    if (NULL == pItem)
+        pItem = selectedItems[0];
+
+    if (pItem->type() == TREE_ITEM_WINDOW) {
+        auto windowName = pItem->text(0).toStdString();
+        auto windowId = pItem->data(0, Qt::UserRole).toInt();
+        auto pParentItem = pItem->parent();
+        if (NULL == pParentItem) {
+            if (m_mapIdWindow.find(windowId) == m_mapIdWindow.end())
+                return;
+            window = m_mapIdWindow[windowId];
+        }
+        else {
+            int index = ui.treeWidget->indexOfTopLevelItem(pParentItem);
+            if (index < 0)
+                return;
+
+            int childIndex = pParentItem->indexOfChild(pItem);
+            window = m_vecWindowGroup[index].vecWindows[childIndex];
+        }
+    }
+    else {
+        int index = ui.treeWidget->indexOfTopLevelItem(pItem);
+        if (index < 0)
+            return;
+
+        if (m_vecWindowGroup[index].vecWindows.size() <= 0)
+            return;
+
+        window = m_vecWindowGroup[index].vecWindows[0];
+    }
+
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+
+    auto x = window.x / dResolutionX;
+    auto y = window.y / dResolutionY;
+    if (bBoardRotated)
+        x = m_nBigImgWidth - x;
+    else
+        y = m_nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
+
+    auto width = window.width / dResolutionX;
+    auto height = window.height / dResolutionY;
+
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    cv::Mat matImage = pUI->getImage();
+
+    cv::Rect rectROI = cv::Rect2f(x - width / 2.f, y - height / 2.f, width, height);
+    cv::Mat matROI(matImage, rectROI);
+   
+    m_pMaskEditorWidget->setImage(matROI, true);
+
+    m_pMaskEditorWidget->show();
+    while (!m_pMaskEditorWidget->isHidden())
+    {
+        QThread::msleep(100);
+        QApplication::processEvents();
     }
 }
 

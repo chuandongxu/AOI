@@ -248,6 +248,18 @@ void QWorkSetting::initUI()
 	connect(ui.pushButton_selectDBPath, SIGNAL(clicked()), SLOT(onSelectDBPath()));
 	connect(ui.pushButton_saveDBPath, SIGNAL(clicked()), SLOT(onSaveDBPath()));
 
+    QString szOffLnPath = System->getOfflinePath();
+    ui.lineEdit_OffLnPath->setText(QString("%1").arg(szOffLnPath));
+
+    connect(ui.pushButton_selectOffLnPath, SIGNAL(clicked()), SLOT(onSelectOffLnPath()));
+    connect(ui.pushButton_saveOffLnPath, SIGNAL(clicked()), SLOT(onSaveOffLnPath()));
+
+    if (!System->isRunOffline())
+    {
+        ui.lineEdit_OffLnPath->setEnabled(false);
+        ui.pushButton_selectOffLnPath->setEnabled(false);
+        ui.pushButton_saveOffLnPath->setEnabled(false);
+    }
 }
 
 void QWorkSetting::onClickFullSpeed(bool s)
@@ -607,4 +619,27 @@ void QWorkSetting::onSaveDBPath()
 {
 	QString str = ui.lineEdit_DBPath->text();
 	if (!str.isEmpty()) System->setParam("auto_startup_db_path", str);
+}
+
+void QWorkSetting::onSelectOffLnPath()
+{
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);   
+    dialog.setViewMode(QFileDialog::Detail);
+    QStringList fileNames;
+    if (dialog.exec())  {
+        fileNames = dialog.selectedFiles();
+    }
+    else
+        return;
+
+    QString str = fileNames[0];
+    if (!str.isEmpty())ui.lineEdit_OffLnPath->setText(str + "/");
+}
+
+void QWorkSetting::onSaveOffLnPath()
+{
+    QString str = ui.lineEdit_OffLnPath->text();
+    if (!str.isEmpty()) System->setOfflinePath(str);
 }

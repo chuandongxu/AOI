@@ -78,7 +78,7 @@
      <x>30</x>
      <y>720</y>
      <width>351</width>
-     <height>31</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="text">
@@ -91,7 +91,7 @@
      <x>30</x>
      <y>760</y>
      <width>351</width>
-     <height>31</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="text">
@@ -257,6 +257,19 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnEditMask">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>365</y>
+     <width>191</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>编辑遮罩</string>
    </property>
   </widget>
  </widget>
