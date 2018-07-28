@@ -254,7 +254,7 @@ void QWorkSetting::initUI()
     connect(ui.pushButton_selectOffLnPath, SIGNAL(clicked()), SLOT(onSelectOffLnPath()));
     connect(ui.pushButton_saveOffLnPath, SIGNAL(clicked()), SLOT(onSaveOffLnPath()));
 
-    if (System->isRunOffline())
+    if (!System->isRunOffline())
     {
         ui.lineEdit_OffLnPath->setEnabled(false);
         ui.pushButton_selectOffLnPath->setEnabled(false);
