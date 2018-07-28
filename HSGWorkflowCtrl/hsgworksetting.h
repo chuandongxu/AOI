@@ -64,6 +64,9 @@ protected slots:
 	void onSelectDBPath();
 	void onSaveDBPath();
 
+    void onSelectOffLnPath();
+    void onSaveOffLnPath();
+
 private:
 	Ui::QWorkSetting ui;
 	QFlowCtrl * m_ctrl;

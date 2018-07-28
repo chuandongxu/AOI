@@ -750,6 +750,16 @@ bool QSystem::isRunOffline() const
     return m_bRunOffline;
 }
 
+QString QSystem::getOfflinePath()
+{
+    return getSysParam("OFFLINE_PATH").toString();
+}
+
+void QSystem::setOfflinePath(const QString& str)
+{
+    setSysParam("OFFLINE_PATH", str);
+}
+
 bool QSystem::readAuthData(QAuthData * data)
 {
 	char * p = (char*)data;
