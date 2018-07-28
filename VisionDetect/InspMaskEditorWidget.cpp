@@ -657,7 +657,7 @@ void InspMaskEditorWidget::repaintAll()
 
         cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
         //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
-        cv::Mat imgLayer(height, width, matImage.type(), cv::Scalar(0, 0, 255));
+        cv::Mat imgLayer(height, width, matImage.type(), cv::Scalar(255, 0, 0));
 
         double alpha = 0.3;
         addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
@@ -674,7 +674,7 @@ void InspMaskEditorWidget::repaintAll()
         cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
         //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
         cv::Mat imgLayer = matRect.clone();
-        circle(imgLayer, cv::Point2f(m_maskCircleCur._radius, m_maskCircleCur._radius), m_maskCircleCur._radius, cv::Scalar(0, 0, 255), -1);
+        circle(imgLayer, cv::Point2f(m_maskCircleCur._radius, m_maskCircleCur._radius), m_maskCircleCur._radius, cv::Scalar(255, 0, 0), -1);
 
         double alpha = 0.3;
         addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
@@ -694,8 +694,8 @@ void InspMaskEditorWidget::repaintAll()
 
         cv::Mat imgLayer = matImage.clone();
 
-        polylines(imgLayer, pt, npt, 1, 1, cv::Scalar(0, 0, 255));
-        fillPoly(imgLayer, pt, npt, 1, cv::Scalar(0, 0, 255), 8);
+        polylines(imgLayer, pt, npt, 1, 1, cv::Scalar(255, 0, 0));
+        fillPoly(imgLayer, pt, npt, 1, cv::Scalar(255, 0, 0), 8);
 
         delete points;
 
@@ -724,7 +724,7 @@ void InspMaskEditorWidget::repaintAll()
 
                 cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
                 //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
-                cv::Mat imgLayer(height, width, matImage.type(), maskObj->IsSelect() ? cv::Scalar(128, 128, 255) : cv::Scalar(0, 0, 255));
+                cv::Mat imgLayer(height, width, matImage.type(), maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0));
 
                 double alpha = 0.3;
                 addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
@@ -745,7 +745,7 @@ void InspMaskEditorWidget::repaintAll()
                 cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
                 //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
                 cv::Mat imgLayer = matRect.clone();
-                circle(imgLayer, cv::Point2f(maskObj->_radius, maskObj->_radius), maskObj->_radius, maskObj->IsSelect() ? cv::Scalar(128, 128, 255) : cv::Scalar(0, 0, 255), -1);
+                circle(imgLayer, cv::Point2f(maskObj->_radius, maskObj->_radius), maskObj->_radius, maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0), -1);
 
                 double alpha = 0.3;
                 addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
@@ -769,8 +769,8 @@ void InspMaskEditorWidget::repaintAll()
 
                 cv::Mat imgLayer = matImage.clone();
 
-                polylines(imgLayer, pt, npt, 1, 1, maskObj->IsSelect() ? cv::Scalar(128, 128, 255) : cv::Scalar(0, 0, 255));
-                fillPoly(imgLayer, pt, npt, 1, maskObj->IsSelect() ? cv::Scalar(128, 128, 255) : cv::Scalar(0, 0, 255), 8);
+                polylines(imgLayer, pt, npt, 1, 1, maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0));
+                fillPoly(imgLayer, pt, npt, 1, maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0), 8);
 
                 delete points;
 
@@ -911,6 +911,7 @@ void InspMaskEditorWidget::unSelectMask()
         m_maskObjs.at(i)->setSelect(false);
     }
     //ui.comboBox_maskIndex->setCurrentIndex(0);
+    repaintAll();
 }
 
 void InspMaskEditorWidget::clear()
