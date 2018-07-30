@@ -58,6 +58,7 @@ static const char *WINDOW_USAGE_NAME[] {
     "Inspect Polarity Ref",
     "Inspect Bridge",
     "Insp Lead",
+    "Ocv",
 };
 
 InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)

@@ -153,6 +153,7 @@ struct Window {
     String              inspParams;
     String              colorParams;
     Int64               lightId;        //Light Id in database start from 1.
+    Binary              mask;
 };
 using WindowVector = std::vector<Window>;
 
