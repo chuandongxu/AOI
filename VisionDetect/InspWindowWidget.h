@@ -39,7 +39,8 @@ public:
     ~InspWindowWidget();
 
     void setCurrentIndex(int index);
-    void UpdateInspWindowList();
+    void updateInspWindowList();
+    void refreshAllDeviceWindows();
     void showInspDetectObjs();
     int getSelectedLighting() const;
     QColorWeight *getColorWidget() const;

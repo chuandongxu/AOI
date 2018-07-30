@@ -18,7 +18,7 @@ public:
 
 	virtual QWidget* getDataEditor() override;
     virtual QWidget* getDataWidget() override;
-    virtual QWidget* getDataList() override;
+    virtual QWidget* getDeviceListWidget() override;
 
 	virtual void incrementCycleTests();
 	virtual void decrementCycleTests();
@@ -50,18 +50,17 @@ public:
 	virtual bool saveProfDataBase(QString& szFilePath);
 	virtual bool loadProfDataBase(QString& szFilePath);
 
-    virtual bool doAlignment(const Vision::VectorOfMat &vecFrameImages) override;
     virtual QString getDataStoreApiVersion() const override { return m_ctrl.getDataStoreApiVersion(); }
     virtual Vision::VectorOfMat getCombinedBigImages() const override { return m_ctrl.getCombinedBigImages(); }
     virtual cv::Mat getCombinedBigHeight() const override { return m_ctrl.getCombinedBigHeight(); }
     virtual QString getCurrentProject() const override { return m_strCurrentProject; }
 
     virtual QString getDeviceType(long deviceID) const override;
-    virtual bool copyDevice(long srcID, long destID) override;
+    virtual bool copyDeviceWindow(long srcID, long destID) override;
 private:
 	DataCtrl m_ctrl;
 	QWidget *m_pDataEditor;
     QWidget *m_pDataWidget;
-    SearchDeviceWidget *m_pDataList;
+    SearchDeviceWidget *m_pDeviceListWidget;
     QString  m_strCurrentProject;
 };

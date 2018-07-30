@@ -86,9 +86,9 @@ QWidget* VisionDetect::getInspect3DProfileView()
     return m_pInspect3DProfileView;
 }
 
-void VisionDetect::updateInspWindowWidget()
+void VisionDetect::refreshAllDeviceWindows()
 {
-   m_pInspWindowView->UpdateInspWindowList();
+   m_pInspWindowView->refreshAllDeviceWindows();
 }
 
 void VisionDetect::showInspDetectObjs()

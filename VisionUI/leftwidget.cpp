@@ -23,13 +23,13 @@ QLeftWidget::QLeftWidget(QWidget *parent)
 	m_subLayout = new QVBoxLayout;
 	m_stateWidget = new QStateWidget;
     auto pData = getModule<IData>(DATA_MODEL);
-    m_dataListWidget = pData->getDataList();
+    m_pDeviceListWidget = pData->getDeviceListWidget();
 
     m_stateWidget->setVisible(true);
-    m_dataListWidget->setVisible(false);
+    m_pDeviceListWidget->setVisible(false);
 
 	m_subLayout->addWidget(m_stateWidget);
-    m_subLayout->addWidget(m_dataListWidget);
+    m_subLayout->addWidget(m_pDeviceListWidget);
 	m_subLayout->setContentsMargins(0,0,0,0);
 	ui.frame->setLayout(m_subLayout);
 	ui.frame->setContentsMargins(0,0,0,0);
@@ -254,7 +254,7 @@ void QLeftWidget::onUIState(const QVariantList &data)
     case RUN_UI_STATE_DATA:
     {
         m_stateWidget->setVisible(false);
-        m_dataListWidget->setVisible(true);
+        m_pDeviceListWidget->setVisible(true);
         int nExtHeight = 120;
         ui.widget_leftbk->setFixedHeight(820 + nExtHeight);
         ui.frame->setFixedHeight(415 + nExtHeight);
@@ -262,7 +262,7 @@ void QLeftWidget::onUIState(const QVariantList &data)
     break;
     default:
         m_stateWidget->setVisible(true);
-        m_dataListWidget->setVisible(false);
+        m_pDeviceListWidget->setVisible(false);
         ui.widget_leftbk->setFixedHeight(820);
         ui.frame->setFixedHeight(415);
         break;

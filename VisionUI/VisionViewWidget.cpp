@@ -598,7 +598,7 @@ void VisionViewWidget::showInspectROI()
     setViewState(MODE_VIEW_SELECT_INSPECT_ROI);
 }
 
-void VisionViewWidget::copyDevice()
+void VisionViewWidget::copyDeviceWindow()
 {
     auto pData = getModule<IData>(DATA_MODEL);
     if (pData->getDeviceType(m_selectedDevice.getId()).isEmpty())
@@ -1856,7 +1856,7 @@ void VisionViewWidget::_moveToSelectDevice(const QString& name)
             m_selectedDevice = vvDevice;
             //QEos::Notify(EVENT_INSP_WINDOW_STATE, 0);
             auto pVision = getModule<IVision>(VISION_MODEL);
-            pVision->updateInspWindowWidget();
+            pVision->refreshAllDeviceWindows();
             break;
         }
     }
@@ -1875,12 +1875,12 @@ bool VisionViewWidget::_pasteSelectedDevice() {
         auto pData = getModule<IData>(DATA_MODEL);
         if (pData->getDeviceType(m_selectedCopyDevice.getId()) == pData->getDeviceType(vvDevicePaste.getId()))
         {
-            if (pData->copyDevice(m_selectedCopyDevice.getId(), vvDevicePaste.getId()))
+            if (pData->copyDeviceWindow(m_selectedCopyDevice.getId(), vvDevicePaste.getId()))
             {   
                 repaintAll();
 
                 auto pVision = getModule<IVision>(VISION_MODEL);
-                pVision->updateInspWindowWidget();
+                pVision->refreshAllDeviceWindows();
                 pVision->showInspDetectObjs();
             }
         }

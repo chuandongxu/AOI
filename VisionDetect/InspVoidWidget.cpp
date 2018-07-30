@@ -84,8 +84,8 @@ void InspVoidWidget::on_inspModeChanged(int index)
 void InspVoidWidget::setDefaultValue()
 {
     m_pComboBoxInspMode->setCurrentIndex(0);
-    m_pSpecAndResultMaxAreaRatio->setSpec(100);
-    m_pSpecAndResultMaxAreaRatio->setSpec(80);    
+    m_pSpecAndResultMaxAreaRatio->setSpec(20);
+    m_pSpecAndResultMinAreaRatio->setSpec(10);
     m_pEditMaxHoleArea->setText("5000");
     m_pEditMinHoleArea->setText("500");
     m_pSpecAndResultMaxHoleCount->setSpec(10);
@@ -276,5 +276,5 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
             System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
     }
 
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }

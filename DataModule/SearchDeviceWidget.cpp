@@ -344,7 +344,7 @@ int SearchDeviceWidget::_prepareRunData()
     return OK;
 }
 
-bool SearchDeviceWidget::copyDevice(long srcID, long destID)
+bool SearchDeviceWidget::copyDeviceWindow(long srcID, long destID)
 {
     if (srcID == destID) return false;
 
@@ -440,7 +440,8 @@ bool SearchDeviceWidget::copyDevice(long srcID, long destID)
         char windowName[100];
         _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), destDevice.name.c_str());
         window.name = windowName;
-        if (window.recordId > 0)
+
+        if (window.recordId > 0 && Engine::Window::Usage::ALIGNMENT == window.usage)
         {
             cv::Rect rectROI = _calcRectROI(window);
 

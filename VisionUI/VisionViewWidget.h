@@ -93,7 +93,7 @@ public:
 	void showSelectROI3D();
     void showInspectROI();
 
-    void copyDevice();
+    void copyDeviceWindow();
     void pasteDevice();
 
 protected:

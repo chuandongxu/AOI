@@ -258,7 +258,7 @@ void InspChipWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }
 
 void InspChipWidget::setCurrentWindow(const Engine::Window &window) {

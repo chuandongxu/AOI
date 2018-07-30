@@ -110,7 +110,7 @@ void InspWindowWidget::showInspDetectObjs()
     this->show();
 }
 
-void InspWindowWidget::UpdateInspWindowList() {
+void InspWindowWidget::updateInspWindowList() {
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     auto deviceId = pUI->getSelectedDevice().getId();
 
@@ -192,26 +192,9 @@ void InspWindowWidget::UpdateInspWindowList() {
     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
 }
 
-int InspWindowWidget::getSelectedLighting() const {
-    return m_pComboBoxLighting->currentIndex();
-}
-
-QColorWeight *InspWindowWidget::getColorWidget() const {
-    return m_pColorWidget;
-}
-
-void InspWindowWidget::showEvent(QShowEvent *event) {
+void InspWindowWidget::refreshAllDeviceWindows() {
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
-
-    Engine::WindowVector vecWindow;
-    auto result = Engine::GetAllWindows(vecWindow);
-    if (Engine::OK != result) {
-        String errorType, errorMessage;
-        Engine::GetErrorDetail(errorType, errorMessage);
-        errorMessage = "Failed to get inspect windows from database, error message " + errorMessage;
-        QMessageBox::critical(nullptr, QStringLiteral("Inspect Window"), errorMessage.c_str(), QStringLiteral("Quit"));
-    }
+    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);    
 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
@@ -221,6 +204,15 @@ void InspWindowWidget::showEvent(QShowEvent *event) {
     auto matImage = pUI->getImage();
     m_nBigImgWidth  = matImage.cols / dCombinedImageScale;
     m_nBigImgHeight = matImage.rows / dCombinedImageScale;
+
+    Engine::WindowVector vecWindow;
+    auto result = Engine::GetAllWindows(vecWindow);
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        errorMessage = "Failed to get inspect windows from database, error message " + errorMessage;
+        QMessageBox::critical(nullptr, QStringLiteral("Inspect Window"), errorMessage.c_str(), QStringLiteral("Quit"));
+    }
 
     QVector<QDetectObj> vecDetectObjs;
     for (const auto &window : vecWindow) {
@@ -244,6 +236,18 @@ void InspWindowWidget::showEvent(QShowEvent *event) {
     }
 
     pUI->setDetectObjs(vecDetectObjs);
+}
+
+int InspWindowWidget::getSelectedLighting() const {
+    return m_pComboBoxLighting->currentIndex();
+}
+
+QColorWeight *InspWindowWidget::getColorWidget() const {
+    return m_pColorWidget;
+}
+
+void InspWindowWidget::showEvent(QShowEvent *event) {
+    refreshAllDeviceWindows();
 }
 
 void InspWindowWidget::_showWidgets() {
@@ -364,7 +368,7 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
         }
     }
 
-    UpdateInspWindowList();    
+    updateInspWindowList();    
 }
 
 void InspWindowWidget::on_btnCreateGroup_clicked() {
@@ -418,7 +422,7 @@ void InspWindowWidget::on_btnCreateGroup_clicked() {
         System->showMessage(strTitle, strMsg);
         return;
     }
-    UpdateInspWindowList();
+    updateInspWindowList();
 }
 
 void InspWindowWidget::on_btnCopyToAll_clicked() {
@@ -441,6 +445,7 @@ void InspWindowWidget::on_btnCopyToAll_clicked() {
         System->showMessage(strTitle, strMsg);
         return;
     }
+
     auto iterDevice = std::find_if(vecDevices.begin(), vecDevices.end(), [deviceId](const Engine::Device &device) { return device.Id == deviceId;});
     if (vecDevices.end() == iterDevice) {
         QString strMsg(QStringLiteral("查询选择的元件失败."));
@@ -456,6 +461,8 @@ void InspWindowWidget::on_btnCopyToAll_clicked() {
         return;
     }
 
+    auto pDataModule = getModule<IData>(DATA_MODEL);
+
     int nAppliedDeviceCount = 0;
     for (const auto &device : vecDevices) {
         if (device.type.empty() || device.type != currentDevice.type)
@@ -465,34 +472,11 @@ void InspWindowWidget::on_btnCopyToAll_clicked() {
         Engine::GetDeviceWindows(device.Id, vecWindows);
         if (! vecWindows.empty())
             continue;
-
-        auto offsetX = device.x - currentDevice.x;
-        auto offsetY = device.y - currentDevice.y;
-        for (const auto &pairIdWindow : m_mapIdWindow) {
-            Engine::Window window = pairIdWindow.second;
-            window.deviceId = device.Id;
-            window.x += offsetX;
-            window.y += offsetY;
-            char windowName[100];
-            _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), device.name.c_str());
-            window.name = windowName;
-            Engine::CreateWindow(window);
-        }
-
-        for (auto windowGroup : m_vecWindowGroup) {
-            for (auto &window : windowGroup.vecWindows) {
-                 window.deviceId = device.Id;
-                 window.x += offsetX;
-                 window.y += offsetY;
-                 char windowName[100];
-                 _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), device.name.c_str());
-                 window.name = windowName;
-                 Engine::CreateWindow(window);
-            }
-            windowGroup.deviceId = device.Id;
-            Engine::CreateWindowGroup(windowGroup);
-        }
+        
+        pDataModule->copyDeviceWindow(currentDevice.Id, device.Id);
     }
+
+    refreshAllDeviceWindows();
 }
 
 void InspWindowWidget::on_btnEditMask_clicked()
@@ -699,7 +683,7 @@ void InspWindowWidget::on_btnConfirmWindow_clicked() {
 }
 
 void InspWindowWidget::onInspWindowState(const QVariantList &data) {
-    UpdateInspWindowList();
+    updateInspWindowList();
     if (ui.treeWidget->topLevelItemCount() > 0) {
         ui.treeWidget->topLevelItem(ui.treeWidget->topLevelItemCount() - 1)->setSelected(true);
     }else {
@@ -865,5 +849,5 @@ void InspWindowWidget::on_comboBoxLighting_indexChanged(int index) {
 }
 
 void InspWindowWidget::on_regrouped() {
-    UpdateInspWindowList();
+    updateInspWindowList();
 }

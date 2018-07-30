@@ -231,7 +231,7 @@ void FindCircleWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }
 
 void FindCircleWidget::setCurrentWindow(const Engine::Window &window) {

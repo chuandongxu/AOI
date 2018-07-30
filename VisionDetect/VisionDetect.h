@@ -30,7 +30,7 @@ public:
 	virtual QWidget* getColorWeightView() override;
     virtual QWidget* getInspect3DProfileView() override;
 
-    virtual void updateInspWindowWidget() override;
+    virtual void refreshAllDeviceWindows() override;
     virtual void showInspDetectObjs() override;
 
 public:

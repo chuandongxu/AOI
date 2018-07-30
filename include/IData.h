@@ -20,7 +20,7 @@ class IData
 public:	
 	virtual QWidget* getDataEditor() = 0;
     virtual QWidget* getDataWidget() = 0;
-    virtual QWidget* getDataList() = 0;
+    virtual QWidget* getDeviceListWidget() = 0;
 
 	virtual void incrementCycleTests() = 0;
 	virtual void decrementCycleTests() = 0;
@@ -52,14 +52,13 @@ public:
 	virtual bool saveProfDataBase(QString& szFilePath) = 0;
 	virtual bool loadProfDataBase(QString& szFilePath) = 0;
 
-    virtual bool doAlignment(const Vision::VectorOfMat &vecFrameImages ) = 0;
     virtual QString getDataStoreApiVersion() const = 0;
     virtual Vision::VectorOfMat getCombinedBigImages() const = 0;
     virtual cv::Mat getCombinedBigHeight() const = 0;
     virtual QString getCurrentProject() const = 0;
 
     virtual QString getDeviceType(long deviceID) const = 0;
-    virtual bool copyDevice(long srcID, long destID) = 0;
+    virtual bool copyDeviceWindow(long srcID, long destID) = 0;
 };
 
 #endif

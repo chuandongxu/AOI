@@ -136,7 +136,7 @@ void VisionView::createActions()
     m_pCopy = std::make_unique<QAction>(QIcon("image/copy.jpg"), tr("&Copy Device"), this);
     m_pCopy->setShortcuts(QKeySequence::Copy);
     m_pCopy->setStatusTip(tr("Copy to clipboard"));
-    connect(m_pCopy.get(), SIGNAL(triggered()), this, SLOT(copyDevice()));
+    connect(m_pCopy.get(), SIGNAL(triggered()), this, SLOT(copyDeviceWindow()));
     addAction(m_pCopy.get());
 
     m_pPaste = std::make_unique<QAction>(QIcon("image/paste.jpg"), tr("&Paste Device"), this);
@@ -291,11 +291,11 @@ void VisionView::showInspectROI()
     }
 }
 
-void VisionView::copyDevice()
+void VisionView::copyDeviceWindow()
 {
     if (m_pViewWidget)
     {
-        m_pViewWidget->copyDevice();
+        m_pViewWidget->copyDeviceWindow();
     }
 }
 

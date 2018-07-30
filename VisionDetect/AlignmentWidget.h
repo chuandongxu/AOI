@@ -8,6 +8,9 @@
 #include "ui_AlignmentWidget.h"
 #include "EditInspWindowBaseWidget.h"
 #include "SpecAndResultWidget.h"
+#include "VisionAPI.h"
+
+using namespace AOI;
 
 class AlignmentWidget : public EditInspWindowBaseWidget
 {
@@ -20,9 +23,9 @@ public:
 	virtual void setCurrentWindow(const Engine::Window &window) override;
 	virtual void tryInsp() override;
 	virtual void confirmWindow(OPERATION enOperation) override;
+    static bool learnTemplate(Vision::PR_MATCH_TMPL_ALGORITHM enAlgo, const cv::Rect &rectROI, int &recordId);
 
 private:
-    bool _learnTemplate(int &recordId);
     bool _srchTemplate(int recordId, bool bShowResult = true);
 
 private:

@@ -84,21 +84,15 @@ void AlignmentWidget::setDefaultValue() {
     m_currentWindow.recordId = 0;
 }
 
-bool AlignmentWidget::_learnTemplate(int &recordId) {
+/*static*/ bool AlignmentWidget::learnTemplate(Vision::PR_MATCH_TMPL_ALGORITHM enAlgo, const cv::Rect &rectROI, int &recordId) {
     Vision::PR_LRN_TEMPLATE_CMD stCmd;
     Vision::PR_LRN_TEMPLATE_RPY stRpy;
 
-    stCmd.enAlgorithm = static_cast<Vision::PR_MATCH_TMPL_ALGORITHM>(m_pComboBoxAlgorithm->currentIndex());
+    stCmd.enAlgorithm = enAlgo;
+    stCmd.rectROI = rectROI;
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
-    stCmd.matInputImg = pUI->getImage();
-    cv::Rect rectROI = pUI->getSelectedROI();
-    if (rectROI.width <= 0 || rectROI.height <= 0) {
-        QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Please select a ROI to do inspection."));
-        return false;
-    }
-
-    stCmd.rectROI = rectROI;
+    stCmd.matInputImg = pUI->getImage();    
 
     Vision::PR_LrnTmpl(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {
@@ -164,7 +158,14 @@ void AlignmentWidget::tryInsp() {
     if (m_currentWindow.recordId > 0)
         nRecordId = m_currentWindow.recordId;
     else {
-        if (!_learnTemplate(nRecordId))
+        auto pUI = getModule<IVisionUI>(UI_MODEL);
+        cv::Rect rectROI = pUI->getSelectedROI();
+        if (rectROI.width <= 0 || rectROI.height <= 0) {
+            QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Please select a ROI to do inspection."));
+            return;
+        }
+        auto enAlgorithm = static_cast<Vision::PR_MATCH_TMPL_ALGORITHM>(m_pComboBoxAlgorithm->currentIndex());
+        if (! learnTemplate(enAlgorithm, rectROI, nRecordId))
             return;
         else
             bNewRecord = true;
@@ -204,8 +205,10 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
             return;
     }
 
+    auto enAlgorithm = static_cast<Vision::PR_MATCH_TMPL_ALGORITHM>(m_pComboBoxAlgorithm->currentIndex());
+
     int nRecordId = 0;
-    if (!_learnTemplate(nRecordId)) {
+    if (! learnTemplate(enAlgorithm, rectROI, nRecordId)) {
         return;
     }
 
@@ -309,7 +312,7 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
     }
 
     pUI->setDetectObjs(vecDetectObjs);
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }
 
 void AlignmentWidget::setCurrentWindow(const Engine::Window &window) {

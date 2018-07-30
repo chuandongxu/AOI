@@ -305,5 +305,5 @@ void InspContourWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }

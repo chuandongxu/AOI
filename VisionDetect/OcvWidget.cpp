@@ -217,7 +217,7 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
     }
 
     pUI->setDetectObjs(vecDetectObjs);
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }
 
 void OcvWidget::on_btnLrnOcv_clicked() {
@@ -269,7 +269,7 @@ void OcvWidget::on_btnLrnOcv_clicked() {
     }
     Engine::AddRecord(nRecordId, recordData);
 
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }
 
 bool OcvWidget::_learnOcv(int &recordId) {

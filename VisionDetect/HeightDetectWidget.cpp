@@ -211,7 +211,7 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }
 
 void HeightDetectWidget::setCurrentWindow(const Engine::Window &window) {

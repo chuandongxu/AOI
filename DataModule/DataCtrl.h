@@ -51,7 +51,6 @@ public:
 	bool saveProfDataBase(QString& szFilePath);
 	bool loadProfDataBase(QString& szFilePath);
 	void clearProfDataBase();
-    bool doAlignment(const Vision::VectorOfMat &vecFrameImages);
     void setCombinedBigResult(const Vision::VectorOfMat &vecCombinedBigImages, const cv::Mat &matHeight);
     Vision::VectorOfMat getCombinedBigImages() const { return m_vecCombinedBigImages; }
     cv::Mat getCombinedBigHeight() const { return m_matCombinedBigHeight; }
