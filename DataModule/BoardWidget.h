@@ -18,8 +18,11 @@ private slots:
     void on_btnTopLeft_clicked();
     void on_btnBtmRight_clicked();
 
+    void on_pushButton_lightOnOff_clicked();
+
+private:
     void _displayResult();
-    void _showJoyStick();
+    void _showJoyStick();   
 
 private:
     Ui::BoardWidget ui;
