@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WorkSetting</class>
+ <widget class="QWidget" name="WorkSetting">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>850</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>WorkSetting</string>
+  </property>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>900</width>
+     <height>800</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>1</number>
+   </property>
+   <widget class="QWidget" name="tab">
+    <attribute name="title">
+     <string>轨道设置</string>
+    </attribute>
+    <widget class="QGroupBox" name="groupBox_11">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>810</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>平台操作</string>
+     </property>
+     <widget class="QPushButton" name="pushButton_imStop">
+      <property name="geometry">
+       <rect>
+        <x>575</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>紧急停止</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_clearError">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>清除报警</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_home">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>回零</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_enable">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>使能</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_disable">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>去使能</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_5">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>120</y>
+       <width>810</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>来料状态</string>
+     </property>
+     <widget class="QGroupBox" name="groupBox_8">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>240</y>
+        <width>120</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>相对运动</string>
+      </property>
+      <widget class="QLabel" name="label_13">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>31</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>距离：</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_2">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>30</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_stopSensor">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>30</y>
+        <width>100</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>停板Sensor</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_inplaceSensor">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>30</y>
+        <width>100</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>到位Sensor</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_outputSensor">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>30</y>
+        <width>100</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>出料Sensor</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_inputSensor">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>100</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>进料Sensor</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_onLive">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Live</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_onStop">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Stop</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_6">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>220</y>
+       <width>810</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>上下料操作</string>
+     </property>
+     <widget class="QGroupBox" name="groupBox_9">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>240</y>
+        <width>120</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>相对运动</string>
+      </property>
+      <widget class="QLabel" name="label_14">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>31</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>距离：</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_3">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>30</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QPushButton" name="pushButton_move">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>221</width>
+        <height>35</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>进料运动</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_stop">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>30</y>
+        <width>151</width>
+        <height>35</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>停止</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_cylinder">
+      <property name="geometry">
+       <rect>
+        <x>420</x>
+        <y>40</y>
+        <width>181</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>顶升气缸上升/下降</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="pushButton_moveInput">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>330</y>
+       <width>400</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>上料运动</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_moveOutput">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>330</y>
+       <width>400</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>下料运动</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_2">
+    <attribute name="title">
+     <string>轨道宽度</string>
+    </attribute>
+    <widget class="QGroupBox" name="groupBox_12">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>120</y>
+       <width>810</width>
+       <height>81</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>轨道设置</string>
+     </property>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>72</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>宽度：</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_width">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>30</y>
+        <width>113</width>
+        <height>21</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_joystickWidth">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>20</y>
+        <width>60</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_13">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>810</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>平台操作</string>
+     </property>
+     <widget class="QPushButton" name="pushButton_imStopWidth">
+      <property name="geometry">
+       <rect>
+        <x>575</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>紧急停止</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_clearErrorWidth">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>清除报警</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_homeWidth">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>回零</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_enableWidth">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>使能</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_disableWidth">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>30</y>
+        <width>100</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>去使能</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="pushButton_moveToReady">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>230</y>
+       <width>400</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>移动到初始位置</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_moveToWidth">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>230</y>
+       <width>400</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>移动到轨道宽度</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
