@@ -293,6 +293,8 @@ bool OcvWidget::_learnOcv(int &recordId) {
         return false;
     }
 
+    pUI->displayImage(stRpy.matResultImg);
+
     recordId = stRpy.nRecordId;
     return true;
 }

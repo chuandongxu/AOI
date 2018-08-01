@@ -77,7 +77,7 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
     auto dOverlapUmX = System->getParam("scan_image_OverlapX").toDouble();
     auto dOverlapUmY = System->getParam("scan_image_OverlapY").toDouble();
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto dResolutionY  = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
 
     int nOverlapX = static_cast<int> (dOverlapUmX / dResolutionX + 0.5);
@@ -142,9 +142,11 @@ void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
 
     cv::Mat matFrameImg;
     auto vecBigImages = m_pDataCtrl->getCombinedBigImages();
-    if (System->isRunOffline() && vecBigImages.empty())
-        matFrameImg = _readFrameImageFromFolder(nFrameX, nFrameY);
-    else {        
+    if (System->isRunOffline() && vecBigImages.empty()) {
+        //matFrameImg = _readFrameImageFromFolder(nFrameX, nFrameY);
+        matFrameImg = _getFrameImageFromBigImage(pUI->getImage(),
+            nFrameX, nFrameY, nImageWidth, nImageHeight, nOverlapX, nOverlapY);
+    }else {
         if (vecBigImages.empty()) {
             System->showMessage(QStringLiteral("Fiducial Mark"), QStringLiteral("请先扫描电路板!"));
             return;
