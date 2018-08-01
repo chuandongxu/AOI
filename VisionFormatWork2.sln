@@ -51,6 +51,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LightModule", "LightModule\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RegressionTest", "RegressionTest\RegressionTest.vcxproj", "{8CAECCEB-6B51-4646-9768-442BA2A21135}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Workholder", "Workholder\Workholder.vcxproj", "{3293A0E4-E5D0-4EF7-95B0-1C9B01D25837}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -113,6 +115,10 @@ Global
 		{EF98B2B3-63E7-4704-96F6-6F6916CBBD13}.Release|x64.Build.0 = Release|x64
 		{8CAECCEB-6B51-4646-9768-442BA2A21135}.Debug|x64.ActiveCfg = Debug|x64
 		{8CAECCEB-6B51-4646-9768-442BA2A21135}.Release|x64.ActiveCfg = Release|x64
+		{3293A0E4-E5D0-4EF7-95B0-1C9B01D25837}.Debug|x64.ActiveCfg = Debug|x64
+		{3293A0E4-E5D0-4EF7-95B0-1C9B01D25837}.Debug|x64.Build.0 = Debug|x64
+		{3293A0E4-E5D0-4EF7-95B0-1C9B01D25837}.Release|x64.ActiveCfg = Release|x64
+		{3293A0E4-E5D0-4EF7-95B0-1C9B01D25837}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
