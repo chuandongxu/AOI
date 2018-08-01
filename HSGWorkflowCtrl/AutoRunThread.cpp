@@ -249,7 +249,7 @@ bool AutoRunThread::captureLightImages(QVector<cv::Mat>& imageMats)
         if (vecLocalImages.empty()) {         
             std::string strImagePath = System->getOfflinePath().toStdString();
             char strfileName[100];
-            for (int i = 1; i <= 6; ++i) {
+            for (int i = 49; i <= 54; ++i) {
                 _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
                 cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
                 if (matImage.empty())
@@ -377,9 +377,11 @@ bool AutoRunThread::_readBarcode()
     return true;
 }
 
-bool AutoRunThread::_doAlignment(){
-    auto pCam = getModule<ICamera>(CAMERA_MODEL);
-    pCam->selectCaptureMode(ICamera::TRIGGER_LIGHT, true);
+bool AutoRunThread::_doAlignment() {
+    if (! System->isRunOffline()) {
+        auto pCam = getModule<ICamera>(CAMERA_MODEL);
+        pCam->selectCaptureMode(ICamera::TRIGGER_LIGHT, true);
+    }
 
     bool bResult = true;
     std::vector<AlignmentRunnablePtr> vecAlignmentRunnable;

@@ -304,6 +304,11 @@ bool TableCaliDataStorage::getFrameOffsetByUm(cv::Point2f& pt, float* fOffsetVal
 
 bool TableCaliDataStorage::getFrameOffsetByMm(cv::Point2f& pt, float* fOffsetValue)
 {
+    if (System->isRunOffline()) {
+        *fOffsetValue = 0.f;
+        return true;
+    }
+
     Vision::PR_CALC_FRAME_VALUE_CMD stCmd;
     Vision::PR_CALC_FRAME_VALUE_RPY stRpy;
 

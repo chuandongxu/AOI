@@ -2,10 +2,10 @@
 #define LEFTWIDGET_H
 
 #include <QWidget>
-#include <qpushbutton>
-#include "ui_leftwidget.h"
 #include <QVBoxLayout>
-#include"statewidget.h"
+
+#include "ui_leftwidget.h"
+#include "statewidget.h"
 #include "settingdialog.h"
 
 class QLeftWidget : public QWidget
@@ -18,7 +18,12 @@ public:
 
 	void setStateWidget(QWidget * w);
 
-public slots:
+protected:
+	void paintEvent(QPaintEvent *event);
+	void timerEvent(QTimerEvent * event);
+	void enableButton(int iLevel);
+
+private slots:
     void onDiagonseClick();
     void onSettingClick();
 	void onShowWarring();
@@ -29,17 +34,12 @@ public slots:
 	void onRunState(const QVariantList &data);
     void onUIState(const QVariantList &data);
 
-protected:
-	void paintEvent(QPaintEvent *event);
-	void timerEvent(QTimerEvent * event);
-	void enableButton(int iLevel);
-
 private:
 	Ui::leftWidget ui;
-	QVBoxLayout * m_subLayout;
-	QWidget * m_stateWidget;
-    QWidget * m_dataListWidget;
-	int m_timerId;
+	QVBoxLayout   *m_subLayout;
+	QWidget       *m_stateWidget;
+    QWidget       *m_pDeviceListWidget;
+	int            m_timerId;
 	QSettingDialog m_dlgSetting;
 };
 

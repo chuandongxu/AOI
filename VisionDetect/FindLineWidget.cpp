@@ -260,7 +260,7 @@ void FindLineWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }
 
 void FindLineWidget::setCurrentWindow(const Engine::Window &window) {

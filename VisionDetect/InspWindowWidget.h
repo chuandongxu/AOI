@@ -20,6 +20,7 @@ enum class INSP_WIDGET_INDEX {
     INSP_CHIP,
     INSP_BRIDGE,
     INSP_LEAD,
+    OCV,
     SIZE,
 };
 
@@ -38,7 +39,8 @@ public:
     ~InspWindowWidget();
 
     void setCurrentIndex(int index);
-    void UpdateInspWindowList();
+    void updateInspWindowList();
+    void refreshAllDeviceWindows();
     void showInspDetectObjs();
     int getSelectedLighting() const;
     QColorWeight *getColorWidget() const;

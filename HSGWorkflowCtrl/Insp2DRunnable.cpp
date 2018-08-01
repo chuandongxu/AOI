@@ -81,6 +81,10 @@ void Insp2DRunnable::_inspWindow(const Engine::Window &window)
         _inspLead(window);
         break;
 
+    case Engine::Window::Usage::OCV:
+        _ocv(window);
+        break;
+
     default:
         break;
     }
@@ -656,6 +660,56 @@ void Insp2DRunnable::_inspLead(const Engine::Window &window) {
     stCmd.fMaxLeadOffsetY = jsonValue["MaxOffsetY"].toDouble() / m_dResolutionX;
 
     Vision::PR_InspLeadTmpl(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK != stRpy.enStatus) {
+        Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
+        Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
+        if (Vision::PR_STATUS_ERROR_LEVEL::PR_FATAL_ERROR == stGetErrInfoRpy.enErrorLevel) {
+            std::string strErrorMsg = "Window \"" + window.name + "\" inspect failed with error: " + stGetErrInfoRpy.achErrorStr;
+            m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+            m_ptrBoardInspResult->setFatalError();
+            return;
+        }
+    }
+    m_ptrBoardInspResult->addWindowStatus(window.Id, Vision::ToInt32(stRpy.enStatus));
+}
+
+void Insp2DRunnable::_ocv(const Engine::Window &window) {
+    QJsonParseError json_error;
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
+        m_ptrBoardInspResult->setFatalError();
+        return;
+    }
+    QJsonObject jsonValue = parse_doucment.object();
+
+    Vision::PR_OCV_CMD stCmd;
+    Vision::PR_OCV_RPY stRpy;
+
+    int nImageIndex = window.lightId - 1;
+    if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
+        std::string strErrorMsg = "Window \"" + window.name + "\" image id " + std::to_string(window.lightId) + " is invalid.";
+        m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
+        m_ptrBoardInspResult->setFatalError();
+        return;
+    }
+
+    stCmd.matInputImg = m_vec2DImages[nImageIndex];
+    stCmd.rectROI = DataUtils::convertWindowToFrameRect(cv::Point2f(window.x, window.y),
+        window.width,
+        window.height,
+        m_ptFramePos,
+        m_nImageWidthPixel,
+        m_nImageHeightPixel,
+        m_dResolutionX,
+        m_dResolutionY);
+    auto strRecordList = jsonValue["RecordList"].toString();
+    auto datalist = strRecordList.split(',');
+    for (const auto &strRecordId : datalist) {
+        stCmd.vecRecordId.push_back(strRecordId.toInt());
+    }
+    stCmd.fMinMatchScore = jsonValue["MinScore"].toDouble();
+
+    Vision::PR_Ocv(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {
         Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
         Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);

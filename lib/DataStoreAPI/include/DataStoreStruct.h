@@ -119,6 +119,7 @@ struct Window {
         INSP_POLARITY,
         INSP_POLARITY_REF,
         INSP_BRIDGE,
+        OCV,
     };
     Window() :
         Id          (0),
@@ -152,6 +153,7 @@ struct Window {
     String              inspParams;
     String              colorParams;
     Int64               lightId;        //Light Id in database start from 1.
+    Binary              mask;
 };
 using WindowVector = std::vector<Window>;
 

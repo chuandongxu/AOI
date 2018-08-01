@@ -298,5 +298,5 @@ void InspLeadWidget::_autoAddInspWindows(const Vision::PR_AUTO_LOCATE_LEAD_RPY &
     }
 
     pUI->setDetectObjs(vecDetectObjs);
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }

@@ -40,7 +40,7 @@ public:
     ~SearchDeviceWidget();
 
     QString getDeviceType(long deviceID) const;
-    bool copyDevice(long srcID, long destID);
+    bool copyDeviceWindow(long srcID, long destID);
 
 private:
     void initUI();

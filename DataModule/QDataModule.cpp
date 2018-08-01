@@ -11,7 +11,7 @@ QDataModule::QDataModule(int id, const QString &name)
 {
 	m_pDataEditor = new DataEditor();
     m_pDataWidget = new DataWidget(&m_ctrl);
-    m_pDataList = new SearchDeviceWidget();
+    m_pDeviceListWidget = new SearchDeviceWidget();
 }
 
 QDataModule::~QDataModule()
@@ -40,9 +40,9 @@ QWidget* QDataModule::getDataWidget()
     return m_pDataWidget;
 }
 
-QWidget* QDataModule::getDataList()
+QWidget* QDataModule::getDeviceListWidget()
 {
-    return m_pDataList;
+    return m_pDeviceListWidget;
 }
 
 void QDataModule::incrementCycleTests()
@@ -172,19 +172,14 @@ bool QDataModule::loadProfDataBase(QString& szFilePath)
 	return m_ctrl.loadProfDataBase(szFilePath);
 }
 
-bool QDataModule::doAlignment(const Vision::VectorOfMat &vecFrameImages )
-{
-    return m_ctrl.doAlignment(vecFrameImages);
-}
-
 QString QDataModule::getDeviceType(long deviceID) const
 {
-    return m_pDataList->getDeviceType(deviceID);
+    return m_pDeviceListWidget->getDeviceType(deviceID);
 }
 
-bool QDataModule::copyDevice(long srcID, long destID)
+bool QDataModule::copyDeviceWindow(long srcID, long destID)
 {
-    return m_pDataList->copyDevice(srcID, destID);
+    return m_pDeviceListWidget->copyDeviceWindow(srcID, destID);
 }
 
 QMOUDLE_INSTANCE(QDataModule)

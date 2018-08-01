@@ -223,7 +223,7 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }
 
 void InspPolarityWidget::onTypeChange(int index) {

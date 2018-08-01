@@ -75,7 +75,7 @@ private slots:
     void selectROI();
 	void showSelectROI3D();
     void showInspectROI();
-    void copyDevice();
+    void copyDeviceWindow();
     void pasteDevice();
 
 	void showLight();

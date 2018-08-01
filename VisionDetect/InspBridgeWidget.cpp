@@ -317,5 +317,5 @@ void InspBridgeWidget::confirmWindow(OPERATION enOperation) {
     }
 
     pUI->setDetectObjs(vecDetectObjs);
-    m_pParent->UpdateInspWindowList();
+    m_pParent->updateInspWindowList();
 }
