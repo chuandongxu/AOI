@@ -18,7 +18,7 @@ public:
     virtual void setCurrentWindow(const Engine::Window &window) override;
     virtual void tryInsp() override;
     virtual void confirmWindow(OPERATION enOperation) override;
-    
+
 private slots:
     void on_inspModeChanged(int index);
 

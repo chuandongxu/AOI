@@ -38,6 +38,8 @@ FindLineWidget::FindLineWidget(InspWindowWidget *parent)
 : EditInspWindowBaseWidget(parent) {
     ui.setupUi(this);
 
+    m_bSupportMask = true;
+
     m_pCheckBoxFindPair = std::make_unique<QCheckBox>(ui.tableWidget);
     ui.tableWidget->setCellWidget(FIND_PAIR, DATA_COLUMN, m_pCheckBoxFindPair.get());
 

@@ -29,6 +29,8 @@ InspVoidWidget::InspVoidWidget(InspWindowWidget *parent)
 {
     ui.setupUi(this);
 
+    m_bSupportMask = true;
+
     m_pComboBoxInspMode = std::make_unique<QComboBox>(this);
     m_pComboBoxInspMode->addItem("Ratio Mode");
     m_pComboBoxInspMode->addItem("Area Modes");
@@ -127,6 +129,8 @@ void InspVoidWidget::setCurrentWindow(const Engine::Window &window)
         m_pSpecAndResultMinHoleCount->clearResult();
     }
 
+    this->m_maskBinary = window.mask;
+
     on_inspModeChanged(m_pComboBoxInspMode->currentIndex());
 }
 
@@ -156,6 +160,8 @@ void InspVoidWidget::tryInsp() {
     cv::Mat matOrigianlROI(stCmd.matInputImg, stCmd.rectROI);
     matProcessedROI.copyTo(matOrigianlROI);
     stCmd.bPreprocessedImg = true;
+
+    stCmd.matMask = getMaskMat();
 
     if (stCmd.rectROI.width <= 0 || stCmd.rectROI.height <= 0) {
         QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI to do inspection."));
@@ -217,7 +223,8 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
     Engine::Window window;
     window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = Engine::Window::Usage::INSP_HOLE;
-    window.inspParams = byteArray;
+    window.inspParams = byteArray;  
+    window.mask = this->m_maskBinary;
 
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width  / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();

@@ -3,7 +3,9 @@
 #include <QWidget>
 #include "ui_InspMaskEditorWidget.h"
 
-#include "opencv/cv.h"
+#include "VisionAPI.h"
+
+using namespace AOI;
 
 enum MaskType
 {
@@ -107,6 +109,7 @@ public:
     void clear();
 
     cv::Mat getMaskImage();
+    AOI::Vision::Binary getMask();
 
 protected:
     void mouseMoveEvent(QMouseEvent * event);

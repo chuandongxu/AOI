@@ -251,6 +251,21 @@ cv::Mat InspMaskEditorWidget::getMaskImage()
     return matImage;
 }
 
+AOI::Vision::Binary InspMaskEditorWidget::getMask()
+{
+    AOI::Vision::Binary maskBinary;
+
+    cv::Mat matMaskImg = getMaskImage();
+    for (int row = 0; row < matMaskImg.rows; ++row) {
+        for (int col = 0; col < matMaskImg.cols; ++col) {
+            AOI::Vision::Byte& mask = matMaskImg.at<AOI::Vision::Byte>(row, col);
+            maskBinary.push_back(mask);
+        }
+    }
+
+    return maskBinary;
+}
+
 void InspMaskEditorWidget::mouseMoveEvent(QMouseEvent * event)
 {
     double mouseX = event->x(), mouseY = event->y();
