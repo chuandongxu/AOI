@@ -22,7 +22,7 @@ private slots:
 
 private:
     void _displayResult();
-    void _showJoyStick();   
+    void _showJoyStick();
 
 private:
     Ui::BoardWidget ui;
