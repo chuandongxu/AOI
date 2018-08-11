@@ -184,7 +184,7 @@ void InspMaskEditorWidget::setImage(cv::Mat& matImage, bool bClearAll)
     }
 }
 
-cv::Mat InspMaskEditorWidget::getMaskImage()
+cv::Mat InspMaskEditorWidget::getMaskMat()
 {
     cv::Mat matImage(m_hoImage.rows, m_hoImage.cols, CV_8UC1, cv::Scalar(1));
 
@@ -247,23 +247,43 @@ cv::Mat InspMaskEditorWidget::getMaskImage()
             break;
         }
     }
-
+   
     return matImage;
 }
 
-AOI::Vision::Binary InspMaskEditorWidget::getMask()
-{
-    AOI::Vision::Binary maskBinary;
+void InspMaskEditorWidget::setMaskBinary(AOI::Vision::Binary maskBinary)
+{   
+    if (maskBinary.size() > 0)
+    {
+        int rows = m_hoImage.rows;
+        int cols = m_hoImage.cols;
 
-    cv::Mat matMaskImg = getMaskImage();
-    for (int row = 0; row < matMaskImg.rows; ++row) {
-        for (int col = 0; col < matMaskImg.cols; ++col) {
-            AOI::Vision::Byte& mask = matMaskImg.at<AOI::Vision::Byte>(row, col);
-            maskBinary.push_back(mask);
+        bool bMasked = false;
+
+        cv::Mat maskMat = cv::Mat::zeros(rows, cols, CV_8UC3);
+        for (int row = 0; row < rows; row++)
+        {
+            for (int col = 0; col < cols; col++)
+            {
+                cv::Vec3b& pixel = maskMat.at<cv::Vec3b>(row, col);
+
+                uchar mask = maskBinary[row*cols + col];
+                if (0 == mask)
+                {
+                    pixel[0] = 255;
+                    bMasked = true;
+                }
+            }
         }
-    }
 
-    return maskBinary;
+        m_maskMat = bMasked ? maskMat : cv::Mat();
+    }
+    else
+    {
+        m_maskMat = cv::Mat();
+    }
+    
+    enablePanel(m_maskMat.empty());
 }
 
 void InspMaskEditorWidget::mouseMoveEvent(QMouseEvent * event)
@@ -657,147 +677,158 @@ void InspMaskEditorWidget::displayImage(cv::Mat& image)
 
 void InspMaskEditorWidget::repaintAll()
 {
-    cv::Mat matImage = m_hoImage.clone();   
+    cv::Mat matImage = m_hoImage.clone();      
 
-    if (!m_maskRectCur.isEmpty())
+    if (!m_maskMat.empty())
     {
-        cv::Point2f vertices[4];
-        m_maskRectCur._rect.points(vertices);
+        cv::Mat imgLayer = m_maskMat.clone();
+        //cv::cvtColor(imgLayer, imgLayer, CV_GRAY2BGR);
 
-        int x = vertices[1].x;
-        int y = vertices[1].y;
-        int width = vertices[3].x - vertices[1].x;
-        int height = vertices[3].y - vertices[1].y;
-
-
-        cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
-        //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
-        cv::Mat imgLayer(height, width, matImage.type(), cv::Scalar(255, 0, 0));
-
-        double alpha = 0.3;
-        addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
-    }
-
-    if (!m_maskCircleCur.isEmpty())
-    {
-        int x = m_maskCircleCur._center.x - m_maskCircleCur._radius;
-        int y = m_maskCircleCur._center.y - m_maskCircleCur._radius;
-        int width = m_maskCircleCur._radius * 2;
-        int height = m_maskCircleCur._radius * 2;
-
-
-        cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
-        //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
-        cv::Mat imgLayer = matRect.clone();
-        circle(imgLayer, cv::Point2f(m_maskCircleCur._radius, m_maskCircleCur._radius), m_maskCircleCur._radius, cv::Scalar(255, 0, 0), -1);
-
-        double alpha = 0.3;
-        addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
-    }
-
-    if (!m_maskPolyLineCur.isEmpty() && m_maskPolyLineCur._polyPts.size() > 0)
-    {
-        cv::Point *points = new cv::Point[m_maskPolyLineCur._polyPts.size()];
-        for (int i = 0; i < m_maskPolyLineCur._polyPts.size(); i++)
-        {
-            points[i].x = m_maskPolyLineCur._polyPts[i].x;
-            points[i].y = m_maskPolyLineCur._polyPts[i].y;
-        }
-
-        const cv::Point* pt[1] = { points };
-        int npt[1] = { m_maskPolyLineCur._polyPts.size() };
-
-        cv::Mat imgLayer = matImage.clone();
-
-        polylines(imgLayer, pt, npt, 1, 1, cv::Scalar(255, 0, 0));
-        fillPoly(imgLayer, pt, npt, 1, cv::Scalar(255, 0, 0), 8);
-
-        delete points;
-
-        double alpha = 0.3;
+        double alpha = 0.7;
         addWeighted(matImage, alpha, imgLayer, 1 - alpha, 0, matImage);
     }
-
-    for (int i = 0; i < m_maskObjs.size(); i++)
+    else
     {
-        MaskObj* obj = m_maskObjs[i];
-        switch (obj->getType())
+        if (!m_maskRectCur.isEmpty())
         {
-        case MASK_TYPE_RECT:
-        {
-            RectMask* maskObj = dynamic_cast<RectMask*>(obj);
-            if (maskObj && !maskObj->isEmpty())
-            {
-                cv::Point2f vertices[4];
-                maskObj->_rect.points(vertices);
+            cv::Point2f vertices[4];
+            m_maskRectCur._rect.points(vertices);
 
-                int x = vertices[1].x;
-                int y = vertices[1].y;
-                int width = vertices[3].x - vertices[1].x;
-                int height = vertices[3].y - vertices[1].y;
+            int x = vertices[1].x;
+            int y = vertices[1].y;
+            int width = vertices[3].x - vertices[1].x;
+            int height = vertices[3].y - vertices[1].y;
 
 
-                cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
-                //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
-                cv::Mat imgLayer(height, width, matImage.type(), maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0));
+            cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
+            //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
+            cv::Mat imgLayer(height, width, matImage.type(), cv::Scalar(255, 0, 0));
 
-                double alpha = 0.3;
-                addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
-            }
+            double alpha = 0.3;
+            addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
         }
-        break;
-        case MASK_TYPE_CIRCLE:
+
+        if (!m_maskCircleCur.isEmpty())
         {
-            CircleMask* maskObj = dynamic_cast<CircleMask*>(obj);
-            if (maskObj && !maskObj->isEmpty())
-            {
-                int x = maskObj->_center.x - maskObj->_radius;
-                int y = maskObj->_center.y - maskObj->_radius;
-                int width = maskObj->_radius * 2;
-                int height = maskObj->_radius * 2;
+            int x = m_maskCircleCur._center.x - m_maskCircleCur._radius;
+            int y = m_maskCircleCur._center.y - m_maskCircleCur._radius;
+            int width = m_maskCircleCur._radius * 2;
+            int height = m_maskCircleCur._radius * 2;
 
 
-                cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
-                //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
-                cv::Mat imgLayer = matRect.clone();
-                circle(imgLayer, cv::Point2f(maskObj->_radius, maskObj->_radius), maskObj->_radius, maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0), -1);
+            cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
+            //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
+            cv::Mat imgLayer = matRect.clone();
+            circle(imgLayer, cv::Point2f(m_maskCircleCur._radius, m_maskCircleCur._radius), m_maskCircleCur._radius, cv::Scalar(255, 0, 0), -1);
 
-                double alpha = 0.3;
-                addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
-            }
+            double alpha = 0.3;
+            addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
         }
-        break;
-        case MASK_TYPE_POLYLINE:
+
+        if (!m_maskPolyLineCur.isEmpty() && m_maskPolyLineCur._polyPts.size() > 0)
         {
-            PolyLineMask* maskObj = dynamic_cast<PolyLineMask*>(obj);
-            if (maskObj && !maskObj->isEmpty() && maskObj->_polyPts.size() > 2)
+            cv::Point *points = new cv::Point[m_maskPolyLineCur._polyPts.size()];
+            for (int i = 0; i < m_maskPolyLineCur._polyPts.size(); i++)
             {
-                cv::Point *points = new cv::Point[maskObj->_polyPts.size()];
-                for (int i = 0; i < maskObj->_polyPts.size(); i++)
+                points[i].x = m_maskPolyLineCur._polyPts[i].x;
+                points[i].y = m_maskPolyLineCur._polyPts[i].y;
+            }
+
+            const cv::Point* pt[1] = { points };
+            int npt[1] = { m_maskPolyLineCur._polyPts.size() };
+
+            cv::Mat imgLayer = matImage.clone();
+
+            polylines(imgLayer, pt, npt, 1, 1, cv::Scalar(255, 0, 0));
+            fillPoly(imgLayer, pt, npt, 1, cv::Scalar(255, 0, 0), 8);
+
+            delete points;
+
+            double alpha = 0.3;
+            addWeighted(matImage, alpha, imgLayer, 1 - alpha, 0, matImage);
+        }
+
+        for (int i = 0; i < m_maskObjs.size(); i++)
+        {
+            MaskObj* obj = m_maskObjs[i];
+            switch (obj->getType())
+            {
+            case MASK_TYPE_RECT:
+            {
+                RectMask* maskObj = dynamic_cast<RectMask*>(obj);
+                if (maskObj && !maskObj->isEmpty())
                 {
-                    points[i].x = maskObj->_polyPts[i].x;
-                    points[i].y = maskObj->_polyPts[i].y;
+                    cv::Point2f vertices[4];
+                    maskObj->_rect.points(vertices);
+
+                    int x = vertices[1].x;
+                    int y = vertices[1].y;
+                    int width = vertices[3].x - vertices[1].x;
+                    int height = vertices[3].y - vertices[1].y;
+
+
+                    cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
+                    //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
+                    cv::Mat imgLayer(height, width, matImage.type(), maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0));
+
+                    double alpha = 0.3;
+                    addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
                 }
-
-                const cv::Point* pt[1] = { points };
-                int npt[1] = { maskObj->_polyPts.size() };
-
-                cv::Mat imgLayer = matImage.clone();
-
-                polylines(imgLayer, pt, npt, 1, 1, maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0));
-                fillPoly(imgLayer, pt, npt, 1, maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0), 8);
-
-                delete points;
-
-                double alpha = 0.3;
-                addWeighted(matImage, alpha, imgLayer, 1 - alpha, 0, matImage);
             }
-        }
-        break;
-        case MASK_TYPE_NULL:
             break;
-        default:
+            case MASK_TYPE_CIRCLE:
+            {
+                CircleMask* maskObj = dynamic_cast<CircleMask*>(obj);
+                if (maskObj && !maskObj->isEmpty())
+                {
+                    int x = maskObj->_center.x - maskObj->_radius;
+                    int y = maskObj->_center.y - maskObj->_radius;
+                    int width = maskObj->_radius * 2;
+                    int height = maskObj->_radius * 2;
+
+
+                    cv::Mat matRect = matImage(cv::Rect(x, y, width, height));
+                    //rectangle(matRect, vertices[1], vertices[3], Scalar(0,0,255, 100), -1);
+                    cv::Mat imgLayer = matRect.clone();
+                    circle(imgLayer, cv::Point2f(maskObj->_radius, maskObj->_radius), maskObj->_radius, maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0), -1);
+
+                    double alpha = 0.3;
+                    addWeighted(matRect, alpha, imgLayer, 1 - alpha, 0, matRect);
+                }
+            }
             break;
+            case MASK_TYPE_POLYLINE:
+            {
+                PolyLineMask* maskObj = dynamic_cast<PolyLineMask*>(obj);
+                if (maskObj && !maskObj->isEmpty() && maskObj->_polyPts.size() > 2)
+                {
+                    cv::Point *points = new cv::Point[maskObj->_polyPts.size()];
+                    for (int i = 0; i < maskObj->_polyPts.size(); i++)
+                    {
+                        points[i].x = maskObj->_polyPts[i].x;
+                        points[i].y = maskObj->_polyPts[i].y;
+                    }
+
+                    const cv::Point* pt[1] = { points };
+                    int npt[1] = { maskObj->_polyPts.size() };
+
+                    cv::Mat imgLayer = matImage.clone();
+
+                    polylines(imgLayer, pt, npt, 1, 1, maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0));
+                    fillPoly(imgLayer, pt, npt, 1, maskObj->IsSelect() ? cv::Scalar(228, 139, 80) : cv::Scalar(255, 0, 0), 8);
+
+                    delete points;
+
+                    double alpha = 0.3;
+                    addWeighted(matImage, alpha, imgLayer, 1 - alpha, 0, matImage);
+                }
+            }
+            break;
+            case MASK_TYPE_NULL:
+                break;
+            default:
+                break;
+            }
         }
     }
    
@@ -929,6 +960,13 @@ void InspMaskEditorWidget::unSelectMask()
     repaintAll();
 }
 
+void InspMaskEditorWidget::enablePanel(bool bEnable)
+{
+    ui.comboBox_maskIndex->setEnabled(bEnable);
+    ui.groupBox->setEnabled(bEnable);
+    ui.pushButton_addMask->setEnabled(bEnable);
+}
+
 void InspMaskEditorWidget::clear()
 {
     ui.comboBox_maskIndex->clear();
@@ -943,6 +981,7 @@ void InspMaskEditorWidget::clear()
     m_nSelectIndex = -1;
 
     m_hoImage.release();
+    m_maskMat.release();
 }
 
 void InspMaskEditorWidget::onMaskIndexChanged(int iIndex)
@@ -971,16 +1010,25 @@ void InspMaskEditorWidget::onEditDone()
 
 void InspMaskEditorWidget::onDeleteMask()
 {
-    int nMaskIndex = ui.comboBox_maskIndex->currentIndex();
-
-    if (nMaskIndex >= 1 && nMaskIndex <= m_maskObjs.size())
+    if (!m_maskMat.empty())
     {
-        delete m_maskObjs[nMaskIndex - 1];
-        m_maskObjs.erase(m_maskObjs.begin() + nMaskIndex - 1);
-
-        ui.comboBox_maskIndex->removeItem(ui.comboBox_maskIndex->count() - 1);
-        ui.comboBox_maskIndex->setCurrentIndex(0);
-
-        unSelectMask();       
+        m_maskMat.release();
+        enablePanel(true);  
+        repaintAll();
     }
+    else
+    {
+        int nMaskIndex = ui.comboBox_maskIndex->currentIndex();
+
+        if (nMaskIndex >= 1 && nMaskIndex <= m_maskObjs.size())
+        {
+            delete m_maskObjs[nMaskIndex - 1];
+            m_maskObjs.erase(m_maskObjs.begin() + nMaskIndex - 1);
+
+            ui.comboBox_maskIndex->removeItem(ui.comboBox_maskIndex->count() - 1);
+            ui.comboBox_maskIndex->setCurrentIndex(0);
+
+            unSelectMask();
+        }
+    }   
 }

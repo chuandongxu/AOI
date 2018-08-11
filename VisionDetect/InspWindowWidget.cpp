@@ -541,6 +541,8 @@ void InspWindowWidget::on_btnEditMask_clicked()
     cv::Mat matROI(matImage, rectROI);
    
     m_pMaskEditorWidget->setImage(matROI, true);
+    m_pMaskEditorWidget->setMaskBinary(window.mask);
+    m_pMaskEditorWidget->repaintAll();
 
     m_pMaskEditorWidget->show();
     while (!m_pMaskEditorWidget->isHidden())
@@ -549,8 +551,8 @@ void InspWindowWidget::on_btnEditMask_clicked()
         QApplication::processEvents();
     }
 
-    Binary mask = m_pMaskEditorWidget->getMask();
-    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setMaskBinary(mask);
+    cv::Mat maskMat = m_pMaskEditorWidget->getMaskMat();
+    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setMask(maskMat);
 }
 
 void InspWindowWidget::on_btnTryInsp_clicked() {

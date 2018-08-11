@@ -129,7 +129,7 @@ void InspVoidWidget::setCurrentWindow(const Engine::Window &window)
         m_pSpecAndResultMinHoleCount->clearResult();
     }
 
-    this->m_maskBinary = window.mask;
+    this->setMask(convertMaskBny2Mat(window.mask));
 
     on_inspModeChanged(m_pComboBoxInspMode->currentIndex());
 }
@@ -161,7 +161,7 @@ void InspVoidWidget::tryInsp() {
     matProcessedROI.copyTo(matOrigianlROI);
     stCmd.bPreprocessedImg = true;
 
-    stCmd.matMask = getMaskMat();
+    stCmd.matMask = getMask();
 
     if (stCmd.rectROI.width <= 0 || stCmd.rectROI.height <= 0) {
         QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI to do inspection."));
@@ -224,7 +224,7 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
     window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = Engine::Window::Usage::INSP_HOLE;
     window.inspParams = byteArray;  
-    window.mask = this->m_maskBinary;
+    window.mask = this->convertMaskMat2Bny(getMask());
 
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width  / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();

@@ -106,10 +106,10 @@ protected:
 public:
     void setImage(cv::Mat& matImage, bool bClearAll = false);
     void repaintAll();
-    void clear();
+    void clear();  
 
-    cv::Mat getMaskImage();
-    AOI::Vision::Binary getMask();
+    cv::Mat getMaskMat();
+    void setMaskBinary(AOI::Vision::Binary maskBinary);
 
 protected:
     void mouseMoveEvent(QMouseEvent * event);
@@ -139,6 +139,8 @@ private:
     MaskType getMaskType();
     void unSelectMask();
 
+    void enablePanel(bool bEnable);
+
 private:
     int    m_stateView;
     bool   m_mouseLeftPressed;
@@ -154,6 +156,7 @@ private:
 private:
     Ui::InspMaskEditorWidget ui;
     cv::Mat	m_hoImage;
+    cv::Mat m_maskMat;
 
     int m_nSelectIndex;
 

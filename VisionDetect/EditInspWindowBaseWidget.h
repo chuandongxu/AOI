@@ -28,15 +28,18 @@ public:
     virtual void setWindowGroup(const Engine::WindowGroup &windowGroup);
    
     bool isSupportMask() { return m_bSupportMask; }
-    void setMaskBinary(Binary& mask){ m_maskBinary = mask; }
-    cv::Mat getMaskMat();
+    void setMask(cv::Mat& maskMat);
+    cv::Mat getMask(){ return m_maskMat; }
+
+    cv::Mat convertMaskBny2Mat(Binary maskBinary);
+    Binary convertMaskMat2Bny(cv::Mat& maskMat);
 
 protected:
     InspWindowWidget           *m_pParent;
     Engine::Window              m_currentWindow;
     Engine::WindowGroup         m_windowGroup;
     bool                        m_bSupportMask;
-    Binary                      m_maskBinary;
+    cv::Mat                     m_maskMat;
 };
 
 using InspWindowBaseWidgetPtr = std::unique_ptr<EditInspWindowBaseWidget>;
