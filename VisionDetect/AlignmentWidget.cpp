@@ -33,6 +33,8 @@ AlignmentWidget::AlignmentWidget(InspWindowWidget *parent)
 :EditInspWindowBaseWidget(parent) {
     ui.setupUi(this);
 
+    m_bSupportMask = true;
+
     m_pComboBoxAlgorithm = std::make_unique<QComboBox>(ui.tableWidget);
     m_pComboBoxAlgorithm->addItem("SQUARE DIFF");
     m_pComboBoxAlgorithm->addItem("HIERARCHICAL EDGE");

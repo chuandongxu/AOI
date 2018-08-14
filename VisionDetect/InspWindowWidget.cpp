@@ -541,6 +541,8 @@ void InspWindowWidget::on_btnEditMask_clicked()
     cv::Mat matROI(matImage, rectROI);
    
     m_pMaskEditorWidget->setImage(matROI, true);
+    m_pMaskEditorWidget->setMaskBinary(window.mask);
+    m_pMaskEditorWidget->repaintAll();
 
     m_pMaskEditorWidget->show();
     while (!m_pMaskEditorWidget->isHidden())
@@ -548,6 +550,9 @@ void InspWindowWidget::on_btnEditMask_clicked()
         QThread::msleep(100);
         QApplication::processEvents();
     }
+
+    cv::Mat maskMat = m_pMaskEditorWidget->getMaskMat();
+    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setMask(maskMat);
 }
 
 void InspWindowWidget::on_btnTryInsp_clicked() {
@@ -799,6 +804,8 @@ void InspWindowWidget::onSelectedWindowChanged() {
 
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setCurrentWindow(window);
     ui.stackedWidget->setCurrentIndex(static_cast<int>(m_enCurrentInspWidget));
+
+    ui.btnEditMask->setEnabled(m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->isSupportMask());
 
     m_pComboBoxLighting->setCurrentIndex(window.lightId - 1);
 

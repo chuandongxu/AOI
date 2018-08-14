@@ -34,6 +34,8 @@ FindCircleWidget::FindCircleWidget(InspWindowWidget *parent)
 : EditInspWindowBaseWidget(parent) {
     ui.setupUi(this);
 
+    m_bSupportMask = true;
+
     m_pComboBoxInnerAttribute = std::make_unique<QComboBox>(ui.tableWidget);
     m_pComboBoxInnerAttribute->addItem("Bright");
     m_pComboBoxInnerAttribute->addItem("Dark");
