@@ -42,6 +42,16 @@ struct PR_VERSION_INFO {
     char                    chArrVersion[100];
 };
 
+struct PR_GET_ERROR_INFO_RPY {
+    PR_STATUS_ERROR_LEVEL	enErrorLevel;
+	char				    achErrorStr[PR_MAX_ERR_STR_LEN];
+};
+
+struct PR_GET_RECORD_INFO_RPY {
+    VisionStatus            enStatus;
+    cv::Mat                 matImage;
+};
+
 struct PR_LRN_OBJ_CMD {
     cv::Mat                 matInputImg;
 	PR_SRCH_OBJ_ALGORITHM   enAlgorithm;
@@ -83,6 +93,7 @@ struct PR_SRCH_OBJ_RPY {
 struct PR_LRN_TEMPLATE_CMD {
     PR_LRN_TEMPLATE_CMD() : enAlgorithm (PR_MATCH_TMPL_ALGORITHM::SQUARE_DIFF) {}
     cv::Mat                 matInputImg;
+    cv::Mat                 matMask;
     cv::Rect                rectROI;
     PR_MATCH_TMPL_ALGORITHM enAlgorithm;
 };
@@ -532,11 +543,6 @@ struct PR_INSP_CIRCLE_RPY {
     cv::Point2f             ptCircleCtr;
     float                   fDiameter;
     cv::Mat                 matResultImg;
-};
-
-struct PR_GET_ERROR_INFO_RPY {
-    PR_STATUS_ERROR_LEVEL	enErrorLevel;
-	char				    achErrorStr[PR_MAX_ERR_STR_LEN];
 };
 
 struct PR_OCR_CMD {
