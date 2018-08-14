@@ -1,0 +1,990 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TowerSetting</class>
+ <widget class="QWidget" name="TowerSetting">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>850</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>TowerSetting</string>
+  </property>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>900</width>
+     <height>821</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="tab">
+    <attribute name="title">
+     <string>三色灯光设置</string>
+    </attribute>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>30</y>
+       <width>591</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>空闲状态</string>
+     </property>
+     <widget class="QGroupBox" name="groupBox_1">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>红</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_3">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>黄</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_4">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_5">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_6">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>绿</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_7">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_8">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_9">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_4">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>蜂鸣</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_45">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_46">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_5">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>220</y>
+       <width>591</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>量产状态</string>
+     </property>
+     <widget class="QGroupBox" name="groupBox_6">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>红</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_10">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_11">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_12">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_7">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>黄</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_13">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_14">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_15">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_8">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>绿</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_16">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_17">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_18">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_9">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>蜂鸣</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_47">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_48">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_10">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>410</y>
+       <width>591</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>告警状态</string>
+     </property>
+     <widget class="QGroupBox" name="groupBox_11">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>红</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_19">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_20">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_21">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_12">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>黄</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_22">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_23">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_24">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_13">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>绿</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_25">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_26">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_27">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_14">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>蜂鸣</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_49">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_50">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_15">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>600</y>
+       <width>591</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>错误状态</string>
+     </property>
+     <widget class="QGroupBox" name="groupBox_16">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>红</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_28">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_29">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_30">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_17">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>黄</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_31">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_32">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_33">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_18">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>绿</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_34">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_35">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_36">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>闪烁</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_19">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>30</y>
+        <width>111</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>蜂鸣</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_51">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>关</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_52">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>80</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="pushButton_LoadAll">
+     <property name="geometry">
+      <rect>
+       <x>650</x>
+       <y>40</y>
+       <width>150</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>导入配置</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_SaveAll">
+     <property name="geometry">
+      <rect>
+       <x>650</x>
+       <y>70</y>
+       <width>150</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>保存配置</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_Trigger">
+     <property name="geometry">
+      <rect>
+       <x>650</x>
+       <y>160</y>
+       <width>65</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>触发</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox_mode">
+     <property name="geometry">
+      <rect>
+       <x>700</x>
+       <y>120</y>
+       <width>100</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_Stop">
+     <property name="geometry">
+      <rect>
+       <x>735</x>
+       <y>160</y>
+       <width>65</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>停止</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>650</x>
+       <y>120</y>
+       <width>51</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>模式：</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
