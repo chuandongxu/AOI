@@ -40,7 +40,7 @@ API_CALL(int)  UpdateDevices(const DeviceVector &vecDevice);
 API_CALL(int)  DeleteDevice(Int64 boardId, const String &strDeviceName);
 API_CALL(int)  GetBoardDevice(Int64 boardId, DeviceVector &vecDevice);
 API_CALL(int)  GetAllDevices(DeviceVector &vecDevice);
-API_CALL(int)  CreateWindow(Window &window);
+API_CALL(int)  CreateWindow(Window &window, bool bCopy = false);
 API_CALL(int)  DeleteWindow(Int64 windowId);
 API_CALL(int)  UpdateWindow(const Window &window);
 API_CALL(int)  GetWindow(Int64 windowId, Window &window);
