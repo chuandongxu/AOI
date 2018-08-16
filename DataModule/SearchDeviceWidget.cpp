@@ -441,23 +441,7 @@ bool SearchDeviceWidget::copyDeviceWindow(long srcID, long destID)
         _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), destDevice.name.c_str());
         window.name = windowName;
 
-        if (window.recordId > 0 && Engine::Window::Usage::ALIGNMENT == window.usage)
-        {
-            cv::Rect rectROI = _calcRectROI(window);
-
-            int nRecordId = 0;
-            if (!_learnTemplate(rectROI, nRecordId)) {
-                continue;
-                //return false;
-            }
-            window.recordId = nRecordId;
-
-            if (ReadBinaryFile(FormatRecordName(window.recordId), window.recordData) != 0) {
-                System->showMessage(QStringLiteral("Add Alignment Window"), QStringLiteral("Failed to read record data."));
-                return false;
-            }
-        }
-        auto result = Engine::CreateWindow(window);
+        auto result = Engine::CreateWindow(window, true); // true means copy mode.
         if (result != Engine::OK) {
             String errorType, errorMessage;
             Engine::GetErrorDetail(errorType, errorMessage);
@@ -476,7 +460,7 @@ bool SearchDeviceWidget::copyDeviceWindow(long srcID, long destID)
             char windowName[100];
             _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), destDevice.name.c_str());
             window.name = windowName;
-            auto result = Engine::CreateWindow(window);
+            auto result = Engine::CreateWindow(window, true); // true means copy mode.
             if (result != Engine::OK) {
                 String errorType, errorMessage;
                 Engine::GetErrorDetail(errorType, errorMessage);
