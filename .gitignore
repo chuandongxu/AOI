@@ -44,6 +44,8 @@ VisionFormatWork/GeneratedFiles
 CurveEditor/GeneratedFiles
 VisionTest/GeneratedFiles
 LightModule/GeneratedFiles
+TowerLight/GeneratedFiles
+WorkHolder/GeneratedFiles
 RegressionTest/RegressionTest_result.txt
 RegressionTest/data/PackageSize.csv
 QSmartDetect/x64/Debug
