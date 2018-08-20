@@ -52,19 +52,22 @@ QVariant DeviceItemModel::data(const QModelIndex &index, int role /*= Qt::Displa
 
 static const char *WINDOW_USAGE_NAME[] {
     "Alignment",
-        "Height Detect Base",
-        "Height Detect",
-        "Inspect Lead",
-        "Inspect Chip",
-        "Inspect Contour",
-        "Inspect Hole",
-        "Find Line",
-        "Find Circle",
-        "Inspect Polarity",
-        "Inspect Polarity Ref",
-        "Inspect Bridge",
-        "Insp Lead",
+    "Height Detect Base",
+    "Height Detect",
+    "Inspect Lead",
+    "Inspect Chip",
+    "Inspect Contour",
+    "Inspect Hole",
+    "Find Line",
+    "Find Circle",
+    "Inspect Polarity",
+    "Inspect Polarity Ref",
+    "Inspect Bridge",
+    "Ocv",
+    "Height Base Global",
 };
+
+static_assert(static_cast<int>(Engine::Window::Usage::COUNT) == sizeof(WINDOW_USAGE_NAME) / sizeof(WINDOW_USAGE_NAME[0]), "The window usage size is not correct");
 
 SearchDeviceWidget::SearchDeviceWidget(QWidget *parent)
     : QWidget(parent)
