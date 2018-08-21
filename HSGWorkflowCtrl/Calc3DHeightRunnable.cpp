@@ -12,8 +12,7 @@ Calc3DHeightRunnable::Calc3DHeightRunnable(int nDlpId, const QVector<cv::Mat> &v
 {
 }
 
-Calc3DHeightRunnable::~Calc3DHeightRunnable()
-{
+Calc3DHeightRunnable::~Calc3DHeightRunnable() {
 }
 
 void Calc3DHeightRunnable::run()

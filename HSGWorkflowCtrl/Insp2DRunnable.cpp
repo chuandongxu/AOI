@@ -8,21 +8,54 @@
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IVisionUI.h"
+#include "../include/IVision.h"
 #include "../DataModule/CalcUtils.hpp"
+#include "TimeLog.h"
 
-Insp2DRunnable::Insp2DRunnable(const Vision::VectorOfMat    &vec2DImages,
-                               const DeviceInspWindowVector &vecDeviceWindows,
-                               const cv::Point2f            &ptFramePos,
-                               BoardInspResultPtr           &ptrBoardInsResult) :
-    m_vec2DImages      (vec2DImages),
-    m_vecDeviceWindows (vecDeviceWindows),
-    InspRunnable       (ptFramePos, ptrBoardInsResult) {
+Insp2DRunnable::Insp2DRunnable(
+    const cv::Mat                &mat3DHeight,
+    const Vision::VectorOfMat    &vec2DImages,
+    const DeviceInspWindowVector &vecDeviceWindows,
+    const cv::Point2f            &ptFramePos,
+    BoardInspResultPtr           &ptrBoardInsResult) :
+    m_mat3DHeight               (mat3DHeight),
+    m_vec2DImages               (vec2DImages),
+    m_vecDeviceWindows          (vecDeviceWindows),
+    m_pThreadPoolCalc3D         (nullptr),
+    InspRunnable                (ptFramePos, ptrBoardInsResult) {
+}
+
+Insp2DRunnable::Insp2DRunnable(const Vision::VectorOfMat            &vec2DCaptureImages,
+                               Vision::VectorOfVectorOfMat          *pVecVecFrameImages,
+                               QThreadPool                          *pThreadPoolCalc3D,
+                               const VectorCalc3DHeightRunnablePtr  &vecCalc3DHeightRunnable,
+                               Vision::VectorOfMat                  *pVec3DFrameImages,
+                               const DeviceInspWindowVector         &vecDeviceWindows,
+                               int                                   nRow,
+                               int                                   nCol,
+                               int                                   nTotalRows,
+                               int                                   nTotalCols,
+                               const cv::Point2f                    &ptFramePos,
+                               BoardInspResultPtr                   &ptrBoardInsResult) :
+    m_vec2DCaptureImages        (vec2DCaptureImages),
+    m_pVecVecFrameImages        (pVecVecFrameImages),
+    m_pThreadPoolCalc3D         (pThreadPoolCalc3D),
+    m_vecCalc3DHeightRunnable   (vecCalc3DHeightRunnable),
+    m_pVec3DFrameImages         (pVec3DFrameImages),
+    m_vecDeviceWindows          (vecDeviceWindows),
+    m_nRow                      (nRow),
+    m_nCol                      (nCol),
+    m_nTotalRows                (nTotalRows),
+    m_nTotalCols                (nTotalCols),
+    InspRunnable                (ptFramePos, ptrBoardInsResult) {
 }
 
 Insp2DRunnable::~Insp2DRunnable() {
 }
 
 void Insp2DRunnable::run() {
+    _prepareImages();
+
     int nWindowIndex = 0;
     for(auto &deviceWindow : m_vecDeviceWindows)
     {
@@ -796,4 +829,76 @@ Vision::VisionStatus Insp2DRunnable::_alignment(const Engine::Window &window, De
     }
 
     return stRpy.enStatus;
+}
+
+Vision::VectorOfMat Insp2DRunnable::_generate2DImages(const Vision::VectorOfMat &vecInputImages)
+{
+    assert(vecInputImages.size() == CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT);
+
+    Vision::VectorOfMat vecResultImages;
+    cv::Mat matRed, matGreen, matBlue;
+    bool bColorCamera = false;
+    if (bColorCamera) {
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT],   matRed,   CV_BayerGR2GRAY);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT], matGreen, CV_BayerGR2GRAY);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT],  matBlue,  CV_BayerGR2GRAY);
+    }else {
+        matRed   = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT];
+        matGreen = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT];
+        matBlue  = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT];
+    }
+
+    Vision::VectorOfMat vecChannels{matBlue, matGreen, matRed};
+    cv::Mat matPseudoColorImage;
+    cv::merge(vecChannels, matPseudoColorImage);
+
+    cv::Mat matTopLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT], matTopLightImage, CV_BayerGR2BGR);
+	vecResultImages.push_back(matTopLightImage);
+
+    cv::Mat matLowAngleLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
+    vecResultImages.push_back(matLowAngleLightImage);
+
+    vecResultImages.push_back(matPseudoColorImage);
+
+	cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
+    if (bColorCamera)
+	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT], matUniformLightImage, CV_BayerGR2BGR);
+	vecResultImages.push_back(matUniformLightImage);
+
+    return vecResultImages;
+}
+
+void Insp2DRunnable::_prepareImages() {
+    if (m_pThreadPoolCalc3D != nullptr) {
+        m_vec2DImages = _generate2DImages(m_vec2DCaptureImages);
+        for (int i = 0; i < 4; ++i)
+            (*m_pVecVecFrameImages)[i][m_nRow * m_nTotalCols + m_nCol] = m_vec2DImages[i];
+
+        m_pThreadPoolCalc3D->waitForDone();
+        TimeLogInstance->addTimeLog(std::string("Finished wait for 3D calculation done in thead ") + QThread::currentThread()->objectName().toStdString());
+        if (!m_vecCalc3DHeightRunnable.empty()) {
+            QVector<cv::Mat> vecMatHeight;
+            for (const auto &ptrCalc3DHeightRunnable : m_vecCalc3DHeightRunnable)
+                vecMatHeight.push_back(ptrCalc3DHeightRunnable->get3DHeight());
+
+            IVision* pVision = getModule<IVision>(VISION_MODEL);
+            if (!pVision) return;
+
+            pVision->setInspect3DHeight(vecMatHeight, m_nRow, m_nCol, m_nTotalRows, m_nTotalCols);
+            pVision->merge3DHeight(vecMatHeight, m_mat3DHeight, m_ptFramePos);
+            (*m_pVec3DFrameImages)[m_nRow * m_nTotalCols + m_nCol] = m_mat3DHeight;
+        }
+    }    
+
+    Vision::PR_HEIGHT_TO_GRAY_CMD stCmd;
+    Vision::PR_HEIGHT_TO_GRAY_RPY stRpy;
+    stCmd.matHeight = m_mat3DHeight;
+    Vision::PR_HeightToGray(&stCmd, &stRpy);
+    if (Vision::VisionStatus::OK == stRpy.enStatus) {
+        m_vec2DImages.push_back(stRpy.matGray);
+    }
 }

@@ -186,7 +186,7 @@ void InspLeadWidget::_autoAddInspWindows(const Vision::PR_AUTO_LOCATE_LEAD_RPY &
 
     Engine::Window window;
     window.lightId = m_pParent->getSelectedLighting() + 1;
-    window.usage = Engine::Window::Usage::INSP_LEAD;    
+    window.usage = Engine::Window::Usage::INSP_LEAD;
 
     auto matBigImage = pUI->getImage();
     int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;

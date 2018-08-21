@@ -96,7 +96,6 @@ private:
     bool _doInspection(BoardInspResultPtr ptrBoardInspResult);
     DeviceInspWindowVector _getDeviceWindowInFrame(const cv::Point2f &ptFrameCtr);
     DeviceInspWindowVector _getNotInspectedDeviceWindow() const;
-    Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
     bool _combineBigImage(const Vision::VectorOfMat &vecMatImages, cv::Mat &matBigImage);
     void _generateResultBigImage(cv::Mat matBigImage, BoardInspResultPtr ptrBoardInspResult);
     void _sendErrorAndWaitForResponse();
@@ -111,7 +110,8 @@ private:
     int                             m_nTotalImageCount;
     cv::Mat                         m_matTransform;
     Vision::VectorOfVectorOfPoint2f m_vecVecFrameCtr;
-    QThreadPool                     m_threadPoolCalc3DInsp2D;
+    QThreadPool                     m_threadPoolCalc3D;
+    QThreadPool                     m_threadPoolInsp2D;
     float                           m_fFovWidthUm;
     float                           m_fFovHeightUm;
     int                             m_nImageWidthPixel;

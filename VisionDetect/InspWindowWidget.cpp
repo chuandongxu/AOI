@@ -46,24 +46,6 @@ static const QString DEFAULT_WINDOW_NAME[] =
 
 static_assert (static_cast<size_t>(INSP_WIDGET_INDEX::SIZE) == sizeof(DEFAULT_WINDOW_NAME) / sizeof(DEFAULT_WINDOW_NAME[0]), "The window name size is not correct");
 
-static const char *WINDOW_USAGE_NAME[] {
-    "Alignment",
-    "Height Detect Base",
-    "Height Detect",
-    "Inspect Lead",
-    "Inspect Chip",
-    "Inspect Contour",
-    "Inspect Hole",
-    "Find Line",
-    "Find Circle",
-    "Inspect Polarity",
-    "Inspect Polarity Ref",
-    "Inspect Bridge",
-    "Insp Lead",
-    "Ocv",
-    "Height Global Base",
-};
-
 InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
 : QWidget(parent), m_pColorWidget(pColorWidget) {
     ui.setupUi(this);
@@ -326,9 +308,6 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
 
             Engine::Window window;
             Engine::GetWindow(windowId, window);
-            if (window.recordId > 0)
-              AOI::Vision::PR_FreeRecord(window.recordId);
-
             result = Engine::DeleteWindow(windowId);
             if (result != Engine::OK) {
                 String errorType, errorMessage;
