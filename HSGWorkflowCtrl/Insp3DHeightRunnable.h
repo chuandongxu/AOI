@@ -9,11 +9,9 @@ class Insp3DHeightRunnable : public InspRunnable
 {
 public:
     Insp3DHeightRunnable(
-        QThreadPool                                *pThreadPoolCalc3DInsp2D,
-        const std::vector<Calc3DHeightRunnablePtr> &vecCalc3DHeightRunnable,
+        QThreadPool                                *pThreadPoolInsp2D,
         Insp2DRunnablePtr                           ptrInsp2DRunnable,
-        const cv::Point2f                          &ptFramePos,
-        Vision::VectorOfMat                        *pVec3DFrameImages,
+        const cv::Point2f                          &ptFramePos,        
         int                                         nRow,
         int                                         nCol,
         int                                         nTotalRows,
@@ -27,7 +25,7 @@ protected:
     void _insp3DHeightGroup(const Engine::WindowGroup &windowGroup);
 
 private:
-    QThreadPool                          *m_pThreadPoolCalc3DInsp2D;
+    QThreadPool                          *m_pThreadPoolInsp2D;
     std::vector<Calc3DHeightRunnablePtr>  m_vecCalc3DHeightRunnable;
     Insp2DRunnablePtr                     m_ptrInsp2DRunnable;
     cv::Mat                               m_mat3DHeight;

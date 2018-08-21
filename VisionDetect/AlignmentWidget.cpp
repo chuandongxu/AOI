@@ -84,6 +84,7 @@ void AlignmentWidget::setDefaultValue() {
 
     m_bIsTryInspected = false;
     m_currentWindow.recordId = 0;
+    m_currentWindow.usage = Engine::Window::Usage::UNDEFINED;
 }
 
 /*static*/ bool AlignmentWidget::learnTemplate(Vision::PR_MATCH_TMPL_ALGORITHM enAlgo, const cv::Rect &rectROI, int &recordId) {

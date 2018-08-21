@@ -26,3 +26,4 @@ private:
 };
 
 using Calc3DHeightRunnablePtr = std::shared_ptr<Calc3DHeightRunnable>;
+using VectorCalc3DHeightRunnablePtr = std::vector<Calc3DHeightRunnablePtr>;

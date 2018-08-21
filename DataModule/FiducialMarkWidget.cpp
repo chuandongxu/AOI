@@ -2,6 +2,7 @@
 #include "FiducialMarkWidget.h"
 #include "../include/IVisionUI.h"
 #include "../include/ICamera.h"
+#include "../include/IVision.h"
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../Common/SystemData.h"
@@ -11,6 +12,7 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/video.hpp"
 #include "../Common/CommonFunc.h"
+#include "QDetectObj.h"
 
 FiducialMarkWidget::FiducialMarkWidget(DataCtrl *pDataCtrl, QWidget *parent)
 :   m_pDataCtrl(pDataCtrl), 
@@ -504,7 +506,9 @@ int FiducialMarkWidget::srchFiducialMark() {
         cv::Mat matFrameImg;
         auto vecBigImages = m_pDataCtrl->getCombinedBigImages();
         if (System->isRunOffline() && vecBigImages.empty())
-            matFrameImg = _readFrameImageFromFolder(nFrameX, nFrameY);
+            //matFrameImg = _readFrameImageFromFolder(nFrameX, nFrameY);
+            matFrameImg = _getFrameImageFromBigImage(pUI->getImage(),
+            nFrameX, nFrameY, nImageWidth, nImageHeight, nOverlapX, nOverlapY);
         else {
             
             if (vecBigImages.empty()) {
@@ -878,10 +882,16 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked() {
             System->showMessage(strTitle, strMsg);
             return;
         }
-    }
+    }    
 
-    //Refresh the select FM window.
+    // Refresh the select FM windows.
     refreshFMWindow();
+
+    // Refresh the inspect windows
+    if (!pUI->getDetectObjs().isEmpty()) {
+        auto pVision = getModule<IVision>(VISION_MODEL);
+        pVision->refreshAllDeviceWindows();
+    }
 }
 
 void FiducialMarkWidget::on_btnRemoveFM_clicked() {

@@ -112,7 +112,7 @@ void InspPolarityWidget::tryInsp() {
             auto x = window.x / dResolutionX;
             auto y = window.y / dResolutionY;
             if (bBoardRotated)
-                x = nBigImgWidth - x;
+                x = nBigImgWidth  - x;
             else
                 y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
 
@@ -125,8 +125,10 @@ void InspPolarityWidget::tryInsp() {
     }
 
     Vision::PR_InspPolarity(&stCmd, &stRpy);
-    if (Vision::VisionStatus::OK == stRpy.enStatus)
+    if (Vision::VisionStatus::OK == stRpy.enStatus) {
         pUI->displayImage(stRpy.matResultImg);
+        m_pSpecAndResultIntensityDiffTol->setResult(stRpy.nGrayScaleDiff);
+    }
     QString strMsg;
     strMsg.sprintf("Inspect Status %d, Intensity difference(%d)", Vision::ToInt32(stRpy.enStatus), stRpy.nGrayScaleDiff);
     QMessageBox::information(this, "Inspect Polarity", strMsg);
@@ -149,8 +151,9 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     auto rectROI = pUI->getSelectedROI();
+    QString strTitle(QStringLiteral("极性检测框"));
     if (rectROI.width <= 0 || rectROI.height <= 0) {
-        QMessageBox::critical(this, QStringLiteral("Add Height Detect Window"), QStringLiteral("Please select a ROI to do inspection."));
+        System->showMessage(strTitle, QStringLiteral("Please select a ROI to do inspection."));
         return;
     }
 
@@ -161,7 +164,7 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
 
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();
-    int nBigImgWidth = matBigImage.cols / dCombinedImageScale;
+    int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;
     int nBigImgHeight = matBigImage.rows / dCombinedImageScale;
     if (bBoardRotated) {
         window.x = (nBigImgWidth - ptWindowCtr.x)  * dResolutionX;
@@ -171,19 +174,20 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
         window.x = ptWindowCtr.x * dResolutionX;
         window.y = (nBigImgHeight - ptWindowCtr.y) * dResolutionY;
     }
-    window.width = rectROI.width  * dResolutionX;
+    window.width  = rectROI.width  * dResolutionX;
     window.height = rectROI.height * dResolutionY;
-    window.deviceId = pUI->getSelectedDevice().getId();
-    window.angle = 0;
+    auto selectedDevice = pUI->getSelectedDevice();
+    window.deviceId = selectedDevice.getId();
+    window.angle = 0;    
 
     int result = Engine::OK;
     if (OPERATION::ADD == enOperation) {
-        window.deviceId = pUI->getSelectedDevice().getId();
+        window.deviceId = selectedDevice.getId();
         char windowName[100];
         if (Engine::Window::Usage::INSP_POLARITY == window.usage)
-            _snprintf(windowName, sizeof(windowName), "Inspect Polarity [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
+            _snprintf(windowName, sizeof(windowName), "Inspect Polarity [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), selectedDevice.getName().c_str());
         else
-            _snprintf(windowName, sizeof(windowName), "Inspect Polarity Ref [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
+            _snprintf(windowName, sizeof(windowName), "Inspect Polarity Ref [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), selectedDevice.getName().c_str());
 
         window.name = windowName;
         result = Engine::CreateWindow(window);
@@ -223,6 +227,79 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
+    m_pParent->updateInspWindowList();
+
+    if (Engine::Window::Usage::INSP_POLARITY != window.usage || OPERATION::ADD != enOperation)
+        return;
+
+    auto nReturn = System->showInteractMessage(strTitle, QStringLiteral("需要自动添加参考检测框吗?"));
+    if (nReturn != QDialog::Accepted)
+        return;
+
+    Engine::WindowGroup windowGroup;
+    windowGroup.deviceId = selectedDevice.getId();
+    char groupName[100];
+     _snprintf(groupName, sizeof(groupName), "Polarity Insp Group @ [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), selectedDevice.getName().c_str());
+    windowGroup.name = groupName;
+    windowGroup.vecWindows.push_back(window);
+    
+    auto ptCenter = selectedDevice.getWindow().center;
+    auto rectDevice = selectedDevice.getWindow().boundingRect();
+    cv::Point ptBaseWindowCtr;
+    if (rectDevice.width > rectDevice.height) {
+        ptBaseWindowCtr.x = 2 * ptCenter.x - ptWindowCtr.x;
+        ptBaseWindowCtr.y = ptWindowCtr.y;
+    }else {
+        ptBaseWindowCtr.x = ptWindowCtr.x;
+        ptBaseWindowCtr.y = 2 * ptCenter.y - ptWindowCtr.y;        
+    }
+
+    if (bBoardRotated) {
+        window.x = (nBigImgWidth - ptBaseWindowCtr.x)  * dResolutionX;
+        window.y = ptBaseWindowCtr.y * dResolutionY;
+    }
+    else {
+        window.x = ptBaseWindowCtr.x * dResolutionX;
+        window.y = (nBigImgHeight - ptBaseWindowCtr.y) * dResolutionY;
+    }
+
+    char windowName[100];
+    window.usage = Engine::Window::Usage::INSP_POLARITY_REF;       
+    _snprintf(windowName, sizeof(windowName), "Inspect Polarity Ref [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), selectedDevice.getName().c_str());
+    window.name = windowName;
+
+    result = Engine::CreateWindow(window);
+    if (result != Engine::OK) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        System->setTrackInfo(QString("Error at CreateWindow, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+        return;
+    }
+    else
+        System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
+
+    QDetectObj detectObj(window.Id, window.name.c_str());
+    ptCenter = cv::Point2f(window.x / dResolutionX, window.y / dResolutionY);
+    if (bBoardRotated)
+        ptCenter.x = nBigImgWidth - ptCenter.x;
+    else
+        ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
+    cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
+    detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
+    auto vecDetectObjs = pUI->getDetectObjs();
+    vecDetectObjs.push_back(detectObj);
+    pUI->setDetectObjs(vecDetectObjs);
+
+    windowGroup.vecWindows.push_back(window);
+    result = Engine::CreateWindowGroup(windowGroup);
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString strMsg(QStringLiteral("创建检测框组失败, 错误消息: "));
+        strMsg += errorMessage.c_str();
+        System->showMessage(strTitle, strMsg);
+    }
+    
     m_pParent->updateInspWindowList();
 }
 

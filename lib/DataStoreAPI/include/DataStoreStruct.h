@@ -120,6 +120,8 @@ struct Window {
         INSP_POLARITY_REF,
         INSP_BRIDGE,
         OCV,
+        HEIGHT_BASE_GLOBAL,
+        COUNT,
     };
     Window() :
         Id          (0),

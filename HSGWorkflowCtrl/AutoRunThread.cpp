@@ -39,7 +39,8 @@ AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignment
      m_pMapBoardInspResult  (pMapBoardInspResult),
      m_exit                 (false)
 {
-    m_threadPoolCalc3DInsp2D.setMaxThreadCount(5);  // (4 DLP height calculation thead) + (1 2D inspection thread)
+    m_threadPoolCalc3D.setMaxThreadCount(4);  // (4 DLP height calculation thead)
+    m_threadPoolInsp2D.setMaxThreadCount(2); 
     QEos::Attach(EVENT_THREAD_STATE, this, SLOT(onThreadState(const QVariantList &)));
 
     int ROWS = m_vecVecFrameCtr.size();
@@ -104,7 +105,7 @@ void AutoRunThread::run()
     m_boardName.clear();
 
 	double dtime_start = 0, dtime_movePos = 0;
-    BoardInspResultPtr ptrBoardInspResult;
+    BoardInspResultPtr ptrBoardInspResult = nullptr;
 
 	while (! isExit())
 	{
@@ -399,6 +400,7 @@ bool AutoRunThread::_doAlignment() {
         
         QVector<cv::Mat> vecMatImages;
         if (! captureLightImages(vecMatImages)) {
+            System->setTrackInfo(QString(QStringLiteral("Capture 2D light image fail.")));
             bResult = false;
             break;
         }
@@ -561,7 +563,7 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
                 QVector<cv::Mat> vecDlpImage = vecMatImages.mid(nDlpId * DLP_IMG_COUNT, DLP_IMG_COUNT);
                 auto pCalc3DHeightRunnable = std::make_shared<Calc3DHeightRunnable>(nDlpId + 1, vecDlpImage);
                 pCalc3DHeightRunnable->setAutoDelete(false);
-                m_threadPoolCalc3DInsp2D.start(pCalc3DHeightRunnable.get());
+                m_threadPoolCalc3D.start(pCalc3DHeightRunnable.get());
                 vecCalc3dHeightRunnable.push_back(std::move(pCalc3DHeightRunnable));
             }
 
@@ -572,20 +574,25 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
                 break;
             }
 
-            auto vec2DImages = _generate2DImages(vec2DCaptureImages);
-            for (int i = 0; i < 4; ++ i)
-                m_vecVecFrameImages[i][row * COLS + col] = vec2DImages[i];
-
             auto vecDeviceWindows = _getDeviceWindowInFrame(ptFrameCtr);
 
-            auto pInsp2DRunnable = std::make_shared<Insp2DRunnable>(vec2DImages, vecDeviceWindows, ptFrameCtr, ptrBoardInspResult);
+            auto pInsp2DRunnable = std::make_shared<Insp2DRunnable>(
+                vec2DCaptureImages,
+               &m_vecVecFrameImages,
+               &m_threadPoolCalc3D,
+                vecCalc3dHeightRunnable,
+               &m_vecFrame3DHeight,
+                vecDeviceWindows,
+                row, col, ROWS, COLS,
+                ptFrameCtr,
+                ptrBoardInspResult);
             pInsp2DRunnable->setAutoDelete(false);
             pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
             pInsp2DRunnable->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
-            m_threadPoolCalc3DInsp2D.start(pInsp2DRunnable.get());
+            m_threadPoolInsp2D.start(pInsp2DRunnable.get());
 
             {
-                auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolCalc3DInsp2D, vecCalc3dHeightRunnable, pInsp2DRunnable, ptFrameCtr, &m_vecFrame3DHeight, row, col, ROWS, COLS, ptrBoardInspResult);
+                auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolInsp2D, pInsp2DRunnable, ptFrameCtr, row, col, ROWS, COLS, ptrBoardInspResult);
                 pInsp3DHeightRunnalbe->setResolution(m_dResolutionX, m_dResolutionY);
                 pInsp3DHeightRunnalbe->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
                 QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
@@ -599,13 +606,13 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
             break;
     }
 
+    QThreadPool::globalInstance()->waitForDone();
+
     for (int i = 0; i < 4; ++ i) {
         if (! _combineBigImage(m_vecVecFrameImages[i], m_vecMatBigImage[i]))
             return false;
     }
     QEos::Notify(EVENT_THREAD_STATE, REFRESH_BIG_IMAGE);
-
-    QThreadPool::globalInstance()->waitForDone();
 
     if (!_combineBigImage(m_vecFrame3DHeight, m_matWhole3DHeight))
         return false;
@@ -617,14 +624,14 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
         if (fabs(ptBigImageCenter.y) <= 0.01f)
             ptBigImageCenter.y = m_vecMatBigImage[0].rows * m_dResolutionY / 2.f;
 
-        auto pInsp2DRunnable = std::make_shared<Insp2DRunnable>(m_vecMatBigImage, vecNotInspectedDeviceWindow, ptBigImageCenter, ptrBoardInspResult);
+        auto pInsp2DRunnable = std::make_shared<Insp2DRunnable>(m_matWhole3DHeight, m_vecMatBigImage, vecNotInspectedDeviceWindow, ptBigImageCenter, ptrBoardInspResult);
         pInsp2DRunnable->setAutoDelete(false);
         pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
         pInsp2DRunnable->setImageSize(m_vecMatBigImage[0].cols, m_vecMatBigImage[0].rows);
-        m_threadPoolCalc3DInsp2D.start(pInsp2DRunnable.get());
+        m_threadPoolInsp2D.start(pInsp2DRunnable.get());
 
         {
-            auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolCalc3DInsp2D, std::vector<Calc3DHeightRunnablePtr>(), pInsp2DRunnable, ptBigImageCenter, &m_vecFrame3DHeight, 0, 0, ROWS, COLS, ptrBoardInspResult);
+            auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolInsp2D, pInsp2DRunnable, ptBigImageCenter, 0, 0, ROWS, COLS, ptrBoardInspResult);
             pInsp3DHeightRunnalbe->set3DHeight(m_matWhole3DHeight);
             pInsp3DHeightRunnalbe->setResolution(m_dResolutionX, m_dResolutionY);
             pInsp3DHeightRunnalbe->setImageSize(m_vecMatBigImage[0].cols, m_vecMatBigImage[0].rows);
@@ -675,47 +682,6 @@ DeviceInspWindowVector AutoRunThread::_getNotInspectedDeviceWindow() const
             vecResult.push_back(deviceInspWindow);
     }
     return vecResult;
-}
-
-Vision::VectorOfMat AutoRunThread::_generate2DImages(const Vision::VectorOfMat &vecInputImages)
-{
-    assert(vecInputImages.size() == CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT);
-
-    Vision::VectorOfMat vecResultImages;
-    cv::Mat matRed, matGreen, matBlue;
-    bool bColorCamera = false;
-    if (bColorCamera) {
-        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT],   matRed,   CV_BayerGR2GRAY);
-        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT], matGreen, CV_BayerGR2GRAY);
-        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT],  matBlue,  CV_BayerGR2GRAY);
-    }else {
-        matRed   = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::RED_LIGHT];
-        matGreen = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::GREEN_LIGHT];
-        matBlue  = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::BLUE_LIGHT];
-    }
-
-    Vision::VectorOfMat vecChannels{matBlue, matGreen, matRed};
-    cv::Mat matPseudoColorImage;
-    cv::merge(vecChannels, matPseudoColorImage);
-
-    cv::Mat matTopLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT];
-    if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT], matTopLightImage, CV_BayerGR2BGR);
-	vecResultImages.push_back(matTopLightImage);
-
-    cv::Mat matLowAngleLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT];
-    if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
-    vecResultImages.push_back(matLowAngleLightImage);
-
-    vecResultImages.push_back(matPseudoColorImage);
-
-	cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
-    if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT], matUniformLightImage, CV_BayerGR2BGR);
-	vecResultImages.push_back(matUniformLightImage);
-
-    return vecResultImages;
 }
 
 bool AutoRunThread::_combineBigImage(const Vision::VectorOfMat &vecMatImages, cv::Mat &matBigImage) {
