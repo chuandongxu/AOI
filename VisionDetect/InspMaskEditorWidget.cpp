@@ -1,4 +1,4 @@
-#include "InspMaskEditorWidget.h"
+ï»¿#include "InspMaskEditorWidget.h"
 #include "../Common/SystemData.h"
 #include "../include/IdDefine.h"
 #include <QVBoxLayout>
@@ -145,7 +145,7 @@ InspMaskEditorWidget::~InspMaskEditorWidget()
 }
 
 void InspMaskEditorWidget::closeEvent(QCloseEvent *e){
-    //qDebug() << "¹Ø±ÕÊÂ¼ş";
+    //qDebug() << "å…³é—­äº‹ä»¶";
     //e->ignore();
 
     this->hide();
@@ -159,7 +159,7 @@ void InspMaskEditorWidget::initUI()
 
     connect(ui.pushButton_editDone, SIGNAL(clicked()), SLOT(onEditDone()));
 
-    ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("ÇëÑ¡ÔñÇøÓò")));
+    ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("è¯·é€‰æ‹©åŒºåŸŸ")));
 
     ui.radioButton_rect->setChecked(true);
     ui.radioButton_circle->setChecked(false);
@@ -577,7 +577,7 @@ void InspMaskEditorWidget::wheelEvent(QWheelEvent * event)
 
 void InspMaskEditorWidget::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 {
-    CV_Assert(src.depth() == CV_8U);//CV_Assert£¨£©ÈôÀ¨ºÅÖĞµÄ±í´ïÊ½ÖµÎªfalse£¬Ôò·µ»ØÒ»¸ö´íÎóĞÅÏ¢¡£  
+    CV_Assert(src.depth() == CV_8U);//CV_Assertï¼ˆï¼‰è‹¥æ‹¬å·ä¸­çš„è¡¨è¾¾å¼å€¼ä¸ºfalseï¼Œåˆ™è¿”å›ä¸€ä¸ªé”™è¯¯ä¿¡æ¯ã€‚  
     const int rows = src.rows;
     const int cols = src.cols;
     dst.create(rows, cols, src.type());
@@ -587,17 +587,17 @@ void InspMaskEditorWidget::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int d
 
     dst.setTo(cv::Scalar(0, 0, 0));
 
-    cv::Vec3b *p;   //¶¨ÒåÒ»¸ö´æ·Å3Í¨µÀµÄÈİÆ÷Ö¸Õëp  
+    cv::Vec3b *p;   //å®šä¹‰ä¸€ä¸ªå­˜æ”¾3é€šé“çš„å®¹å™¨æŒ‡é’ˆp  
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
         {
-            p = dst.ptr<cv::Vec3b>(i);//Ö¸ÏòĞĞÊıµÄÈİÆ÷p  
+            p = dst.ptr<cv::Vec3b>(i);//æŒ‡å‘è¡Œæ•°çš„å®¹å™¨p  
             int x = j - dx;
             int y = i - dy;
-            if (x>0 && y>0 && x < cols&&y < rows)//Æ½ÒÆºóµÄÏñËØ×ø±êÔÚÔ­Í¼ÏñµÄĞĞÊıºÍÁĞÊıÄÚ  
+            if (x>0 && y>0 && x < cols&&y < rows)//å¹³ç§»åçš„åƒç´ åæ ‡åœ¨åŸå›¾åƒçš„è¡Œæ•°å’Œåˆ—æ•°å†…  
             {
-                p[i, j] = src.ptr<cv::Vec3b>(y)[x];//Æ½ÒÆºóµÄÍ¼Ïñ£¨i,j)¶ÔÓ¦ÓÚÔ­Í¼ÏñµÄ£¨y,x)  
+                p[i, j] = src.ptr<cv::Vec3b>(y)[x];//å¹³ç§»åçš„å›¾åƒï¼ˆi,j)å¯¹åº”äºåŸå›¾åƒçš„ï¼ˆy,x)  
             }
         }
     }
@@ -970,7 +970,7 @@ void InspMaskEditorWidget::enablePanel(bool bEnable)
 void InspMaskEditorWidget::clear()
 {
     ui.comboBox_maskIndex->clear();
-    ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("ÇëÑ¡ÔñÇøÓò")));
+    ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("è¯·é€‰æ‹©åŒºåŸŸ")));
 
     for (int i = 0; i < m_maskObjs.size(); i++)
     {
