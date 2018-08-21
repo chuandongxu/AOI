@@ -143,7 +143,7 @@ void InspHeightBaseWidget::confirmWindow(OPERATION enOperation) {
 
     Engine::Window window;
     window.lightId = m_pParent->getSelectedLighting() + 1;
-    window.usage = Engine::Window::Usage::HEIGHT_MEASURE;
+    window.usage = Engine::Window::Usage::HEIGHT_BASE_GLOBAL;
     window.inspParams = byte_array;
 
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);

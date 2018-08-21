@@ -55,13 +55,13 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::CALIPER_CIRCLE)] = std::make_unique<FindCircleWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::ALIGNMENT)] = std::make_unique<AlignmentWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::HEIGHT_DETECT)] = std::make_unique<HeightDetectWidget>(this);
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE)] = std::make_unique<InspHeightBaseWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_POLARITY)] = std::make_unique<InspPolarityWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CONTOUR)] = std::make_unique<InspContourWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CHIP)] = std::make_unique<InspChipWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_BRIDGE)] = std::make_unique<InspBridgeWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_LEAD)] = std::make_unique<InspLeadWidget>(this);
-    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::OCV)] = std::make_unique<OcvWidget>(this);
-    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE)] = std::make_unique<InspHeightBaseWidget>(this);
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::OCV)] = std::make_unique<OcvWidget>(this);   
 
     for (const auto &ptrInspWindowWidget : m_arrInspWindowWidget)
         ui.stackedWidget->addWidget(ptrInspWindowWidget.get());
@@ -779,9 +779,9 @@ void InspWindowWidget::onSelectedWindowChanged() {
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::OCV;
         break;
 
-    //case Engine::Window::Usage::HEIGHT_GLOBAL_BASE:
-    //    m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE;
-    //    break;
+    case Engine::Window::Usage::HEIGHT_BASE_GLOBAL:
+        m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE;
+        break;
 
     default:
         assert(0); break;

@@ -108,7 +108,7 @@ void HeightDetectWidget::tryInsp() {
         Engine::Window window;
         for each (Engine::Window win in vecWindow)
         {
-            //if (win.usage == Engine::Window::Usage::HEIGHT_MEASURE)
+            if (win.usage == Engine::Window::Usage::HEIGHT_BASE_GLOBAL)
             {
                 window = win;
                 break;
@@ -174,12 +174,13 @@ void HeightDetectWidget::tryInsp() {
     float fMaxHeight = m_pSpecAndResultMaxRelHt->getSpec();
     float fMinHeigth = m_pSpecAndResultMinRelHt->getSpec();
     Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
-    m_pSpecAndResultMaxRelHt->setResult(stRpy.fHeightDiff);
-    m_pSpecAndResultMinRelHt->setResult(stRpy.fHeightDiff);
-    bool bPassed = (stRpy.fHeightDiff < fMaxHeight) && (stRpy.fHeightDiff > fMinHeigth);
+    float height = stRpy.fHeightDiff * MM_TO_UM;
+    m_pSpecAndResultMaxRelHt->setResult(height);
+    m_pSpecAndResultMinRelHt->setResult(height);
+    bool bPassed = (height < fMaxHeight) && (height > fMinHeigth);
     if (! bPassed) {
         QString strMsg;
-        strMsg.sprintf("Inspect Status %d, %s, height (%f)", Vision::ToInt32(stRpy.enStatus), bPassed ? "pass" : "not pass", stRpy.fHeightDiff);
+        strMsg.sprintf("Inspect Status %d, %s, height (%f)", Vision::ToInt32(stRpy.enStatus), bPassed ? "pass" : "not pass", height);
         QMessageBox::information(this, "Height Detect", strMsg);
     }
 }
