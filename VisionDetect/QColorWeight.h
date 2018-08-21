@@ -56,6 +56,12 @@ public:
 	cv::Mat generateColorImage(cv::Point ptPos);
 	void setColorImagePos(cv::Point ptMousePos);
 
+    //Color Space using color not pick position
+    void holdColorImage(cv::Vec3b color = cv::Vec3b(0, 0, 0), int nRn = 30, int nTn = 50);   
+    void getColorParams(int& nRn, int& nTn);  
+    void releaseColorImage();
+
+    // Color Parameters
     std::string getJsonFormattedParams() const;
     void setJsonFormattedParams(const std::string &jsonParams);
 
@@ -127,7 +133,9 @@ private:
 	cv::Point m_grayGenPt;
 
 	// Color Space
+    bool m_bSetColor;
 	cv::Point m_colorGenPt;
+    cv::Vec3b m_color;
 	std::shared_ptr<QCustomPlot> m_customPlotR;
 	std::shared_ptr<QCustomPlot> m_customPlotG;
 	std::shared_ptr<QCustomPlot> m_customPlotB;

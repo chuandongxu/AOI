@@ -186,11 +186,36 @@ cv::Mat QColorWeight::generateColorImage(cv::Point ptPos)
 
 void QColorWeight::setColorImagePos(cv::Point ptMousePos)
 {
+    if (m_bSetColor) return;
+
 	ui.tabWidget->setCurrentIndex(1);
 	m_colorGenPt.x = ptMousePos.x * m_matSrcImage.size().width  / IMG_DISPLAY_WIDTH;
 	m_colorGenPt.y = ptMousePos.y * m_matSrcImage.size().height / IMG_DISPLAY_HEIGHT;
 
 	generateColorPlot();
+}
+
+void QColorWeight::holdColorImage(cv::Vec3b color, int nRn, int nTn)
+{   
+    ui.tabWidget->setCurrentIndex(1);
+
+    m_bSetColor = true;
+    m_color = color;
+    ui.horizontalSlider_Rn->setValue(nRn);
+    ui.horizontalSlider_Tn->setValue(nTn);
+    
+    generateColorPlot();
+}
+
+void QColorWeight::releaseColorImage()
+{
+    m_bSetColor = false;
+}
+
+void  QColorWeight::getColorParams(int& nRn, int& nTn)
+{
+    nRn = ui.horizontalSlider_Rn->value();
+    nTn = ui.horizontalSlider_Tn->value();
 }
 
 void QColorWeight::initUI()
@@ -364,6 +389,8 @@ void QColorWeight::initData()
 
 	m_nGrayLevelThreshold1 = 0;
 	m_nGrayLevelThreshold2 = 255;
+
+    m_bSetColor = false;
 }
 
 std::string QColorWeight::getJsonFormattedParams() const
@@ -1200,6 +1227,15 @@ cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage)
 	uchar Tt = T.at<uchar>(m_colorGenPt.y, m_colorGenPt.x);
 	uchar St = S.at<uchar>(m_colorGenPt.y, m_colorGenPt.x);
 
+    if (m_bSetColor)
+    {
+        Rt = m_color[0];
+        Gt = m_color[1];
+        Bt = m_color[2];
+        Tt = calcGrayValue(cv::Scalar(Bt, Gt, Rt));
+        St = qMax(Rt, qMax(Gt, Bt));
+    }
+
 	uchar maxRGB = qMax(Rt, qMax(Gt, Bt));
 
 	uchar maxR = 0, minR = 255;
@@ -1306,11 +1342,14 @@ cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage)
 	m_maxT = maxT;
 	m_minT = minT;
 
-	double dXScale = m_matSrcImage.size().width * 1.0 / IMG_DISPLAY_WIDTH;
-	double dYScale = m_matSrcImage.size().height * 1.0 / IMG_DISPLAY_HEIGHT;
-	double dScale = qMax(dXScale, dYScale);
+    if (!m_bSetColor)
+    {
+        double dXScale = m_matSrcImage.size().width * 1.0 / IMG_DISPLAY_WIDTH;
+        double dYScale = m_matSrcImage.size().height * 1.0 / IMG_DISPLAY_HEIGHT;
+        double dScale = qMax(dXScale, dYScale);
 
-	cv::circle(matImage, m_colorGenPt, 3.5 * dScale, cv::Scalar(0, 0, 255), 1 * dScale, 8);
+        cv::circle(matImage, m_colorGenPt, 3.5 * dScale, cv::Scalar(0, 0, 255), 1 * dScale, 8);
+    }	
 
 	int nWidth = ui.graphicsView_grayColor->geometry().width();
 	int nHeight = ui.graphicsView_grayColor->geometry().height();

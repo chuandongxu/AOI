@@ -25,6 +25,7 @@
 #include "OcvWidget.h"
 #include "TreeWidgetInspWindow.h"
 #include "InspMaskEditorWidget.h"
+#include "InspHeightBaseWidget.h"
 #include "VisionAPI.h"
 
 static const QString DEFAULT_WINDOW_NAME[] =
@@ -34,6 +35,7 @@ static const QString DEFAULT_WINDOW_NAME[] =
     "Caliper Circle",
     "Alignment",
     "Height Detect",
+    "Height Global Base",
     "Inspect Polarity",
     "Inspect Contour",
     "Inspect Chip",
@@ -59,6 +61,7 @@ static const char *WINDOW_USAGE_NAME[] {
     "Inspect Bridge",
     "Insp Lead",
     "Ocv",
+    "Height Global Base",
 };
 
 InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
@@ -76,6 +79,7 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_BRIDGE)] = std::make_unique<InspBridgeWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_LEAD)] = std::make_unique<InspLeadWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::OCV)] = std::make_unique<OcvWidget>(this);
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE)] = std::make_unique<InspHeightBaseWidget>(this);
 
     for (const auto &ptrInspWindowWidget : m_arrInspWindowWidget)
         ui.stackedWidget->addWidget(ptrInspWindowWidget.get());
@@ -795,6 +799,10 @@ void InspWindowWidget::onSelectedWindowChanged() {
     case Engine::Window::Usage::OCV:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::OCV;
         break;
+
+    //case Engine::Window::Usage::HEIGHT_GLOBAL_BASE:
+    //    m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE;
+    //    break;
 
     default:
         assert(0); break;

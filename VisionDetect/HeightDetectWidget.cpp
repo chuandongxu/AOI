@@ -11,12 +11,14 @@
 #include "../Common/ModuleMgr.h"
 #include "../DataModule/QDetectObj.h"
 #include "InspWindowWidget.h"
+#include "../DataModule/CalcUtils.hpp"
 
 using namespace NFG::AOI;
 using namespace AOI;
 
 enum BASIC_PARAM
 {
+    BASE_TYPE_ATTRI,
     MEASURE_TYPE_ATTRI,
     RANGE_MIN_ATTRI,
     RANGE_MAX_ATTRI,
@@ -28,9 +30,13 @@ HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
 :EditInspWindowBaseWidget(parent) {
     ui.setupUi(this);
 
+    m_pCheckBoxBase = std::make_unique<QCheckBox>(ui.tableWidget);
+    ui.tableWidget->setCellWidget(BASE_TYPE_ATTRI, DATA_COLUMN, m_pCheckBoxBase.get());
+    connect(m_pCheckBoxBase.get(), SIGNAL(toggled(bool)), this, SLOT(onBaseTypeChanged(bool)));
+
     m_pCheckBoxMeasure = std::make_unique<QCheckBox>(ui.tableWidget);
     ui.tableWidget->setCellWidget(MEASURE_TYPE_ATTRI, DATA_COLUMN, m_pCheckBoxMeasure.get());
-    connect(m_pCheckBoxMeasure.get(), SIGNAL(toggled(bool)), this, SLOT(onTypeChanged(bool)));
+    connect(m_pCheckBoxMeasure.get(), SIGNAL(toggled(bool)), this, SLOT(onMeasureTypeChanged(bool)));
 
     m_pEditMinRange = std::make_unique<QLineEdit>(ui.tableWidget);
     m_pEditMinRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinRange.get()));
@@ -40,10 +46,10 @@ HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
     m_pEditMaxRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMaxRange.get()));
     ui.tableWidget->setCellWidget(RANGE_MAX_ATTRI, DATA_COLUMN, m_pEditMaxRange.get());
 
-    m_pSpecAndResultMaxRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10, 10);
+    m_pSpecAndResultMaxRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
     ui.tableWidget->setCellWidget(MAX_REL_HT, DATA_COLUMN, m_pSpecAndResultMaxRelHt.get());
 
-    m_pSpecAndResultMinRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10, 10);
+    m_pSpecAndResultMinRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
     ui.tableWidget->setCellWidget(MIN_REL_HT, DATA_COLUMN, m_pSpecAndResultMinRelHt.get());
 }
 
@@ -51,11 +57,12 @@ HeightDetectWidget::~HeightDetectWidget() {
 }
 
 void HeightDetectWidget::setDefaultValue() {
+    m_pCheckBoxBase->setChecked(false);
     m_pCheckBoxMeasure->setChecked(true);
     m_pEditMinRange->setText("30");
     m_pEditMaxRange->setText("70");
-    m_pSpecAndResultMaxRelHt->setSpec(3);
-    m_pSpecAndResultMinRelHt->setSpec(1);
+    m_pSpecAndResultMaxRelHt->setSpec(3000);
+    m_pSpecAndResultMinRelHt->setSpec(1000);
 }
 
 void HeightDetectWidget::tryInsp() {
@@ -79,30 +86,88 @@ void HeightDetectWidget::tryInsp() {
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     stCmd.matHeight = pUI->getHeightData();
-    cv::Rect rectROI = pUI->getSelectedROI();
+    auto rectROI = pUI->getSelectedROI();
     if (rectROI.width <= 0 || rectROI.height <= 0) {
         QMessageBox::critical(this, QStringLiteral("高度检测框"), QStringLiteral("Please select a ROI to do inspection."));
         return;
     }
     stCmd.rectROI = rectROI;
 
-    auto matImage = pUI->getImage();
-    int nBigImgWidth  = matImage.cols / dCombinedImageScale;
-    int nBigImgHeight = matImage.rows / dCombinedImageScale;
+    bool bGlobalBase = m_pCheckBoxBase->isChecked();
+    if (bGlobalBase)
+    {     
+        Engine::WindowVector vecWindow;
+        auto result = Engine::GetAllWindows(vecWindow);
+        if (result != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            System->setTrackInfo(QString("Error at GetAllWindows, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+            return;
+        }
 
-    for (const auto &window : m_windowGroup.vecWindows) {
-        if (Engine::Window::Usage::HEIGHT_BASE == window.usage) {
-            auto x = window.x / dResolutionX;
-            auto y = window.y / dResolutionY;
-            if (bBoardRotated)
-                x = nBigImgWidth - x;
-            else
-                y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
+        Engine::Window window;
+        for each (Engine::Window win in vecWindow)
+        {
+            //if (win.usage == Engine::Window::Usage::HEIGHT_MEASURE)
+            {
+                window = win;
+                break;
+            }
+        }
 
-            auto width = window.width / dResolutionX;
-            auto height = window.height / dResolutionY;
-            cv::RotatedRect rrBaseRect(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
-            stCmd.vecRectBases.push_back(rrBaseRect.boundingRect());
+        QJsonParseError json_error;
+        QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+        if (json_error.error != QJsonParseError::NoError) {
+            QMessageBox::critical(this, QStringLiteral("高度检测框"), QStringLiteral("Please check global base params to do inspection."));
+            return;
+        }
+        QJsonObject jsonValue = parse_doucment.object();
+
+        cv::Vec3b color; int nRn = 0, nTn = 0;
+        color[0] = jsonValue["ClrRVal"].toInt();
+        color[1] = jsonValue["ClrGVal"].toInt();
+        color[2] = jsonValue["ClrBVal"].toInt();
+        nRn = jsonValue["RnValue"].toInt();
+        nTn = jsonValue["TnValue"].toInt();
+
+        cv::Rect rectBaseDetectWin = CalcUtils::resizeRect(rectROI, cv::Size2f(rectROI.width * 2.0f, rectROI.height * 2.0f));
+       
+        auto pColorWidget = m_pParent->getColorWidget();
+        cv::Mat matImage = pUI->getImage();
+        cv::Mat matROI(matImage, rectBaseDetectWin);
+        pColorWidget->setImage(matROI);       
+
+        pColorWidget->holdColorImage(color, nRn, nTn);
+        cv::Mat matMask = pColorWidget->getProcessedImage();
+        pColorWidget->releaseColorImage();
+
+        cv::Mat matBigMask = cv::Mat::ones(matImage.size(), CV_8UC1);
+        cv::Mat matMaskROI(matBigMask, cv::Rect(rectBaseDetectWin));
+        matMask.copyTo(matMaskROI);
+       // stCmd.matMask = matBigMask;        
+
+        stCmd.vecRectBases.push_back(rectBaseDetectWin);
+    }
+    else
+    {
+        auto matImage = pUI->getImage();
+        int nBigImgWidth = matImage.cols / dCombinedImageScale;
+        int nBigImgHeight = matImage.rows / dCombinedImageScale;
+
+        for (const auto &window : m_windowGroup.vecWindows) {
+            if (Engine::Window::Usage::HEIGHT_BASE == window.usage) {
+                auto x = window.x / dResolutionX;
+                auto y = window.y / dResolutionY;
+                if (bBoardRotated)
+                    x = nBigImgWidth - x;
+                else
+                    y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
+
+                auto width = window.width / dResolutionX;
+                auto height = window.height / dResolutionY;
+                cv::RotatedRect rrBaseRect(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
+                stCmd.vecRectBases.push_back(rrBaseRect.boundingRect());
+            }
         }
     }
 
@@ -239,11 +304,22 @@ void HeightDetectWidget::setCurrentWindow(const Engine::Window &window) {
     }
 }
 
-void HeightDetectWidget::onTypeChanged(bool bInsp) {
+void HeightDetectWidget::onBaseTypeChanged(bool bInsp) {
+    if (bInsp) {     
+        m_pCheckBoxMeasure->setEnabled(false);
+    }
+    else {       
+        m_pCheckBoxMeasure->setEnabled(true);
+    }
+}
+
+void HeightDetectWidget::onMeasureTypeChanged(bool bInsp) {
     if (bInsp) {
+        ui.tableWidget->showRow(BASE_TYPE_ATTRI);
         ui.tableWidget->showRow(MAX_REL_HT);
         ui.tableWidget->showRow(MIN_REL_HT);
     }else {
+        ui.tableWidget->hideRow(BASE_TYPE_ATTRI);
         ui.tableWidget->hideRow(MAX_REL_HT);
         ui.tableWidget->hideRow(MIN_REL_HT);
     }
