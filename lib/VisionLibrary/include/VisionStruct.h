@@ -15,7 +15,7 @@ namespace Vision
 
 using VectorOfDMatch = std::vector<cv::DMatch>;
 using VectorOfVectorOfDMatch = std::vector<VectorOfDMatch>;
-using VectorOfKeyPoint =  std::vector<cv::KeyPoint> ;
+using VectorOfKeyPoint =  std::vector<cv::KeyPoint>;
 using VectorOfVectorKeyPoint = std::vector<VectorOfKeyPoint>;
 using VectorOfPoint = std::vector<cv::Point>;
 using VectorOfVectorOfPoint = std::vector<VectorOfPoint>;
@@ -1275,6 +1275,7 @@ struct PR_CALC_3D_HEIGHT_DIFF_CMD {
         fEffectHRatioStart(0.3f),
         fEffectHRatioEnd(0.7f) {}
     cv::Mat                 matHeight;
+    cv::Mat                 matMask;
     VectorOfRect            vecRectBases;           //One or more bases as the reference surface.
     cv::Rect                rectROI;                //The ROI to measure height difference to base.
     float                   fEffectHRatioStart;     //If fEffectHRatioStart = 0.3, the lower 30% points in the window will be removed for fitting.
@@ -1454,6 +1455,22 @@ struct PR_OCV_RPY {
     cv::Mat                 matResultImg;
     float                   fOverallScore;
     VectorOfFloat           vecCharScore;
+};
+
+struct PR_READ_2DCODE_CMD {
+    PR_READ_2DCODE_CMD() :
+        nEdgeThreshold      (30),
+        nRemoveNoiseArea    (20) {}
+    cv::Mat                 matInputImg;
+    cv::Rect                rectROI;
+    int                     nEdgeThreshold;
+    int                     nRemoveNoiseArea;   // The standalone edge which area smaller than this value will be removed.
+};
+
+struct PR_READ_2DCODE_RPY {
+    VisionStatus            enStatus;
+    String                  strReadResult;
+    cv::Mat                 matResultImg;
 };
 
 }
