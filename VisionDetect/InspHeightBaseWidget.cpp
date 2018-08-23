@@ -80,34 +80,14 @@ void InspHeightBaseWidget::tryInsp() {
     auto matImage = pUI->getImage();
     auto matSelect = matImage(rectROI);
 
-    int m = matSelect.rows;
-    int n = matSelect.cols;
-    int R = 0, G = 0, B = 0;
-    for (int y = 0; y < m; y++)
-    {
-        for (int x = 0; x < n; x++)
-        {
-            cv::Vec3b& pixel = matImage.at<cv::Vec3b>(y, x);         
+    cv::Scalar tempVal = cv::mean(matSelect);
 
-            uchar& r = pixel[2];
-            uchar& g = pixel[1];
-            uchar& b = pixel[0];
-
-            R += r;
-            G += g;
-            B += b;
-        }
-    }
-    R /= m*n;
-    G /= m*n;
-    B /= m*n;
-
-    m_color[0] = R;
-    m_color[1] = G;
-    m_color[2] = B;
+    m_color[0] = tempVal.val[0];
+    m_color[1] = tempVal.val[1];
+    m_color[2] = tempVal.val[2];
 
     QString strColorMsg;
-    strColorMsg.sprintf("r:%d,g:%d,b:%d", R, G, B);
+    strColorMsg.sprintf("r:%d,g:%d,b:%d", m_color[0], m_color[1], m_color[2]);
     m_pEditColor->setText(strColorMsg);
 
     QString strMsg;

@@ -120,9 +120,12 @@ void QColorWeight::setImage(const cv::Mat& img)
 void QColorWeight::setGrayParams(const GrayWeightParams& grayParams)
 {
 	ui.comboBox_selectMode->setCurrentIndex(grayParams.enMethod);
-	ui.horizontalSlider_R->setValue(grayParams.nRScale);
+	ui.horizontalSlider_R->setValue(grayParams.nRScale);   
 	ui.horizontalSlider_G->setValue(grayParams.nGScale);
 	ui.horizontalSlider_B->setValue(grayParams.nBScale);
+    ui.lineEdit_R->setText(QString::number(grayParams.nRScale));
+    ui.lineEdit_G->setText(QString::number(grayParams.nGScale));
+    ui.lineEdit_B->setText(QString::number(grayParams.nBScale));
 	ui.horizontalSlider_grayLeft->setValue(grayParams.nThreshold1);
 	ui.horizontalSlider_grayRight->setValue(grayParams.nThreshold2);
 }
@@ -233,6 +236,8 @@ void QColorWeight::initUI()
 	connect(ui.horizontalSlider_grayLeft, SIGNAL(valueChanged(int)), SLOT(onGrayLeftSliderChanged(int)));
 	connect(ui.horizontalSlider_grayRight, SIGNAL(valueChanged(int)), SLOT(onGrayRightSliderChanged(int)));
 
+    connect(ui.checkBox_invert, SIGNAL(stateChanged(int)), SLOT(onCheckBoxInvert(int)));
+
 	connect(ui.horizontalSlider_R, SIGNAL(valueChanged(int)), SLOT(onGrayRSliderChanged(int)));
 	connect(ui.horizontalSlider_G, SIGNAL(valueChanged(int)), SLOT(onGrayGSliderChanged(int)));
 	connect(ui.horizontalSlider_B, SIGNAL(valueChanged(int)), SLOT(onGrayBSliderChanged(int)));
@@ -243,6 +248,9 @@ void QColorWeight::initUI()
 	ui.horizontalSlider_R->setValue(100);
 	ui.horizontalSlider_G->setValue(100);
 	ui.horizontalSlider_B->setValue(100);
+    ui.lineEdit_R->setText(QString::number(100));
+    ui.lineEdit_G->setText(QString::number(100));
+    ui.lineEdit_B->setText(QString::number(100));
 
 	m_customPlot = std::make_shared<QCustomPlot>();    
 	setupDateDemo(m_customPlot, true);
@@ -389,6 +397,7 @@ void QColorWeight::initData()
 
 	m_nGrayLevelThreshold1 = 0;
 	m_nGrayLevelThreshold2 = 255;
+    ui.comboBox_selectMode->setCurrentIndex(1);
 
     m_bSetColor = false;
 }
@@ -413,6 +422,8 @@ std::string QColorWeight::getJsonFormattedParams() const
 	json.insert("ColorTThreshold", stColorParams.nTThreshold);
     json.insert("PickPointX", m_colorGenPt.x);
 	json.insert("PickPointY", m_colorGenPt.y);
+
+    json["Invert"] = ui.checkBox_invert->isChecked();
 
 	QJsonDocument document;
 	document.setObject(json);
@@ -452,11 +463,14 @@ void QColorWeight::setJsonFormattedParams(const std::string &jsonParams)
     m_colorGenPt.x = obj["PickPointX"].toInt();
 	m_colorGenPt.y = obj["PickPointY"].toInt();
 
+    ui.checkBox_invert->setChecked(obj["Invert"].toBool());
+
     setGrayParams(stGrayParams);
     setColorParams(stColorParams);
 
     if (GRAY_WEIGHT_METHOD::EM_MODE_ONE_THRESHOLD == stGrayParams.enMethod || GRAY_WEIGHT_METHOD::EM_MODE_TWO_THRESHOLD == stGrayParams.enMethod) {
         ui.tabWidget->setCurrentIndex(0);
+        ui.comboBox_selectMode->setCurrentIndex(stGrayParams.enMethod);
         generateGrayPlot();
     }
     else {
@@ -655,6 +669,7 @@ void QColorWeight::generateGrayPlot()
     ui.graphicsView_grayHitChart->update();
 
 	displayGrayImg();
+    if (ui.checkBox_relatedToColorWeight->isChecked()) generateColorPlot();
 }
 
 void QColorWeight::setupDateColor(std::shared_ptr<QCustomPlot> customPlot, QCPBars *regen, int nColorIndex, bool bCreate)
@@ -880,8 +895,11 @@ void QColorWeight::generateColorPlot()
 
 void QColorWeight::clearGrayData()
 {
-	for (int i = 0; i < 255; ++ i)
-		m_grayHitDatas[i] = 0;
+    m_grayHitDatas.clear();
+    for (int i = 0; i <= 255; i++)
+    {
+        m_grayHitDatas.insert(i, 0);
+    }	
 }
 
 int QColorWeight::getGrayValue(int nGrayLevel)
@@ -905,7 +923,7 @@ void QColorWeight::clearColorData(int nColorIndex)
 	if (0 == nColorIndex)
 	{
 		m_colorRHitDatas.clear();
-		for (int i = 0; i < 255; i++)
+		for (int i = 0; i <= 255; i++)
 		{
 			m_colorRHitDatas.insert(i, 0);
 		}
@@ -913,7 +931,7 @@ void QColorWeight::clearColorData(int nColorIndex)
 	else if (1 == nColorIndex)
 	{
 		m_colorGHitDatas.clear();
-		for (int i = 0; i < 255; i++)
+		for (int i = 0; i <= 255; i++)
 		{
 			m_colorGHitDatas.insert(i, 0);
 		}
@@ -921,7 +939,7 @@ void QColorWeight::clearColorData(int nColorIndex)
 	else if (2 == nColorIndex)
 	{
 		m_colorBHitDatas.clear();
-		for (int i = 0; i < 255; i++)
+		for (int i = 0; i <= 255; i++)
 		{
 			m_colorBHitDatas.insert(i, 0);
 		}
@@ -929,7 +947,7 @@ void QColorWeight::clearColorData(int nColorIndex)
 	else if (3 == nColorIndex)
 	{
 		m_colorGrayHitDatas.clear();
-		for (int i = 0; i < 255; i++)
+		for (int i = 0; i <= 255; i++)
 		{
 			m_colorGrayHitDatas.insert(i, 0);
 		}
@@ -1007,6 +1025,8 @@ void QColorWeight::displayGrayImg() {
     cv::Mat matGrayImg = m_matSrcImage.clone();
     cv::Mat maskMat = cv::Mat::zeros(matGrayImg.rows, matGrayImg.cols, CV_8UC1);
 
+    bool bInvert = ui.checkBox_invert->isChecked();
+
     int nIndex = ui.comboBox_selectMode->currentIndex();
     GRAY_WEIGHT_METHOD emMode = static_cast<GRAY_WEIGHT_METHOD>(nIndex);
     if (EM_MODE_PT_THRESHOLD == emMode) {
@@ -1019,7 +1039,7 @@ void QColorWeight::displayGrayImg() {
                 uchar& mask = maskMat.at<uchar>(y, x);
 
                 int nGrayValue = calcGrayValue(cv::Scalar(pixel[0], pixel[1], pixel[2]));
-                if (nGrayValue < nGrayValueGet) {
+                if (bInvert ? (nGrayValue > nGrayValueGet) : (nGrayValue <= nGrayValueGet)) {
                     pixel[0] = 0;
                     pixel[1] = 0;
                     pixel[2] = 0;
@@ -1035,8 +1055,8 @@ void QColorWeight::displayGrayImg() {
         }
     }
     else if (EM_MODE_ONE_THRESHOLD == emMode) {
-        cv::Mat matGrayLocal = _convertToGrayImage();
-        cv::threshold(matGrayLocal, maskMat, m_nGrayLevelThreshold1, 255, cv::ThresholdTypes::THRESH_BINARY);
+        cv::Mat matGrayLocal = _convertToGrayImage();       
+        cv::threshold(matGrayLocal, maskMat, m_nGrayLevelThreshold1, 255, bInvert ? cv::ThresholdTypes::THRESH_BINARY_INV : cv::ThresholdTypes::THRESH_BINARY);
         cv::cvtColor(maskMat, matGrayImg, CV_GRAY2RGB);
     }
     else if (EM_MODE_TWO_THRESHOLD == emMode) {
@@ -1046,6 +1066,7 @@ void QColorWeight::displayGrayImg() {
         stCmd.bDoubleThreshold = true;
         stCmd.nThreshold1 = m_nGrayLevelThreshold1;
         stCmd.nThreshold2 = m_nGrayLevelThreshold2;
+        stCmd.bInverseResult = bInvert;
         Vision::PR_Threshold(&stCmd, &stRpy);
         maskMat = stRpy.matResultImg;
 
@@ -1065,8 +1086,9 @@ void QColorWeight::displayColorImg()
 
 	int nRn = ui.horizontalSlider_Rn->value();
 	int nTn = ui.horizontalSlider_Tn->value();
+    bool bInvert = ui.checkBox_invert->isChecked();
 
-	cv::Mat matGrayColor = generateColorRange(nRn, nTn, matColorImg);
+	cv::Mat matGrayColor = generateColorRange(nRn, nTn, matColorImg, bInvert);
 	QImage imageColor = QImage((uchar*)matGrayColor.data, matGrayColor.cols, matGrayColor.rows, ToInt(matGrayColor.step), QImage::Format_RGB888);
 	m_grayColorScene->clear();
 	m_grayColorScene->addPixmap(QPixmap::fromImage(imageColor));
@@ -1079,7 +1101,20 @@ void QColorWeight::displayColorImg()
 
 void QColorWeight::onGrayModeIndexChanged(int iIndex)
 {
-	int nIndex = ui.comboBox_selectMode->currentIndex();
+    int nIndex = ui.comboBox_selectMode->currentIndex();
+    GRAY_WEIGHT_METHOD emMode = static_cast<GRAY_WEIGHT_METHOD>(nIndex);
+    if (EM_MODE_PT_THRESHOLD == emMode) {
+        ui.horizontalSlider_grayLeft->setVisible(false);
+        ui.horizontalSlider_grayRight->setVisible(false);
+    }
+    else if (EM_MODE_ONE_THRESHOLD == emMode){
+        ui.horizontalSlider_grayLeft->setVisible(true);
+        ui.horizontalSlider_grayRight->setVisible(false);
+    }
+    else if (EM_MODE_TWO_THRESHOLD == emMode){
+        ui.horizontalSlider_grayLeft->setVisible(true);
+        ui.horizontalSlider_grayRight->setVisible(true);
+    }
 }
 
 void QColorWeight::onCheckBoxEnableR(int iState)
@@ -1138,6 +1173,18 @@ void QColorWeight::onGrayRightSliderChanged(int i)
 	generateGrayPlot();
 }
 
+void QColorWeight::onCheckBoxInvert(int iState)
+{
+    if (iState == Qt::Checked)
+    {
+    }
+    else
+    {
+    }
+
+    generateGrayPlot();
+}
+
 void QColorWeight::onGrayRSliderChanged(int i)
 {
 	QString str = QString::number(i);
@@ -1181,9 +1228,15 @@ void QColorWeight::onColorTnSliderChanged(int i)
 	generateColorPlot();
 }
 
-cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage)
+cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage, bool bInvert)
 {
 	if (m_matSrcImage.empty()) return cv::Mat();
+
+    cv::Mat matImageSrc;
+    if (bInvert)
+    {
+        matImageSrc = matImage.clone();
+    }
 
 	int m = matImage.rows;
 	int n = matImage.cols;
@@ -1332,6 +1385,23 @@ cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage)
 		}
 	}
 	m_maskMat = maskMat;
+    if (bInvert)
+    {
+        m_maskMat = Vision::PR_MAX_GRAY_LEVEL - m_maskMat;
+       
+        cv::Mat imgLayer;
+        cv::cvtColor(m_maskMat, imgLayer, CV_GRAY2RGB);
+
+        std::vector<cv::Mat> vecChannels;
+        cv::split(imgLayer, vecChannels);
+        vecChannels[0] = 0;
+        cv::merge(vecChannels, imgLayer);
+
+        double alpha = 0.3;
+        addWeighted(matImageSrc, alpha, imgLayer, 1 - alpha, 0, matImageSrc);
+
+        matImage = matImageSrc;
+    }
 
 	m_maxR = maxR;
 	m_minR = minR;
