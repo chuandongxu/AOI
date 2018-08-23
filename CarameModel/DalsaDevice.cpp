@@ -11,7 +11,7 @@ typedef Pylon::CBaslerCameraLinkInstantCamera Camera_t;
 
 const QString g_szDefaultDalsaHWConfigFile = "N_AOI_Default_Default_HW_TRIGGER.ccf";
 const QString g_szDefaultDalsaSWConfigFile = "N_AOI_Default_Default_SW_TRIGGER.ccf";
-const int g_nBufferSize = 4;
+const int g_nBufferSize = 54;
 
 int DalsaCameraDevice::_sXferIndex = 0;
 DalsaCameraDevice::DalsaCameraDevice(SapLocation* loc, QString cameraName, QString  cameraID)
