@@ -25,7 +25,10 @@
 #include "OcvWidget.h"
 #include "TreeWidgetInspWindow.h"
 #include "InspMaskEditorWidget.h"
+#include "InspHeightBaseWidget.h"
 #include "VisionAPI.h"
+#include <QJsonObject>
+#include <QJsonDocument>
 
 static const QString DEFAULT_WINDOW_NAME[] =
 {
@@ -34,6 +37,7 @@ static const QString DEFAULT_WINDOW_NAME[] =
     "Caliper Circle",
     "Alignment",
     "Height Detect",
+    "Height Global Base",
     "Inspect Polarity",
     "Inspect Contour",
     "Inspect Chip",
@@ -53,12 +57,13 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::CALIPER_CIRCLE)] = std::make_unique<FindCircleWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::ALIGNMENT)] = std::make_unique<AlignmentWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::HEIGHT_DETECT)] = std::make_unique<HeightDetectWidget>(this);
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE)] = std::make_unique<InspHeightBaseWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_POLARITY)] = std::make_unique<InspPolarityWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CONTOUR)] = std::make_unique<InspContourWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CHIP)] = std::make_unique<InspChipWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_BRIDGE)] = std::make_unique<InspBridgeWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_LEAD)] = std::make_unique<InspLeadWidget>(this);
-    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::OCV)] = std::make_unique<OcvWidget>(this);
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::OCV)] = std::make_unique<OcvWidget>(this);   
 
     for (const auto &ptrInspWindowWidget : m_arrInspWindowWidget)
         ui.stackedWidget->addWidget(ptrInspWindowWidget.get());
@@ -519,9 +524,11 @@ void InspWindowWidget::on_btnEditMask_clicked()
 
     cv::Rect rectROI = cv::Rect2f(x - width / 2.f, y - height / 2.f, width, height);
     cv::Mat matROI(matImage, rectROI);
-   
+
+    cv::Mat matMask = m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->convertMaskBny2Mat(window.mask);
+
     m_pMaskEditorWidget->setImage(matROI, true);
-    m_pMaskEditorWidget->setMaskBinary(window.mask);
+    m_pMaskEditorWidget->setMaskMat(matMask);
     m_pMaskEditorWidget->repaintAll();
 
     m_pMaskEditorWidget->show();
@@ -533,6 +540,8 @@ void InspWindowWidget::on_btnEditMask_clicked()
 
     cv::Mat maskMat = m_pMaskEditorWidget->getMaskMat();
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setMask(maskMat);
+
+    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->confirmWindow(OPERATION::EDIT);
 }
 
 void InspWindowWidget::on_btnTryInsp_clicked() {
@@ -553,6 +562,25 @@ void InspWindowWidget::on_btnTryInsp_clicked() {
 }
 
 void InspWindowWidget::_tryInspHeight() {
+    Engine::Window window = m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->getCurrentWindow();
+    if (window.usage == Engine::Window::Usage::HEIGHT_MEASURE)
+    {
+        QJsonParseError json_error;
+        QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+        if (json_error.error != QJsonParseError::NoError)
+            return;
+
+        if (parse_doucment.isObject()) {
+            QJsonObject obj = parse_doucment.object();
+            bool bGloablBase = obj.take("GlobalBase").toBool();
+            if (bGloablBase)
+            {
+                m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
+                return;
+            }
+        }
+    }
+
     QString strTitle(QStringLiteral("高度检测"));
     auto ptrCurrentItem = ui.treeWidget->currentItem();
     if (!ptrCurrentItem) {
@@ -774,6 +802,10 @@ void InspWindowWidget::onSelectedWindowChanged() {
 
     case Engine::Window::Usage::OCV:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::OCV;
+        break;
+
+    case Engine::Window::Usage::HEIGHT_BASE_GLOBAL:
+        m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE;
         break;
 
     default:

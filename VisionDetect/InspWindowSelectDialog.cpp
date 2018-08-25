@@ -72,6 +72,11 @@ void InspWindowSelectDialog::on_btnOcvWindow_clicked()
     m_enInspWidgetIndex = INSP_WIDGET_INDEX::OCV;
 }
 
+void InspWindowSelectDialog::on_btnGlobalWindow_clicked()
+{
+    m_enInspWidgetIndex = INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE;
+}
+
 void InspWindowSelectDialog::on_accept()
 {
     if ( INSP_WIDGET_INDEX::UNDEFINED == m_enInspWidgetIndex ) {

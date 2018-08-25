@@ -1,4 +1,4 @@
-#include "InspMaskEditorWidget.h"
+ï»¿#include "InspMaskEditorWidget.h"
 #include "../Common/SystemData.h"
 #include "../include/IdDefine.h"
 #include <QVBoxLayout>
@@ -145,7 +145,7 @@ InspMaskEditorWidget::~InspMaskEditorWidget()
 }
 
 void InspMaskEditorWidget::closeEvent(QCloseEvent *e){
-    //qDebug() << "¹Ø±ÕÊÂ¼ş";
+    //qDebug() << "å…³é—­äº‹ä»¶";
     //e->ignore();
 
     this->hide();
@@ -159,7 +159,7 @@ void InspMaskEditorWidget::initUI()
 
     connect(ui.pushButton_editDone, SIGNAL(clicked()), SLOT(onEditDone()));
 
-    ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("ÇëÑ¡ÔñÇøÓò")));
+    ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("è¯·é€‰æ‹©åŒºåŸŸ")));
 
     ui.radioButton_rect->setChecked(true);
     ui.radioButton_circle->setChecked(false);
@@ -186,103 +186,83 @@ void InspMaskEditorWidget::setImage(cv::Mat& matImage, bool bClearAll)
 
 cv::Mat InspMaskEditorWidget::getMaskMat()
 {
-    cv::Mat matImage(m_hoImage.rows, m_hoImage.cols, CV_8UC1, cv::Scalar(1));
+    if (!m_maskMat.empty()) return m_maskMat;
 
-    for (int i = 0; i < m_maskObjs.size(); i++)
+    if (m_maskObjs.size() > 0)
     {
-        MaskObj* obj = m_maskObjs[i];
-        switch (obj->getType())
-        {
-        case MASK_TYPE_RECT:
-        {
-            RectMask* maskObj = dynamic_cast<RectMask*>(obj);
-            if (maskObj && !maskObj->isEmpty())
-            {
-                cv::Point2f vertices[4];
-                maskObj->_rect.points(vertices);
+        cv::Mat matImage(m_hoImage.rows, m_hoImage.cols, CV_8UC1, cv::Scalar(Vision::PR_MAX_GRAY_LEVEL));
 
-                int x = vertices[1].x;
-                int y = vertices[1].y;
-                int width = vertices[3].x - vertices[1].x;
-                int height = vertices[3].y - vertices[1].y;
-
-                rectangle(matImage, vertices[1], vertices[3], cv::Scalar(0), -1);
-            }
-        }
-        break;
-        case MASK_TYPE_CIRCLE:
+        for (int i = 0; i < m_maskObjs.size(); i++)
         {
-            CircleMask* maskObj = dynamic_cast<CircleMask*>(obj);
-            if (maskObj && !maskObj->isEmpty())
+            MaskObj* obj = m_maskObjs[i];
+            switch (obj->getType())
             {
-                circle(matImage, maskObj->_center, maskObj->_radius, cv::Scalar(0), -1);
-            }
-        }
-        break;
-        case MASK_TYPE_POLYLINE:
-        {
-            PolyLineMask* maskObj = dynamic_cast<PolyLineMask*>(obj);
-            if (maskObj && !maskObj->isEmpty() && maskObj->_polyPts.size() > 2)
+            case MASK_TYPE_RECT:
             {
-                cv::Point *points = new cv::Point[maskObj->_polyPts.size()];
-                for (int i = 0; i < maskObj->_polyPts.size(); i++)
+                RectMask* maskObj = dynamic_cast<RectMask*>(obj);
+                if (maskObj && !maskObj->isEmpty())
                 {
-                    points[i].x = maskObj->_polyPts[i].x;
-                    points[i].y = maskObj->_polyPts[i].y;
-                }
+                    cv::Point2f vertices[4];
+                    maskObj->_rect.points(vertices);
 
-                const cv::Point* pt[1] = { points };
-                int npt[1] = { maskObj->_polyPts.size() };
+                    int x = vertices[1].x;
+                    int y = vertices[1].y;
+                    int width = vertices[3].x - vertices[1].x;
+                    int height = vertices[3].y - vertices[1].y;
 
-                polylines(matImage, pt, npt, 1, 1, cv::Scalar(0));
-                fillPoly(matImage, pt, npt, 1, cv::Scalar(0), 8);
-
-                delete points;
-            }
-        }
-        break;
-        case MASK_TYPE_NULL:
-            break;
-        default:
-            break;
-        }
-    }
-   
-    return matImage;
-}
-
-void InspMaskEditorWidget::setMaskBinary(AOI::Vision::Binary maskBinary)
-{   
-    if (maskBinary.size() > 0)
-    {
-        int rows = m_hoImage.rows;
-        int cols = m_hoImage.cols;
-
-        bool bMasked = false;
-
-        cv::Mat maskMat = cv::Mat::zeros(rows, cols, CV_8UC3);
-        for (int row = 0; row < rows; row++)
-        {
-            for (int col = 0; col < cols; col++)
-            {
-                cv::Vec3b& pixel = maskMat.at<cv::Vec3b>(row, col);
-
-                uchar mask = maskBinary[row*cols + col];
-                if (0 == mask)
-                {
-                    pixel[0] = 255;
-                    bMasked = true;
+                    rectangle(matImage, vertices[1], vertices[3], cv::Scalar(0), -1);
                 }
             }
+            break;
+            case MASK_TYPE_CIRCLE:
+            {
+                CircleMask* maskObj = dynamic_cast<CircleMask*>(obj);
+                if (maskObj && !maskObj->isEmpty())
+                {
+                    circle(matImage, maskObj->_center, maskObj->_radius, cv::Scalar(0), -1);
+                }
+            }
+            break;
+            case MASK_TYPE_POLYLINE:
+            {
+                PolyLineMask* maskObj = dynamic_cast<PolyLineMask*>(obj);
+                if (maskObj && !maskObj->isEmpty() && maskObj->_polyPts.size() > 2)
+                {
+                    cv::Point *points = new cv::Point[maskObj->_polyPts.size()];
+                    for (int i = 0; i < maskObj->_polyPts.size(); i++)
+                    {
+                        points[i].x = maskObj->_polyPts[i].x;
+                        points[i].y = maskObj->_polyPts[i].y;
+                    }
+
+                    const cv::Point* pt[1] = { points };
+                    int npt[1] = { maskObj->_polyPts.size() };
+
+                    polylines(matImage, pt, npt, 1, 1, cv::Scalar(0));
+                    fillPoly(matImage, pt, npt, 1, cv::Scalar(0), 8);
+
+                    delete points;
+                }
+            }
+            break;
+            case MASK_TYPE_NULL:
+                break;
+            default:
+                break;
+            }
         }
 
-        m_maskMat = bMasked ? maskMat : cv::Mat();
+        return matImage;
     }
     else
     {
-        m_maskMat = cv::Mat();
+        return cv::Mat();
     }
-    
+}
+
+void InspMaskEditorWidget::setMaskMat(cv::Mat& matMask)
+{
+    m_maskMat = matMask;
     enablePanel(m_maskMat.empty());
 }
 
@@ -577,7 +557,7 @@ void InspMaskEditorWidget::wheelEvent(QWheelEvent * event)
 
 void InspMaskEditorWidget::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 {
-    CV_Assert(src.depth() == CV_8U);//CV_Assert£¨£©ÈôÀ¨ºÅÖĞµÄ±í´ïÊ½ÖµÎªfalse£¬Ôò·µ»ØÒ»¸ö´íÎóĞÅÏ¢¡£  
+    CV_Assert(src.depth() == CV_8U);//CV_Assertï¼ˆï¼‰è‹¥æ‹¬å·ä¸­çš„è¡¨è¾¾å¼å€¼ä¸ºfalseï¼Œåˆ™è¿”å›ä¸€ä¸ªé”™è¯¯ä¿¡æ¯ã€‚  
     const int rows = src.rows;
     const int cols = src.cols;
     dst.create(rows, cols, src.type());
@@ -587,17 +567,17 @@ void InspMaskEditorWidget::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int d
 
     dst.setTo(cv::Scalar(0, 0, 0));
 
-    cv::Vec3b *p;   //¶¨ÒåÒ»¸ö´æ·Å3Í¨µÀµÄÈİÆ÷Ö¸Õëp  
+    cv::Vec3b *p;   //å®šä¹‰ä¸€ä¸ªå­˜æ”¾3é€šé“çš„å®¹å™¨æŒ‡é’ˆp  
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
         {
-            p = dst.ptr<cv::Vec3b>(i);//Ö¸ÏòĞĞÊıµÄÈİÆ÷p  
+            p = dst.ptr<cv::Vec3b>(i);//æŒ‡å‘è¡Œæ•°çš„å®¹å™¨p  
             int x = j - dx;
             int y = i - dy;
-            if (x>0 && y>0 && x < cols&&y < rows)//Æ½ÒÆºóµÄÏñËØ×ø±êÔÚÔ­Í¼ÏñµÄĞĞÊıºÍÁĞÊıÄÚ  
+            if (x>0 && y>0 && x < cols&&y < rows)//å¹³ç§»åçš„åƒç´ åæ ‡åœ¨åŸå›¾åƒçš„è¡Œæ•°å’Œåˆ—æ•°å†…  
             {
-                p[i, j] = src.ptr<cv::Vec3b>(y)[x];//Æ½ÒÆºóµÄÍ¼Ïñ£¨i,j)¶ÔÓ¦ÓÚÔ­Í¼ÏñµÄ£¨y,x)  
+                p[i, j] = src.ptr<cv::Vec3b>(y)[x];//å¹³ç§»åçš„å›¾åƒï¼ˆi,j)å¯¹åº”äºåŸå›¾åƒçš„ï¼ˆy,x)  
             }
         }
     }
@@ -682,10 +662,13 @@ void InspMaskEditorWidget::repaintAll()
     if (!m_maskMat.empty())
     {
         cv::Mat imgLayer = m_maskMat.clone();
-        //cv::cvtColor(imgLayer, imgLayer, CV_GRAY2BGR);
+        cv::cvtColor(imgLayer, imgLayer, CV_GRAY2BGR);
+
+        cv::Mat imgMat;
+        cv::resize(imgLayer, imgMat, cv::Size(matImage.size().width, matImage.size().height), (0, 0), (0, 0), 3);
 
         double alpha = 0.7;
-        addWeighted(matImage, alpha, imgLayer, 1 - alpha, 0, matImage);
+        addWeighted(matImage, alpha, imgMat, 1 - alpha, 0, matImage);
     }
     else
     {
@@ -970,7 +953,7 @@ void InspMaskEditorWidget::enablePanel(bool bEnable)
 void InspMaskEditorWidget::clear()
 {
     ui.comboBox_maskIndex->clear();
-    ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("ÇëÑ¡ÔñÇøÓò")));
+    ui.comboBox_maskIndex->addItem(QString("%1").arg(QStringLiteral("è¯·é€‰æ‹©åŒºåŸŸ")));
 
     for (int i = 0; i < m_maskObjs.size(); i++)
     {

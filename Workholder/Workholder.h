@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "workholder_global.h"
 
@@ -15,12 +15,12 @@ public:
     virtual void addSettingWiddget(QTabWidget * tabWidget);
 
 public:
-    virtual bool IsBoardArrived() override;		//¼ì²âÇ°·½ÊÇ·ñÓĞ°å×Óµ½´ï
-    virtual bool IsBoardDelivered() override;	//¼ì²â°å×ÓÊÇ·ñ·¢ËÍÍê³É
-    virtual bool IsBoardReady() override;		//¼ì²â°å×ÓÊÇ·ñÔÚ¼ì²âÎ»ÖÃ
+    virtual bool IsBoardArrived() override;		//æ£€æµ‹å‰æ–¹æ˜¯å¦æœ‰æ¿å­åˆ°è¾¾
+    virtual bool IsBoardDelivered() override;	//æ£€æµ‹æ¿å­æ˜¯å¦å‘é€å®Œæˆ
+    virtual bool IsBoardReady() override;		//æ£€æµ‹æ¿å­æ˜¯å¦åœ¨æ£€æµ‹ä½ç½®
 
-    virtual bool pullBoard(bool bWait) override;	//»ñÈ¡µ±Ç°°å×Ó£¬²¢ÔË¶¯µ½¼ì²âÎ»ÖÃ
-    virtual bool pushBoard(bool bWait) override;	//°å×Ó¼ì²âÍê³É£¬Çå³ö
+    virtual bool pullBoard(bool bWait) override;	//è·å–å½“å‰æ¿å­ï¼Œå¹¶è¿åŠ¨åˆ°æ£€æµ‹ä½ç½®
+    virtual bool pushBoard(bool bWait) override;	//æ¿å­æ£€æµ‹å®Œæˆï¼Œæ¸…å‡º
 
 private:
     WorkCtrl m_ctrl;
