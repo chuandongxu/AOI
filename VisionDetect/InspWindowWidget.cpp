@@ -522,9 +522,11 @@ void InspWindowWidget::on_btnEditMask_clicked()
 
     cv::Rect rectROI = cv::Rect2f(x - width / 2.f, y - height / 2.f, width, height);
     cv::Mat matROI(matImage, rectROI);
-   
+
+    cv::Mat matMask = m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->convertMaskBny2Mat(window.mask);
+
     m_pMaskEditorWidget->setImage(matROI, true);
-    m_pMaskEditorWidget->setMaskBinary(window.mask);
+    m_pMaskEditorWidget->setMaskMat(matMask);
     m_pMaskEditorWidget->repaintAll();
 
     m_pMaskEditorWidget->show();
@@ -536,6 +538,8 @@ void InspWindowWidget::on_btnEditMask_clicked()
 
     cv::Mat maskMat = m_pMaskEditorWidget->getMaskMat();
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setMask(maskMat);
+
+    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->confirmWindow(OPERATION::EDIT);
 }
 
 void InspWindowWidget::on_btnTryInsp_clicked() {
