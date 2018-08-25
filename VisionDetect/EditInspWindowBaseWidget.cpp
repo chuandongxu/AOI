@@ -3,6 +3,11 @@
 
 #include "../Common/SystemData.h"
 
+#include "VisionAPI.h"
+#include "opencv2/opencv.hpp"
+
+using namespace AOI;
+
 EditInspWindowBaseWidget::EditInspWindowBaseWidget(InspWindowWidget *parent) : QWidget(parent), m_pParent(parent), m_bSupportMask(false)
 {
 }
@@ -18,33 +23,13 @@ void EditInspWindowBaseWidget::setMask(cv::Mat& maskMat)
 }
 
 cv::Mat EditInspWindowBaseWidget::convertMaskBny2Mat(Binary maskBinary)
-{
-    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-
-    auto width = m_currentWindow.width / dResolutionX;
-    auto height = m_currentWindow.height / dResolutionY;
-
-    int rows = static_cast<int>(height);
-    int cols = static_cast<int>(width);  
-
+{ 
+    cv::Mat matMask;
     if (maskBinary.size() > 0)
     {
-        cv::Mat maskMat = cv::Mat::zeros(rows, cols, CV_8UC1);
-
-        for (int row = 0; row < rows; row++)
-        {
-            for (int col = 0; col < cols; col++)
-            {
-                uchar& mask = maskMat.at<uchar>(row, col);
-                mask = maskBinary[row*cols + col];
-            }
-        }
-
-        return maskMat;
-    }  
-
-    return cv::Mat();
+        matMask = cv::imdecode(maskBinary, CV_LOAD_IMAGE_GRAYSCALE);
+    }
+    return matMask;
 }
 
 Binary EditInspWindowBaseWidget::convertMaskMat2Bny(cv::Mat& maskMat)
@@ -53,14 +38,8 @@ Binary EditInspWindowBaseWidget::convertMaskMat2Bny(cv::Mat& maskMat)
 
     if (!maskMat.empty())
     {
-        cv::Mat matMaskImg = maskMat;
-        for (int row = 0; row < matMaskImg.rows; ++row) {
-            for (int col = 0; col < matMaskImg.cols; ++col) {
-                AOI::Vision::Byte& mask = matMaskImg.at<AOI::Vision::Byte>(row, col);
-                maskBinary.push_back(mask);
-            }
-        }
-    }   
+        cv::imencode(".bmp", maskMat, maskBinary);
+    }
 
     return maskBinary;
 }

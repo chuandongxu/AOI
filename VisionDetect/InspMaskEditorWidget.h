@@ -109,7 +109,7 @@ public:
     void clear();  
 
     cv::Mat getMaskMat();
-    void setMaskBinary(AOI::Vision::Binary maskBinary);
+    void setMaskMat(cv::Mat& matMask);   
 
 protected:
     void mouseMoveEvent(QMouseEvent * event);

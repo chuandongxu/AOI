@@ -13,9 +13,6 @@
 
 typedef Pylon::CBaslerGigEInstantCamera Camera_t;
 
-const int g_ImageBufferSize = 10;
-const int g_ImageFrameTriggerNum = 1000;
-
 CameraDevice::CameraDevice(QString cameraName, QString  cameraID)
 {	
 	m_bOpen  = false;	

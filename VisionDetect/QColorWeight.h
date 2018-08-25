@@ -56,6 +56,12 @@ public:
     cv::Mat generateColorImage(cv::Point ptPos);
     void setColorImagePos(cv::Point ptMousePos);
 
+    //Color Space using color not pick position
+    void holdColorImage(cv::Vec3b color = cv::Vec3b(0, 0, 0), int nRn = 30, int nTn = 50);   
+    void getColorParams(int& nRn, int& nTn);  
+    void releaseColorImage();
+
+    // Color Parameters
     std::string getJsonFormattedParams() const;
     void setJsonFormattedParams(const std::string &jsonParams);
 
@@ -83,7 +89,7 @@ private:
     void displayGrayImg();
     void displayColorImg();
 
-    cv::Mat generateColorRange(int nRn, int nTn, cv::Mat& matImage);
+    cv::Mat generateColorRange(int nRn, int nTn, cv::Mat& matImage, bool bInvert);
     cv::Mat generateColorTrig(int nWidth, int nHeight, int nMinR, int nMaxR, int nMinG, int nMaxG, int nMinB, int nMaxB);
     bool calcTwoLineIntersect(cv::Point2f pt1, cv::Point2f pt2, cv::Point2f pt3, cv::Point2f pt4, cv::Point2f& ptIntersect);
     bool calcTwoLineIntersect(double k1, double b1, double k2, double b2, cv::Point2f& ptIntersect);
@@ -97,6 +103,8 @@ private slots:
 
     void onGrayLeftSliderChanged(int i);
     void onGrayRightSliderChanged(int i);
+
+    void onCheckBoxInvert(int iState);
 
     void onGrayRSliderChanged(int i);
     void onGrayGSliderChanged(int i);
@@ -126,12 +134,15 @@ private:
 
     cv::Point m_grayGenPt;
 
-    // Color Space
-    cv::Point m_colorGenPt;
-    std::shared_ptr<QCustomPlot> m_customPlotR;
-    std::shared_ptr<QCustomPlot> m_customPlotG;
-    std::shared_ptr<QCustomPlot> m_customPlotB;
-    std::shared_ptr<QCustomPlot> m_customPlotGray;
+	// Color Space
+    bool m_bSetColor;
+	cv::Point m_colorGenPt;
+    cv::Vec3b m_color;
+	std::shared_ptr<QCustomPlot> m_customPlotR;
+	std::shared_ptr<QCustomPlot> m_customPlotG;
+	std::shared_ptr<QCustomPlot> m_customPlotB;
+	std::shared_ptr<QCustomPlot> m_customPlotGray;
+
     QCPBars *m_regenR;
     QCPBars *m_regenG;
     QCPBars *m_regenB;

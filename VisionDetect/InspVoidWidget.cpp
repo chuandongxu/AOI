@@ -161,7 +161,12 @@ void InspVoidWidget::tryInsp() {
     matProcessedROI.copyTo(matOrigianlROI);
     stCmd.bPreprocessedImg = true;
 
-    stCmd.matMask = getMask();
+    cv::Mat matMask = getMask();
+    cv::Mat matBigMask = cv::Mat::ones(pUI->getImage().size(), CV_8UC1);
+    matBigMask *= Vision::PR_MAX_GRAY_LEVEL;
+    cv::Mat matMaskROI(matBigMask, cv::Rect(pUI->getSelectedROI()));
+    matMask.copyTo(matMaskROI);
+    stCmd.matMask = matBigMask;
 
     if (stCmd.rectROI.width <= 0 || stCmd.rectROI.height <= 0) {
         QMessageBox::critical(this, QStringLiteral("Add Insp Hole Window"), QStringLiteral("Please select a ROI to do inspection."));

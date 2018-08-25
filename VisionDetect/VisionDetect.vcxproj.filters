@@ -416,6 +416,15 @@
     <ClCompile Include="InspMaskEditorWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_InspHeightBaseWidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_InspHeightBaseWidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="InspHeightBaseWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VisionDetect.h">
@@ -528,8 +537,11 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_OcvWidget.h">
       <Filter>Generated Files</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_InspMaskEditorWidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_InspHeightBaseWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -759,6 +771,12 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="InspMaskEditorWidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="InspHeightBaseWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="InspHeightBaseWidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
