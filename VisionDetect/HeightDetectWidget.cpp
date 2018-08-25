@@ -144,7 +144,7 @@ void HeightDetectWidget::tryInsp() {
         cv::Mat matBigMask = cv::Mat::ones(matImage.size(), CV_8UC1);
         cv::Mat matMaskROI(matBigMask, cv::Rect(rectBaseDetectWin));
         matMask.copyTo(matMaskROI);
-       // stCmd.matMask = matBigMask;        
+       stCmd.matMask = matBigMask;        
 
         stCmd.vecRectBases.push_back(rectBaseDetectWin);
     }
