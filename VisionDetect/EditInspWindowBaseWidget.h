@@ -24,8 +24,10 @@ public:
     virtual void setDefaultValue() = 0;
     virtual void tryInsp() = 0;
     virtual void confirmWindow(OPERATION enOperation) = 0;
-    virtual void setCurrentWindow(const Engine::Window &window) = 0;
+    virtual void setCurrentWindow(const Engine::Window &window) = 0;   
     virtual void setWindowGroup(const Engine::WindowGroup &windowGroup);
+
+    Engine::Window getCurrentWindow() { return m_currentWindow; }
    
     bool isSupportMask() { return m_bSupportMask; }
     void setMask(cv::Mat& maskMat);
@@ -33,7 +35,6 @@ public:
 
     cv::Mat convertMaskBny2Mat(Binary maskBinary);
     Binary convertMaskMat2Bny(cv::Mat& maskMat);
-
 protected:
     InspWindowWidget           *m_pParent;
     Engine::Window              m_currentWindow;

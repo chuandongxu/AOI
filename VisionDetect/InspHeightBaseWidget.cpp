@@ -90,8 +90,8 @@ void InspHeightBaseWidget::tryInsp() {
     strColorMsg.sprintf("r:%d,g:%d,b:%d", m_color[0], m_color[1], m_color[2]);
     m_pEditColor->setText(strColorMsg);
 
-    QString strMsg;
-    strMsg.sprintf("Inspect Status, Color %s", strColorMsg);
+    QString strMsg("Inspect Status, Color ");
+    strMsg += strColorMsg;
     QMessageBox::information(this, "Height Base Detect", strMsg);
 }
 
@@ -236,7 +236,7 @@ void InspHeightBaseWidget::on_btnSelectROI_clicked()
 
     pColorWidget->holdColorImage(m_color, m_pEditRnParam->text().toInt(), m_pEditTnParam->text().toInt());   
     pColorWidget->show();
-    while (pColorWidget->isHidden())
+    while (!pColorWidget->isHidden())
     {
         QThread::msleep(100);
         QApplication::processEvents();

@@ -27,6 +27,8 @@
 #include "InspMaskEditorWidget.h"
 #include "InspHeightBaseWidget.h"
 #include "VisionAPI.h"
+#include <QJsonObject>
+#include <QJsonDocument>
 
 static const QString DEFAULT_WINDOW_NAME[] =
 {
@@ -560,6 +562,25 @@ void InspWindowWidget::on_btnTryInsp_clicked() {
 }
 
 void InspWindowWidget::_tryInspHeight() {
+    Engine::Window window = m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->getCurrentWindow();
+    if (window.usage == Engine::Window::Usage::HEIGHT_MEASURE)
+    {
+        QJsonParseError json_error;
+        QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+        if (json_error.error != QJsonParseError::NoError)
+            return;
+
+        if (parse_doucment.isObject()) {
+            QJsonObject obj = parse_doucment.object();
+            bool bGloablBase = obj.take("GlobalBase").toBool();
+            if (bGloablBase)
+            {
+                m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
+                return;
+            }
+        }
+    }
+
     QString strTitle(QStringLiteral("高度检测"));
     auto ptrCurrentItem = ui.treeWidget->currentItem();
     if (!ptrCurrentItem) {
