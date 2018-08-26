@@ -25,9 +25,11 @@ private slots:
     void on_btnSelectCombinedImage_clicked();
     void on_scanImage_done();
     void on_comboBoxDisplayImage_indexChanged(int);
+    void on_btnSaveScanImage_clicked();
+    void on_btnOpenScanImage_clicked();
 
 private:
-    cv::Mat combineImage(const QString &strFolder);
+    cv::Mat _combineImage(const QString &strFolder);
     void updateImageDeviceWindows(const cv::Mat &matImage);
     bool _moveToCapturePos(float fPosX, float fPosY);
 

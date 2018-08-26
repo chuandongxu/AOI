@@ -53,7 +53,7 @@ void ScanImageWidget::on_btnPrepareScanImage_clicked() {
     float left = 0.f, top = 0.f, right = 0.f, bottom = 0.f;
     if (Engine::GetBigBoardCoords(left, top, right, bottom) != 0) {
         String errorType, errorMessage;
-        Engine::GetErrorDetail ( errorType, errorMessage );
+        Engine::GetErrorDetail(errorType, errorMessage);
         System->showMessage(QStringLiteral("设置电路板"), QStringLiteral("Error at GetBigBoardCoords, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
         return;
     }
@@ -107,7 +107,7 @@ void ScanImageWidget::on_scanImage_done()
 {
     if (m_pScanImageThread->isGood()) {
         m_pDataCtrl->setCombinedBigResult(m_pScanImageThread->getCombinedBigImages(), m_pScanImageThread->getCombinedBigHeight());
-		updateImageDeviceWindows(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]);
+        updateImageDeviceWindows(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]);
         ui.comboBoxDisplayImage->setEnabled(true);
 
         auto pUI = getModule<IVisionUI>(UI_MODEL);
@@ -143,7 +143,7 @@ void ScanImageWidget::on_btnSelectFrameImages_clicked() {
     ui.lineEditFrameImageFolder->setText(fileNames[0]);
 }
 
-cv::Mat ScanImageWidget::combineImage(const QString &strInputFolder) {
+cv::Mat ScanImageWidget::_combineImage(const QString &strInputFolder) {
     auto nCountOfImgPerFrame = System->getParam("scan_image_OneFrameImageCount").toInt();
     auto nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
     auto nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
@@ -224,7 +224,7 @@ void ScanImageWidget::on_btnCombineLoadImage_clicked() {
     System->setSysParam("CAM_RESOLUTION_Y", dResolutionY);
     System->setSysParam("BOARD_ROTATED", bBoardRotated);
 
-    auto matImage = combineImage(strFolder);
+    auto matImage = _combineImage(strFolder);
     if (matImage.empty())
         return;
 
@@ -255,6 +255,79 @@ void ScanImageWidget::on_btnSelectCombinedImage_clicked() {
 
     auto matImage = cv::imread(fileNames[0].toStdString());
     updateImageDeviceWindows(matImage);
+}
+
+void ScanImageWidget::on_btnSaveScanImage_clicked() {
+    auto vecCombinedBigImage = m_pDataCtrl->getCombinedBigImages();
+    if (vecCombinedBigImage.empty()) {
+        System->showMessage(QString(QStringLiteral("扫图")), QString(QStringLiteral("请先扫图!")));
+        return;
+    }
+
+    QString dir = QFileDialog::getExistingDirectory(
+        this,
+        tr("Open Directory"),
+        "/home",
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+    auto strFolder = dir.toStdString();
+    for (size_t i = 0; i < vecCombinedBigImage.size(); ++ i) {
+        auto strImage = strFolder + "/" + std::to_string(i) + ".png";
+        cv::imwrite(strImage, vecCombinedBigImage[i]);
+    }
+
+    auto strHeightFile = strFolder + "/height.yml";
+    cv::FileStorage fs(strHeightFile, cv::FileStorage::WRITE);
+    if (!fs.isOpened()) {
+        System->showMessage(QString(QStringLiteral("保存图片")), QString(QStringLiteral("打开文件 %1 失败!")).arg(strHeightFile.c_str()));
+        return;
+    }
+
+    cv::write(fs, "height", m_pDataCtrl->getCombinedBigHeight());
+    fs.release();
+}
+
+void ScanImageWidget::on_btnOpenScanImage_clicked() {
+    QString dir = QFileDialog::getExistingDirectory(
+        this,
+        tr("Open Directory"),
+        "/home",
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+    auto strFolder = dir.toStdString();
+    AOI::Vision::VectorOfMat vecCombinedImage;
+    for (size_t i = 0; i < PROCESSED_IMAGE_SEQUENCE::TOTAL_COUNT; ++ i) {
+        auto strImage = strFolder + "/" + std::to_string(i) + ".png";
+        auto matImage = cv::imread(strImage);
+        if (matImage.empty()) {
+            System->showMessage(QString(QStringLiteral("加载图片")), QString(QStringLiteral("读取图片 %1 失败!")).arg(strImage.c_str()));
+            return;
+        }
+        vecCombinedImage.push_back(matImage);
+    }
+
+    auto strHeightFile = strFolder + "/height.yml";
+    cv::FileStorage fs(strHeightFile, cv::FileStorage::READ);
+    if (!fs.isOpened()) {
+        System->showMessage(QString(QStringLiteral("打开高度文件")), QString(QStringLiteral("打开高度文件 %1 失败!")).arg(strHeightFile.c_str()));
+        return;
+    }
+
+    cv::Mat matHeight;
+    cv::FileNode fileNode = fs["height"];
+    cv::read(fileNode, matHeight);
+    if (matHeight.empty()) {
+        System->showMessage(QString(QStringLiteral("打开高度文件")), QString(QStringLiteral("读取高度文件 %1 失败!")).arg(strHeightFile.c_str()));
+        return;
+    }
+    fs.release();
+
+    m_pDataCtrl->setCombinedBigResult(vecCombinedImage, matHeight);
+    updateImageDeviceWindows(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]);
+    ui.comboBoxDisplayImage->setEnabled(true);
+
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    pUI->setHeightData(matHeight);
 }
 
 void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage) {
@@ -311,11 +384,11 @@ void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage) {
 bool ScanImageWidget::_moveToCapturePos(float fPosX, float fPosY)
 {
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
-	if (!pMotion) return false;
+    if (!pMotion) return false;
 
     if (! pMotion->moveToGroup(std::vector<int>({AXIS_MOTOR_X, AXIS_MOTOR_Y}), std::vector<double>({fPosX, fPosY}), std::vector<int>({0, 0}), true)) {
         System->setTrackInfo(QString("move to position error."));
-		return false;
+        return false;
     }
     return true;
 }

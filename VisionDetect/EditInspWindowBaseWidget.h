@@ -27,14 +27,15 @@ public:
     virtual void setCurrentWindow(const Engine::Window &window) = 0;   
     virtual void setWindowGroup(const Engine::WindowGroup &windowGroup);
 
-    Engine::Window getCurrentWindow() { return m_currentWindow; }
+    Engine::Window getCurrentWindow() const { return m_currentWindow; }
    
     bool isSupportMask() { return m_bSupportMask; }
-    void setMask(cv::Mat& maskMat);
-    cv::Mat getMask(){ return m_maskMat; }
+    void setMask(const cv::Mat& maskMat);
+    cv::Mat getMask() const { return m_maskMat; }
 
     cv::Mat convertMaskBny2Mat(Binary maskBinary);
     Binary convertMaskMat2Bny(cv::Mat& maskMat);
+
 protected:
     InspWindowWidget           *m_pParent;
     Engine::Window              m_currentWindow;

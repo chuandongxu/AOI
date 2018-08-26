@@ -17,7 +17,7 @@ void EditInspWindowBaseWidget::setWindowGroup(const Engine::WindowGroup &windowG
     m_windowGroup = windowGroup;
 }
 
-void EditInspWindowBaseWidget::setMask(cv::Mat& maskMat)
+void EditInspWindowBaseWidget::setMask(const cv::Mat& maskMat)
 { 
     m_maskMat = maskMat;    
 }
@@ -25,7 +25,7 @@ void EditInspWindowBaseWidget::setMask(cv::Mat& maskMat)
 cv::Mat EditInspWindowBaseWidget::convertMaskBny2Mat(Binary maskBinary)
 { 
     cv::Mat matMask;
-    if (maskBinary.size() > 0)
+    if (!maskBinary.empty())
     {
         matMask = cv::imdecode(maskBinary, CV_LOAD_IMAGE_GRAYSCALE);
     }

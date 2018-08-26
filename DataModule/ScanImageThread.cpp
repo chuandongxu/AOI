@@ -42,7 +42,7 @@ ScanImageThread::~ScanImageThread() {
 
 void ScanImageThread::quit()
 {
-	m_exit = true;
+    m_exit = true;
 }
 
 bool ScanImageThread::preRunning()
@@ -54,7 +54,7 @@ bool ScanImageThread::preRunning()
     auto pCam = getModule<ICamera>(CAMERA_MODEL);
     pCam->selectCaptureMode(ICamera::TRIGGER_ALL, true);
 
-	return true;
+    return true;
 }
 
 void ScanImageThread::run()
@@ -74,7 +74,6 @@ void ScanImageThread::run()
     m_bGood = true;
     for (int row = 0; row < ROWS; ++ row) {
         for (int col = 0; col < COLS; ++ col) {
-
             System->setTrackInfo(QStringLiteral("正在扫描行 (%1) 列 (%2)").arg(row).arg(col));
 
             auto ptFrameCtr = m_vecVecFrameCtr[row][col];
@@ -176,7 +175,7 @@ void ScanImageThread::run()
 bool ScanImageThread::moveToCapturePos(float fPosX, float fPosY)
 {
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
-	if (!pMotion) return false;
+    if (!pMotion) return false;
 
     fPosX *= UM_TO_MM;
     fPosY *= UM_TO_MM;
@@ -184,7 +183,7 @@ bool ScanImageThread::moveToCapturePos(float fPosX, float fPosY)
     if (! pMotion->moveToGroup(std::vector<int>({AXIS_MOTOR_X, AXIS_MOTOR_Y}), std::vector<double>({fPosX, fPosY}), std::vector<int>({0, 0}), true))
     {
         System->setTrackInfo(QString("move to position error"));
-		return false;
+        return false;
     }
     return true;
 }
@@ -205,57 +204,57 @@ bool ScanImageThread::captureAllImages(QVector<cv::Mat>& imageMats)
         return true;
     }
 
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return false;
+    ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+    if (!pCam) return false;
 
-	return pCam->captureAllImages(imageMats);
+    return pCam->captureAllImages(imageMats);
 }
 
 bool ScanImageThread::mergeImages(QString& szImagePath)
 {
-	return true;
+    return true;
 }
 
 bool ScanImageThread::isExit()
 {
-	return m_exit;
+    return m_exit;
 }
 
 QString ScanImageThread::generateImagePath()
 {
-	QString capturePath = System->getParam("camera_cap_image_path").toString();
+    QString capturePath = System->getParam("camera_cap_image_path").toString();
 
-	QDateTime dtm = QDateTime::currentDateTime();
-	QString fileDir = capturePath + "/image/" + dtm.toString("MMddhhmmss") + "/";
-	QDir dir; dir.mkdir(fileDir);
+    QDateTime dtm = QDateTime::currentDateTime();
+    QString fileDir = capturePath + "/image/" + dtm.toString("MMddhhmmss") + "/";
+    QDir dir; dir.mkdir(fileDir);
 
-	return fileDir;
+    return fileDir;
 }
 
 void ScanImageThread::saveImages(const QString& szImagePath, int nRowIndex, int nColIndex, int nCountOfImgPerRow, const QVector<cv::Mat>& imageMats)
 {
-	int nCountOfImgPerFrame = imageMats.size();
-	for (int i = 0; i < nCountOfImgPerFrame; i++)
-	{
-		int nImageIndex = nRowIndex * nCountOfImgPerRow + nColIndex*nCountOfImgPerFrame + i + 1;
+    int nCountOfImgPerFrame = imageMats.size();
+    for (int i = 0; i < nCountOfImgPerFrame; i++)
+    {
+        int nImageIndex = nRowIndex * nCountOfImgPerRow + nColIndex*nCountOfImgPerFrame + i + 1;
 
-		QString strSave = szImagePath + QString("F") + QString::number(nRowIndex + 1, 'g', 2) + QString("-") + QString::number(nImageIndex, 'g', 2) + QString("-") +
-			QString("1") + QString(".bmp");
+        QString strSave = szImagePath + QString("F") + QString::number(nRowIndex + 1, 'g', 2) + QString("-") + QString::number(nImageIndex, 'g', 2) + QString("-") +
+            QString("1") + QString(".bmp");
 
-		IplImage frameImg = IplImage(imageMats[i]);
-		cvSaveImage(strSave.toStdString().c_str(), &frameImg);
-	}	
+        IplImage frameImg = IplImage(imageMats[i]);
+        cvSaveImage(strSave.toStdString().c_str(), &frameImg);
+    }    
 }
 
 void ScanImageThread::saveCombineImages(const QString& szImagePath, const QVector<cv::Mat>& imageMats)
 {
-	for (int i = 0; i < imageMats.size(); i++)
-	{
-		QString strSave = szImagePath + QString("CombineResult_") + QString::number(i + 1, 'g', 2) + QString(".bmp");
+    for (int i = 0; i < imageMats.size(); i++)
+    {
+        QString strSave = szImagePath + QString("CombineResult_") + QString::number(i + 1, 'g', 2) + QString(".bmp");
 
-		IplImage frameImg = IplImage(imageMats[i]);
-		cvSaveImage(strSave.toStdString().c_str(), &frameImg);
-	}
+        IplImage frameImg = IplImage(imageMats[i]);
+        cvSaveImage(strSave.toStdString().c_str(), &frameImg);
+    }
 }
 
 Vision::VectorOfMat ScanImageThread::_generate2DImages(const Vision::VectorOfMat &vecInputImages)
@@ -281,20 +280,20 @@ Vision::VectorOfMat ScanImageThread::_generate2DImages(const Vision::VectorOfMat
 
     cv::Mat matTopLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT];
     if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT], matTopLightImage, CV_BayerGR2BGR);
-	vecResultImages.push_back(matTopLightImage);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT], matTopLightImage, CV_BayerGR2BGR);
+    vecResultImages.push_back(matTopLightImage);
 
     cv::Mat matLowAngleLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT];
     if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
     vecResultImages.push_back(matLowAngleLightImage);
 
     vecResultImages.push_back(matPseudocolorImage);
 
-	cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
+    cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
     if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT], matUniformLightImage, CV_BayerGR2BGR);
-	vecResultImages.push_back(matUniformLightImage);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT], matUniformLightImage, CV_BayerGR2BGR);
+    vecResultImages.push_back(matUniformLightImage);
 
     return vecResultImages;
 }
