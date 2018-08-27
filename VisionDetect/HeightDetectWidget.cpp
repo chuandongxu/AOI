@@ -147,6 +147,10 @@ void HeightDetectWidget::tryInsp() {
 
         cv::Rect2f rectBase(x, y, width, height);
         cv::Rect rectBaseDetectWin = CalcUtils::resizeRect(rectBase, cv::Size2f(rectBase.width * 2.0f, rectBase.height * 2.0f));
+        if (rectBaseDetectWin.x < 0) rectBaseDetectWin.x = 0;
+        else if ((rectBaseDetectWin.x + rectBaseDetectWin.width) >= matImage.cols) rectBaseDetectWin.width = rectBase.width;
+        if (rectBaseDetectWin.y < 0) rectBaseDetectWin.y = 0;
+        else if ((rectBaseDetectWin.y + rectBaseDetectWin.height) >= matImage.rows) rectBaseDetectWin.height = rectBase.height;
         cv::Mat matROI(matImage, rectBaseDetectWin);
         pColorWidget->setImage(matROI);       
 
