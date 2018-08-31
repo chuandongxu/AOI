@@ -29,7 +29,6 @@ DataEditor::DataEditor(QWidget *parent)
 	ui.setupUi(this);
 
     initUI();
-    displayRecord(0);
 }
 
 DataEditor::~DataEditor()

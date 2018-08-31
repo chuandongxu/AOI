@@ -54,6 +54,7 @@ protected slots:
     void onSearch();
 
     void slotRowDoubleClicked(const QModelIndex &);
+    void slotTypeRowDoubleClicked(const QModelIndex &);
 
 private:
     int _prepareRunData();
@@ -61,12 +62,15 @@ private:
     void searchUpdateData(int nBoardId, const QString& szType, const QString& name);    
     DeviceInspWindowVector _search(int nBoardId, const QString& szType, const QString& name);
 
+    void searchTypeUpdateData(int nBoardId);
+
     cv::Rect _calcRectROI(Engine::Window& window);
     bool _learnTemplate(cv::Rect& rectROI, int &recordId);
 
 private:
     Ui::SearchDeviceWidget ui;
     DeviceItemModel m_model;
+    DeviceItemModel m_modelType;
 
     Engine::DeviceVector            m_vecDevice;
     Engine::AlignmentVector         m_vecAlignments;
