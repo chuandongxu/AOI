@@ -8,6 +8,7 @@
 #include "DataWidget.h"
 
 class SearchDeviceWidget;
+class DataEditor;
 class QDataModule : public QModuleBase, public IData
 {
 public:
@@ -57,9 +58,12 @@ public:
 
     virtual QString getDeviceType(long deviceID) const override;
     virtual bool copyDeviceWindow(long srcID, long destID) override;
+
+    virtual bool displayRecord(int recordID) override;
+
 private:
 	DataCtrl m_ctrl;
-	QWidget *m_pDataEditor;
+    DataEditor *m_pDataEditor;
     QWidget *m_pDataWidget;
     SearchDeviceWidget *m_pDeviceListWidget;
     QString  m_strCurrentProject;
