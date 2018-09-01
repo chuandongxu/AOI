@@ -128,7 +128,7 @@ void HeightDetectWidget::tryInsp() {
         color[1] = jsonValue["ClrGVal"].toInt();
         color[2] = jsonValue["ClrBVal"].toInt();
         nRn = jsonValue["RnValue"].toInt();
-        nTn = jsonValue["TnValue"].toInt();  
+        nTn = jsonValue["TnValue"].toInt();
 
         auto pColorWidget = m_pParent->getColorWidget();
         cv::Mat matImage = pUI->getImage();
@@ -138,11 +138,11 @@ void HeightDetectWidget::tryInsp() {
         auto x = m_currentWindow.x / dResolutionX;
         auto y = m_currentWindow.y / dResolutionY;
         if (bBoardRotated)
-            x = nBigImgWidth - x;
+            x = nBigImgWidth  - x;
         else
             y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
 
-        auto width = m_currentWindow.width / dResolutionX;
+        auto width  = m_currentWindow.width  / dResolutionX;
         auto height = m_currentWindow.height / dResolutionY;
 
         cv::Rect2f rectBase(x, y, width, height);
@@ -152,7 +152,7 @@ void HeightDetectWidget::tryInsp() {
         if (rectBaseDetectWin.y < 0) rectBaseDetectWin.y = 0;
         else if ((rectBaseDetectWin.y + rectBaseDetectWin.height) >= matImage.rows) rectBaseDetectWin.height = rectBase.height;
         cv::Mat matROI(matImage, rectBaseDetectWin);
-        pColorWidget->setImage(matROI);       
+        pColorWidget->setImage(matROI);
 
         pColorWidget->holdColorImage(color, nRn, nTn);
         cv::Mat matMask = pColorWidget->getProcessedImage();
@@ -162,7 +162,7 @@ void HeightDetectWidget::tryInsp() {
         matBigMask *= Vision::PR_MAX_GRAY_LEVEL;
         cv::Mat matMaskROI(matBigMask, cv::Rect(rectBaseDetectWin));
         matMask.copyTo(matMaskROI);
-        stCmd.matMask = matBigMask;        
+        stCmd.matMask = matBigMask;
 
         stCmd.vecRectBases.push_back(rectBaseDetectWin);
     }
@@ -177,7 +177,7 @@ void HeightDetectWidget::tryInsp() {
                 auto x = window.x / dResolutionX;
                 auto y = window.y / dResolutionY;
                 if (bBoardRotated)
-                    x = nBigImgWidth - x;
+                    x = nBigImgWidth  - x;
                 else
                     y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
 
