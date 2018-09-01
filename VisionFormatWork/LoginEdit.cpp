@@ -14,7 +14,7 @@ QLoginEdit::QLoginEdit(QWidget *parent)
 	//ui.lineEdit->setText("operator");
 	//ui.lineEdit_2->setText("123");
 	ui.lineEditUser->setText("admin");
-	ui.lineEditPassword->setText("jFgEMa");
+	ui.lineEditPassword->setText("UhKaas");
 
 	connect(ui.pushButton,SIGNAL(clicked()),SLOT(onOkBtn()));
 	connect(ui.pushButton_2,SIGNAL(clicked()),SLOT(onExitBtn()));

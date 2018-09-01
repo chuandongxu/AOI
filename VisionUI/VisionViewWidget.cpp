@@ -1762,6 +1762,8 @@ void VisionViewWidget::_drawDetectObjs()
 
     cv::Scalar scalarNormalWindowColor(128, 255, 255);      //Yellow
     cv::Scalar scalarSelectedWindowColor(255, 128, 255);    //Pink
+    int nLineWidth = _constDeviceWindowLineWidth / m_dScale;
+    if (nLineWidth <= 0) nLineWidth = 1;
 
     for (const auto &obj : m_vecDetectObjs) {
         cv::Scalar scalarWindowColor(scalarNormalWindowColor);
@@ -1773,14 +1775,14 @@ void VisionViewWidget::_drawDetectObjs()
 
         for (int i = 0; i < 4; ++ i)
         {
-            cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], scalarWindowColor, 4);
+            cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], scalarWindowColor, nLineWidth);
         }
 
         obj.getSrchWindow().points(vertices);
 
         for (int i = 0; i < 4; ++ i)
         {
-            cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], _constGreenScalar, 2);
+            cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], _constGreenScalar, nLineWidth);
         }
     }
 }

@@ -207,34 +207,30 @@ void InspHeightBaseWidget::setCurrentWindow(const Engine::Window &window) {
         m_pEditMinRange->setText(QString::number(obj.take("MinRange").toDouble() * ONE_HUNDRED_PERCENT));
         m_pEditMaxRange->setText(QString::number(obj.take("MaxRange").toDouble() * ONE_HUNDRED_PERCENT));
         m_pEditRnParam->setText(QString::number(obj.take("RnValue").toInt()));
-        m_pEditTnParam->setText(QString::number(obj.take("TnValue").toInt()));   
+        m_pEditTnParam->setText(QString::number(obj.take("TnValue").toInt()));
 
         m_color[0] = obj.take("ClrRVal").toInt();
         m_color[0] = obj.take("ClrGVal").toInt();
-        m_color[0] = obj.take("ClrBVal").toInt();       
+        m_color[0] = obj.take("ClrBVal").toInt();
     }
 }
 
 void InspHeightBaseWidget::on_btnSelectROI_clicked()
 {
     // Ask user to select the search window
-    auto pUI = getModule<IVisionUI>(UI_MODEL);
-    auto rectROI = pUI->getSelectedROI();
-    cv::Rect rectDefaultSrchWindow = CalcUtils::resizeRect(rectROI, cv::Size2f(rectROI.width * 2.0f, rectROI.height * 2.0f));
-    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_SRCH_WINDOW);
-    pUI->setSrchWindow(rectDefaultSrchWindow);
     auto nReturn = System->showInteractMessage(QStringLiteral("Base检测框"), QStringLiteral("请拖动鼠标选择检测窗口"));
     if (nReturn != QDialog::Accepted)
         return;
 
-    auto detectWinROI = pUI->getSrchWindow();
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    auto detectWinROI = pUI->getSelectedROI();
 
     auto pColorWidget = m_pParent->getColorWidget();
-    cv::Mat matImage = pUI->getImage();    
+    cv::Mat matImage = pUI->getImage();
     cv::Mat matROI(matImage, detectWinROI);
     pColorWidget->setImage(matROI);
 
-    pColorWidget->holdColorImage(m_color, m_pEditRnParam->text().toInt(), m_pEditTnParam->text().toInt());   
+    pColorWidget->holdColorImage(m_color, m_pEditRnParam->text().toInt(), m_pEditTnParam->text().toInt());
     pColorWidget->show();
     while (!pColorWidget->isHidden())
     {
