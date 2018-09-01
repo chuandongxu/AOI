@@ -362,7 +362,7 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
         }
     }
 
-    updateInspWindowList();    
+    updateInspWindowList();
 }
 
 void InspWindowWidget::on_btnCreateGroup_clicked() {
