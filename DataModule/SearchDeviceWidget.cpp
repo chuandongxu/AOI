@@ -120,6 +120,21 @@ void SearchDeviceWidget::initUI()
     ui.tableView_device->setEditTriggers(QAbstractItemView::NoEditTriggers);
     connect(ui.tableView_device, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(slotRowDoubleClicked(const QModelIndex &)));
 
+    //Device Type list
+    ui.tableView_type->setModel(&m_modelType);
+    ls.clear();
+    ls << QStringLiteral("图标") << QStringLiteral("类型");
+    m_modelType.setHorizontalHeaderLabels(ls);
+    ui.tableView_type->setColumnWidth(0, 30);
+    //ui.tableView_device->setColumnWidth(1, 170);
+    ui.tableView_type->horizontalHeader()->setStretchLastSection(true);
+    ui.tableView_type->horizontalHeader()->setVisible(false);
+    ui.tableView_type->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui.tableView_type->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui.tableView_type->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui.tableView_type->verticalHeader()->hide();
+    connect(ui.tableView_type, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(slotTypeRowDoubleClicked(const QModelIndex &)));
+
     QEos::Attach(EVENT_SEARCH_DEVICE_STATE, this, SLOT(onSearchDeviceState(const QVariantList &)));
 }
 
@@ -186,6 +201,18 @@ void SearchDeviceWidget::slotRowDoubleClicked(const QModelIndex& index)
     }
 }
 
+void SearchDeviceWidget::slotTypeRowDoubleClicked(const QModelIndex& index)
+{
+    //QModelIndex index = ui.tableView_objList->currentIndex();
+    if (index.isValid())
+    {
+        int row = index.row();
+
+        QString type = m_modelType.data(m_modelType.index(row, 1)).toString();  
+        ui.comboBox_type->setCurrentText(type);
+    }
+}
+
 void SearchDeviceWidget::searchUpdateData(int nBoardId, const QString& szType, const QString& name)
 {
     DeviceInspWindowVector inspWinVec = _search(nBoardId, szType, name);
@@ -206,6 +233,25 @@ void SearchDeviceWidget::searchUpdateData(int nBoardId, const QString& szType, c
         m_model.setData(m_model.index(nr, 0), QStringLiteral("%1").arg(QString::fromStdString(deviceInspWin.device.type)));
         m_model.setData(m_model.index(nr, 1), QStringLiteral("%1").arg(QString::fromStdString(deviceInspWin.device.name)));
     } 
+}
+
+void SearchDeviceWidget::searchTypeUpdateData(int nBoardId)
+{
+    m_modelType.clear();
+    QStringList ls;
+    ls << QStringLiteral("图标") << QStringLiteral("类型");
+    m_modelType.setHorizontalHeaderLabels(ls);
+    ui.tableView_type->setColumnWidth(0, 30);
+    //ui.tableView_device->setColumnWidth(1, 170);
+    ui.tableView_type->horizontalHeader()->setStretchLastSection(true);
+
+    for (const auto &type : m_vecDeviceType) {     
+        int nr = m_modelType.rowCount();
+        m_modelType.insertRow(nr);
+
+        m_modelType.setData(m_modelType.index(nr, 0), QStringLiteral("%1").arg(QString::fromStdString(type)));
+        m_modelType.setData(m_modelType.index(nr, 1), QStringLiteral("%1").arg(QString::fromStdString(type)));
+    }
 }
 
 DeviceInspWindowVector SearchDeviceWidget::_search(int nBoardId, const QString& szType, const QString& name)
@@ -343,6 +389,8 @@ int SearchDeviceWidget::_prepareRunData()
     }
 
     ui.comboBox_type->addItems(ls);
+
+    searchTypeUpdateData(0);
 
     return OK;
 }

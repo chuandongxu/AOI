@@ -126,6 +126,13 @@ void FindCircleWidget::tryInsp() {
         return;
     }
 
+    cv::Mat matMask = getMask();
+    cv::Mat matBigMask = cv::Mat::ones(pUI->getImage().size(), CV_8UC1);
+    matBigMask *= Vision::PR_MAX_GRAY_LEVEL;
+    cv::Mat matMaskROI(matBigMask, cv::Rect(pUI->getSelectedROI()));
+    matMask.copyTo(matMaskROI);
+    stCmd.matMask = matBigMask;
+
     stCmd.ptExpectedCircleCtr = cv::Point2f(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2);
     stCmd.fMaxSrchRadius = qMin(rectROI.width / 2.0f, rectROI.height / 2.0f);
     stCmd.fMinSrchRadius = qMin(rectROI.width / 2.0f, rectROI.height / 2.0f) / 3.0f;
@@ -171,6 +178,7 @@ void FindCircleWidget::confirmWindow(OPERATION enOperation) {
     window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = Engine::Window::Usage::FIND_CIRCLE;
     window.inspParams = byte_array;
+    window.mask = this->convertMaskMat2Bny(getMask());
 
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();
@@ -260,4 +268,6 @@ void FindCircleWidget::setCurrentWindow(const Engine::Window &window) {
     m_pEditRmStrayPointRatio->setText(QString::number(obj.take("RmStrayPointRatio").toDouble()));
     m_pEditDiffFilterHalfW->setText(QString::number(obj.take("DiffFilterHalfW").toInt()));
     m_pEditDiffFilterSigma->setText(QString::number(obj.take("DiffFilterSigma").toDouble()));
+
+    this->setMask(convertMaskBny2Mat(window.mask));
 }

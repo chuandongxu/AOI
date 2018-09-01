@@ -905,6 +905,30 @@ void VisionViewWidget::mousePressEvent(QMouseEvent * event)
 	}
 }
 
+void VisionViewWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    const QPoint pos = event->pos();
+    if (Qt::LeftButton == event->buttons())
+    {
+        switch (m_stateView)
+        {
+        case MODE_VIEW_EDIT_INSP_WINDOW:  
+            if (_checkSelectedDevice(cv::Point(pos.x(), pos.y())))
+            {
+                _moveToSelectDevice(QString::fromStdString(m_selectedDevice.getName()));
+            }
+            break;
+        case MODE_VIEW_NONE:
+            break;
+        default:
+            break;
+        }       
+    }
+    else if (Qt::RightButton == event->buttons())
+    {      
+    }
+}
+
 void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
 {
 	if (event->button() & Qt::LeftButton)
