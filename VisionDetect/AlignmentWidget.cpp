@@ -96,12 +96,7 @@ void AlignmentWidget::setDefaultValue() {
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     stCmd.matInputImg = pUI->getImage();  
-
-    cv::Mat matBigMask = cv::Mat::ones(pUI->getImage().size(), CV_8UC1);
-    matBigMask *= Vision::PR_MAX_GRAY_LEVEL;
-    cv::Mat matMaskROI(matBigMask, cv::Rect(pUI->getSelectedROI()));
-    matMask.copyTo(matMaskROI);
-    stCmd.matMask = matBigMask;
+    stCmd.matMask = matMask;
 
     Vision::PR_LrnTmpl(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {
