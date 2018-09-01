@@ -469,7 +469,7 @@ bool VisionViewWidget::onLive(bool bPromptSelect)
 	{
 		clearImage();
 
-		zoomImage(0.25);
+		zoomImage(0.5);
 
 		m_pCameraOnLive = new CameraOnLive(this, bHardwareTrigger);
 		m_pCameraOnLive->start();
