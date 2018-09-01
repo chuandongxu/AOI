@@ -162,12 +162,21 @@ void InspWindowWidget::updateInspWindowList() {
         return;
     }
 
+    bool bItemSelect = false;
     m_mapIdWindow.clear();        
     for (const auto &window : vecCurrentDeviceWindows) {
         m_mapIdWindow.insert(std::pair<Int64, Engine::Window>(window.Id, window));
         QTreeWidgetItem *pItem = new QTreeWidgetItem(QStringList{window.name.c_str()}, TREE_ITEM_WINDOW);
         pItem->setData(0, Qt::UserRole, window.Id);
         ui.treeWidget->addTopLevelItem(pItem);
+        if (Engine::Window::Usage::ALIGNMENT == window.usage)
+        {
+            ui.treeWidget->topLevelItem(ui.treeWidget->topLevelItemCount() - 1)->setSelected(true);
+            bItemSelect = true;
+        }
+    }
+    if (!bItemSelect && ui.treeWidget->topLevelItemCount() > 0) {
+        ui.treeWidget->topLevelItem(ui.treeWidget->topLevelItemCount() - 1)->setSelected(true);
     }
 
     if (vecCurrentDeviceWindows.empty() && vecGroupId.empty()) {
@@ -697,9 +706,7 @@ void InspWindowWidget::on_btnConfirmWindow_clicked() {
 
 void InspWindowWidget::onInspWindowState(const QVariantList &data) {
     updateInspWindowList();
-    if (ui.treeWidget->topLevelItemCount() > 0) {
-        ui.treeWidget->topLevelItem(ui.treeWidget->topLevelItemCount() - 1)->setSelected(true);
-    }else {
+    if (ui.treeWidget->topLevelItemCount() <= 0) {
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::UNDEFINED;
 
         IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
