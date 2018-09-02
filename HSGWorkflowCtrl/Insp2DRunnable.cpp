@@ -269,7 +269,7 @@ void Insp2DRunnable::_inspChip(const Engine::Window &window) {
     QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError) {
         m_ptrBoardInspResult->setFatalError();
-		return;
+        return;
     }
     QJsonObject jsonValue = parse_doucment.object();
 
@@ -441,16 +441,16 @@ void Insp2DRunnable::_findCircle(const Engine::Window &window) {
     Vision::PR_FIND_CIRCLE_RPY stRpy;
 
     stCmd.enInnerAttribute = static_cast<Vision::PR_OBJECT_ATTRIBUTE>(jsonValue["InnerAttri"].toInt());
-	stCmd.bFindCirclePair = jsonValue["FindPair"].toBool();
-	stCmd.fStartSrchAngle = jsonValue["SearchStartAngle"].toDouble();
-	stCmd.fEndSrchAngle = jsonValue["SearchEndAngle"].toDouble();
-	stCmd.nCaliperCount = jsonValue["CaliperCount"].toInt();
-	stCmd.fCaliperWidth = jsonValue["CaliperWidth"].toDouble();
-	stCmd.nEdgeThreshold = jsonValue["EdgeThreshold"].toInt();
-	stCmd.enSelectEdge = static_cast<Vision::PR_CALIPER_SELECT_EDGE>(jsonValue["SelectEdge"].toInt());
-	stCmd.fRmStrayPointRatio = jsonValue["RmStrayPointRatio"].toDouble();
-	stCmd.nDiffFilterHalfW = jsonValue["DiffFilterHalfW"].toInt();
-	stCmd.fDiffFilterSigma = jsonValue["DiffFilterSigma"].toDouble();
+    stCmd.bFindCirclePair = jsonValue["FindPair"].toBool();
+    stCmd.fStartSrchAngle = jsonValue["SearchStartAngle"].toDouble();
+    stCmd.fEndSrchAngle = jsonValue["SearchEndAngle"].toDouble();
+    stCmd.nCaliperCount = jsonValue["CaliperCount"].toInt();
+    stCmd.fCaliperWidth = jsonValue["CaliperWidth"].toDouble();
+    stCmd.nEdgeThreshold = jsonValue["EdgeThreshold"].toInt();
+    stCmd.enSelectEdge = static_cast<Vision::PR_CALIPER_SELECT_EDGE>(jsonValue["SelectEdge"].toInt());
+    stCmd.fRmStrayPointRatio = jsonValue["RmStrayPointRatio"].toDouble();
+    stCmd.nDiffFilterHalfW = jsonValue["DiffFilterHalfW"].toInt();
+    stCmd.fDiffFilterSigma = jsonValue["DiffFilterSigma"].toDouble();
 
     int nImageIndex = window.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
@@ -472,7 +472,7 @@ void Insp2DRunnable::_findCircle(const Engine::Window &window) {
 
     stCmd.ptExpectedCircleCtr = cv::Point2f(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2);
     stCmd.fMaxSrchRadius = qMin(rectROI.width / 2.0f, rectROI.height / 2.0f);
-	stCmd.fMinSrchRadius = qMin(rectROI.width / 2.0f, rectROI.height / 2.0f) / 3.0f;
+    stCmd.fMinSrchRadius = qMin(rectROI.width / 2.0f, rectROI.height / 2.0f) / 3.0f;
 
     Vision::PR_FindCircle(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {
@@ -553,7 +553,7 @@ void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) 
     QJsonObject jsonValue = parse_doucment.object();
 
     Vision::PR_INSP_POLARITY_CMD stCmd;
-	Vision::PR_INSP_POLARITY_RPY stRpy;
+    Vision::PR_INSP_POLARITY_RPY stRpy;
 
     int nImageIndex = windowInsp.lightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
@@ -565,10 +565,10 @@ void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) 
 
     stCmd.matInputImg = m_vec2DImages[nImageIndex];
 
-	stCmd.enInspROIAttribute = static_cast<Vision::PR_OBJECT_ATTRIBUTE>(jsonValue["Attribute"].toInt());
-	stCmd.nGrayScaleDiffTol = jsonValue["IntensityDiffTol"].toInt();
+    stCmd.enInspROIAttribute = static_cast<Vision::PR_OBJECT_ATTRIBUTE>(jsonValue["Attribute"].toInt());
+    stCmd.nGrayScaleDiffTol = jsonValue["IntensityDiffTol"].toInt();
 
-	stCmd.rectInspROI = DataUtils::convertWindowToFrameRect(cv::Point2f(windowInsp.x, windowInsp.y),
+    stCmd.rectInspROI = DataUtils::convertWindowToFrameRect(cv::Point2f(windowInsp.x, windowInsp.y),
         windowInsp.width,
         windowInsp.height,
         m_ptFramePos,
@@ -591,7 +591,7 @@ void Insp2DRunnable::_inspPolarityGroup(const Engine::WindowGroup &windowGroup) 
         }
     }
 
-	Vision::PR_InspPolarity(&stCmd, &stRpy);
+    Vision::PR_InspPolarity(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {
         Vision::PR_GET_ERROR_INFO_RPY stGetErrInfoRpy;
         Vision::PR_GetErrorInfo(stRpy.enStatus, &stGetErrInfoRpy);
@@ -854,20 +854,20 @@ Vision::VectorOfMat Insp2DRunnable::_generate2DImages(const Vision::VectorOfMat 
 
     cv::Mat matTopLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT];
     if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT], matTopLightImage, CV_BayerGR2BGR);
-	vecResultImages.push_back(matTopLightImage);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::WHITE_LIGHT], matTopLightImage, CV_BayerGR2BGR);
+    vecResultImages.push_back(matTopLightImage);
 
     cv::Mat matLowAngleLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT];
     if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::LOW_ANGLE_LIGHT], matLowAngleLightImage, CV_BayerGR2BGR);
     vecResultImages.push_back(matLowAngleLightImage);
 
     vecResultImages.push_back(matPseudoColorImage);
 
-	cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
+    cv::Mat matUniformLightImage = vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT];
     if (bColorCamera)
-	    cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT], matUniformLightImage, CV_BayerGR2BGR);
-	vecResultImages.push_back(matUniformLightImage);
+        cv::cvtColor(vecInputImages[CAPTURE_2D_IMAGE_SEQUENCE::UNIFORM_LIGHT], matUniformLightImage, CV_BayerGR2BGR);
+    vecResultImages.push_back(matUniformLightImage);
 
     return vecResultImages;
 }

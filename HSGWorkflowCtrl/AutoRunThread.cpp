@@ -82,8 +82,8 @@ void AutoRunThread::onThreadState(const QVariantList &data)
 
 void AutoRunThread::quit()
 {
-	resetResoultLight();
-	m_exit = true;
+    resetResoultLight();
+    m_exit = true;
 }
 
 bool AutoRunThread::preRunning()
@@ -94,23 +94,23 @@ bool AutoRunThread::preRunning()
     m_nTotalImageCount = m_nDLPCount * DLP_IMG_COUNT + CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT;
     m_fFovWidthUm  = m_nImageWidthPixel  * m_dResolutionX;
     m_fFovHeightUm = m_nImageHeightPixel * m_dResolutionY;
-	return true;
+    return true;
 }
 
 void AutoRunThread::run()
 {
-	if (! preRunning()) return;
+    if (! preRunning()) return;
 
-	System->setTrackInfo(QString(QStringLiteral("主流程启动成功!")));
+    System->setTrackInfo(QString(QStringLiteral("主流程启动成功!")));
     m_boardName.clear();
 
-	double dtime_start = 0, dtime_movePos = 0;
+    double dtime_start = 0, dtime_movePos = 0;
     BoardInspResultPtr ptrBoardInspResult = nullptr;
 
-	while (! isExit())
-	{
-		//if (! waitStartBtn()) continue;
-		if (isExit()) break;
+    while (! isExit())
+    {
+        //if (! waitStartBtn()) continue;
+        if (isExit()) break;
 
         _feedBoard();
         
@@ -134,13 +134,13 @@ void AutoRunThread::run()
         ptrBoardInspResult = std::make_shared<BoardInspResult>(m_boardName);
         m_pMapBoardInspResult->insert(m_boardName, ptrBoardInspResult);
 
-		if (! _doAlignment()) {
-		    if (isExit()) break;
+        if (! _doAlignment()) {
+            if (isExit()) break;
             else continue;
         }
 
         if (isExit()) break;
-		TimeLogInstance->addTimeLog("Finished do alignment.");
+        TimeLogInstance->addTimeLog("Finished do alignment.");
 
         if (m_vecVecFrameCtr.empty())
             break;
@@ -150,21 +150,21 @@ void AutoRunThread::run()
             else continue;
         }
         if (isExit()) break;
-	}
+    }
 
-	if (isExit())
-	{
-		IData * pData = getModule<IData>(DATA_MODEL);
-		if (pData)
-		{
-			pData->decrementCycleTests();
-		}
-	}
+    if (isExit())
+    {
+        IData * pData = getModule<IData>(DATA_MODEL);
+        if (pData)
+        {
+            pData->decrementCycleTests();
+        }
+    }
 
     QThreadPool::globalInstance()->waitForDone();
     postRunning();
 
-	System->setTrackInfo(QString(QStringLiteral("主流程已停止")));
+    System->setTrackInfo(QString(QStringLiteral("主流程已停止")));
 }
 
 void AutoRunThread::postRunning()
@@ -198,7 +198,7 @@ bool AutoRunThread::waitStartBtn()
 bool AutoRunThread::moveToCapturePos(float fPosX, float fPosY)
 {
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
-	if (!pMotion) return false;
+    if (!pMotion) return false;
 
     fPosX *= UM_TO_MM;
     fPosY *= UM_TO_MM;
@@ -206,7 +206,7 @@ bool AutoRunThread::moveToCapturePos(float fPosX, float fPosY)
     if (! pMotion->moveToGroup(std::vector<int>({AXIS_MOTOR_X, AXIS_MOTOR_Y}), std::vector<double>({fPosX, fPosY}), std::vector<int>({0, 0}), true))
     {
         System->setTrackInfo(QString("move to position error"));
-		return false;
+        return false;
     }
     return true;
 }
@@ -230,10 +230,10 @@ bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
         return true;
     }
 
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (!pCam) return false;
+    ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+    if (!pCam) return false;
 
-	bool bResult = pCam->captureAllImages(imageMats);
+    bool bResult = pCam->captureAllImages(imageMats);
     if (! bResult)
         return bResult;
 
@@ -277,87 +277,87 @@ bool AutoRunThread::captureLightImages(QVector<cv::Mat>& imageMats)
 
 bool AutoRunThread::isExit()
 {
-	return m_exit;
+    return m_exit;
 }
 
 void AutoRunThread::setResoultLight(bool isOk)
 {
-	IMotion * p = getModule<IMotion>(MOTION_MODEL);
-	if (p)
-	{
-		int okLight = 0;
-		int ngLight = 0;
-		if (getLightIO(okLight, ngLight))
-		{
-			if (isOk)
-			{
-				//p->setExtDO(okLight, 1);
-				//p->setExtDO(ngLight, 0);
-			}
-			else
-			{
-				//p->setExtDO(okLight, 0);
-				//p->setExtDO(ngLight, 1);
-			}
-		}
-	}
+    IMotion * p = getModule<IMotion>(MOTION_MODEL);
+    if (p)
+    {
+        int okLight = 0;
+        int ngLight = 0;
+        if (getLightIO(okLight, ngLight))
+        {
+            if (isOk)
+            {
+                //p->setExtDO(okLight, 1);
+                //p->setExtDO(ngLight, 0);
+            }
+            else
+            {
+                //p->setExtDO(okLight, 0);
+                //p->setExtDO(ngLight, 1);
+            }
+        }
+    }
 }
 
 void AutoRunThread::resetResoultLight()
 {
-	IMotion * p = getModule<IMotion>(MOTION_MODEL);
-	if (p)
-	{
-		int okLight = 0;
-		int ngLight = 0;
-		if (getLightIO(okLight, ngLight))
-		{
-			//p->setExtDO(okLight, 0);
-			//p->setExtDO(ngLight, 0);
-		}
-	}
+    IMotion * p = getModule<IMotion>(MOTION_MODEL);
+    if (p)
+    {
+        int okLight = 0;
+        int ngLight = 0;
+        if (getLightIO(okLight, ngLight))
+        {
+            //p->setExtDO(okLight, 0);
+            //p->setExtDO(ngLight, 0);
+        }
+    }
 }
 
 bool AutoRunThread::getLightIO(int &okLight, int &ngLight)
 {
-	return false;
+    return false;
 }
 
 QString AutoRunThread::generateImagePath()
 {
-	QString capturePath = System->getParam("camera_cap_image_path").toString();
+    QString capturePath = System->getParam("camera_cap_image_path").toString();
 
-	QDateTime dtm = QDateTime::currentDateTime();
-	QString fileDir = capturePath + "/image/" + dtm.toString("MMddhhmmss") + "/";
-	QDir dir; dir.mkdir(fileDir);
+    QDateTime dtm = QDateTime::currentDateTime();
+    QString fileDir = capturePath + "/image/" + dtm.toString("MMddhhmmss") + "/";
+    QDir dir; dir.mkdir(fileDir);
 
-	return fileDir;
+    return fileDir;
 }
 
 void AutoRunThread::saveImages(const QString& szImagePath, int nRowIndex, int nColIndex, int nCountOfImgPerRow, const QVector<cv::Mat>& imageMats)
 {
-	int nCountOfImgPerFrame = imageMats.size();
-	for (int i = 0; i < nCountOfImgPerFrame; i++)
-	{
-		int nImageIndex = nRowIndex * nCountOfImgPerRow + nColIndex*nCountOfImgPerFrame + i + 1;
+    int nCountOfImgPerFrame = imageMats.size();
+    for (int i = 0; i < nCountOfImgPerFrame; i++)
+    {
+        int nImageIndex = nRowIndex * nCountOfImgPerRow + nColIndex*nCountOfImgPerFrame + i + 1;
 
-		QString strSave = szImagePath + QString("F") + QString::number(nRowIndex + 1, 'g', 2) + QString("-") + QString::number(nImageIndex, 'g', 2) + QString("-") +
-			QString("1") + QString(".bmp");
+        QString strSave = szImagePath + QString("F") + QString::number(nRowIndex + 1, 'g', 2) + QString("-") + QString::number(nImageIndex, 'g', 2) + QString("-") +
+            QString("1") + QString(".bmp");
 
-		IplImage frameImg = IplImage(imageMats[i]);
-		cvSaveImage(strSave.toStdString().c_str(), &frameImg);
-	}	
+        IplImage frameImg = IplImage(imageMats[i]);
+        cvSaveImage(strSave.toStdString().c_str(), &frameImg);
+    }    
 }
 
 void AutoRunThread::saveCombineImages(const QString& szImagePath, const QVector<cv::Mat>& imageMats)
 {
-	for (int i = 0; i < imageMats.size(); i++)
-	{
-		QString strSave = szImagePath + QString("CombineResult_") + QString::number(i + 1, 'g', 2) + QString(".bmp");
+    for (int i = 0; i < imageMats.size(); i++)
+    {
+        QString strSave = szImagePath + QString("CombineResult_") + QString::number(i + 1, 'g', 2) + QString(".bmp");
 
-		IplImage frameImg = IplImage(imageMats[i]);
-		cvSaveImage(strSave.toStdString().c_str(), &frameImg);
-	}
+        IplImage frameImg = IplImage(imageMats[i]);
+        cvSaveImage(strSave.toStdString().c_str(), &frameImg);
+    }
 }
 
 bool AutoRunThread::_feedBoard()
@@ -410,14 +410,14 @@ bool AutoRunThread::_doAlignment() {
         cv::Point2f ptFrameCtr(alignment.tmplPosX, alignment.tmplPosY), ptAlignment(alignment.tmplPosX, alignment.tmplPosY);
         if (System->isRunOffline()) {
             //Here is just for offline test.
-            if ( 0 == index)
+            //if (0 == index)
                 ptFrameCtr = m_vecVecFrameCtr[0][0];
-            else
-                ptFrameCtr = m_vecVecFrameCtr[0].back();
+            //else
+            //    ptFrameCtr = m_vecVecFrameCtr[0].back();
         }else {
             auto pMotion = getModule<IMotion>(MOTION_MODEL);
             double dPosX = 0., dPosY = 0.;
-	        pMotion->getCurrentPos(AXIS_MOTOR_X, &dPosX);
+            pMotion->getCurrentPos(AXIS_MOTOR_X, &dPosX);
             pMotion->getCurrentPos(AXIS_MOTOR_Y, &dPosY);
             ptFrameCtr = cv::Point2f(dPosX * MM_TO_UM, dPosY * MM_TO_UM);
         }

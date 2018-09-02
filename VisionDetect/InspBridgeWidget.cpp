@@ -267,16 +267,6 @@ void InspBridgeWidget::confirmWindow(OPERATION enOperation) {
     window.angle = 0;
     window.colorParams = m_pParent->getColorWidget()->getJsonFormattedParams();
 
-    QDetectObj detectObj(window.Id, window.name.c_str());
-    cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
-    if (bBoardRotated)
-        ptCenter.x = nBigImgWidth - ptCenter.x;
-    else
-        ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
-
-    detectObj.setFrame(cv::RotatedRect(ptCenter, rectROI.size(), window.angle));
-    detectObj.setSrchWindow(cv::RotatedRect(ptCenter, rectSrchWindow.size(), window.angle));
-
     int result = Engine::OK;
     auto vecDetectObjs = pUI->getDetectObjs();
     if (OPERATION::ADD == enOperation) {
@@ -294,8 +284,6 @@ void InspBridgeWidget::confirmWindow(OPERATION enOperation) {
         else {
             System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
         }
-
-        vecDetectObjs.push_back(detectObj);
     }
     else {
         window.Id = m_currentWindow.Id;
@@ -309,13 +297,8 @@ void InspBridgeWidget::confirmWindow(OPERATION enOperation) {
         }
         else
             System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
-
-        auto iter = std::find_if(vecDetectObjs.begin(), vecDetectObjs.end(), [window](const QDetectObj& obj) { return window.Id == obj.getID(); });
-        if (iter != vecDetectObjs.end()) {
-            *iter = detectObj;
-        }
     }
 
-    pUI->setDetectObjs(vecDetectObjs);
+    updateWindowToUI(window, enOperation);
     m_pParent->updateInspWindowList();
 }

@@ -10,7 +10,7 @@
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../Common/CommonFunc.h"
-#include "../DataModule/QDetectObj.h"
+
 #include "InspWindowWidget.h"
 #include "../DataModule/CalcUtils.hpp"
 
@@ -244,7 +244,7 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
 
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();
-    int nBigImgWidth = matBigImage.cols / dCombinedImageScale;
+    int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;
     int nBigImgHeight = matBigImage.rows / dCombinedImageScale;
     if (bBoardRotated) {
         window.x = (nBigImgWidth - ptWindowCtr.x)  * dResolutionX;
@@ -268,16 +268,6 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
         return;
     }
 
-    QDetectObj detectObj(window.Id, window.name.c_str());
-    cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
-    if (bBoardRotated)
-        ptCenter.x = nBigImgWidth - ptCenter.x;
-    else
-        ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
-    detectObj.setFrame(cv::RotatedRect(ptCenter, rectROI.size(), window.angle));
-    detectObj.setSrchWindow(cv::RotatedRect(ptCenter, rectSrchWindow.size(), window.angle));
-    auto vecDetectObjs = pUI->getDetectObjs();
-
     int result = Engine::OK;
     if (OPERATION::ADD == enOperation) {
         window.deviceId = pUI->getSelectedDevice().getId();
@@ -294,8 +284,6 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
         else {
             System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
         }
-
-        vecDetectObjs.push_back(detectObj);
     }
     else {
         result = Engine::UpdateWindow(window);
@@ -307,14 +295,9 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
         }
         else
             System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
-
-        auto iter = std::find_if(vecDetectObjs.begin(), vecDetectObjs.end(), [window](const QDetectObj& obj) { return window.Id == obj.getID(); });
-        if (iter != vecDetectObjs.end()) {
-            *iter = detectObj;
-        }
     }
 
-    pUI->setDetectObjs(vecDetectObjs);
+    updateWindowToUI(window, enOperation);
     m_pParent->updateInspWindowList();
 }
 

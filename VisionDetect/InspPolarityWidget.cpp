@@ -178,7 +178,7 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
     window.height = rectROI.height * dResolutionY;
     auto selectedDevice = pUI->getSelectedDevice();
     window.deviceId = selectedDevice.getId();
-    window.angle = 0;    
+    window.angle = 0;
 
     int result = Engine::OK;
     if (OPERATION::ADD == enOperation) {
@@ -199,18 +199,6 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
         }
         else
             System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
-
-        QDetectObj detectObj(window.Id, window.name.c_str());
-        cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
-        if (bBoardRotated)
-            ptCenter.x = nBigImgWidth - ptCenter.x;
-        else
-            ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
-        cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
-        detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
-        auto vecDetectObjs = pUI->getDetectObjs();
-        vecDetectObjs.push_back(detectObj);
-        pUI->setDetectObjs(vecDetectObjs);
     }
     else {
         window.Id = m_currentWindow.Id;
@@ -226,6 +214,8 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
             System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
         }
     }
+
+    updateWindowToUI(window, enOperation);
 
     m_pParent->updateInspWindowList();
 
@@ -264,7 +254,7 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
     }
 
     char windowName[100];
-    window.usage = Engine::Window::Usage::INSP_POLARITY_REF;       
+    window.usage = Engine::Window::Usage::INSP_POLARITY_REF;
     _snprintf(windowName, sizeof(windowName), "Inspect Polarity Ref [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), selectedDevice.getName().c_str());
     window.name = windowName;
 
@@ -278,18 +268,6 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
     else
         System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
 
-    QDetectObj detectObj(window.Id, window.name.c_str());
-    ptCenter = cv::Point2f(window.x / dResolutionX, window.y / dResolutionY);
-    if (bBoardRotated)
-        ptCenter.x = nBigImgWidth - ptCenter.x;
-    else
-        ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
-    cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
-    detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
-    auto vecDetectObjs = pUI->getDetectObjs();
-    vecDetectObjs.push_back(detectObj);
-    pUI->setDetectObjs(vecDetectObjs);
-
     windowGroup.vecWindows.push_back(window);
     result = Engine::CreateWindowGroup(windowGroup);
     if (Engine::OK != result) {
@@ -300,6 +278,7 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
         System->showMessage(strTitle, strMsg);
     }
     
+    updateWindowToUI(window, enOperation);
     m_pParent->updateInspWindowList();
 }
 
