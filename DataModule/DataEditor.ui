@@ -30,15 +30,15 @@
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
-     <string>编辑元器件</string>
+     <string>待料影像</string>
     </attribute>
-    <widget class="QGraphicsView" name="graphicsView">
+    <widget class="QGraphicsView" name="graphicsView_recordImg">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>10</y>
+       <y>5</y>
        <width>150</width>
-       <height>90</height>
+       <height>100</height>
       </rect>
      </property>
     </widget>

@@ -87,15 +87,16 @@ void AlignmentWidget::setDefaultValue() {
     m_currentWindow.usage = Engine::Window::Usage::UNDEFINED;
 }
 
-/*static*/ bool AlignmentWidget::learnTemplate(Vision::PR_MATCH_TMPL_ALGORITHM enAlgo, const cv::Rect &rectROI, int &recordId) {
+/*static*/ bool AlignmentWidget::learnTemplate(Vision::PR_MATCH_TMPL_ALGORITHM enAlgo, cv::Mat& matMask, const cv::Rect &rectROI, int &recordId) {
     Vision::PR_LRN_TEMPLATE_CMD stCmd;
     Vision::PR_LRN_TEMPLATE_RPY stRpy;
 
     stCmd.enAlgorithm = enAlgo;
-    stCmd.rectROI = rectROI;
+    stCmd.rectROI = rectROI;  
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
-    stCmd.matInputImg = pUI->getImage();    
+    stCmd.matInputImg = pUI->getImage();  
+    stCmd.matMask = matMask;
 
     Vision::PR_LrnTmpl(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {
@@ -168,7 +169,7 @@ void AlignmentWidget::tryInsp() {
             return;
         }
         auto enAlgorithm = static_cast<Vision::PR_MATCH_TMPL_ALGORITHM>(m_pComboBoxAlgorithm->currentIndex());
-        if (! learnTemplate(enAlgorithm, rectROI, nRecordId))
+        if (!learnTemplate(enAlgorithm, getMask(), rectROI, nRecordId))
             return;
         else
             bNewRecord = true;
@@ -211,7 +212,7 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
     auto enAlgorithm = static_cast<Vision::PR_MATCH_TMPL_ALGORITHM>(m_pComboBoxAlgorithm->currentIndex());
 
     int nRecordId = 0;
-    if (! learnTemplate(enAlgorithm, rectROI, nRecordId)) {
+    if (!learnTemplate(enAlgorithm, getMask(), rectROI, nRecordId)) {
         return;
     }
 
@@ -241,6 +242,7 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
     window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = Engine::Window::Usage::ALIGNMENT;
     window.inspParams = byte_array;
+    window.mask = this->convertMaskMat2Bny(getMask());
 
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();
@@ -324,4 +326,6 @@ void AlignmentWidget::setCurrentWindow(const Engine::Window &window) {
     m_pSpecAndResultMaxRotation->setSpec(obj["MaxRotation"].toDouble());
 
     m_bIsTryInspected = false;
+
+    this->setMask(convertMaskBny2Mat(window.mask));
 }

@@ -50,8 +50,12 @@ void FiducialMarkWidget::showEvent(QShowEvent *event) {
         int index = ui.comboBoxChooseImage->currentIndex();
         if (index >= 0 && index < vecCombinedBigImage.size() && !vecCombinedBigImage[index].empty())
             pUI->setImage(vecCombinedBigImage[index]);
-        m_nBigImageWidth  = vecCombinedBigImage[index].cols;
-        m_nBigImageHeight = vecCombinedBigImage[index].rows;
+
+        if (index >= 0 && index < vecCombinedBigImage.size())
+        {
+            m_nBigImageWidth = vecCombinedBigImage[index].cols;
+            m_nBigImageHeight = vecCombinedBigImage[index].rows;
+        }       
     } 
 
     m_vecFMBigImagePos.clear();

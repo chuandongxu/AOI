@@ -149,6 +149,13 @@ void FindLineWidget::tryInsp() {
         return;
     }
 
+    cv::Mat matMask = getMask();
+    cv::Mat matBigMask = cv::Mat::ones(pUI->getImage().size(), CV_8UC1);
+    matBigMask *= Vision::PR_MAX_GRAY_LEVEL;
+    cv::Mat matMaskROI(matBigMask, cv::Rect(pUI->getSelectedROI()));
+    matMask.copyTo(matMaskROI);
+    stCmd.matMask = matBigMask;
+
     stCmd.rectRotatedROI.center = cv::Point2f(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2);
     stCmd.rectRotatedROI.size = rectROI.size();
     Vision::PR_FindLine(&stCmd, &stRpy);
@@ -201,6 +208,7 @@ void FindLineWidget::confirmWindow(OPERATION enOperation) {
     window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = Engine::Window::Usage::FIND_LINE;
     window.inspParams = byteArray;
+    window.mask = this->convertMaskMat2Bny(getMask());
 
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();
@@ -286,4 +294,6 @@ void FindLineWidget::setCurrentWindow(const Engine::Window &window) {
     m_pSpecAndResultAngle->clearResult();
     m_pSpecAndResultAngleDiffTol->setSpec(jsonValue["AngleDiffTolerance"].toDouble());
     m_pSpecAndResultAngleDiffTol->clearResult();
+
+    this->setMask(convertMaskBny2Mat(window.mask));
 }

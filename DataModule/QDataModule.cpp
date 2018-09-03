@@ -182,4 +182,9 @@ bool QDataModule::copyDeviceWindow(long srcID, long destID)
     return m_pDeviceListWidget->copyDeviceWindow(srcID, destID);
 }
 
+bool QDataModule::displayRecord(int recordID)
+{
+    return m_pDataEditor->displayRecord(recordID);
+}
+
 QMOUDLE_INSTANCE(QDataModule)

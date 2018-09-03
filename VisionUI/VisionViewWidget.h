@@ -103,8 +103,9 @@ protected:
 
 	void mouseMoveEvent(QMouseEvent * event);
 	void mousePressEvent(QMouseEvent * event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
-	void wheelEvent(QWheelEvent * event);
+	void wheelEvent(QWheelEvent * event);   
 
 private slots:
 	void onResultEvent(const QVariantList &data);

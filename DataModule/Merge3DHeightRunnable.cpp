@@ -36,7 +36,7 @@ void Merge3DHeightRunnable::run()
         vecMatHeight.push_back(ptrCalc3DHeightRunnable->get3DHeight());
 
     IVision* pVision = getModule<IVision>(VISION_MODEL);
-	if (!pVision) return;
+    if (!pVision) return;
 
     cv::Mat matMerged3DHeight;
     pVision->setInspect3DHeight(vecMatHeight, m_nRow, m_nCol, m_nTotalRows, m_nTotalCols);
