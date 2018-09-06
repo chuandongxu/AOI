@@ -11,54 +11,54 @@
 class IGraphicEditor;
 class CameraSetting : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent = Q_NULLPTR);
-	~CameraSetting();
+    CameraSetting(CameraCtrl* pCameraCtrl, QWidget *parent = Q_NULLPTR);
+    ~CameraSetting();
 
 public:
-	QWidget* getCaliTab();
+    QWidget* getCaliTab();
 
 protected slots:
-	void onStateChangeCapture(int iState);
-	void onStateChangeCaptureLight(int iState);
-	void onStateChangeCaptureAsMatlab(int iState);
-	void onStateChangeCrossEnable(int iState);
+    void onStateChangeCapture(int iState);
+    void onStateChangeCaptureLight(int iState);
+    void onStateChangeCaptureAsMatlab(int iState);
+    void onStateChangeCrossEnable(int iState);
 
-	void onCaptureModeIndexChanged(int iIndex);
-	void onCaptureNumModeIndexChanged(int iIndex);
-	void onSelCapturePath();
-	void onSaveCapturePath();
-	void onSelImgDLP1Path();
-	void onSaveImgDLP1Path();
-	void onSelImgDLP2Path();
-	void onSaveImgDLP2Path();
-	void onCalibration();
+    void onCaptureModeIndexChanged(int iIndex);
+    void onCaptureNumModeIndexChanged(int iIndex);
+    void onSelCapturePath();
+    void onSaveCapturePath();
+    void onSelImgDLP1Path();
+    void onSaveImgDLP1Path();
+    void onSelImgDLP2Path();
+    void onSaveImgDLP2Path();
+    void onCalibration();
 
     void onSelectLightIndexChanged(int iIndex);
-	void onStartSetupDLP();
-	void onEndSetupDLP();
-	void onCaptureDLP();
-	void onCaptureLight();
+    void onStartSetupDLP();
+    void onEndSetupDLP();
+    void onCaptureDLP();
+    void onCaptureLight();
 
 private:
-	double convertToPixel(double umValue);
-	double convertToUm(double pixel);
+    double convertToPixel(double umValue);
+    double convertToUm(double pixel);
 
 private:
-	void updateUI();
+    void updateUI();
 
 private:
-	QIntValidator *inputIntRangePos;
-	QIntValidator *inputIntRangeAll;
-	QDoubleValidator *inputDoubleRangePos;
-	QDoubleValidator *inputDoubleRangeAll;
+    QIntValidator *inputIntRangePos;
+    QIntValidator *inputIntRangeAll;
+    QDoubleValidator *inputDoubleRangePos;
+    QDoubleValidator *inputDoubleRangeAll;
 
 private:
-	Ui::CameraSetting ui;
-	CameraCtrl* m_pCameraCtrl;
-	IGraphicEditor *m_pGraphicsEditor;	
+    Ui::CameraSetting ui;
+    CameraCtrl* m_pCameraCtrl;
+    IGraphicEditor *m_pGraphicsEditor;    
     int m_lastIndexMode;
     int m_lastIndexNum;
 

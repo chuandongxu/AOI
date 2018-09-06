@@ -162,8 +162,10 @@ void InspWindowWidget::updateInspWindowList() {
         return;
     }
 
+
     bool bItemSelect = false;
-    m_mapIdWindow.clear();        
+    m_mapIdWindow.clear();
+
     for (const auto &window : vecCurrentDeviceWindows) {
         m_mapIdWindow.insert(std::pair<Int64, Engine::Window>(window.Id, window));
         QTreeWidgetItem *pItem = new QTreeWidgetItem(QStringList{window.name.c_str()}, TREE_ITEM_WINDOW);

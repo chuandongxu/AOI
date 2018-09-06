@@ -60,8 +60,8 @@
       <Command>if not exist $(OutDir)\data (
     mkdir $(OutDir)\data
 )
-
-copy .\data\PackageSize.csv $(OutDir)\data\PackageSize.csv</Command>
+copy .\data\PackageSize.csv $(OutDir)\data\PackageSize.csv
+copy ..\lib\DataStoreAPI\x64\$(Configuration)\DataStoreAPI.dll $(OutDir)  /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -84,8 +84,8 @@ copy .\data\PackageSize.csv $(OutDir)\data\PackageSize.csv</Command>
       <Command>if not exist $(OutDir)\data (
     mkdir $(OutDir)\data
 )
-
-copy .\data\PackageSize.csv $(OutDir)\data\PackageSize.csv</Command>
+copy .\data\PackageSize.csv $(OutDir)\data\PackageSize.csv
+copy ..\lib\DataStoreAPI\x64\$(Configuration)\DataStoreAPI.dll $(OutDir)  /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

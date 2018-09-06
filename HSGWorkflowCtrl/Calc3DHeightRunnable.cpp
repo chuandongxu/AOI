@@ -20,5 +20,5 @@ void Calc3DHeightRunnable::run()
     IVision* pVision = getModule<IVision>(VISION_MODEL);
     if (!pVision) return;
 
-    pVision->calculate3DHeight(m_nDlpId, m_vecMatImages, m_mat3DHeight, m_matHeightResultImg);
+    pVision->calculate3DHeight(m_nDlpId, m_vecMatImages, m_mat3DHeight, m_matNanMask, m_matHeightResultImg);
 }

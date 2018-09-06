@@ -45,6 +45,8 @@ void OcvWidget::setDefaultValue() {
     m_pSpecAndResultMinScore->setSpec(60);
     ui.listWidgetRecordId->clear();
     m_bIsTryInspected = false;
+
+    m_currentWindow.usage = Engine::Window::Usage::UNDEFINED;
 }
 
 void OcvWidget::setCurrentWindow(const Engine::Window &window) {
@@ -268,8 +270,6 @@ void OcvWidget::on_btnLrnOcv_clicked() {
         return;
     }
     Engine::AddRecord(nRecordId, recordData);
-
-    m_pParent->updateInspWindowList();
 }
 
 bool OcvWidget::_learnOcv(int &recordId) {

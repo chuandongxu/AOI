@@ -27,57 +27,57 @@ using namespace Pylon;
 class DalsaCameraDevice : public CameraDevice
 {
 public:
-	DalsaCameraDevice(SapLocation* loc, QString cameraName, QString cameraID);
-	~DalsaCameraDevice(void);
+    DalsaCameraDevice(SapLocation* loc, QString cameraName, QString cameraID);
+    ~DalsaCameraDevice(void);
 
-	void setCamera(IPylonDevice* dev);
-	void openCamera();
-	void closeCamera();
+    void setCamera(IPylonDevice* dev);
+    void openCamera();
+    void closeCamera();
 
-	virtual void setExposureTime(double expouserTime);
-	virtual void getExposureTime(double *expouserTime);  // 注意, 有些相机是不支持的
-	virtual void setHardwareTrigger(bool bOn);
-	virtual void setTriggerActive(bool bActiveHigh);
-	virtual bool captureImage(cv::Mat &imageMat);
-	virtual bool getCameraScreenSize(int& nWidth, int& nHeight);
+    virtual void setExposureTime(double expouserTime);
+    virtual void getExposureTime(double *expouserTime);  // 注意, 有些相机是不支持的
+    virtual void setHardwareTrigger(bool bOn);
+    virtual void setTriggerActive(bool bActiveHigh);
+    virtual bool captureImage(cv::Mat &imageMat);
+    virtual bool getCameraScreenSize(int& nWidth, int& nHeight);
 
-	virtual void softwareTrigger();
-	virtual bool startGrabing(int nNum);
-	virtual bool captureImageByFrameTrig(QVector<cv::Mat>& imageMats);
-	virtual void stopGrabing();
-	virtual void clearGrabing();
-	virtual bool isGrabing();
+    virtual void softwareTrigger();
+    virtual bool startGrabing(int nNum);
+    virtual bool captureImageByFrameTrig(QVector<cv::Mat>& imageMats);
+    virtual void stopGrabing();
+    virtual void clearGrabing();
+    virtual bool isGrabing();
 
-	virtual void openDevice(QString cameraName, QString cameraID, bool bHWTrigger = true);
-	virtual void closeDevice();
-
-private:
-	static void XferCallback(SapXferCallbackInfo *pInfo);
-	static int _sXferIndex;
-
-	void updateGrabCount(cv::Mat& imgMat);
+    virtual void openDevice(QString cameraName, QString cameraID, bool bHWTrigger = true);
+    virtual void closeDevice();
 
 private:
-	QString m_cameraName;
-	QString m_cameraID;
+    static void XferCallback(SapXferCallbackInfo *pInfo);
+    static int _sXferIndex;
 
-	IPylonDevice* m_hv_AcqHandle;
-	Pylon::CBaslerCameraLinkInstantCamera* m_camera;
+    void updateGrabCount(cv::Mat& imgMat);
 
-	SapLocation		*m_loc;
-	SapAcquisition	*m_Acq;
-	//SapAcqDevice	*m_AcqDevice;
-	SapBuffer		*m_Buffers;
-	SapTransfer		*m_Xfer;
-	SapFeature      *m_Feature;
-	//SapView			*m_View;
+private:
+    QString m_cameraName;
+    QString m_cameraID;
 
-	QVector<cv::Mat> m_imageMats;
-	int m_nGrabNum;
-	int m_nGrabCount;
+    IPylonDevice* m_hv_AcqHandle;
+    Pylon::CBaslerCameraLinkInstantCamera* m_camera;
 
-	bool m_bCapturedImage;
+    SapLocation        *m_loc;
+    SapAcquisition    *m_Acq;
+    //SapAcqDevice    *m_AcqDevice;
+    SapBuffer        *m_Buffers;
+    SapTransfer        *m_Xfer;
+    SapFeature      *m_Feature;
+    //SapView            *m_View;
 
-	QWaitCondition m_waitCon;
-	QMutex m_waitMutex;
+    QVector<cv::Mat> m_imageMats;
+    int m_nGrabNum;
+    int m_nGrabCount;
+
+    bool m_bCapturedImage;
+
+    QWaitCondition m_waitCon;
+    QMutex m_waitMutex;
 };

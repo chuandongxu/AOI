@@ -24,7 +24,7 @@ public:
     virtual void setDefaultValue() = 0;
     virtual void tryInsp() = 0;
     virtual void confirmWindow(OPERATION enOperation) = 0;
-    virtual void setCurrentWindow(const Engine::Window &window) = 0;   
+    virtual void setCurrentWindow(const Engine::Window &window) = 0;
     virtual void setWindowGroup(const Engine::WindowGroup &windowGroup);
 
     Engine::Window getCurrentWindow() const { return m_currentWindow; }
@@ -35,6 +35,7 @@ public:
 
     cv::Mat convertMaskBny2Mat(Binary maskBinary);
     Binary convertMaskMat2Bny(cv::Mat& maskMat);
+    void updateWindowToUI(const Engine::Window &window, OPERATION operation);
 
 protected:
     InspWindowWidget           *m_pParent;
