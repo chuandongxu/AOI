@@ -14,6 +14,7 @@ public:
     ~Calc3DHeightRunnable();
     inline cv::Mat get3DHeight() const { return m_mat3DHeight; }
     inline cv::Mat getHeightResultImg() const { return m_matHeightResultImg; }
+    inline cv::Mat getNanMask() const { return m_matNanMask; }
 
 protected:
     virtual void run() override;
@@ -22,6 +23,7 @@ private:
     int                     m_nDlpId;
     QVector<cv::Mat>        m_vecMatImages;
     cv::Mat                 m_mat3DHeight;
+    cv::Mat                 m_matNanMask;
     cv::Mat                 m_matHeightResultImg;
 };
 

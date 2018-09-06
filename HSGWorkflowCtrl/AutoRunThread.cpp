@@ -154,6 +154,7 @@ void AutoRunThread::run()
 
     if (isExit())
     {
+        TimeLogInstance->dumpTimeLog("./log/timelog.log");
         IData * pData = getModule<IData>(DATA_MODEL);
         if (pData)
         {
@@ -215,7 +216,7 @@ bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
 {
     if (System->isRunOffline()) {
         static QVector<cv::Mat> vecLocalImages;
-        if (vecLocalImages.empty()) {         
+        if (vecLocalImages.empty()) {
             std::string strImagePath = System->getOfflinePath().toStdString();
             char strfileName[100];
             for (int i = 1; i <= 54; ++ i) {
@@ -396,7 +397,7 @@ bool AutoRunThread::_doAlignment() {
             bResult = false;
             break;
         }
-        TimeLogInstance->addTimeLog("Move to capture position.");
+        TimeLogInstance->addTimeLog("Move to alignment capture position.");
         
         QVector<cv::Mat> vecMatImages;
         if (! captureLightImages(vecMatImages)) {
@@ -404,7 +405,7 @@ bool AutoRunThread::_doAlignment() {
             bResult = false;
             break;
         }
-        TimeLogInstance->addTimeLog("Capture Light images.");
+        TimeLogInstance->addTimeLog("Capture alignment light images.");
 
         cv::Mat matAlignmentImg = vecMatImages[0];
         cv::Point2f ptFrameCtr(alignment.tmplPosX, alignment.tmplPosY), ptAlignment(alignment.tmplPosX, alignment.tmplPosY);
@@ -542,14 +543,14 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
             if (fabs(ptFrameCtr.y) <= 0.01f)
                 ptFrameCtr.y = m_nImageHeightPixel * m_dResolutionY / 2.f;
 
-            TimeLogInstance->addTimeLog("Move to capture position.");
+            TimeLogInstance->addTimeLog("Move to inspect capture position.");            
         
             QVector<cv::Mat> vecMatImages;
             if (! captureAllImages(vecMatImages)) {
                 bGood = false;
                 break;
             }
-            TimeLogInstance->addTimeLog("Capture all images.");
+            TimeLogInstance->addTimeLog("Capture all inspect images.");
 
             QThreadPool::globalInstance()->waitForDone();
             if (ptrBoardInspResult->isWithFatalError()) {

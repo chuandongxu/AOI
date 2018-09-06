@@ -16,6 +16,8 @@ TimeLog *TimeLog::GetInstance() {
 
 void TimeLog::addTimeLog(const std::string &strMsg) {
     std::string strLog = strMsg;
+    if (strLog.size() < _MSG_WIDTH)
+        strLog.resize(_MSG_WIDTH, ' ');
     strLog += "\t" + std::to_string(_stopWatch.Span());
     strLog += "\t" + _stopWatch.GetLocalTimeStr();
 

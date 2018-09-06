@@ -33,34 +33,34 @@
 const QString TimeFormatString ="MMdd";
 
 QFlowCtrl::QFlowCtrl(QObject *parent)
-	: QObject(parent),m_isHome(false),m_isStart(false),m_timerId(-1)
-	,m_homeIng(false)
-{	
-	m_errorCode = -1;
-	m_timerId = startTimer(50);
+    : QObject(parent),m_isHome(false),m_isStart(false),m_timerId(-1)
+    ,m_homeIng(false)
+{    
+    m_errorCode = -1;
+    m_timerId = startTimer(50);
 
-	m_pAutoRunThread = NULL;
+    m_pAutoRunThread = NULL;
 
-	this->initStationParam();
+    this->initStationParam();
 
-	QSystem *p = QSystem::instance();
-	bool s = connect(p, SIGNAL(goHome()), this, SLOT(home()));
-	s = connect(p, SIGNAL(start()), this, SLOT(startAutoRun()));
-	s = connect(p, SIGNAL(stop()), this, SLOT(stopAutoRun()));
+    QSystem *p = QSystem::instance();
+    bool s = connect(p, SIGNAL(goHome()), this, SLOT(home()));
+    s = connect(p, SIGNAL(start()), this, SLOT(startAutoRun()));
+    s = connect(p, SIGNAL(stop()), this, SLOT(stopAutoRun()));
 
-	m_dateTime = QDateTime::currentDateTime();
+    m_dateTime = QDateTime::currentDateTime();
 
-	QEos::Attach(EVENT_IMAGE_STATE, this, SLOT(onImageEvent(const QVariantList &)));
+    QEos::Attach(EVENT_IMAGE_STATE, this, SLOT(onImageEvent(const QVariantList &)));
     QEos::Attach(EVENT_THREAD_STATE, this, SLOT(onThreadState(const QVariantList &)));
 
-	//IMotion * pMotion = getModule<IMotion>(MOTION_MODEL);
-	//if(pMotion)
-	//{
-	//	pMotion->setExtDO(DO_YELLOW_LIGHT,1);
-	//	pMotion->setExtDO(DO_GREEN_LIGHT,0);
-	//	pMotion->setExtDO(DO_RED_LIGHT,0);
-	//	pMotion->setExtDO(DO_BUZZER,0);
-	//}	
+    //IMotion * pMotion = getModule<IMotion>(MOTION_MODEL);
+    //if(pMotion)
+    //{
+    //    pMotion->setExtDO(DO_YELLOW_LIGHT,1);
+    //    pMotion->setExtDO(DO_GREEN_LIGHT,0);
+    //    pMotion->setExtDO(DO_RED_LIGHT,0);
+    //    pMotion->setExtDO(DO_BUZZER,0);
+    //}    
 }
 
 QFlowCtrl::~QFlowCtrl()
@@ -69,17 +69,17 @@ QFlowCtrl::~QFlowCtrl()
 
 bool QFlowCtrl::isRuning()
 {
-	return m_isStart;
+    return m_isStart;
 }
 
 void QFlowCtrl::onImageEvent(const QVariantList &data)
 {
-	if (data.size() < 3) return;
+    if (data.size() < 3) return;
 
-	int iBoard = data[0].toInt();
-	int iEvent = data[1].toInt();
-	if (iEvent != IMAGE_STATE_CHANGE) return;
-	int nIndex = data[2].toInt();
+    int iBoard = data[0].toInt();
+    int iEvent = data[1].toInt();
+    if (iEvent != IMAGE_STATE_CHANGE) return;
+    int nIndex = data[2].toInt();
 }
 
 void QFlowCtrl::onThreadState(const QVariantList &data)
@@ -108,15 +108,15 @@ void QFlowCtrl::onThreadState(const QVariantList &data)
 }
 
 void QFlowCtrl::home()
-{	
-	if(m_isStart)
-	{
-		QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在运行中，请先停止在回零"));
-		QApplication::processEvents();
+{    
+    if(m_isStart)
+    {
+        QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在运行中，请先停止在回零"));
+        QApplication::processEvents();
 
-		//this->stop();
-		return ;
-	}
+        //this->stop();
+        return ;
+    }
 
     QEos::Notify(EVENT_GOHOMEING_STATE, GOHOMEING_STATE_OK);
 
@@ -151,63 +151,63 @@ void QFlowCtrl::home()
 
 void QFlowCtrl::startAutoRun()
 {
-	start();
+    start();
 }
 
 void QFlowCtrl::stopAutoRun()
 {
-	if (m_isStart) stop();
+    if (m_isStart) stop();
 }
 
 void QFlowCtrl::readbarCode()
-{	
+{    
 }
 
 void QFlowCtrl::imStop()
 {
-	this->stop();
-	System->userImStop();
+    this->stop();
+    System->userImStop();
 
-	IMotion * p = getModule<IMotion>(MOTION_MODEL);
-	if(p)
-	{
-		//p->setExtDO(DO_YELLOW_LIGHT,0);
-		//p->setExtDO(DO_GREEN_LIGHT,0);
-		//p->setExtDO(DO_RED_LIGHT,1);
-		//p->setExtDO(DO_BUZZER,1);
-	}
+    IMotion * p = getModule<IMotion>(MOTION_MODEL);
+    if(p)
+    {
+        //p->setExtDO(DO_YELLOW_LIGHT,0);
+        //p->setExtDO(DO_GREEN_LIGHT,0);
+        //p->setExtDO(DO_RED_LIGHT,1);
+        //p->setExtDO(DO_BUZZER,1);
+    }
 
-	QSystem::showMessage(QStringLiteral("告警"), QStringLiteral("设备处于急停状态。"));
+    QSystem::showMessage(QStringLiteral("告警"), QStringLiteral("设备处于急停状态。"));
 }
-	
+    
 void QFlowCtrl::reset()
 {
-	if(m_isStart)
-	{
-		QMessageBox::warning(NULL,QStringLiteral("警告"), QStringLiteral("复位前请停止设备。"));
-		return;
-	}
-	m_errorCode =-1;
-	m_isHome = false;
-	m_isStart = false;
-	System->setErrorCode(ERROR_NO_ERROR);
-	IMotion * p = getModule<IMotion>(MOTION_MODEL);
-	if(p)
-	{
-		//p->clearError();
-		QThread::msleep(100);
-		//p->setExtDO(DO_YELLOW_LIGHT,1);
-		//p->setExtDO(DO_GREEN_LIGHT,0);
-		//p->setExtDO(DO_RED_LIGHT,0);
-		//p->setExtDO(DO_BUZZER,0);
-	}	
-	
-	if(QSystem::isMessageShowed())
-	{
-		QSystem::closeMessage();
-	}	
+    if(m_isStart)
+    {
+        QMessageBox::warning(NULL,QStringLiteral("警告"), QStringLiteral("复位前请停止设备。"));
+        return;
+    }
+    m_errorCode =-1;
+    m_isHome = false;
+    m_isStart = false;
+    System->setErrorCode(ERROR_NO_ERROR);
+    IMotion * p = getModule<IMotion>(MOTION_MODEL);
+    if(p)
+    {
+        //p->clearError();
+        QThread::msleep(100);
+        //p->setExtDO(DO_YELLOW_LIGHT,1);
+        //p->setExtDO(DO_GREEN_LIGHT,0);
+        //p->setExtDO(DO_RED_LIGHT,0);
+        //p->setExtDO(DO_BUZZER,0);
+    }    
+    
+    if(QSystem::isMessageShowed())
+    {
+        QSystem::closeMessage();
+    }    
 }
-	
+    
 void QFlowCtrl::start()
 {
     ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
@@ -280,14 +280,14 @@ void QFlowCtrl::start()
 
     QSystem::closeMessage();
 }
-	
+    
 void QFlowCtrl::stop()
-{		
-	//m_isHome = false;   
-	QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在停止中..."), 0);
-	QApplication::processEvents();
+{        
+    //m_isHome = false;   
+    QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在停止中..."), 0);
+    QApplication::processEvents();
 
-	//if (m_pAutoRunThread) m_pAutoRunThread->quit();
+    //if (m_pAutoRunThread) m_pAutoRunThread->quit();
     QEos::Notify(EVENT_THREAD_STATE, SHUTDOWN_MAIN_THREAD);
 
     ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
@@ -314,23 +314,23 @@ void QFlowCtrl::stop()
         }       
     }
 
-	IMotion * p = getModule<IMotion>(MOTION_MODEL);
-	if(p)
-	{
-		//p->setExtDO(DO_YELLOW_LIGHT,1);
-		//p->setExtDO(DO_GREEN_LIGHT,0);
-		//p->setExtDO(DO_RED_LIGHT,0);
-		//p->setExtDO(DO_BUZZER,0);
+    IMotion * p = getModule<IMotion>(MOTION_MODEL);
+    if(p)
+    {
+        //p->setExtDO(DO_YELLOW_LIGHT,1);
+        //p->setExtDO(DO_GREEN_LIGHT,0);
+        //p->setExtDO(DO_RED_LIGHT,0);
+        //p->setExtDO(DO_BUZZER,0);
 
-		//p->releaseInputLock();
-		//p->releaseAllStationStart();
-	}
+        //p->releaseInputLock();
+        //p->releaseAllStationStart();
+    }
 
-	System->setParam("camera_show_image_toScreen_enable", true);
+    System->setParam("camera_show_image_toScreen_enable", true);
 
-	m_isStart = false;
-	QEos::Notify(EVENT_RUN_STATE, RUN_STATE_STOP);
-	QSystem::closeMessage();
+    m_isStart = false;
+    QEos::Notify(EVENT_RUN_STATE, RUN_STATE_STOP);
+    QSystem::closeMessage();
 }
 
 void QFlowCtrl::initStationParam()
@@ -339,16 +339,16 @@ void QFlowCtrl::initStationParam()
 
 void QFlowCtrl::checkAuthError()
 {
-	if (m_dateTime.secsTo(QDateTime::currentDateTime()) >= 60*10)
-	//if (m_dateTime.daysTo(QDateTime::currentDateTime()) >= 1)
-	{
-		if (!System->checkRuntimeAuthRight())
-		{
-			System->setErrorCode(ERROR_ATHU_NORIGHT_WARRING);
-			return;
-		}
-		m_dateTime = QDateTime::currentDateTime();
-	}	
+    if (m_dateTime.secsTo(QDateTime::currentDateTime()) >= 60*10)
+    //if (m_dateTime.daysTo(QDateTime::currentDateTime()) >= 1)
+    {
+        if (!System->checkRuntimeAuthRight())
+        {
+            System->setErrorCode(ERROR_ATHU_NORIGHT_WARRING);
+            return;
+        }
+        m_dateTime = QDateTime::currentDateTime();
+    }    
 }
 
 //检测电机驱动器状态，报警，急停，使能等。
@@ -362,11 +362,11 @@ void QFlowCtrl::checkError()
 
 void QFlowCtrl::initErrorCode()
 {
-	System->addErrorMap(ERROR_ATHU_NORIGHT_WARRING, MSG_ATH_NORIGHT_WARRING);
-	//System->addErrorMap(ERROR_Z_POS_WARRING,MSG_Z_POS_WARRING);
-	//System->addErrorMap(ERROR_Z_POS_WARRING,MSG_Z_POS_WARRING);
-	System->addErrorMap(ERROR_MOTION_POS_WARRING,MSG_MOTION_POS_WARRING);
-	System->addErrorMap(ERROR_STATION_SAFE_GRATING_ALRM,MSG_STTATION_SAFE_GRATING_ALRM);
+    System->addErrorMap(ERROR_ATHU_NORIGHT_WARRING, MSG_ATH_NORIGHT_WARRING);
+    //System->addErrorMap(ERROR_Z_POS_WARRING,MSG_Z_POS_WARRING);
+    //System->addErrorMap(ERROR_Z_POS_WARRING,MSG_Z_POS_WARRING);
+    System->addErrorMap(ERROR_MOTION_POS_WARRING,MSG_MOTION_POS_WARRING);
+    System->addErrorMap(ERROR_STATION_SAFE_GRATING_ALRM,MSG_STTATION_SAFE_GRATING_ALRM);
 }
 
 int QFlowCtrl::_prepareRunData()

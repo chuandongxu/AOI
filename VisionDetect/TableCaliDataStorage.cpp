@@ -305,7 +305,8 @@ bool TableCaliDataStorage::getFrameOffsetByUm(cv::Point2f& pt, float* fOffsetVal
 bool TableCaliDataStorage::getFrameOffsetByMm(cv::Point2f& pt, float* fOffsetValue)
 {
     if (System->isRunOffline()) {
-        *fOffsetValue = 0.f;
+        for (int i = 0; i < _DLP_MAX_NUM; ++ i)
+            fOffsetValue[i] = 0.f;
         return true;
     }
 

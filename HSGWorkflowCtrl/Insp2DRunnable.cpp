@@ -881,15 +881,17 @@ void Insp2DRunnable::_prepareImages() {
         m_pThreadPoolCalc3D->waitForDone();
         TimeLogInstance->addTimeLog(std::string("Finished wait for 3D calculation done in thead ") + QThread::currentThread()->objectName().toStdString());
         if (!m_vecCalc3DHeightRunnable.empty()) {
-            QVector<cv::Mat> vecMatHeight;
-            for (const auto &ptrCalc3DHeightRunnable : m_vecCalc3DHeightRunnable)
+            QVector<cv::Mat> vecMatHeight, vecMatNanMask;
+            for (const auto &ptrCalc3DHeightRunnable : m_vecCalc3DHeightRunnable) {
                 vecMatHeight.push_back(ptrCalc3DHeightRunnable->get3DHeight());
+                vecMatNanMask.push_back(ptrCalc3DHeightRunnable->getNanMask());
+            }
 
             IVision* pVision = getModule<IVision>(VISION_MODEL);
             if (!pVision) return;
 
             pVision->setInspect3DHeight(vecMatHeight, m_nRow, m_nCol, m_nTotalRows, m_nTotalCols);
-            pVision->merge3DHeight(vecMatHeight, m_mat3DHeight, m_ptFramePos);
+            pVision->merge3DHeight(vecMatHeight, vecMatNanMask, m_mat3DHeight, m_matNanMask, m_ptFramePos);
             (*m_pVec3DFrameImages)[m_nRow * m_nTotalCols + m_nCol] = m_mat3DHeight;
         }
     }    

@@ -136,9 +136,9 @@ void VisionDetect::prepareNewProf()
 	m_ctrl.getProfileEditor()->prepareNewProf();
 }
 
-bool VisionDetect::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv::Mat& heightMat, cv::Mat& matHeightResultImg)
+bool VisionDetect::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv::Mat& heightMat, cv::Mat& matNanMask, cv::Mat& matHeightResultImg)
 {
-	return m_ctrl.calculate3DHeight(nStation, imageMats, heightMat, matHeightResultImg);
+	return m_ctrl.calculate3DHeight(nStation, imageMats, heightMat, matNanMask, matHeightResultImg);
 }
 
 bool VisionDetect::generateAverageImage(const QVector<cv::Mat>& imageMats, cv::Mat& grayMat)
@@ -156,9 +156,9 @@ bool VisionDetect::calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*
 	return m_ctrl.calculateDetectHeight(matHeight, objTests);
 }
 
-bool VisionDetect::merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight, cv::Point2f& ptFramePos)
+bool VisionDetect::merge3DHeight(const QVector<cv::Mat>& matHeights, const QVector<cv::Mat>& vecMatNanMask, cv::Mat& matHeight, cv::Mat &matNanMask, cv::Point2f& ptFramePos)
 {
-    return m_ctrl.merge3DHeight(matHeights, matHeight, ptFramePos);
+    return m_ctrl.merge3DHeight(matHeights, vecMatNanMask, matHeight, matNanMask, ptFramePos);
 }
 
 bool VisionDetect::mergeImage(QVector<cv::Mat>& matInputImages, QVector<cv::Mat>& matOutputImages)

@@ -31,16 +31,18 @@ void Merge3DHeightRunnable::run()
 {
     m_pCalc3dHeightThreadPool->waitForDone();
 
-    QVector<cv::Mat> vecMatHeight;
-    for (const auto &ptrCalc3DHeightRunnable : m_vecCalc3DHeightRunnable)
+    QVector<cv::Mat> vecMatHeight, vecNanMask;
+    for (const auto &ptrCalc3DHeightRunnable : m_vecCalc3DHeightRunnable) {
         vecMatHeight.push_back(ptrCalc3DHeightRunnable->get3DHeight());
+        vecNanMask.push_back(ptrCalc3DHeightRunnable->getNanMask());
+    }
 
     IVision* pVision = getModule<IVision>(VISION_MODEL);
     if (!pVision) return;
 
-    cv::Mat matMerged3DHeight;
+    cv::Mat matMerged3DHeight, matNanMask;
     pVision->setInspect3DHeight(vecMatHeight, m_nRow, m_nCol, m_nTotalRows, m_nTotalCols);
-    pVision->merge3DHeight(vecMatHeight, matMerged3DHeight, m_ptFramePos);
+    pVision->merge3DHeight(vecMatHeight, vecNanMask, matMerged3DHeight, matNanMask, m_ptFramePos);
 
     (*m_pVec3DFrameImages)[m_nRow * m_nTotalCols + m_nCol] = matMerged3DHeight;
 }

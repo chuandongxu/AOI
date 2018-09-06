@@ -65,6 +65,7 @@ private:
     DeviceInspWindowVector        m_vecDeviceWindows;
     int                           m_nRow, m_nCol, m_nTotalRows, m_nTotalCols;
     cv::Mat                       m_mat3DHeight;
+    cv::Mat                       m_matNanMask;
 };
 
 using Insp2DRunnablePtr = std::shared_ptr<Insp2DRunnable>;

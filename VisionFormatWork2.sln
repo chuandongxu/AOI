@@ -25,6 +25,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3DViewUtility", "3DViewUtil
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VisionDetect", "VisionDetect\VisionDetect.vcxproj", "{BF710EED-8BBE-41DE-AFD3-F575981ACCF1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9DF4C4D5-B741-395A-A734-B78E8D285D2D} = {9DF4C4D5-B741-395A-A734-B78E8D285D2D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VisionUI", "VisionUI\VisionUI.vcxproj", "{1795F236-00DB-4229-A2E2-FD21754B6206}"
 EndProject
@@ -47,8 +50,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VisionTest", "VisionTest\VisionTest.vcxproj", "{214D8033-C29C-4D9E-B790-864663DA4A9D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MotionModule", "MotionModule\MotionModule.vcxproj", "{EA84D5EF-8C5C-44D5-B886-2B16468A3D70}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QSmartDetect", "QSmartDetect\QSmartDetect.vcxproj", "{5AAC3118-0C85-4004-84CF-A2B076C3F08D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LightModule", "LightModule\LightModule.vcxproj", "{EF98B2B3-63E7-4704-96F6-6F6916CBBD13}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -115,8 +116,6 @@ Global
 		{EA84D5EF-8C5C-44D5-B886-2B16468A3D70}.Debug|x64.Build.0 = Debug|x64
 		{EA84D5EF-8C5C-44D5-B886-2B16468A3D70}.Release|x64.ActiveCfg = Release|x64
 		{EA84D5EF-8C5C-44D5-B886-2B16468A3D70}.Release|x64.Build.0 = Release|x64
-		{5AAC3118-0C85-4004-84CF-A2B076C3F08D}.Debug|x64.ActiveCfg = Debug|x64
-		{5AAC3118-0C85-4004-84CF-A2B076C3F08D}.Release|x64.ActiveCfg = Release|x64
 		{EF98B2B3-63E7-4704-96F6-6F6916CBBD13}.Debug|x64.ActiveCfg = Debug|x64
 		{EF98B2B3-63E7-4704-96F6-6F6916CBBD13}.Debug|x64.Build.0 = Debug|x64
 		{EF98B2B3-63E7-4704-96F6-6F6916CBBD13}.Release|x64.ActiveCfg = Release|x64

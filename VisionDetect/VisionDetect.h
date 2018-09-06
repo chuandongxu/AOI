@@ -43,11 +43,11 @@ public:
 	virtual bool setProfRange(double x1, double y1, double x2, double y2);
 	virtual void prepareNewProf();
 
-	virtual bool calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv::Mat& heightMat, cv::Mat& matHeightResultImg);
+	virtual bool calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv::Mat& heightMat, cv::Mat& matNanMask, cv::Mat& matHeightResultImg);
 	virtual bool generateAverageImage(const QVector<cv::Mat>& imageMats, cv::Mat& grayMat) override;
 	virtual bool matchPosition(cv::Mat& matDisplay, QVector<QDetectObj*>& objTests);
 	virtual bool calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>& objTests);
-    virtual bool merge3DHeight(QVector<cv::Mat>& matHeights, cv::Mat& matHeight, cv::Point2f& ptFramePos);
+    virtual bool merge3DHeight(const QVector<cv::Mat>& matHeights, const QVector<cv::Mat>& vecMatNanMask, cv::Mat& matHeight, cv::Mat &matNamMas, cv::Point2f& ptFramePos);
 	virtual bool mergeImage(QVector<cv::Mat>& matInputImages, QVector<cv::Mat>& matOutputImages);
 
 	virtual bool matchAlignment(cv::Mat& matDisplay, QVector<QProfileObj*>& objProfTests);
