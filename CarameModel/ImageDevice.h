@@ -9,38 +9,38 @@ using namespace cv;
 class ImageDevice : public CameraDevice
 {
 public:
-	ImageDevice(QString cameraName, QString cameraID);
-	~ImageDevice();
+    ImageDevice(QString cameraName, QString cameraID);
+    ~ImageDevice();
 
 public:
-	virtual void setExposureTime(double expouserTime);
-	virtual void getExposureTime(double *expouserTime);  // 注意, 有些相机是不支持的
-	virtual void setHardwareTrigger(bool bOn);
-	virtual void setTriggerActive(bool bActiveHigh){}
-	virtual bool captureImage(cv::Mat &imageMat);
-	virtual bool getCameraScreenSize(int& nWidth, int& nHeight){ nWidth = 0; nHeight = 0; return true; }
+    virtual void setExposureTime(double expouserTime);
+    virtual void getExposureTime(double *expouserTime);  // 注意, 有些相机是不支持的
+    virtual void setHardwareTrigger(bool bOn);
+    virtual void setTriggerActive(bool bActiveHigh){}
+    virtual bool captureImage(cv::Mat &imageMat);
+    virtual bool getCameraScreenSize(int& nWidth, int& nHeight){ nWidth = 0; nHeight = 0; return true; }
 
-	virtual void softwareTrigger();
-	virtual bool startGrabing(int nNum);
-	virtual bool captureImageByFrameTrig(QVector<cv::Mat>& imageMats);
-	virtual void stopGrabing();
-	virtual void clearGrabing();
-	virtual bool isGrabing();
+    virtual void softwareTrigger();
+    virtual bool startGrabing(int nNum);
+    virtual bool captureImageByFrameTrig(QVector<cv::Mat>& imageMats);
+    virtual void stopGrabing();
+    virtual void clearGrabing();
+    virtual bool isGrabing();
 
-	virtual void openDevice(QString cameraName, QString cameraID, bool bHWTrigger = true);
-	virtual void closeDevice();
-
-private:
-	bool convertToGrayImage(QString& szFilePath, cv::Mat &matGray);
-	bool readImages(QString& szFilePath, QVector<cv::Mat>& matImgs);
-	QString getImageFilePath();
+    virtual void openDevice(QString cameraName, QString cameraID, bool bHWTrigger = true);
+    virtual void closeDevice();
 
 private:
-	QString m_cameraName;
-	QString m_cameraID;
+    bool convertToGrayImage(QString& szFilePath, cv::Mat &matGray);
+    bool readImages(QString& szFilePath, QVector<cv::Mat>& matImgs);
+    QString getImageFilePath();
 
-	QVector<cv::Mat> m_imageMats;
+private:
+    QString m_cameraName;
+    QString m_cameraID;
 
-	int m_nGrabNum;
-	int m_nGrabCount;
+    QVector<cv::Mat> m_imageMats;
+
+    int m_nGrabNum;
+    int m_nGrabCount;
 };

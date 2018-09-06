@@ -3,8 +3,6 @@
 
 #include "../Common/ModuleMgr.h"
 #include "../Common/SystemData.h"
-
-
 #include "VisionView.h"
 
 QVisionUIModule::QVisionUIModule(int id, const QString &name)

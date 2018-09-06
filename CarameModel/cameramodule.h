@@ -13,48 +13,48 @@ class QMainProcess;
 class CameraModule : public QModuleBase, public ICamera
 {
 public:
-	CameraModule(int id,const QString &name);
-	~CameraModule();
+    CameraModule(int id,const QString &name);
+    ~CameraModule();
 
      void initial(int nWindow = 0 );
-	 void unInit();
+     void unInit();
 
 public:
-	QWidget* getCalibrationView();
+    QWidget* getCalibrationView();
 
-	bool startUpCapture(bool bHWTrigger);
-	bool isHWTrigger();
-	bool endUpCapture();
-	bool selectCaptureMode(TRIGGER emCaptureMode, bool reStartUp);
+    bool startUpCapture(bool bHWTrigger);
+    bool isHWTrigger();
+    bool endUpCapture();
+    bool selectCaptureMode(TRIGGER emCaptureMode, bool reStartUp);
 
-	bool startCapturing();
-	bool getImages(QVector<cv::Mat>& imageMats);
-	bool getLastImages(QVector<cv::Mat>& imageMats);
-	bool stopCapturing();
+    bool startCapturing();
+    bool getImages(QVector<cv::Mat>& imageMats);
+    bool getLastImages(QVector<cv::Mat>& imageMats);
+    bool stopCapturing();
     virtual bool isStopped() override;
-	
+    
     virtual bool captureAllImages(QVector<cv::Mat>& imageMats) override;
     virtual bool captureLightImages(QVector<cv::Mat>& imageMats) override;
 
-	bool getCameraScreenSize(int& nWidth, int& nHeight);
+    bool getCameraScreenSize(int& nWidth, int& nHeight);
 
 public:
-	 void openCamera();
-	 void closeCamera();
-	 int getCameraNum();	
+     void openCamera();
+     void closeCamera();
+     int getCameraNum();    
 
-	 bool grabCamImage(int nCamera, cv::Mat& image, bool bSync);
-	 void setExposureTime(int nCamera, double exposureTime);	
+     bool grabCamImage(int nCamera, cv::Mat& image, bool bSync);
+     void setExposureTime(int nCamera, double exposureTime);    
 
 private:
-	virtual void addSettingWiddget(QTabWidget *tabWidget);
+    virtual void addSettingWiddget(QTabWidget *tabWidget);
     virtual void showSettingWidget();
-	void setErrorMap();
+    void setErrorMap();
 
 private: 
-	CameraCtrl                  *m_pCameraCtrl;
-	CameraSetting               *m_pSetting;
-	QSharedPointer<QMainProcess> m_pMainProcess;
+    CameraCtrl                  *m_pCameraCtrl;
+    CameraSetting               *m_pSetting;
+    QSharedPointer<QMainProcess> m_pMainProcess;
 };
 
 #endif // CARAMEMODEL_H
