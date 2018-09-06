@@ -189,7 +189,7 @@ void Inspect3DProfileWidget::inspect(cv::Rect& rectROI)
         }
     }  
 
-    doInspect();   
+    doInspect();
 }
 
 void Inspect3DProfileWidget::doInspect()
@@ -212,10 +212,9 @@ void Inspect3DProfileWidget::doInspect()
         ptInt2.x = matSourceImg.cols; ptInt2.y = nRow;
         cv::line(matSourceImg, ptInt1, ptInt2, cv::Scalar(255, 255, 0), 5);
 
-
         QImage img = QImage((uchar*)matSourceImg.data, matSourceImg.cols, matSourceImg.rows, ToInt(matSourceImg.step), QImage::Format_RGB888);
         scene[i]->clear();
-        scene[i]->addPixmap(QPixmap::fromImage(img.scaled(QSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT))));      
+        scene[i]->addPixmap(QPixmap::fromImage(img.scaled(QSize(IMG_DISPLAY_WIDTH, IMG_DISPLAY_HEIGHT))));
     }
 
     generateProfData(true, nRow, m_matHeights, m_profRowDatas);

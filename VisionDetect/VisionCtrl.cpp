@@ -178,18 +178,7 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
         for (int i = 0; i < IMAGE_COUNT; ++i)
         {
             m_stCalcHeightCmds[nStation - 1].vecInputImgs.push_back(imageMats[i]);
-        }
-
-        bool b3DDetectCaliUseThinPattern = System->getParam("3d_detect_thin_pattern").toBool();
-        bool b3DDetectGaussionFilter = System->getParam("3d_detect_gaussion_filter").toBool();
-        //bool b3DDetectReverseSeq = System->getParam("3d_detect_reverse_seq").toBool();
-        double d3DDetectMinIntDiff = System->getParam("3d_detect_min_intensity_diff").toDouble();
-        double d3DDetectPhaseShift = System->getParam("3d_detect_phase_shift").toDouble();
-        m_stCalcHeightCmds[nStation - 1].bEnableGaussianFilter = b3DDetectGaussionFilter;
-        //m_stCalcHeightCmds[nStation - 1].bReverseSeq = b3DDetectReverseSeq;
-        m_stCalcHeightCmds[nStation - 1].fMinAmplitude = d3DDetectMinIntDiff;
-        m_stCalcHeightCmds[nStation - 1].bUseThinnestPattern = b3DDetectCaliUseThinPattern;
-        m_stCalcHeightCmds[nStation - 1].fPhaseShift = d3DDetectPhaseShift;
+        }        
 
         cv::Mat matBaseSurfaceParam;
 
@@ -223,7 +212,7 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
         fileNode = fs["BaseWrappedGamma"];
         cv::read(fileNode, m_stCalcHeightCmds[nStation - 1].matBaseWrappedGamma, cv::Mat());
         fileNode = fs["ReverseSeq"];
-        cv::read(fileNode, m_stCalcHeightCmds[nStation - 1].bReverseSeq, 0);
+        cv::read(fileNode, m_stCalcHeightCmds[nStation - 1].bReverseSeq, 1);
         fs.release();
 
         path = QApplication::applicationDirPath();
@@ -247,6 +236,15 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
             m_stCalcHeightCmds[nStation - 1].vecInputImgs.push_back(imageMats[i]);
         }
     }
+
+    bool b3DDetectCaliUseThinPattern = System->getParam("3d_detect_thin_pattern").toBool();
+    bool b3DDetectGaussionFilter = System->getParam("3d_detect_gaussion_filter").toBool();
+    double d3DDetectMinIntDiff = System->getParam("3d_detect_min_intensity_diff").toDouble();
+    double d3DDetectPhaseShift = System->getParam("3d_detect_phase_shift").toDouble();
+    m_stCalcHeightCmds[nStation - 1].bEnableGaussianFilter = b3DDetectGaussionFilter;
+    m_stCalcHeightCmds[nStation - 1].fMinAmplitude = d3DDetectMinIntDiff;
+    m_stCalcHeightCmds[nStation - 1].bUseThinnestPattern = b3DDetectCaliUseThinPattern;
+    m_stCalcHeightCmds[nStation - 1].fPhaseShift = d3DDetectPhaseShift;
 
     Vision::PR_CALC_3D_HEIGHT_RPY stRpy;
     Vision::VisionStatus retStatus = PR_Calc3DHeight(&(m_stCalcHeightCmds[nStation - 1]), &stRpy);
