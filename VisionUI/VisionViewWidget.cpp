@@ -111,7 +111,7 @@ void CameraOnLive::run()
                         showImageToScreen(image);
                     }
                 }
-            }            
+            }
 
             System->setTrackInfo(QString("System captureImages Image Num: %1").arg(imageMats.size()));
 
@@ -658,7 +658,7 @@ void VisionViewWidget::addImageText(QString szText)
 
     cv::Mat image = m_hoImage.clone();
     double fontScale = dScaleFactor*2.0f;
-    cv::putText(image, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
+    cv::putText(image, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, _constRedScalar, 2);
 
     // show
     displayImage(image);
@@ -788,12 +788,16 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
                         if (select.y < 0) select.y = 0;
                         select.width  = (select.x + select.width)  > m_hoImage.size().width  ? (m_hoImage.size().width  - select.x) : select.width;
                         select.height = (select.y + select.height) > m_hoImage.size().height ? (m_hoImage.size().height - select.y) : select.height;
-                    }
+                    }                    
 
                     if (MODE_VIEW_SELECT_3D_ROI == m_stateView && select.width  > 1000) select.width  = 1000;
                     if (MODE_VIEW_SELECT_3D_ROI == m_stateView && select.height > 1000) select.height = 1000;
 
                     m_selectROI = select;
+
+                    std::stringstream ss;
+                    ss << "Selected ROI " << select;
+                    m_strCursorInfo = ss.str();
 
                     //qDebug() << m_selectROI.x << ":" << m_selectROI.y << ":" << m_selectROI.width << ":" << m_selectROI.height;
 
@@ -870,6 +874,8 @@ void VisionViewWidget::mousePressEvent(QMouseEvent * event)
         m_startY = event->y();
         m_preMoveX = m_startX;
         m_preMoveY = m_startY;
+
+        _updateCursorInfo(cv::Point(m_startX, m_startY));
 
         switch (m_stateView)
         {
@@ -1086,7 +1092,7 @@ void VisionViewWidget::displayAllObjs()
                     cv::String text = QString("%1").arg(j + 1).toStdString();
 
                     double fontScale = dScaleFactor*2.0f;
-                    cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
+                    cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, _constRedScalar, 2);
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -1111,7 +1117,7 @@ void VisionViewWidget::displayAllObjs()
                     cv::String text = QString("%1").arg(j + 1).toStdString();
 
                     double fontScale = dScaleFactor*2.0f;
-                    cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
+                    cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, _constRedScalar, 2);
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -1179,7 +1185,7 @@ void VisionViewWidget::A_Transform(cv::Mat& src, cv::Mat& dst, int dx, int dy)
 
     dst.setTo(cv::Scalar(0, 0, 0));
 
-    cv::Vec3b *p;   //定义一个存放3通道的容器指针p  
+    cv::Vec3b *p;   //定义一个存放3通道的容器指针p
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
@@ -1238,10 +1244,13 @@ void VisionViewWidget::displayImage(cv::Mat& image)
     _drawSelectedROI(m_dispImage);
     _cutImageForDisplay(m_dispImage, matDisplay);
 
+    if (!m_strCursorInfo.empty())
+        cv::putText(matDisplay, m_strCursorInfo, cv::Point(10, matDisplay.rows - 30), CV_FONT_HERSHEY_COMPLEX, 0.5, _constGreenScalar, 1);
+
     if (matDisplay.type() == CV_8UC3)
         cvtColor(matDisplay, matDisplay, CV_BGR2RGB);
     else if (matDisplay.type() == CV_8UC1)
-        cvtColor(matDisplay, matDisplay, CV_GRAY2RGB);
+        cvtColor(matDisplay, matDisplay, CV_GRAY2RGB);    
 
     QImage imagePixmap = QImage((uchar*)matDisplay.data, matDisplay.cols, matDisplay.rows, ToInt(matDisplay.step), QImage::Format_RGB888);
     ui.label_Img->setPixmap(QPixmap::fromImage(imagePixmap));
@@ -1333,7 +1342,7 @@ void VisionViewWidget::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
                     cv::String text = QString("%1").arg(j + 1).toStdString();
 
                     double fontScale = dScaleFactor*2.0f;
-                    cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
+                    cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, _constRedScalar, 2);
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -1358,7 +1367,7 @@ void VisionViewWidget::displayObjs(QVector<QDetectObj*> objs, bool bShowNumber)
                     cv::String text = QString("%1").arg(j + 1).toStdString();
 
                     double fontScale = dScaleFactor*2.0f;
-                    cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, cv::Scalar(0, 0, 255), 2);
+                    cv::putText(matImage, text, p1, CV_FONT_HERSHEY_COMPLEX, fontScale, _constRedScalar, 2);
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -1444,8 +1453,7 @@ VisionViewFM VisionViewWidget::getCurrentFM() const
     return m_currentFM;
 }
 
-cv::Point VisionViewWidget::convertToImgPos(const cv::Point &ptMousePos)
-{
+cv::Point VisionViewWidget::convertToImgPos(const cv::Point &ptMousePos) {
     const auto COLS = m_hoImage.cols;
     const auto ROWS = m_hoImage.rows;
     cv::Point ptOnImage;
@@ -1891,8 +1899,7 @@ void VisionViewWidget::_moveToSelectDevice(const QString& name)
     repaintAll();
 }
 
-bool VisionViewWidget::_pasteSelectedDevice() {
-    
+bool VisionViewWidget::_pasteSelectedDevice() {    
     bool bFoundDevice = (m_selectedDevice.getId() != m_selectedCopyDevice.getId());
     if (bFoundDevice)
     {
@@ -1913,7 +1920,28 @@ bool VisionViewWidget::_pasteSelectedDevice() {
         else
         {
             QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("粘贴的元件类型与复制的不同，请重新选择"));
-        }       
-    }        
+        }
+    }
     return bFoundDevice;
+}
+
+void VisionViewWidget::_updateCursorInfo(const cv::Point &ptMouse) {
+    if (m_hoImage.empty())
+        return;
+
+    auto ptImage = convertToImgPos(ptMouse);
+    try
+    {
+        auto bgrValue = m_hoImage.at<cv::Vec3b>(ptImage);
+        int gray = (0.3f * bgrValue[2]) + (0.59f * bgrValue[1]) + (0.11f * bgrValue[0]);
+        std::stringstream ss;
+        ss << "Mouse Point " << ptMouse << " , Image Point " << ptImage << " , RGB (" 
+            << Vision::ToInt16(bgrValue[2]) << ", " <<  Vision::ToInt16(bgrValue[1]) << ", " <<  Vision::ToInt16(bgrValue[0]) << ")" << ", Gray Level " << gray;
+        m_strCursorInfo = ss.str();
+
+        repaintAll();
+    }catch(...)
+    {
+        System->setTrackInfo(QString("The mouse point (%1, %2) converted to invalid image point (%3, %4).").arg(ptMouse.x).arg(ptMouse.y).arg(ptImage.x).arg(ptImage.y));
+    }
 }

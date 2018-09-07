@@ -12,36 +12,36 @@ class QDetectObj;
 class IVisionUI 
 {
 public:
-	virtual void init() = 0;
-	virtual void Show() = 0;
-	virtual void unInit() = 0;
+    virtual void init() = 0;
+    virtual void Show() = 0;
+    virtual void unInit() = 0;
 
-	virtual void setStateWidget(QWidget * stateWidget) = 0;
-	virtual void setTitle(const QString & str,const QString &ver) = 0;
+    virtual void setStateWidget(QWidget * stateWidget) = 0;
+    virtual void setTitle(const QString & str,const QString &ver) = 0;
 
-	virtual QWidget* getVisionView() = 0; // Display on the main UI
+    virtual QWidget* getVisionView() = 0; // Display on the main UI
 
-	virtual void setImage(const cv::Mat& matImage, bool bDisplay = true) = 0;
-	virtual cv::Mat getImage() = 0;
-	virtual void clearImage() = 0;
-	virtual void addImageText(QString szText) = 0;
-	virtual void displayImage(cv::Mat& image) = 0;
+    virtual void setImage(const cv::Mat& matImage, bool bDisplay = true) = 0;
+    virtual cv::Mat getImage() = 0;
+    virtual void clearImage() = 0;
+    virtual void addImageText(QString szText) = 0;
+    virtual void displayImage(cv::Mat& image) = 0;
 
-	virtual void setHeightData(const cv::Mat& matHeight) = 0;
-	virtual cv::Mat getHeightData() const = 0;
-	virtual bool startUpCapture(bool bPromptSelect = true) = 0;
-	virtual bool endUpCapture() = 0;
+    virtual void setHeightData(const cv::Mat& matHeight) = 0;
+    virtual cv::Mat getHeightData() const = 0;
+    virtual bool startUpCapture(bool bPromptSelect = true) = 0;
+    virtual bool endUpCapture() = 0;
 
-	virtual void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues) = 0;
-	virtual void show3DView() = 0;
+    virtual void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues) = 0;
+    virtual void show3DView() = 0;
 
-	virtual cv::Mat getSelectImage() = 0;
-	virtual void clearSelect() = 0;
-	virtual cv::Rect2f getSelectedROI() = 0;
+    virtual cv::Mat getSelectImage() = 0;
+    virtual void clearSelect() = 0;
+    virtual cv::Rect2f getSelectedROI() = 0;
     virtual cv::Rect getSrchWindow() const = 0;
     virtual void setSrchWindow(const cv::Rect &rectSrchWindow) = 0;
 
-	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber = false) = 0;
+    virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber = false) = 0;
     virtual void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs) = 0;
     virtual void setCurrentDetectObj(const QDetectObj &detectObj) = 0;
     virtual QVector<QDetectObj> getDetectObjs() const = 0;
