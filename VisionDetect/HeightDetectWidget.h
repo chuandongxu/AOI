@@ -25,14 +25,15 @@ public:
     virtual void confirmWindow(OPERATION enOperation) override;
 
 protected slots:
-    void onBaseTypeChanged(bool bInsp);
-    void onMeasureTypeChanged(bool bInsp);
+    void on_measureChanged(int index);
+    void on_baseTypeChanged(int index);   
 
 private:
     Ui::HeightDetectWidget ui;
 
-    std::unique_ptr<QCheckBox>  m_pCheckBoxBase;
-    std::unique_ptr<QCheckBox>  m_pCheckBoxMeasure;
+    std::unique_ptr<QComboBox>  m_pComboxMeasureType;
+    std::unique_ptr<QComboBox>  m_pComboxBaseType;   
+    std::unique_ptr<QLineEdit>  m_pEditBaseScale;
     std::unique_ptr<QLineEdit>  m_pEditMinRange;
     std::unique_ptr<QLineEdit>  m_pEditMaxRange;
     SpecAndResultWidgetPtr      m_pSpecAndResultMaxRelHt;
