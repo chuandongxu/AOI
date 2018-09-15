@@ -26,6 +26,9 @@ private slots:
     void on_btnSelectROI_clicked();
 
 private:
+    bool isGlobalBaseNotExist();
+
+private:
     Ui::InspHeightBaseWidget ui;
 
     std::unique_ptr<QLineEdit>  m_pEditColor;

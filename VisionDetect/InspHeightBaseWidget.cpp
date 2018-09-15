@@ -95,7 +95,7 @@ void InspHeightBaseWidget::tryInsp() {
     QMessageBox::information(this, "Height Base Detect", strMsg);
 }
 
-void InspHeightBaseWidget::confirmWindow(OPERATION enOperation) {
+void InspHeightBaseWidget::confirmWindow(OPERATION enOperation) { 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
@@ -146,6 +146,8 @@ void InspHeightBaseWidget::confirmWindow(OPERATION enOperation) {
 
     int result = Engine::OK;
     if (OPERATION::ADD == enOperation) {
+        if (!isGlobalBaseNotExist()) return;
+
         window.deviceId = pUI->getSelectedDevice().getId();
         char windowName[100];       
         _snprintf(windowName, sizeof(windowName), "Height Global Base [%d, %d] @ %s", Vision::ToInt32(window.x), Vision::ToInt32(window.y), pUI->getSelectedDevice().getName().c_str());
@@ -244,4 +246,67 @@ void InspHeightBaseWidget::on_btnSelectROI_clicked()
 
     m_pEditRnParam->setText(QString::number(nRn));
     m_pEditTnParam->setText(QString::number(nTn));
+}
+
+bool InspHeightBaseWidget::isGlobalBaseNotExist()
+{
+    Engine::DeviceVector vecDevices;
+    QString strTitle(QStringLiteral("全局Base设置"));
+    auto result = Engine::GetAllDevices(vecDevices);
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString strMsg(QStringLiteral("读取元件信息失败, 错误消息: "));
+        strMsg += errorMessage.c_str();
+        System->showMessage(strTitle, strMsg);
+        return false;
+    }
+  
+    int windowId = -1;
+    for (const auto &device : vecDevices) {
+        if (device.type.empty())
+            continue;
+
+        Engine::WindowVector vecWindows;
+        Engine::GetDeviceWindows(device.Id, vecWindows);
+        if (vecWindows.empty())
+            continue;
+
+        for (const auto &window : vecWindows) {
+            if (Engine::Window::Usage::HEIGHT_BASE_GLOBAL == window.usage)
+            {
+                windowId = window.Id;
+                break;
+            }
+        }      
+
+        if (windowId > -1) break;
+    }
+
+    if (windowId > -1)
+    {
+        if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+            QStringLiteral("全局Base已经存在，是否重新设置？"), QMessageBox::Ok, QMessageBox::Cancel))
+        {  
+            result = Engine::DeleteWindow(windowId);
+            if (result != Engine::OK) {
+                String errorType, errorMessage;
+                Engine::GetErrorDetail(errorType, errorMessage);
+                QString msg(QStringLiteral("删除检测框失败, 错误消息: "));
+                msg += errorMessage.c_str();
+                System->showMessage(QStringLiteral("检测框"), msg);
+                return false;
+            }
+
+            IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+            auto vecDetectObjs = pUI->getDetectObjs();
+            auto it = std::remove_if(vecDetectObjs.begin(), vecDetectObjs.end(), [windowId](QDetectObj &detectObj) { return detectObj.getID() == windowId; });
+            vecDetectObjs.erase(it);
+            pUI->setDetectObjs(vecDetectObjs);
+
+            return true;
+        }
+        return false;
+    }
+    return true;
 }

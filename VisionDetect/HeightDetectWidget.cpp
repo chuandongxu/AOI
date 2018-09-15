@@ -18,25 +18,44 @@ using namespace AOI;
 
 enum BASIC_PARAM
 {
-    BASE_TYPE_ATTRI,
     MEASURE_TYPE_ATTRI,
+    BASE_TYPE_ATTRI,
+    BASE_SCALE_ATTRI,
     RANGE_MIN_ATTRI,
     RANGE_MAX_ATTRI,
     MAX_REL_HT,
     MIN_REL_HT,
 };
 
+enum class HDW_MEASURE_TYPE {
+    EN_MEASURE_TYPE,
+    EN_BASE_TYPE,
+};
+
+enum class HDW_BASE_TYPE {
+    EN_GLOBAL_BASE_TYPE,
+    EN_MANUAL_TYPE,
+};
+
 HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
 :EditInspWindowBaseWidget(parent) {
-    ui.setupUi(this);
+    ui.setupUi(this);   
 
-    m_pCheckBoxBase = std::make_unique<QCheckBox>(ui.tableWidget);
-    ui.tableWidget->setCellWidget(BASE_TYPE_ATTRI, DATA_COLUMN, m_pCheckBoxBase.get());
-    connect(m_pCheckBoxBase.get(), SIGNAL(toggled(bool)), this, SLOT(onBaseTypeChanged(bool)));
+    m_pComboxMeasureType = std::make_unique<QComboBox>(ui.tableWidget);
+    m_pComboxMeasureType->addItem(QStringLiteral("测量面"));
+    m_pComboxMeasureType->addItem(QStringLiteral("基准面"));
+    ui.tableWidget->setCellWidget(MEASURE_TYPE_ATTRI, DATA_COLUMN, m_pComboxMeasureType.get());
+    connect(m_pComboxMeasureType.get(), SIGNAL(currentIndexChanged(int)), this, SLOT(on_measureChanged(int)));
 
-    m_pCheckBoxMeasure = std::make_unique<QCheckBox>(ui.tableWidget);
-    ui.tableWidget->setCellWidget(MEASURE_TYPE_ATTRI, DATA_COLUMN, m_pCheckBoxMeasure.get());
-    connect(m_pCheckBoxMeasure.get(), SIGNAL(toggled(bool)), this, SLOT(onMeasureTypeChanged(bool)));
+    m_pComboxBaseType = std::make_unique<QComboBox>(ui.tableWidget);
+    m_pComboxBaseType->addItem(QStringLiteral("自动生成"));
+    m_pComboxBaseType->addItem(QStringLiteral("手动添加"));
+    ui.tableWidget->setCellWidget(BASE_TYPE_ATTRI, DATA_COLUMN, m_pComboxBaseType.get());
+    connect(m_pComboxBaseType.get(), SIGNAL(currentIndexChanged(int)), this, SLOT(on_baseTypeChanged(int)));
+
+    m_pEditBaseScale = std::make_unique<QLineEdit>(ui.tableWidget);
+    m_pEditBaseScale->setValidator(new QIntValidator(2, 5, m_pEditBaseScale.get()));
+    ui.tableWidget->setCellWidget(BASE_SCALE_ATTRI, DATA_COLUMN, m_pEditBaseScale.get());
 
     m_pEditMinRange = std::make_unique<QLineEdit>(ui.tableWidget);
     m_pEditMinRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMinRange.get()));
@@ -57,8 +76,9 @@ HeightDetectWidget::~HeightDetectWidget() {
 }
 
 void HeightDetectWidget::setDefaultValue() {
-    m_pCheckBoxBase->setChecked(false);
-    m_pCheckBoxMeasure->setChecked(true);
+    m_pComboxMeasureType->setCurrentIndex(0);
+    m_pComboxBaseType->setCurrentIndex(0);
+    m_pEditBaseScale->setText("2");
     m_pEditMinRange->setText("30");
     m_pEditMaxRange->setText("70");
     m_pSpecAndResultMaxRelHt->setSpec(3000);
@@ -66,7 +86,7 @@ void HeightDetectWidget::setDefaultValue() {
 }
 
 void HeightDetectWidget::tryInsp() {
-    if (!m_pCheckBoxMeasure->isChecked()) {
+    if (static_cast<HDW_MEASURE_TYPE> (m_pComboxMeasureType->currentIndex()) == HDW_MEASURE_TYPE::EN_BASE_TYPE) {
         QString strMsg;
         strMsg.sprintf("Select Measure Window to measure height!");
         QMessageBox::information(this, "Measure Height", strMsg);
@@ -93,7 +113,7 @@ void HeightDetectWidget::tryInsp() {
     }
     stCmd.rectROI = rectROI;
 
-    bool bGlobalBase = m_pCheckBoxBase->isChecked();
+    bool bGlobalBase = (static_cast<HDW_BASE_TYPE> (m_pComboxBaseType->currentIndex()) == HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE);
     if (bGlobalBase)
     {     
         Engine::WindowVector vecWindow;
@@ -145,8 +165,10 @@ void HeightDetectWidget::tryInsp() {
         auto width  = m_currentWindow.width  / dResolutionX;
         auto height = m_currentWindow.height / dResolutionY;
 
+        double dBaseScale = m_pEditBaseScale->text().toInt();
+
         cv::Rect2f rectBase(x, y, width, height);
-        cv::Rect rectBaseDetectWin = CalcUtils::resizeRect(rectBase, cv::Size2f(rectBase.width * 2.0f, rectBase.height * 2.0f));
+        cv::Rect rectBaseDetectWin = CalcUtils::resizeRect(rectBase, cv::Size2f(rectBase.width * dBaseScale, rectBase.height * dBaseScale));
         if (rectBaseDetectWin.x < 0) rectBaseDetectWin.x = 0;
         else if ((rectBaseDetectWin.x + rectBaseDetectWin.width) >= matImage.cols) rectBaseDetectWin.width = rectBase.width;
         if (rectBaseDetectWin.y < 0) rectBaseDetectWin.y = 0;
@@ -214,7 +236,8 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
     json.insert("MaxRange", m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT);
     json.insert("MaxRelHt", m_pSpecAndResultMaxRelHt->getSpec());
     json.insert("MinRelHt", m_pSpecAndResultMinRelHt->getSpec());
-    json.insert("GlobalBase", m_pCheckBoxBase->isChecked());
+    json.insert("GlobalBase", (static_cast<HDW_BASE_TYPE> (m_pComboxBaseType->currentIndex()) == HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE) ? true : false);
+    json.insert("GlobalBaseScale", m_pEditBaseScale->text().toInt());
 
     QJsonDocument document;
     document.setObject(json);
@@ -229,7 +252,7 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
 
     Engine::Window window;
     window.lightId = m_pParent->getSelectedLighting() + 1;
-    window.usage = m_pCheckBoxMeasure->isChecked() ? Engine::Window::Usage::HEIGHT_MEASURE : Engine::Window::Usage::HEIGHT_BASE;
+    window.usage = (static_cast<HDW_MEASURE_TYPE> (m_pComboxMeasureType->currentIndex()) == HDW_MEASURE_TYPE::EN_MEASURE_TYPE) ? Engine::Window::Usage::HEIGHT_MEASURE : Engine::Window::Usage::HEIGHT_BASE;
     window.inspParams = byte_array;
 
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);
@@ -305,7 +328,7 @@ void HeightDetectWidget::setCurrentWindow(const Engine::Window &window) {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-    m_pCheckBoxMeasure->setChecked(window.usage == Engine::Window::Usage::HEIGHT_MEASURE);
+    m_pComboxMeasureType->setCurrentIndex(static_cast<int>((window.usage == Engine::Window::Usage::HEIGHT_MEASURE) ? HDW_MEASURE_TYPE::EN_MEASURE_TYPE : HDW_MEASURE_TYPE::EN_BASE_TYPE));
 
     QJsonParseError json_error;
     QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
@@ -321,27 +344,41 @@ void HeightDetectWidget::setCurrentWindow(const Engine::Window &window) {
         m_pSpecAndResultMaxRelHt->clearResult();
         m_pSpecAndResultMinRelHt->setSpec(obj.take("MinRelHt").toDouble());
         m_pSpecAndResultMinRelHt->clearResult();
-        m_pCheckBoxBase->setChecked(obj.take("GlobalBase").toBool());        
+
+        m_pComboxBaseType->setCurrentIndex(static_cast<int>(obj.take("GlobalBase").toBool() ? HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE : HDW_BASE_TYPE::EN_MANUAL_TYPE)); 
+        m_pEditBaseScale->setText(QString::number(obj.take("GlobalBaseScale").toInt()));
     }
 }
 
-void HeightDetectWidget::onBaseTypeChanged(bool bInsp) {
-    if (bInsp) {     
-        m_pCheckBoxMeasure->setEnabled(false);
-    }
-    else {       
-        m_pCheckBoxMeasure->setEnabled(true);
-    }
-}
+void HeightDetectWidget::on_measureChanged(int index) {
 
-void HeightDetectWidget::onMeasureTypeChanged(bool bInsp) {
-    if (bInsp) {
+    if (static_cast<HDW_MEASURE_TYPE> (index) == HDW_MEASURE_TYPE::EN_MEASURE_TYPE)
+    {
         ui.tableWidget->showRow(BASE_TYPE_ATTRI);
+        ui.tableWidget->showRow(BASE_SCALE_ATTRI);
         ui.tableWidget->showRow(MAX_REL_HT);
         ui.tableWidget->showRow(MIN_REL_HT);
-    }else {
+    }
+    else if (static_cast<HDW_MEASURE_TYPE> (index) == HDW_MEASURE_TYPE::EN_BASE_TYPE)
+    {
         ui.tableWidget->hideRow(BASE_TYPE_ATTRI);
+        ui.tableWidget->hideRow(BASE_SCALE_ATTRI);
         ui.tableWidget->hideRow(MAX_REL_HT);
         ui.tableWidget->hideRow(MIN_REL_HT);
+    }  
+}
+
+void HeightDetectWidget::on_baseTypeChanged(int index) {
+    if (static_cast<HDW_BASE_TYPE> (index) == HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE)
+    {
+        //m_pComboxMeasureType->setEnabled(false);
+        m_pEditBaseScale->setEnabled(true);
+    }
+    else if (static_cast<HDW_BASE_TYPE> (index) == HDW_BASE_TYPE::EN_MANUAL_TYPE)
+    {
+        //m_pComboxMeasureType->setEnabled(true);
+        m_pEditBaseScale->setEnabled(false);
     }
 }
+
+
