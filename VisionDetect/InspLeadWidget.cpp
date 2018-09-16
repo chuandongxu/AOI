@@ -115,12 +115,12 @@ void InspLeadWidget::on_btnAutoLocateLead_clicked() {
 
     auto rectDevice = vvDevice.getWindow().boundingRect();
 
-     cv::Rect rectDefaultSrchWindow = CalcUtils::resizeRect(rectDevice, cv::Size(rectDevice.width + 50, rectDevice.height + 50));
-     pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_SRCH_WINDOW);
-     pUI->setSrchWindow(rectDefaultSrchWindow);
-     auto nReturn = System->showInteractMessage(strTitle, QStringLiteral("请拖动鼠标选择搜寻窗口"));
-     if (nReturn != QDialog::Accepted)
-         return;
+    cv::Rect rectDefaultSrchWindow = CalcUtils::resizeRect(rectDevice, cv::Size(rectDevice.width + 50, rectDevice.height + 50));
+    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_SRCH_WINDOW);
+    pUI->setSrchWindow(rectDefaultSrchWindow);
+    auto nReturn = System->showInteractMessage(strTitle, QStringLiteral("请拖动鼠标选择搜寻窗口"));
+    if (nReturn != QDialog::Accepted)
+        return;
 
     auto rectSrchWindow = pUI->getSrchWindow();
 
@@ -182,7 +182,7 @@ void InspLeadWidget::_autoAddInspWindows(const Vision::PR_AUTO_LOCATE_LEAD_RPY &
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
 
-    auto pUI = getModule<IVisionUI>(UI_MODEL);  
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
 
     Engine::Window window;
     window.lightId = m_pParent->getSelectedLighting() + 1;

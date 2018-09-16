@@ -769,6 +769,7 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
         case MODE_VIEW_SELECT_INSPECT_ROI:
         case MODE_VIEW_SELECT_ROI:
         case MODE_VIEW_EDIT_INSP_WINDOW:
+        case MODE_VIEW_SELECT_SUB_ROI:
             if ((0 != (int)motionX) || (0 != (int)motionY))
             {
                 if ((int)motionX >= 0 && (int)motionY >= 0)
@@ -788,12 +789,15 @@ void VisionViewWidget::mouseMoveEvent(QMouseEvent * event)
                         if (select.y < 0) select.y = 0;
                         select.width  = (select.x + select.width)  > m_hoImage.size().width  ? (m_hoImage.size().width  - select.x) : select.width;
                         select.height = (select.y + select.height) > m_hoImage.size().height ? (m_hoImage.size().height - select.y) : select.height;
-                    }                    
+                    }
 
                     if (MODE_VIEW_SELECT_3D_ROI == m_stateView && select.width  > 1000) select.width  = 1000;
                     if (MODE_VIEW_SELECT_3D_ROI == m_stateView && select.height > 1000) select.height = 1000;
 
-                    m_selectROI = select;
+                    if (MODE_VIEW_SELECT_SUB_ROI == m_stateView)
+                        m_vecSubROIs[m_vecSubROIs.size() - 1] = select;
+                    else
+                        m_selectROI = select;
 
                     std::stringstream ss;
                     ss << "Selected ROI " << select;
@@ -882,6 +886,9 @@ void VisionViewWidget::mousePressEvent(QMouseEvent * event)
         case MODE_VIEW_SELECT_3D_ROI:
         case MODE_VIEW_SELECT_INSPECT_ROI:
         case MODE_VIEW_SELECT_ROI:
+            break;
+        case MODE_VIEW_SELECT_SUB_ROI:
+            m_vecSubROIs.emplace_back(0, 0, 0, 0);
             break;
         case MODE_VIEW_NONE:
             break;
@@ -1169,6 +1176,10 @@ void VisionViewWidget::_drawSelectedROI(cv::Mat &matImage)
         cv::rectangle(matImage, m_selectROI, cv::Scalar(128, 64, 0), 1);
     }
 
+    for (const auto &rectROI : m_vecSubROIs) {
+        cv::rectangle(matImage, rectROI, _constGreenScalar, 1);
+    }
+
     if (MODE_VIEW_EDIT_SRCH_WINDOW == m_stateView || MODE_VIEW_EDIT_INSP_WINDOW == m_stateView)
         cv::rectangle(matImage, m_rectSrchWindow, _constOrchidScalar, 2);
 }
@@ -1250,7 +1261,7 @@ void VisionViewWidget::displayImage(cv::Mat& image)
     if (matDisplay.type() == CV_8UC3)
         cvtColor(matDisplay, matDisplay, CV_BGR2RGB);
     else if (matDisplay.type() == CV_8UC1)
-        cvtColor(matDisplay, matDisplay, CV_GRAY2RGB);    
+        cvtColor(matDisplay, matDisplay, CV_GRAY2RGB);
 
     QImage imagePixmap = QImage((uchar*)matDisplay.data, matDisplay.cols, matDisplay.rows, ToInt(matDisplay.step), QImage::Format_RGB888);
     ui.label_Img->setPixmap(QPixmap::fromImage(imagePixmap));
@@ -1285,15 +1296,13 @@ void VisionViewWidget::clearSelect()
     m_selectROI.height = 0;
 }
 
-cv::Rect2f VisionViewWidget::getSelectedROI()
-{
-    //cv::Rect2f scale;
-    //scale.x = m_selectROI.x;
-    //scale.y = m_selectROI.y;
-    //scale.width = m_selectROI.width / m_imageWidth;
-    //scale.height = m_selectROI.height / m_imageHeight;
-
+cv::Rect2f VisionViewWidget::getSelectedROI() const {
     return m_selectROI;
+}
+
+void VisionViewWidget::setSubROIs(const Vision::VectorOfRect &vecRects) {
+    m_vecSubROIs = vecRects;
+    repaintAll();
 }
 
 void VisionViewWidget::setSrchWindow(const cv::Rect &rectSrchWindow)
@@ -1712,9 +1721,9 @@ void VisionViewWidget::_cutImageForDisplay(const cv::Mat &matInputImg, cv::Mat &
     }
 }
 
-static VectorOfPoint getCornerOfRotatedRect(const cv::RotatedRect &rotatedRect)
+static Vision::VectorOfPoint getCornerOfRotatedRect(const cv::RotatedRect &rotatedRect)
 {
-    VectorOfPoint vecPoint;
+    Vision::VectorOfPoint vecPoint;
     cv::Point2f arrPt[4];
     rotatedRect.points(arrPt);
     for (int i = 0; i < 4; ++i)
@@ -1725,14 +1734,14 @@ static VectorOfPoint getCornerOfRotatedRect(const cv::RotatedRect &rotatedRect)
 void VisionViewWidget::_drawDeviceWindows(cv::Mat &matImg)
 {
     auto getCornerOfRotatedRect = [](const cv::RotatedRect &rotatedRect) {
-        VectorOfPoint vecPoint;
+        Vision::VectorOfPoint vecPoint;
         cv::Point2f arrPt[4];
         rotatedRect.points(arrPt);
         for (int i = 0; i < 4; ++i)
             vecPoint.push_back(arrPt[i]);
         return vecPoint;
     };
-    VectorOfVectorOfPoint vecContours;
+    Vision::VectorOfVectorOfPoint vecContours;
     cv::Point ptCtrOfImage(0, 0);
     ptCtrOfImage.x += m_szCadOffset.width;
     ptCtrOfImage.y += m_szCadOffset.height;
@@ -1772,7 +1781,7 @@ void VisionViewWidget::_drawDeviceWindows(cv::Mat &matImg)
     localSelectedDevice.center.y += ptCtrOfImage.y;
     auto contour = getCornerOfRotatedRect(localSelectedDevice);
     contour.push_back(contour.front());
-    cv::polylines(matImg, VectorOfVectorOfPoint(1, contour), true, _constCyanScalar, nLineWidth);
+    cv::polylines(matImg, Vision::VectorOfVectorOfPoint(1, contour), true, _constCyanScalar, nLineWidth);
 
     cv::Rect rectFM(m_currentFM.getFM());
     rectFM.x += ptCtrOfImage.x;

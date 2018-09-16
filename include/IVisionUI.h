@@ -7,6 +7,8 @@
 #include "../lib/VisionLibrary/include/opencv/cv.h"
 #include "constants.h"
 #include "../VisionUI//VisionViewStruct.hpp"
+#include "VisionStruct.h"
+using namespace AOI;
 
 class QDetectObj;
 class IVisionUI 
@@ -38,6 +40,8 @@ public:
     virtual cv::Mat getSelectImage() = 0;
     virtual void clearSelect() = 0;
     virtual cv::Rect2f getSelectedROI() = 0;
+    virtual Vision::VectorOfRect getSubROIs() const = 0;
+    virtual void setSubROIs(const Vision::VectorOfRect &vecRects) = 0;
     virtual cv::Rect getSrchWindow() const = 0;
     virtual void setSrchWindow(const cv::Rect &rectSrchWindow) = 0;
 

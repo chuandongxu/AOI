@@ -19,13 +19,14 @@ private slots:
     void on_btnVoidInspWindow_clicked();
 	void on_btnAlignmentWindow_clicked();
 	void on_btnHeightDetectWindow_clicked();
+    void on_btnGlobalWindow_clicked();
     void on_btnInspPolarityWindow_clicked();
     void on_btnInspContourWindow_clicked();
     void on_btnInspChipWindow_clicked();
     void on_btnInspLeadWindow_clicked();
     void on_btnInspBridgeWindow_clicked();
     void on_btnOcvWindow_clicked();
-    void on_btnGlobalWindow_clicked();
+    void on_btn3DSolderWindow_clicked();
     void on_accept();
 
 private:

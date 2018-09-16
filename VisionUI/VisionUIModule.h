@@ -9,38 +9,40 @@
 class QVisionUIModule : public IVisionUI, public QModuleBase
 {
 public:
-	QVisionUIModule(int id,const QString &name);
-	~QVisionUIModule();
+    QVisionUIModule(int id,const QString &name);
+    ~QVisionUIModule();
 
-	virtual void init();
-	virtual void Show();
-	virtual void unInit();
+    virtual void init();
+    virtual void Show();
+    virtual void unInit();
 
-	void setStateWidget(QWidget * stateWidget);
-	void setTitle(const QString & str,const QString &ver);
+    void setStateWidget(QWidget * stateWidget);
+    void setTitle(const QString & str,const QString &ver);
 
-	virtual QWidget* getVisionView();
-	virtual void setImage(const cv::Mat& matImage, bool bDisplay);
-	virtual void setHeightData(const cv::Mat& matHeight);
-	virtual cv::Mat getHeightData() const;
-	virtual bool startUpCapture(bool bPromptSelect);
-	virtual bool endUpCapture();
+    virtual QWidget* getVisionView();
+    virtual void setImage(const cv::Mat& matImage, bool bDisplay);
+    virtual void setHeightData(const cv::Mat& matHeight);
+    virtual cv::Mat getHeightData() const;
+    virtual bool startUpCapture(bool bPromptSelect);
+    virtual bool endUpCapture();
 
-	virtual cv::Mat getImage();
-	virtual void clearImage();
-	virtual void addImageText(QString szText);
-	virtual void displayImage(cv::Mat& image);
+    virtual cv::Mat getImage();
+    virtual void clearImage();
+    virtual void addImageText(QString szText);
+    virtual void displayImage(cv::Mat& image);
 
-	virtual void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues);
-	virtual void show3DView();
+    virtual void load3DViewData(int nSizeX, int nSizeY, QVector<double>& xValues, QVector<double>& yValues, QVector<double>& zValues);
+    virtual void show3DView();
 
-	virtual cv::Mat getSelectImage();
-	virtual void clearSelect() override;
-	virtual cv::Rect2f getSelectedROI() override;
+    virtual cv::Mat getSelectImage();
+    virtual void clearSelect() override;
+    virtual cv::Rect2f getSelectedROI() override;
+    Vision::VectorOfRect getSubROIs() const override { return m_pVisionView->getSubROIs(); }
+    void setSubROIs(const Vision::VectorOfRect &vecRects) override { m_pVisionView->setSubROIs(vecRects); }
     cv::Rect getSrchWindow() const override { return m_pVisionView->getSrchWindow(); }
     void setSrchWindow(const cv::Rect &rectSrchWindow) override { m_pVisionView->setSrchWindow(rectSrchWindow); }
 
-	virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber) override;
+    virtual void displayObjs(QVector<QDetectObj*> objs, bool bShowNumber) override;
     virtual void setDetectObjs(const QVector<QDetectObj> &vecDetectObjs) override;
     virtual void setCurrentDetectObj(const QDetectObj &detectObj) override;
     virtual QVector<QDetectObj> getDetectObjs() const override;
@@ -53,8 +55,8 @@ public:
     virtual VisionViewFM getCurrentFM() const override;
 
 private:
-	void * m_mainWidget;
-	VisionView* m_pVisionView;
+    void * m_mainWidget;
+    VisionView* m_pVisionView;
 };
 
 #endif // VISIONUI_H

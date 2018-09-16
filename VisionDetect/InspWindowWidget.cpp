@@ -23,6 +23,7 @@
 #include "InspBridgeWidget.h"
 #include "InspLeadWidget.h"
 #include "OcvWidget.h"
+#include "Insp3DSolderWidget.h"
 #include "TreeWidgetInspWindow.h"
 #include "InspMaskEditorWidget.h"
 #include "InspHeightBaseWidget.h"
@@ -43,7 +44,8 @@ static const QString DEFAULT_WINDOW_NAME[] =
     "Inspect Chip",
     "Inspect Bridge",
     "Insp Lead",
-    "Ocv"
+    "Ocv",
+    "3D Solder"
 };
 
 static_assert (static_cast<size_t>(INSP_WIDGET_INDEX::SIZE) == sizeof(DEFAULT_WINDOW_NAME) / sizeof(DEFAULT_WINDOW_NAME[0]), "The window name size is not correct");
@@ -63,7 +65,8 @@ InspWindowWidget::InspWindowWidget(QWidget *parent, QColorWeight *pColorWidget)
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_CHIP)] = std::make_unique<InspChipWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_BRIDGE)] = std::make_unique<InspBridgeWidget>(this);
     m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_LEAD)] = std::make_unique<InspLeadWidget>(this);
-    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::OCV)] = std::make_unique<OcvWidget>(this);   
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::OCV)] = std::make_unique<OcvWidget>(this);
+    m_arrInspWindowWidget[static_cast<int>(INSP_WIDGET_INDEX::INSP_3D_SOLDER)] = std::make_unique<Insp3DSolderWidget>(this);
 
     for (const auto &ptrInspWindowWidget : m_arrInspWindowWidget)
         ui.stackedWidget->addWidget(ptrInspWindowWidget.get());
@@ -478,7 +481,7 @@ void InspWindowWidget::on_btnCopyToAll_clicked() {
 void InspWindowWidget::on_btnEditMask_clicked()
 {
     auto selectedItems = ui.treeWidget->selectedItems();
-    if (selectedItems.size() <= 0) {       
+    if (selectedItems.size() <= 0) {
         return;
     }
 
@@ -846,7 +849,7 @@ void InspWindowWidget::onSelectedWindowChanged() {
 
     auto width  = window.width  / dResolutionX;
     auto height = window.height / dResolutionY;
-    auto srchWidth  = window.srchWidth / dResolutionX;
+    auto srchWidth  = window.srchWidth  / dResolutionX;
     auto srchHeight = window.srchHeight / dResolutionY;
     cv::RotatedRect detectObjWin(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
     cv::RotatedRect detectSrchWin(cv::Point2f(x, y), cv::Size2f(srchWidth, srchHeight), window.angle);
