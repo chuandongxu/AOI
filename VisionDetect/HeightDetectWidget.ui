@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>420</width>
-    <height>348</height>
+    <height>352</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,15 +31,9 @@
     <rect>
      <x>10</x>
      <y>40</y>
-     <width>401</width>
-     <height>291</height>
+     <width>400</width>
+     <height>300</height>
     </rect>
-   </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-   <property name="rowCount">
-    <number>7</number>
    </property>
    <attribute name="horizontalHeaderVisible">
     <bool>false</bool>
@@ -53,6 +47,12 @@
    <attribute name="verticalHeaderVisible">
     <bool>false</bool>
    </attribute>
+   <attribute name="verticalHeaderDefaultSectionSize">
+    <number>25</number>
+   </attribute>
+   <attribute name="verticalHeaderMinimumSectionSize">
+    <number>25</number>
+   </attribute>
    <row>
     <property name="text">
      <string>新建行</string>
@@ -73,9 +73,41 @@
      <string>新建行</string>
     </property>
    </row>
-   <row/>
-   <row/>
-   <row/>
+   <row>
+    <property name="text">
+     <string>新建行</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>新建行</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>新建行</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>新建行</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>新建行</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>新建行</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>新建行</string>
+    </property>
+   </row>
    <column>
     <property name="text">
      <string>新建列</string>
@@ -98,7 +130,7 @@
    </item>
    <item row="2" column="0">
     <property name="text">
-     <string>基面范围（x2）</string>
+     <string>基面范围（X2）</string>
     </property>
    </item>
    <item row="3" column="0">
@@ -106,39 +138,39 @@
      <string>最小范围（%）</string>
     </property>
    </item>
-   <item row="3" column="1">
-    <property name="text">
-     <string>30</string>
-    </property>
-   </item>
    <item row="4" column="0">
     <property name="text">
      <string>最大范围（%）</string>
     </property>
    </item>
-   <item row="4" column="1">
-    <property name="text">
-     <string>70</string>
-    </property>
-   </item>
    <item row="5" column="0">
     <property name="text">
-     <string>最大相对高度</string>
-    </property>
-   </item>
-   <item row="5" column="1">
-    <property name="text">
-     <string>5</string>
+     <string>绝对高度标准</string>
     </property>
    </item>
    <item row="6" column="0">
     <property name="text">
-     <string>最小相对高度</string>
+     <string>绝对高度上限</string>
     </property>
    </item>
-   <item row="6" column="1">
+   <item row="7" column="0">
     <property name="text">
-     <string>0</string>
+     <string>绝对高度下限</string>
+    </property>
+   </item>
+   <item row="8" column="0">
+    <property name="text">
+     <string>相对高度</string>
+    </property>
+   </item>
+   <item row="9" column="0">
+    <property name="text">
+     <string>相对高度左右</string>
+    </property>
+   </item>
+   <item row="10" column="0">
+    <property name="text">
+     <string>相对高度上下</string>
     </property>
    </item>
   </widget>

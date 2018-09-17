@@ -23,8 +23,12 @@ enum BASIC_PARAM
     BASE_SCALE_ATTRI,
     RANGE_MIN_ATTRI,
     RANGE_MAX_ATTRI,
+    MAX_ABS_HT,
+    MAX_MAXERR_HT,
+    MIN_MINERR_HT,
     MAX_REL_HT,
-    MIN_REL_HT,
+    MAX_LR_REL_HT,
+    MAX_TB_REL_HT,
 };
 
 enum class HDW_MEASURE_TYPE {
@@ -65,11 +69,24 @@ HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
     m_pEditMaxRange->setValidator(new QDoubleValidator(0, 100, 2, m_pEditMaxRange.get()));
     ui.tableWidget->setCellWidget(RANGE_MAX_ATTRI, DATA_COLUMN, m_pEditMaxRange.get());
 
-    m_pSpecAndResultMaxRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
-    ui.tableWidget->setCellWidget(MAX_REL_HT, DATA_COLUMN, m_pSpecAndResultMaxRelHt.get());
+    m_pSpecAndResultAbsHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
+    ui.tableWidget->setCellWidget(MAX_ABS_HT, DATA_COLUMN, m_pSpecAndResultAbsHt.get());
 
-    m_pSpecAndResultMinRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
-    ui.tableWidget->setCellWidget(MIN_REL_HT, DATA_COLUMN, m_pSpecAndResultMinRelHt.get());
+    m_pSpecAndResultMaxHtErr = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 0, 10000);
+    ui.tableWidget->setCellWidget(MAX_MAXERR_HT, DATA_COLUMN, m_pSpecAndResultMaxHtErr.get());
+
+    m_pSpecAndResultMinHtErr = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 0);
+    ui.tableWidget->setCellWidget(MIN_MINERR_HT, DATA_COLUMN, m_pSpecAndResultMinHtErr.get());
+
+    m_pCheckBoxRelHt = std::make_unique<QCheckBox>(ui.tableWidget);
+    ui.tableWidget->setCellWidget(MAX_REL_HT, DATA_COLUMN, m_pCheckBoxRelHt.get());
+    connect(m_pCheckBoxRelHt.get(), SIGNAL(toggled(bool)), this, SLOT(onRelHtChanged(bool)));
+
+    m_pSpecAndResultLefRigRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
+    ui.tableWidget->setCellWidget(MAX_LR_REL_HT, DATA_COLUMN, m_pSpecAndResultLefRigRelHt.get());
+
+    m_pSpecAndResultTopBomRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
+    ui.tableWidget->setCellWidget(MAX_TB_REL_HT, DATA_COLUMN, m_pSpecAndResultTopBomRelHt.get());
 }
 
 HeightDetectWidget::~HeightDetectWidget() {
@@ -81,8 +98,14 @@ void HeightDetectWidget::setDefaultValue() {
     m_pEditBaseScale->setText("2");
     m_pEditMinRange->setText("30");
     m_pEditMaxRange->setText("70");
-    m_pSpecAndResultMaxRelHt->setSpec(3000);
-    m_pSpecAndResultMinRelHt->setSpec(1000);
+    m_pSpecAndResultAbsHt->setSpec(2000);
+    m_pSpecAndResultMaxHtErr->setSpec(1000);
+    m_pSpecAndResultMinHtErr->setSpec(-1000);
+    m_pCheckBoxRelHt->setChecked(false);
+    m_pSpecAndResultLefRigRelHt->setEnabled(false);
+    m_pSpecAndResultTopBomRelHt->setEnabled(false);
+    m_pSpecAndResultLefRigRelHt->setSpec(1000);
+    m_pSpecAndResultTopBomRelHt->setSpec(1000);
 }
 
 void HeightDetectWidget::tryInsp() {
@@ -211,18 +234,31 @@ void HeightDetectWidget::tryInsp() {
         }
     }
 
-    float fMaxHeight = m_pSpecAndResultMaxRelHt->getSpec();
-    float fMinHeigth = m_pSpecAndResultMinRelHt->getSpec();
+    float fAbsHeight = m_pSpecAndResultAbsHt->getSpec();
+    float fMaxHeight = m_pSpecAndResultMaxHtErr->getSpec();
+    float fMinHeigth = m_pSpecAndResultMinHtErr->getSpec();    
+
     Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
     float height = stRpy.fHeightDiff * MM_TO_UM;
-    m_pSpecAndResultMaxRelHt->setResult(height);
-    m_pSpecAndResultMinRelHt->setResult(height);
-    bool bPassed = (height < fMaxHeight) && (height > fMinHeigth);
+    float heightErr = height - fAbsHeight;
+
+    m_pSpecAndResultAbsHt->setResult(height);
+    m_pSpecAndResultMaxHtErr->setResult(heightErr > 0 ? heightErr : 0);
+    m_pSpecAndResultMinHtErr->setResult(heightErr < 0 ? heightErr : 0);
+
+    bool bPassed = (heightErr <= fMaxHeight) && (heightErr >= fMinHeigth);
     if (! bPassed) {
         QString strMsg;
         strMsg.sprintf("Inspect Status %d, %s, height (%f)", Vision::ToInt32(stRpy.enStatus), bPassed ? "pass" : "not pass", height);
         QMessageBox::information(this, "Height Detect", strMsg);
     }
+
+    bool bRelHeight = m_pCheckBoxRelHt->isChecked();
+    float fLRRelHeight = m_pSpecAndResultLefRigRelHt->getSpec();
+    float fTBRelHeight = m_pSpecAndResultTopBomRelHt->getSpec();
+
+    m_pSpecAndResultLefRigRelHt->setResult(0);
+    m_pSpecAndResultTopBomRelHt->setResult(0);
 }
 
 void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
@@ -234,8 +270,12 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
     QJsonObject json;
     json.insert("MinRange", m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT);
     json.insert("MaxRange", m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT);
-    json.insert("MaxRelHt", m_pSpecAndResultMaxRelHt->getSpec());
-    json.insert("MinRelHt", m_pSpecAndResultMinRelHt->getSpec());
+    json.insert("AbsHt", m_pSpecAndResultAbsHt->getSpec());
+    json.insert("MaxAbxHt", m_pSpecAndResultMaxHtErr->getSpec());
+    json.insert("MinAbsHt", m_pSpecAndResultMinHtErr->getSpec());
+    json.insert("RelHt", m_pCheckBoxRelHt->isChecked());
+    json.insert("LefRigRelHt", m_pSpecAndResultLefRigRelHt->getSpec());
+    json.insert("TopBomRelHt", m_pSpecAndResultTopBomRelHt->getSpec());
     json.insert("GlobalBase", (static_cast<HDW_BASE_TYPE> (m_pComboxBaseType->currentIndex()) == HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE) ? true : false);
     json.insert("GlobalBaseScale", m_pEditBaseScale->text().toInt());
 
@@ -340,10 +380,19 @@ void HeightDetectWidget::setCurrentWindow(const Engine::Window &window) {
 
         m_pEditMinRange->setText(QString::number(obj.take("MinRange").toDouble() * ONE_HUNDRED_PERCENT));
         m_pEditMaxRange->setText(QString::number(obj.take("MaxRange").toDouble() * ONE_HUNDRED_PERCENT));
-        m_pSpecAndResultMaxRelHt->setSpec(obj.take("MaxRelHt").toDouble());
-        m_pSpecAndResultMaxRelHt->clearResult();
-        m_pSpecAndResultMinRelHt->setSpec(obj.take("MinRelHt").toDouble());
-        m_pSpecAndResultMinRelHt->clearResult();
+        
+        m_pSpecAndResultAbsHt->setSpec(obj.take("AbsHt").toDouble());
+        m_pSpecAndResultAbsHt->clearResult();
+        m_pSpecAndResultMaxHtErr->setSpec(obj.take("MaxAbxHt").toDouble());
+        m_pSpecAndResultMaxHtErr->clearResult();
+        m_pSpecAndResultMinHtErr->setSpec(obj.take("MinAbsHt").toDouble());
+        m_pSpecAndResultMinHtErr->clearResult();
+
+        m_pCheckBoxRelHt->setChecked(obj.take("RelHt").toBool());
+        m_pSpecAndResultLefRigRelHt->setSpec(obj.take("LefRigRelHt").toDouble());
+        m_pSpecAndResultLefRigRelHt->clearResult();
+        m_pSpecAndResultTopBomRelHt->setSpec(obj.take("TopBomRelHt").toDouble());
+        m_pSpecAndResultTopBomRelHt->clearResult();
 
         m_pComboxBaseType->setCurrentIndex(static_cast<int>(obj.take("GlobalBase").toBool() ? HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE : HDW_BASE_TYPE::EN_MANUAL_TYPE)); 
         m_pEditBaseScale->setText(QString::number(obj.take("GlobalBaseScale").toInt()));
@@ -356,15 +405,23 @@ void HeightDetectWidget::on_measureChanged(int index) {
     {
         ui.tableWidget->showRow(BASE_TYPE_ATTRI);
         ui.tableWidget->showRow(BASE_SCALE_ATTRI);
+        ui.tableWidget->showRow(MAX_ABS_HT);
+        ui.tableWidget->showRow(MAX_MAXERR_HT);
+        ui.tableWidget->showRow(MIN_MINERR_HT);
         ui.tableWidget->showRow(MAX_REL_HT);
-        ui.tableWidget->showRow(MIN_REL_HT);
+        ui.tableWidget->showRow(MAX_LR_REL_HT);
+        ui.tableWidget->showRow(MAX_TB_REL_HT);
     }
     else if (static_cast<HDW_MEASURE_TYPE> (index) == HDW_MEASURE_TYPE::EN_BASE_TYPE)
     {
         ui.tableWidget->hideRow(BASE_TYPE_ATTRI);
         ui.tableWidget->hideRow(BASE_SCALE_ATTRI);
+        ui.tableWidget->hideRow(MAX_ABS_HT);
+        ui.tableWidget->hideRow(MAX_MAXERR_HT);
+        ui.tableWidget->hideRow(MIN_MINERR_HT);
         ui.tableWidget->hideRow(MAX_REL_HT);
-        ui.tableWidget->hideRow(MIN_REL_HT);
+        ui.tableWidget->hideRow(MAX_LR_REL_HT);
+        ui.tableWidget->hideRow(MAX_TB_REL_HT);
     }  
 }
 
@@ -378,6 +435,17 @@ void HeightDetectWidget::on_baseTypeChanged(int index) {
     {
         //m_pComboxMeasureType->setEnabled(true);
         m_pEditBaseScale->setEnabled(false);
+    }
+}
+
+void HeightDetectWidget::onRelHtChanged(bool bInsp) {
+    if (bInsp) {
+        m_pSpecAndResultLefRigRelHt->setEnabled(true);
+        m_pSpecAndResultTopBomRelHt->setEnabled(true);
+    }
+    else {
+        m_pSpecAndResultLefRigRelHt->setEnabled(false);
+        m_pSpecAndResultTopBomRelHt->setEnabled(false);
     }
 }
 
