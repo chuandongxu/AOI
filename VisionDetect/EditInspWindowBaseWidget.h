@@ -43,6 +43,7 @@ protected:
     Engine::WindowGroup         m_windowGroup;
     bool                        m_bSupportMask;
     cv::Mat                     m_maskMat;
+    bool                        m_bIsTryInspected = false;
 };
 
 using InspWindowBaseWidgetPtr = std::unique_ptr<EditInspWindowBaseWidget>;

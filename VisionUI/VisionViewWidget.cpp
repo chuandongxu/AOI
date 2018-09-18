@@ -1233,6 +1233,9 @@ void VisionViewWidget::setViewState(VISION_VIEW_MODE state)
     case MODE_VIEW_NONE:
         setCursor(Qt::ArrowCursor);
         break;
+    case MODE_VIEW_SELECT_SUB_ROI:
+        m_vecSubROIs.clear();
+        break;
     default:
         setCursor(Qt::ArrowCursor);
         break;

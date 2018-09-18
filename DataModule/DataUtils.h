@@ -93,6 +93,7 @@ class DataUtils
 {
     DataUtils();
     ~DataUtils();
+
 public:
     template<typename _Tp>
     static inline std::vector<std::vector<_Tp>> matToVector(const cv::Mat &matInputImg) {
@@ -186,5 +187,9 @@ public:
         int                imageHeight,
         float              fResolutionX,
         float              fResolutionY);
+
+    static Vision::StringVector split(const Vision::String &s, char delim);
+    static Vision::String formatRect(const cv::Rect2f &pt);
+    static cv::Rect2f parseRect(const Vision::String &strCoordinate);
 };
 

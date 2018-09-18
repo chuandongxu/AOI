@@ -1303,13 +1303,13 @@ struct PR_INSP_3D_SOLDER_CMD {
         nBaseGrayDiff   (20),
         nWettingWidth   (8) {}
     cv::Mat                 matHeight;
-    cv::Mat                 matColorImage;
+    cv::Mat                 matColorImg;
     cv::Rect                rectDeviceROI;
     cv::Scalar              scalarBaseColor;
     Int16                   nBaseColorDiff;
     Int16                   nBaseGrayDiff;
     VectorOfRect            vecRectCheckROIs;
-    float                   nWettingWidth;
+    int                     nWettingWidth;
 };
 
 struct PR_INSP_3D_SOLDER_RPY {

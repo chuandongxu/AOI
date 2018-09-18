@@ -64,13 +64,13 @@ void InspHeightBaseWidget::setDefaultValue() {
     m_pEditTnParam->setText("50");
 }
 
-void InspHeightBaseWidget::tryInsp() {  
+void InspHeightBaseWidget::tryInsp() {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
 
-    auto pUI = getModule<IVisionUI>(UI_MODEL);    
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
     cv::Rect rectROI = pUI->getSelectedROI();
     if (rectROI.width <= 0 || rectROI.height <= 0) {
         QMessageBox::critical(this, QStringLiteral("高度全局基面框"), QStringLiteral("Please select a ROI to do inspection."));
@@ -87,7 +87,7 @@ void InspHeightBaseWidget::tryInsp() {
     m_color[2] = tempVal.val[2];
 
     QString strColorMsg;
-    strColorMsg.sprintf("r:%d,g:%d,b:%d", m_color[0], m_color[1], m_color[2]);
+    strColorMsg.sprintf("r:%d,g:%d,b:%d", m_color[2], m_color[1], m_color[0]);
     m_pEditColor->setText(strColorMsg);
 
     QString strMsg("Inspect Status, Color ");
@@ -105,10 +105,10 @@ void InspHeightBaseWidget::confirmWindow(OPERATION enOperation) {
     json.insert("MinRange", m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT);
     json.insert("MaxRange", m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT);
     json.insert("RnValue", m_pEditRnParam->text().toInt());
-    json.insert("TnValue", m_pEditTnParam->text().toInt());
-    json.insert("ClrRVal", m_color[0]);
+    json.insert("TnValue", m_pEditTnParam->text().toInt());    
+    json.insert("ClrBVal", m_color[0]);
     json.insert("ClrGVal", m_color[1]);
-    json.insert("ClrBVal", m_color[2]);
+    json.insert("ClrRVal", m_color[2]);
 
     QJsonDocument document;
     document.setObject(json);
@@ -195,9 +195,6 @@ void InspHeightBaseWidget::confirmWindow(OPERATION enOperation) {
 void InspHeightBaseWidget::setCurrentWindow(const Engine::Window &window) {
     m_currentWindow = window;
 
-    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-
     QJsonParseError json_error;
     QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
     if (json_error.error != QJsonParseError::NoError)
@@ -211,9 +208,9 @@ void InspHeightBaseWidget::setCurrentWindow(const Engine::Window &window) {
         m_pEditRnParam->setText(QString::number(obj.take("RnValue").toInt()));
         m_pEditTnParam->setText(QString::number(obj.take("TnValue").toInt()));
 
-        m_color[0] = obj.take("ClrRVal").toInt();
-        m_color[0] = obj.take("ClrGVal").toInt();
         m_color[0] = obj.take("ClrBVal").toInt();
+        m_color[1] = obj.take("ClrGVal").toInt();
+        m_color[2] = obj.take("ClrRVal").toInt();
     }
 }
 
@@ -287,7 +284,7 @@ bool InspHeightBaseWidget::isGlobalBaseNotExist()
     {
         if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
             QStringLiteral("全局Base已经存在，是否重新设置？"), QMessageBox::Ok, QMessageBox::Cancel))
-        {  
+        {
             result = Engine::DeleteWindow(windowId);
             if (result != Engine::OK) {
                 String errorType, errorMessage;

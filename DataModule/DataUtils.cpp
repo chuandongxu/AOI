@@ -523,3 +523,32 @@ matTransform = [ cos(a) -sina(a) Tx ]
     int winHeightPixel = static_cast<int>(winHeight / fResolutionY);
     return cv::Rect(static_cast<int>(ptRectCtr.x) - winWidthPixel / 2, static_cast<int>(ptRectCtr.y) - winHeightPixel / 2, winWidthPixel, winHeightPixel);
 }
+
+
+/*static*/ Vision::StringVector DataUtils::split(const Vision::String &s, char delim) {
+    Vision::StringVector elems;
+    std::stringstream ss(s);
+    Vision::String item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+/*static*/ Vision::String DataUtils::formatRect(const cv::Rect2f &pt) {
+    char chArray[200];
+    _snprintf(chArray, sizeof(chArray), "%.2f, %.2f, %.2f, %.2f", pt.tl().x, pt.tl().y, pt.br().x, pt.br().y);
+    return Vision::String(chArray);
+}
+
+/*static*/ cv::Rect2f DataUtils::parseRect(const Vision::String &strCoordinate) {
+    cv::Point2f pt1(0.f, 0.f), pt2(0.f, 0.f);
+    Vision::StringVector vecStrCoordinate = split(strCoordinate, ',');
+    if (vecStrCoordinate.size() == 4) {
+        pt1.x = std::stof(vecStrCoordinate[0]);
+        pt1.y = std::stof(vecStrCoordinate[1]);
+        pt2.x = std::stof(vecStrCoordinate[2]);
+        pt2.y = std::stof(vecStrCoordinate[3]);
+    }
+    return cv::Rect2f(pt1, pt2);
+}

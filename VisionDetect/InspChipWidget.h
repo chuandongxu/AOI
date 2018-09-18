@@ -27,6 +27,4 @@ private:
     Ui::InspChipWidget ui;
     std::unique_ptr<QComboBox>  m_pComboBoxInspMode;
     std::unique_ptr<QLineEdit>  m_pEditRecordID;
-
-    bool                        m_bIsTryInspected = false;
 };

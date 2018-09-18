@@ -17,6 +17,7 @@ public:
     virtual void setCurrentWindow(const Engine::Window &window) override;
     virtual void tryInsp() override;
     virtual void confirmWindow(OPERATION enOperation) override;
+    static bool getGlobalHeightBaseParams(cv::Scalar &scalarValue, int &nColorDiff, int &nGrayDiff);
 
 private:
     Ui::Insp3DSolderWidget ui;
@@ -27,6 +28,7 @@ private:
     SpecAndResultWidgetPtr  m_pSolderHeightLoLimit;
     SpecAndResultWidgetPtr  m_pSolderHeightRatioLoLimit;
     SpecAndResultWidgetPtr  m_pSolderCovRatioLoLimit;
+
     std::unique_ptr<QLineEdit>  m_pSolderHeightUpLimit;
     std::unique_ptr<QLineEdit>  m_pSolderWettingWidth;
 };

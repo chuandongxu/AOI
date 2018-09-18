@@ -196,7 +196,7 @@ void InspWindowWidget::updateInspWindowList() {
 
 void InspWindowWidget::refreshAllDeviceWindows() {
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);    
+    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_EDIT_INSP_WINDOW);
 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
@@ -298,6 +298,8 @@ void InspWindowWidget::on_btnAddWindow_clicked() {
 
     if (INSP_WIDGET_INDEX::HEIGHT_DETECT == m_enCurrentInspWidget)
         m_pComboBoxLighting->setCurrentIndex(PROCESSED_IMAGE_SEQUENCE::HEIGHT_GRAY);
+    else if (INSP_WIDGET_INDEX::INSP_3D_SOLDER == m_enCurrentInspWidget)
+        m_pComboBoxLighting->setCurrentIndex(PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT);
     else
         m_pComboBoxLighting->setCurrentIndex(PROCESSED_IMAGE_SEQUENCE::WHITE_LIGHT);
 
@@ -818,6 +820,10 @@ void InspWindowWidget::onSelectedWindowChanged() {
 
     case Engine::Window::Usage::HEIGHT_BASE_GLOBAL:
         m_enCurrentInspWidget = INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE;
+        break;
+
+    case Engine::Window::Usage::INSP_3D_SOLDER:
+        m_enCurrentInspWidget = INSP_WIDGET_INDEX::INSP_3D_SOLDER;
         break;
 
     default:
