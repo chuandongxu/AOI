@@ -28,6 +28,8 @@ protected slots:
     void on_measureChanged(int index);
     void on_baseTypeChanged(int index);   
 
+    void onRelHtChanged(bool bInsp);
+
 private:
     Ui::HeightDetectWidget ui;
 
@@ -36,6 +38,11 @@ private:
     std::unique_ptr<QLineEdit>  m_pEditBaseScale;
     std::unique_ptr<QLineEdit>  m_pEditMinRange;
     std::unique_ptr<QLineEdit>  m_pEditMaxRange;
-    SpecAndResultWidgetPtr      m_pSpecAndResultMaxRelHt;
-    SpecAndResultWidgetPtr      m_pSpecAndResultMinRelHt;
+
+    SpecAndResultWidgetPtr      m_pSpecAndResultAbsHt;
+    SpecAndResultWidgetPtr      m_pSpecAndResultMaxHtErr;
+    SpecAndResultWidgetPtr      m_pSpecAndResultMinHtErr;
+    std::unique_ptr<QCheckBox>  m_pCheckBoxRelHt;
+    SpecAndResultWidgetPtr      m_pSpecAndResultLefRigRelHt;
+    SpecAndResultWidgetPtr      m_pSpecAndResultTopBomRelHt;
 };
