@@ -238,7 +238,7 @@ void QFlowCtrl::start()
     QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在启动中..."), 0);
     QApplication::processEvents();
 
-    if (! System->isRunOffline()) {
+    if (!System->isRunOffline()) {
         pCam->selectCaptureMode(ICamera::TRIGGER_ALL);
         pLight->setupTrigger(ILight::TRIGGER_ALL);
         if (pCam->getCameraNum() > 0) {
