@@ -6,6 +6,8 @@
 #include <QFileDialog>
 #include <QThread>
 #include <QTime>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "hsgflowctrl.h"
 #include "../Common/ModuleMgr.h"
@@ -488,14 +490,60 @@ int QFlowCtrl::_prepareRunData()
                     window.x += m_fBoardLeft;
                     window.y += m_fBoardBottom;
                 }
-
                 deviceInpWindow.vecWindowGroup.push_back(windowGroup);
             }
         }
-
         m_vecDeviceInspWindow.push_back(deviceInpWindow);
     }
-    
+
+    if (_getGlobalHeightBaseParams() != OK) {
+        System->showMessage(QStringLiteral("准备自动运行"), QStringLiteral("请设置全局高度基准框!"));
+        return NOK;
+    }
+    return OK;
+}
+
+int QFlowCtrl::_getGlobalHeightBaseParams() {
+    Engine::WindowVector vecWindows;
+    auto result = Engine::GetAllWindows(vecWindows);
+    QString strTitle(QStringLiteral("3D Base"));
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString strMsg(QStringLiteral("读取检测框失败, 错误消息: "));
+        strMsg += errorMessage.c_str();
+        System->showMessage(strTitle, strMsg);
+        return NOK;
+    }
+    bool bFound = false;
+    Engine::Window windowHeightBase;
+    for (const auto& window : vecWindows) {
+        if (window.usage == Engine::Window::Usage::HEIGHT_BASE_GLOBAL) {
+            windowHeightBase = window;
+            bFound = true;
+            break;
+        }
+    }
+
+    if (!bFound)
+        return NOK;
+
+    QJsonParseError json_error;
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(windowHeightBase.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
+        System->showMessage(strTitle, QString("Window insp parameters: ") + windowHeightBase.inspParams.c_str() + " is invalid.");
+        return NOK;
+    }
+
+    if (!parse_doucment.isObject())
+        return NOK;
+
+    QJsonObject obj = parse_doucment.object();
+
+    m_nGlobalBaseColorDiff = obj.take("RnValue").toInt();
+    m_nGlobalBaseGrayDiff = obj.take("TnValue").toInt();
+
+    m_scalarGlobalBase = cv::Scalar(obj["ClrBVal"].toInt(), obj["ClrGVal"].toInt(), obj["ClrRVal"].toInt());
     return OK;
 }
 

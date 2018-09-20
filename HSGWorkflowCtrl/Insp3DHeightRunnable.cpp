@@ -10,22 +10,24 @@
 #include "../DataModule/DataUtils.h"
 
 Insp3DHeightRunnable::Insp3DHeightRunnable(
-    QThreadPool                                *pThreadPoolInsp2D,
-    Insp2DRunnablePtr                           ptrInsp2DRunnable,
-    const cv::Point2f                          &ptFramePos,
-    int                                         nRow,
-    int                                         nCol,
-    int                                         nTotalRows,
-    int                                         nTotalCols,
-    BoardInspResultPtr                         &ptrBoardInsResult) :
-        m_pThreadPoolInsp2D (pThreadPoolInsp2D),
-        m_ptrInsp2DRunnable (ptrInsp2DRunnable),
-        m_ptFramePos        (ptFramePos),
-        m_nRow              (nRow),
-        m_nCol              (nCol),
-        m_nTotalRows        (nTotalRows),
-        m_nTotalCols        (nTotalCols),
-        InspRunnable        (ptFramePos, ptrBoardInsResult)
+    QThreadPool*         pThreadPoolInsp2D,
+    Insp2DRunnablePtr    ptrInsp2DRunnable,
+    const cv::Point2f&   ptFramePos,        
+    int                  nRow,
+    int                  nCol,
+    int                  nTotalRows,
+    int                  nTotalCols,
+    const AutoRunParams& stAutoRunParams,
+    BoardInspResultPtr& ptrBoardInsResult) :
+    m_pThreadPoolInsp2D (pThreadPoolInsp2D),
+    m_ptrInsp2DRunnable (ptrInsp2DRunnable),
+    m_ptFramePos        (ptFramePos),
+    m_nRow              (nRow),
+    m_nCol              (nCol),
+    m_nTotalRows        (nTotalRows),
+    m_nTotalCols        (nTotalCols),
+    m_stAutoRunParams   (stAutoRunParams),
+    InspRunnable        (ptFramePos, ptrBoardInsResult)
 {
 }
 
@@ -36,30 +38,43 @@ void Insp3DHeightRunnable::set3DHeight(const cv::Mat &mat3DHeight) {
     m_mat3DHeight = mat3DHeight;
 }
 
-void Insp3DHeightRunnable::run()
-{
+void Insp3DHeightRunnable::run() {
     m_pThreadPoolInsp2D->waitForDone();
     TimeLogInstance->addTimeLog(std::string("Finished wait for 2D inspection done in thead ") + QThread::currentThread()->objectName().toStdString());
     if (m_mat3DHeight.empty())
         m_mat3DHeight = m_ptrInsp2DRunnable->get3DHeight();
 
     auto vecDeviceInspWindow = m_ptrInsp2DRunnable->getDeviceInspWindow();
-    for (const auto &deviceInspWindow : vecDeviceInspWindow) {
-        if (! deviceInspWindow.bAlignmentPassed)
+    for (const auto &deviceWindow : vecDeviceInspWindow) {
+        if (! deviceWindow.bAlignmentPassed)
             continue;
 
-        for (const auto &windowGroup : deviceInspWindow.vecWindowGroup) {
+        for (const auto &windowGroup : deviceWindow.vecWindowGroup) {
             auto iterHeightCheckWindow = std::find_if(windowGroup.vecWindows.begin(), windowGroup.vecWindows.end(), [](const Engine::Window &window) { return Engine::Window::Usage::HEIGHT_MEASURE == window.usage; });
             if (iterHeightCheckWindow != windowGroup.vecWindows.end()) {
                 _insp3DHeightGroup(windowGroup);
             }
         }
-        m_ptrBoardInspResult->addDeviceInspWindow(deviceInspWindow);
+
+        for (const auto &window : deviceWindow.vecUngroupedWindows) {
+            switch (window.usage)
+            {
+            case Engine::Window::Usage::HEIGHT_MEASURE:
+                _insp3DHeightGlobalBase(window);
+                break;
+            case Engine::Window::Usage::INSP_3D_SOLDER:
+                _insp3DSolder(window);
+                break;
+            default:
+                break;
+
+            }
+        }
+        m_ptrBoardInspResult->addDeviceInspWindow(deviceWindow);
     }
 }
 
-void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowGroup)
-{
+void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowGroup) {
     auto iterHeightCheckWindow = std::find_if(windowGroup.vecWindows.begin(), windowGroup.vecWindows.end(), [](const Engine::Window &window) { return Engine::Window::Usage::HEIGHT_MEASURE == window.usage; });
     auto windowInsp = *iterHeightCheckWindow;
 
@@ -126,4 +141,12 @@ void Insp3DHeightRunnable::_insp3DHeightGroup(const Engine::WindowGroup &windowG
     
     for (const auto &window : windowGroup.vecWindows)
         m_ptrBoardInspResult->addWindowStatus(window.Id, status);
+}
+
+void Insp3DHeightRunnable::_insp3DHeightGlobalBase(const Engine::Window &window)
+{
+}
+
+void Insp3DHeightRunnable::_insp3DSolder(const Engine::Window &window)
+{
 }

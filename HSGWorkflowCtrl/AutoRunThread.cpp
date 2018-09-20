@@ -36,6 +36,7 @@ AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignment
     :m_vecAlignments        (vecAlignments),
      m_vecDeviceInspWindow  (vecDeviceWindows),
      m_vecVecFrameCtr       (vecVecFrameCtr),
+     m_stAutoRunParams      (stAutoRunParams),
      m_pMapBoardInspResult  (pMapBoardInspResult),
      m_exit                 (false)
 {
@@ -49,16 +50,6 @@ AutoRunThread::AutoRunThread(const Engine::AlignmentVector         &vecAlignment
     m_vecVecFrameImages = Vision::VectorOfVectorOfMat(PROCESSED_IMAGE_SEQUENCE::TOTAL_COUNT, Vision::VectorOfMat(TOTAL, cv::Mat()));
     m_vecFrame3DHeight = Vision::VectorOfMat(TOTAL, cv::Mat());
     m_vecMatBigImage = Vision::VectorOfMat(PROCESSED_IMAGE_SEQUENCE::TOTAL_COUNT, cv::Mat());
-
-    m_nImageWidthPixel  = stAutoRunParams.nImgHeightPixel;
-    m_nImageHeightPixel = stAutoRunParams.nImgHeightPixel;
-    m_fBoardLeftPos = stAutoRunParams.fBoardLeftPos;
-    m_fBoardTopPos = stAutoRunParams.fBoardTopPos;
-    m_fBoardRightPos = stAutoRunParams.fBoardRightPos;
-    m_fBoardBtmPos = stAutoRunParams.fBoardBtmPos;
-    m_fOverlapUmX = stAutoRunParams.fOverlapUmX;
-    m_fOverlapUmY = stAutoRunParams.fOverlapUmY;
-    m_enScanDir = stAutoRunParams.enScanDir;
 }
 
 AutoRunThread::~AutoRunThread() {
@@ -92,8 +83,8 @@ bool AutoRunThread::preRunning()
     m_dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     m_nDLPCount = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
     m_nTotalImageCount = m_nDLPCount * DLP_IMG_COUNT + CAPTURE_2D_IMAGE_SEQUENCE::TOTAL_COUNT;
-    m_fFovWidthUm  = m_nImageWidthPixel  * m_dResolutionX;
-    m_fFovHeightUm = m_nImageHeightPixel * m_dResolutionY;
+    m_fFovWidthUm  = m_stAutoRunParams.nImgWidthPixel  * m_dResolutionX;
+    m_fFovHeightUm = m_stAutoRunParams.nImgHeightPixel * m_dResolutionY;
     return true;
 }
 
@@ -425,9 +416,9 @@ bool AutoRunThread::_doAlignment() {
 
         // Only has frame in X direction. It should only happen when there is only X axis can move.
         if (fabs(ptFrameCtr.y) <= 0.01f)
-            ptFrameCtr.y = m_nImageHeightPixel * m_dResolutionY / 2.f;
+            ptFrameCtr.y = m_stAutoRunParams.nImgHeightPixel * m_dResolutionY / 2.f;
 
-        cv::Rect rectSrchWindow = DataUtils::convertWindowToFrameRect(ptAlignment, alignment.srchWinWidth, alignment.srchWinHeight, ptFrameCtr, m_nImageWidthPixel, m_nImageHeightPixel, m_dResolutionX, m_dResolutionY);
+        cv::Rect rectSrchWindow = DataUtils::convertWindowToFrameRect(ptAlignment, alignment.srchWinWidth, alignment.srchWinHeight, ptFrameCtr, m_stAutoRunParams.nImgWidthPixel, m_stAutoRunParams.nImgHeightPixel, m_dResolutionX, m_dResolutionY);
         auto pAlignmentRunnable = std::make_unique<AlignmentRunnable>(matAlignmentImg, alignment, rectSrchWindow);
         pAlignmentRunnable->setAutoDelete(false);
         pAlignmentRunnable->setResolution(m_dResolutionX, m_dResolutionY);
@@ -541,7 +532,7 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
 
             // Only has frame in X direction. It should only happen when there is only X axis can move.
             if (fabs(ptFrameCtr.y) <= 0.01f)
-                ptFrameCtr.y = m_nImageHeightPixel * m_dResolutionY / 2.f;
+                ptFrameCtr.y = m_stAutoRunParams.nImgHeightPixel * m_dResolutionY / 2.f;
 
             TimeLogInstance->addTimeLog("Move to inspect capture position.");            
         
@@ -589,13 +580,13 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
                 ptrBoardInspResult);
             pInsp2DRunnable->setAutoDelete(false);
             pInsp2DRunnable->setResolution(m_dResolutionX, m_dResolutionY);
-            pInsp2DRunnable->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
+            pInsp2DRunnable->setImageSize(m_stAutoRunParams.nImgWidthPixel, m_stAutoRunParams.nImgHeightPixel);
             m_threadPoolInsp2D.start(pInsp2DRunnable.get());
 
             {
-                auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolInsp2D, pInsp2DRunnable, ptFrameCtr, row, col, ROWS, COLS, ptrBoardInspResult);
+                auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolInsp2D, pInsp2DRunnable, ptFrameCtr, row, col, ROWS, COLS, m_stAutoRunParams, ptrBoardInspResult);
                 pInsp3DHeightRunnalbe->setResolution(m_dResolutionX, m_dResolutionY);
-                pInsp3DHeightRunnalbe->setImageSize(m_nImageWidthPixel, m_nImageHeightPixel);
+                pInsp3DHeightRunnalbe->setImageSize(m_stAutoRunParams.nImgWidthPixel, m_stAutoRunParams.nImgHeightPixel);
                 QThreadPool::globalInstance()->start(pInsp3DHeightRunnalbe);
             }
 
@@ -620,7 +611,7 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
 
     auto vecNotInspectedDeviceWindow = _getNotInspectedDeviceWindow();
     if (! vecNotInspectedDeviceWindow.empty()) {
-        cv::Point2f ptBigImageCenter((m_fBoardLeftPos + m_fBoardRightPos) / 2.f, (m_fBoardTopPos, m_fBoardBtmPos) / 2.f);
+        cv::Point2f ptBigImageCenter((m_stAutoRunParams.fBoardLeftPos + m_stAutoRunParams.fBoardRightPos) / 2.f, (m_stAutoRunParams.fBoardTopPos, m_stAutoRunParams.fBoardBtmPos) / 2.f);
         // Only has frame in X direction. It should only happen when there is only X axis can move.
         if (fabs(ptBigImageCenter.y) <= 0.01f)
             ptBigImageCenter.y = m_vecMatBigImage[0].rows * m_dResolutionY / 2.f;
@@ -632,7 +623,7 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
         m_threadPoolInsp2D.start(pInsp2DRunnable.get());
 
         {
-            auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolInsp2D, pInsp2DRunnable, ptBigImageCenter, 0, 0, ROWS, COLS, ptrBoardInspResult);
+            auto pInsp3DHeightRunnalbe = new Insp3DHeightRunnable(&m_threadPoolInsp2D, pInsp2DRunnable, ptBigImageCenter, 0, 0, ROWS, COLS, m_stAutoRunParams, ptrBoardInspResult);
             pInsp3DHeightRunnalbe->set3DHeight(m_matWhole3DHeight);
             pInsp3DHeightRunnalbe->setResolution(m_dResolutionX, m_dResolutionY);
             pInsp3DHeightRunnalbe->setImageSize(m_vecMatBigImage[0].cols, m_vecMatBigImage[0].rows);
@@ -691,10 +682,10 @@ bool AutoRunThread::_combineBigImage(const Vision::VectorOfMat &vecMatImages, cv
     stCmd.nCountOfImgPerFrame = 1;
     stCmd.nCountOfFrameX = m_vecVecFrameCtr[0].size();
     stCmd.nCountOfFrameY = m_vecVecFrameCtr.size();
-    stCmd.nOverlapX = m_fOverlapUmX / m_dResolutionX;
-    stCmd.nOverlapY = m_fOverlapUmY / m_dResolutionY;
+    stCmd.nOverlapX = m_stAutoRunParams.fOverlapUmX / m_dResolutionX;
+    stCmd.nOverlapY = m_stAutoRunParams.fOverlapUmY / m_dResolutionY;
     stCmd.nCountOfImgPerRow = m_vecVecFrameCtr[0].size();
-    stCmd.enScanDir = m_enScanDir;
+    stCmd.enScanDir = m_stAutoRunParams.enScanDir;
 
     stCmd.vecInputImages = vecMatImages;
     if (Vision::VisionStatus::OK == Vision::PR_CombineImg(&stCmd, &stRpy)) {
@@ -708,7 +699,7 @@ bool AutoRunThread::_combineBigImage(const Vision::VectorOfMat &vecMatImages, cv
 }
 
 void AutoRunThread::_generateResultBigImage(cv::Mat matBigImage, BoardInspResultPtr ptrBoardInspResult) {
-    cv::Point2f ptBigImageCenter((m_fBoardLeftPos + m_fBoardRightPos) / 2.f, (m_fBoardTopPos, m_fBoardBtmPos) / 2.f);
+    cv::Point2f ptBigImageCenter((m_stAutoRunParams.fBoardLeftPos + m_stAutoRunParams.fBoardRightPos) / 2.f, (m_stAutoRunParams.fBoardTopPos, m_stAutoRunParams.fBoardBtmPos) / 2.f);
     // Only has frame in X direction. It should only happen when there is only X axis can move.
     if (fabs(ptBigImageCenter.y) <= 0.01f)
         ptBigImageCenter.y = matBigImage.rows * m_dResolutionY / 2.f;
