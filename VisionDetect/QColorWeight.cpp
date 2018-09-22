@@ -1777,6 +1777,8 @@ void QColorWeight::onColorWidgetState(const QVariantList &data)
 
     if (rectROI.x < 0) rectROI.x = 0;
     if (rectROI.y < 0) rectROI.y = 0;
+    if (rectROI.width < 0) rectROI.width = 0;
+    if (rectROI.height < 0) rectROI.height = 0;
     if ((rectROI.x + rectROI.width) > matImage.cols)
         rectROI.width = matImage.cols - rectROI.x;
     if ((rectROI.y + rectROI.height) > matImage.rows)
