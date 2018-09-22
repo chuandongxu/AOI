@@ -165,12 +165,12 @@
    </item>
    <item row="9" column="0">
     <property name="text">
-     <string>相对高度左右</string>
+     <string>相对高度水平</string>
     </property>
    </item>
    <item row="10" column="0">
     <property name="text">
-     <string>相对高度上下</string>
+     <string>相对高度垂直</string>
     </property>
    </item>
   </widget>
