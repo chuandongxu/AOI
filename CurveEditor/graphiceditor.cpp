@@ -11,7 +11,7 @@
 #include <QVBoxLayout>
 
 graphiceditor::graphiceditor(QWidget *parent)
-	: QDialog(parent), m_curve_type(aaAaa::aaSpline::SPLINE_CUBIC)
+    : QDialog(parent), m_curve_type(aaAaa::aaSpline::SPLINE_CUBIC)
 {
     ui.setupUi(this);
 
@@ -32,31 +32,31 @@ graphiceditor::graphiceditor(QWidget *parent)
     connect(ui.comboBox_item, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurveSelectChanged(int)));
     connect(ui.comboBox_type, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurveTypeChanged(int)));
     connect(m_viewer, SIGNAL(selectValuesChanged(float, float)), this, SLOT(onSelectPosChanged(float, float)));
-	connect(ui.pushButton_edit, SIGNAL(clicked()), SLOT(onEditProfile()));
+    connect(ui.pushButton_edit, SIGNAL(clicked()), SLOT(onEditProfile()));
 }
 
 graphiceditor::~graphiceditor()
 {    
-	if (m_viewer)
-	{
-		delete m_viewer;
-		m_viewer = NULL;
-	}
+    if (m_viewer)
+    {
+        delete m_viewer;
+        m_viewer = NULL;
+    }
 }
 
 void graphiceditor::setViewPos(int nPosX, int nPosY)
 {
-	if (m_viewer)
-		m_viewer->m_CameraPos = aaAaa::Vector3(nPosX * m_viewer->m_dScaleX, nPosY*m_viewer->m_dScaleY, 127);
+    if (m_viewer)
+        m_viewer->m_CameraPos = aaAaa::Vector3(nPosX * m_viewer->m_dScaleX, nPosY*m_viewer->m_dScaleY, 127);
 }
 
 void graphiceditor::setScale(double dScaleX, double dScaleY)
 {
-	if (m_viewer)
-	{
-		m_viewer->m_dScaleX = dScaleX;
-		m_viewer->m_dScaleY = dScaleY;
-	}	
+    if (m_viewer)
+    {
+        m_viewer->m_dScaleX = dScaleX;
+        m_viewer->m_dScaleY = dScaleY;
+    }    
 }
 
 int graphiceditor::getCurrentSplineIndex(){
@@ -154,6 +154,6 @@ void graphiceditor::addKnot(int index, float t){
 
 void graphiceditor::onEditProfile()
 {
-	QEos::Notify(EVENT_OBJ_STATE, 0, RUN_OBJ_PROFILE_EDIT, 0);
-	this->hide();
+    QEos::Notify(EVENT_OBJ_STATE, 0, RUN_OBJ_PROFILE_EDIT, 0);
+    this->hide();
 }

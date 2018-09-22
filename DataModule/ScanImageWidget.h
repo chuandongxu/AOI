@@ -17,7 +17,7 @@ public:
     ~ScanImageWidget();
 
 private slots:
-	void on_btnCombineImageParamsSave_clicked();
+    void on_btnCombineImageParamsSave_clicked();
     void on_btnPrepareScanImage_clicked();
     void on_btnScanImage_clicked();
     void on_btnCombineLoadImage_clicked();

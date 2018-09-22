@@ -11,27 +11,27 @@
 class HSGWorkflowCtrl : public QModuleBase , public IFlowCtrl
 {
 public:
-	HSGWorkflowCtrl(int id,const QString &name);
-	~HSGWorkflowCtrl();
+    HSGWorkflowCtrl(int id,const QString &name);
+    ~HSGWorkflowCtrl();
 
     QWidget * getAutoRunPanel() override;
 
-	void addSettingWiddget(QTabWidget *tabWidget);
-	void addDiagonseWidget(QTabWidget * tabWidget);
+    void addSettingWiddget(QTabWidget *tabWidget);
+    void addDiagonseWidget(QTabWidget * tabWidget);
 
-	void preStartUp();
-	
-	virtual bool isRuning();
+    void preStartUp();
+    
+    virtual bool isRuning();
 
-	virtual QWidget * getFlowCtrlWidget();
-	virtual void InitResoultItemModel(QStandardItemModel * pModel);
-	virtual QList<int> getResoultItemHeaderWidth();
+    virtual QWidget * getFlowCtrlWidget();
+    virtual void InitResoultItemModel(QStandardItemModel * pModel);
+    virtual QList<int> getResoultItemHeaderWidth();
 private:
-	void initErrorCode();
+    void initErrorCode();
 
 private:
-	QFlowCtrl * m_ctrl;
-	QWorkFlowWidget * m_workflowWidget;
+    QFlowCtrl * m_ctrl;
+    QWorkFlowWidget * m_workflowWidget;
     QWidget *m_pAutoRunWidget;
 
 };

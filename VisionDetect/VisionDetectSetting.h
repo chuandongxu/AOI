@@ -6,13 +6,13 @@
 
 class VisionDetectSetting : public QMainWindow
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	VisionDetectSetting(VisionCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
-	~VisionDetectSetting();
+    VisionDetectSetting(VisionCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
+    ~VisionDetectSetting();
 
 private:
-	Ui::VisionDetectSetting ui;	
-	VisionCtrl* m_pCtrl;
+    Ui::VisionDetectSetting ui;    
+    VisionCtrl* m_pCtrl;
 };

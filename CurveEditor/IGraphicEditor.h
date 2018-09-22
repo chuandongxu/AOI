@@ -11,29 +11,29 @@ class graphiceditor;
 class  CURVEEDITOR_EXPORT IGraphicEditor
 {
 public:
-	IGraphicEditor();
-	~IGraphicEditor();
+    IGraphicEditor();
+    ~IGraphicEditor();
 
-	void setViewPos(int nPosX, int nPosY);
-	void setScale(double dScaleX, double dScaleY);
+    void setViewPos(int nPosX, int nPosY);
+    void setScale(double dScaleX, double dScaleY);
 
-	void clearSplines();
-	void addSpline(const aaAaa::aaSpline &knot);
-	void setSplines(const std::vector<aaAaa::aaSpline> &splines);
-	void addKnot(int index, const aaAaa::aaPoint &pt);
-	void addKnot(int index, float t);
+    void clearSplines();
+    void addSpline(const aaAaa::aaSpline &knot);
+    void setSplines(const std::vector<aaAaa::aaSpline> &splines);
+    void addKnot(int index, const aaAaa::aaPoint &pt);
+    void addKnot(int index, float t);
 
-	int getCurrentSplineIndex();
+    int getCurrentSplineIndex();
 
-	const std::vector<aaAaa::aaSpline> &getSplines(void) const;
+    const std::vector<aaAaa::aaSpline> &getSplines(void) const;
 
-	void setPos(int posX, int posY);
-	void getSize(int& width, int& height);
-	void show();
-	void hide();
+    void setPos(int posX, int posY);
+    void getSize(int& width, int& height);
+    void show();
+    void hide();
 
 private:
-	graphiceditor *m_pInstance;
+    graphiceditor *m_pInstance;
 };
 
 

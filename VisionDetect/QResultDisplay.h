@@ -9,24 +9,24 @@ using VectorOfVectorOfFloat = std::vector < VectorOfFloat > ;
 class QCustomPlot;
 class QResultDisplay : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QResultDisplay(QWidget *parent = Q_NULLPTR);
-	~QResultDisplay();
+    QResultDisplay(QWidget *parent = Q_NULLPTR);
+    ~QResultDisplay();
 
-public:	
-	void setupPlot1Data(VectorOfVectorOfFloat& dataStepPhase, VectorOfFloat& dataSlop);
-	void setupPlot2Data(VectorOfVectorOfFloat& dataStepPhase, VectorOfVectorOfFloat& dataStepPhaseDiff);
-
-private:
-	void setupSimpleDemo(QCustomPlot *customPlot);
-	void setupSincScatterDemo(QCustomPlot *customPlot);
+public:    
+    void setupPlot1Data(VectorOfVectorOfFloat& dataStepPhase, VectorOfFloat& dataSlop);
+    void setupPlot2Data(VectorOfVectorOfFloat& dataStepPhase, VectorOfVectorOfFloat& dataStepPhaseDiff);
 
 private:
-	Ui::QResultDisplay ui;
+    void setupSimpleDemo(QCustomPlot *customPlot);
+    void setupSincScatterDemo(QCustomPlot *customPlot);
 
 private:
-	QCustomPlot* m_pCustomPlot1;
-	QCustomPlot* m_pCustomPlot2;
+    Ui::QResultDisplay ui;
+
+private:
+    QCustomPlot* m_pCustomPlot1;
+    QCustomPlot* m_pCustomPlot2;
 };

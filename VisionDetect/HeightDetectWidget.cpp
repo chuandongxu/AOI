@@ -176,7 +176,7 @@ void HeightDetectWidget::tryInsp() {
         auto pColorWidget = m_pParent->getColorWidget();
         cv::Mat matImage = pUI->getImage();
 
-        int nBigImgWidth = matImage.cols / dCombinedImageScale;
+        int nBigImgWidth  = matImage.cols / dCombinedImageScale;
         int nBigImgHeight = matImage.rows / dCombinedImageScale;
         auto x = m_currentWindow.x / dResolutionX;
         auto y = m_currentWindow.y / dResolutionY;
@@ -190,7 +190,7 @@ void HeightDetectWidget::tryInsp() {
 
         double dBaseScale = m_pEditBaseScale->text().toInt();
 
-        cv::Rect2f rectBase(x, y, width, height);
+        cv::Rect2f rectBase(x - width / 2, y - height / 2, width, height);
         cv::Rect rectBaseDetectWin = CalcUtils::resizeRect(rectBase, cv::Size2f(rectBase.width * dBaseScale, rectBase.height * dBaseScale));
         if (rectBaseDetectWin.x < 0) rectBaseDetectWin.x = 0;
         else if ((rectBaseDetectWin.x + rectBaseDetectWin.width) >= matImage.cols) rectBaseDetectWin.width = rectBase.width;
@@ -271,11 +271,11 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
     json.insert("MinRange", m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT);
     json.insert("MaxRange", m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT);
     json.insert("AbsHt", m_pSpecAndResultAbsHt->getSpec());
-    json.insert("MaxAbxHt", m_pSpecAndResultMaxHtErr->getSpec());
+    json.insert("MaxAbsHt", m_pSpecAndResultMaxHtErr->getSpec());
     json.insert("MinAbsHt", m_pSpecAndResultMinHtErr->getSpec());
     json.insert("RelHt", m_pCheckBoxRelHt->isChecked());
-    json.insert("LefRigRelHt", m_pSpecAndResultLefRigRelHt->getSpec());
-    json.insert("TopBomRelHt", m_pSpecAndResultTopBomRelHt->getSpec());
+    json.insert("LftRgtRelHt", m_pSpecAndResultLefRigRelHt->getSpec());
+    json.insert("TopBtmRelHt", m_pSpecAndResultTopBomRelHt->getSpec());
     json.insert("GlobalBase", (static_cast<HDW_BASE_TYPE> (m_pComboxBaseType->currentIndex()) == HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE) ? true : false);
     json.insert("GlobalBaseScale", m_pEditBaseScale->text().toInt());
 
@@ -307,7 +307,7 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
         window.x = ptWindowCtr.x * dResolutionX;
         window.y = (nBigImgHeight - ptWindowCtr.y) * dResolutionY;
     }
-    window.width = rectROI.width  * dResolutionX;
+    window.width  = rectROI.width  * dResolutionX;
     window.height = rectROI.height * dResolutionY;
     window.deviceId = pUI->getSelectedDevice().getId();
     window.angle = 0;
@@ -383,15 +383,15 @@ void HeightDetectWidget::setCurrentWindow(const Engine::Window &window) {
         
         m_pSpecAndResultAbsHt->setSpec(obj.take("AbsHt").toDouble());
         m_pSpecAndResultAbsHt->clearResult();
-        m_pSpecAndResultMaxHtErr->setSpec(obj.take("MaxAbxHt").toDouble());
+        m_pSpecAndResultMaxHtErr->setSpec(obj.take("MaxAbsHt").toDouble());
         m_pSpecAndResultMaxHtErr->clearResult();
         m_pSpecAndResultMinHtErr->setSpec(obj.take("MinAbsHt").toDouble());
         m_pSpecAndResultMinHtErr->clearResult();
 
         m_pCheckBoxRelHt->setChecked(obj.take("RelHt").toBool());
-        m_pSpecAndResultLefRigRelHt->setSpec(obj.take("LefRigRelHt").toDouble());
+        m_pSpecAndResultLefRigRelHt->setSpec(obj.take("LftRgtRelHt").toDouble());
         m_pSpecAndResultLefRigRelHt->clearResult();
-        m_pSpecAndResultTopBomRelHt->setSpec(obj.take("TopBomRelHt").toDouble());
+        m_pSpecAndResultTopBomRelHt->setSpec(obj.take("TopBtmRelHt").toDouble());
         m_pSpecAndResultTopBomRelHt->clearResult();
 
         m_pComboxBaseType->setCurrentIndex(static_cast<int>(obj.take("GlobalBase").toBool() ? HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE : HDW_BASE_TYPE::EN_MANUAL_TYPE)); 
@@ -400,7 +400,6 @@ void HeightDetectWidget::setCurrentWindow(const Engine::Window &window) {
 }
 
 void HeightDetectWidget::on_measureChanged(int index) {
-
     if (static_cast<HDW_MEASURE_TYPE> (index) == HDW_MEASURE_TYPE::EN_MEASURE_TYPE)
     {
         ui.tableWidget->showRow(BASE_TYPE_ATTRI);
@@ -448,5 +447,3 @@ void HeightDetectWidget::onRelHtChanged(bool bInsp) {
         m_pSpecAndResultTopBomRelHt->setEnabled(false);
     }
 }
-
-

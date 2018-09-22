@@ -10,20 +10,20 @@
 
 class QStartupWidget : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QStartupWidget(QWidget *parent = NULL);
-	~QStartupWidget();
+    QStartupWidget(QWidget *parent = NULL);
+    ~QStartupWidget();
 
 protected slots:
-	void onOk();
-	void onExit();
+    void onOk();
+    void onExit();
 
 private:
-	QLoginEdit * m_loginEdit;
-	QWidget * m_bkWidget;
-	QVBoxLayout * m_layout;
+    QLoginEdit * m_loginEdit;
+    QWidget * m_bkWidget;
+    QVBoxLayout * m_layout;
 };
 
 #endif // STARTUPWIDGET_H

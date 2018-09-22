@@ -1,7 +1,7 @@
 /* \internal
 *---------------------------------------------------------------------------
 *                     Novo Graphics Technology
-*					R&D Software Technology Group
+*                    R&D Software Technology Group
 *                      (c) Copyright 2018 NFG
 *
 * All rights reserved. This source code contains confidential, trade secret

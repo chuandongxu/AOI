@@ -1,7 +1,7 @@
 /* \internal
 *---------------------------------------------------------------------------
 *                     Novo Graphics Technology Ltd
-*					R&D Software Technology Group
+*                    R&D Software Technology Group
 *                      (c) Copyright 2018 NFG
 *
 * All rights reserved. This source code contains confidential, trade secret
@@ -13,11 +13,11 @@
 * Programmer   : Xiao Sheng Guang
 * Created      : 10 Jan 2018
 * Description  : This file contained constant values for the AOI project.
-* Remark	   : Reference to vision library.
+* Remark       : Reference to vision library.
 *--------------------------------------------------------------------------
 * History :
 * YYYYMMDD     AUTHOR       NOTES
-* 20180110	   Xiao SG  Initial version. 
+* 20180110       Xiao SG  Initial version. 
 *--------------------------------------------------------------------------
 */
 
@@ -59,9 +59,9 @@ enum VISION_VIEW_MODE {
 
 enum GRAY_WEIGHT_METHOD
 {
-	EM_MODE_PT_THRESHOLD = 0,
-	EM_MODE_ONE_THRESHOLD,
-	EM_MODE_TWO_THRESHOLD
+    EM_MODE_PT_THRESHOLD = 0,
+    EM_MODE_ONE_THRESHOLD,
+    EM_MODE_TWO_THRESHOLD
 };
 
 class CAPTURE_2D_IMAGE_SEQUENCE

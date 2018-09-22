@@ -26,8 +26,8 @@ public:
     virtual QString getDisplayName() = 0;
     virtual int getId() = 0;
 
-	//virtual void init() = 0;
-	//virtual void unInit() = 0;
+    //virtual void init() = 0;
+    //virtual void unInit() = 0;
 
     virtual void * getHal() = 0;
 
@@ -37,7 +37,7 @@ public:
     virtual void addDiagonseWidget(QTabWidget * tabWidget) = 0;
     virtual void freeDiagonseWidget(QTabWidget * tabWidget) = 0;
 
-	virtual void preStartUp() = 0;
+    virtual void preStartUp() = 0;
 
     virtual void insertEventObserver(QHalEventObserver * pObs) = 0;
     virtual void sendNotifyHalEvent(const QHalEvent &ev) = 0;

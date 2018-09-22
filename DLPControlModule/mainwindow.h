@@ -78,16 +78,16 @@ public:
     ~MainWindow();
 
 public:
-	void ApplyDefaultSolution();
-	bool isConnected();
-	bool isDataValiated();
-	bool startUpCapture();
-	bool endUpCapture();
+    void ApplyDefaultSolution();
+    bool isConnected();
+    bool isDataValiated();
+    bool startUpCapture();
+    bool endUpCapture();
 
-	void setDLP(int nIndex);
-	void setUSBSerialNB(std::string& serialNumber);
-	std::string getUSBSerialNB();
-	bool trigger();
+    void setDLP(int nIndex);
+    void setUSBSerialNB(std::string& serialNumber);
+    std::string getUSBSerialNB();
+    bool trigger();
 
 private slots:
 
@@ -246,22 +246,22 @@ private slots:
     void on_pushButton_FWUpload_clicked();
 
 private:
-	FlashDevice g_FlashDevice;
-	int g_FrameIdx;
-	int g_VarExpFrameIdx ;	
-	QString g_displayStr_splashImageCount;
-	QString g_displayStr_splashImageAddedCount;
-	QString g_displayStr_splashImageRemovedCount;
-	QString g_displayStr_splashImageTotalCount;
-	QStringList g_iniGUITokens;
+    FlashDevice g_FlashDevice;
+    int g_FrameIdx;
+    int g_VarExpFrameIdx ;    
+    QString g_displayStr_splashImageCount;
+    QString g_displayStr_splashImageAddedCount;
+    QString g_displayStr_splashImageRemovedCount;
+    QString g_displayStr_splashImageTotalCount;
+    QStringList g_iniGUITokens;
 
 private:
     Ui::MainWindow *ui;
 
-	DLPUsb* m_dlpUSB;
-	DLPApi* m_dlpAPI;
-	DLPFrmw* m_dlpFrm;
-	DLPBMPParser* m_dlpBMPParser;
+    DLPUsb* m_dlpUSB;
+    DLPApi* m_dlpAPI;
+    DLPFrmw* m_dlpFrm;
+    DLPBMPParser* m_dlpBMPParser;
 
     QSettings m_settings;
     QString m_firmwarePath;
@@ -279,11 +279,11 @@ private:
     int m_numExtraSplashLutEntries;
     int m_extraSplashLutEntries[64];
     unsigned int m_numImgInFlash;
-	bool m_bApplyDefaultSolution;
-	bool m_bConnected;
-	bool m_bPatSeqValidated;
-	std::string m_usbSerialNumber;
-	int m_nDLPIndex;
+    bool m_bApplyDefaultSolution;
+    bool m_bConnected;
+    bool m_bPatSeqValidated;
+    std::string m_usbSerialNumber;
+    int m_nDLPIndex;
 
     void ShowError(const char *str);
     int GetSectorNum(unsigned int Addr);
@@ -320,7 +320,7 @@ private:
 
     /* Read DLPC350 Status */
     int GetDLPC350Status();
-	/* DLPC350 group calls */
+    /* DLPC350 group calls */
     void SetDLPC350InVideoMode();
     void SetDLPC350InPatternMode();
 };

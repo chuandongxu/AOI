@@ -8,26 +8,26 @@
 
 class QRightWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QRightWidget(QWidget *parent = Q_NULLPTR);
-	~QRightWidget();
+    QRightWidget(QWidget *parent = Q_NULLPTR);
+    ~QRightWidget();
 
 protected:
-	void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event);
 
 public slots:
-	void onRunState(const QVariantList &data);
-	void onUIState(const QVariantList &data);
+    void onRunState(const QVariantList &data);
+    void onUIState(const QVariantList &data);
 
 private:
-	Ui::rightwidget ui;
+    Ui::rightwidget ui;
 
 protected:
-	//QWidget * m_widgetRun;
-	//QWidget * m_widgetEdit;
+    //QWidget * m_widgetRun;
+    //QWidget * m_widgetEdit;
 
-	//QHBoxLayout * m_subVLayout;
-	//QVBoxLayout * m_mainLayout;
+    //QHBoxLayout * m_subVLayout;
+    //QVBoxLayout * m_mainLayout;
 };

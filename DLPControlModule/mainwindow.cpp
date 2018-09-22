@@ -263,79 +263,79 @@ MainWindow::MainWindow(QWidget *parent) :
     m_settings("Texas Instruments", "LightCrafter GUI")
 {
     ui->setupUi(this);
-	
-	g_FrameIdx = 0;
-	g_VarExpFrameIdx = 0;
-	g_displayStr_splashImageCount = "# Original Images: ";
-	g_displayStr_splashImageAddedCount = "Images Added: ";
-	g_displayStr_splashImageRemovedCount = "Images Removed: ";
-	g_displayStr_splashImageTotalCount = "Total Images: ";	
+    
+    g_FrameIdx = 0;
+    g_VarExpFrameIdx = 0;
+    g_displayStr_splashImageCount = "# Original Images: ";
+    g_displayStr_splashImageAddedCount = "Images Added: ";
+    g_displayStr_splashImageRemovedCount = "Images Removed: ";
+    g_displayStr_splashImageTotalCount = "Total Images: ";    
 
-	m_dlpUSB = new DLPUsb();
-	m_dlpAPI = new DLPApi(m_dlpUSB);
-	m_dlpFrm = new DLPFrmw();
-	m_dlpBMPParser = new DLPBMPParser();
+    m_dlpUSB = new DLPUsb();
+    m_dlpAPI = new DLPApi(m_dlpUSB);
+    m_dlpFrm = new DLPFrmw();
+    m_dlpBMPParser = new DLPBMPParser();
 
-	//m_dlpFrm->g_iniParam_Info[0] = { "APPCONFIG.VERSION.SUBMINOR", { 0x00 }, { 0x00 }, 1, 1, false, 0, 1 };//SK: Remove
-	//m_dlpFrm->g_iniParam_Info[1] = { "APPCONFIG.VERSION.MINOR", { 0x00 }, { 0x00 }, 1, 1, false, 1, 1 }; //SK: Remove
-	//m_dlpFrm->g_iniParam_Info[2] = { "APPCONFIG.VERSION.MAJOR", { 0x03 }, { 0x00 }, 1, 1, false, 2, 1 }; //SK:Remove
-	////{"APPCONFIG.VERSION.RSERVED", {0x00}, {0x00}, 1, 1, true, 3, 1},
-	//m_dlpFrm->g_iniParam_Info[3] = { "DEFAULT.FIRMWARE_TAG", { 0x44, 0x4C, 0x50 }, { 0x00 }, 3, 1, true, 4, 32 };
-	//m_dlpFrm->g_iniParam_Info[4] = { "DEFAULT.AUTOSTART", { 0x00 }, { 0x00 }, 1, 1, false, 36, 1 };
-	//m_dlpFrm->g_iniParam_Info[5] = { "DEFAULT.DISPMODE", { 0x00 }, { 0x00 }, 1, 1, true, 37, 1 };
-	//m_dlpFrm->g_iniParam_Info[6] = { "DEFAULT.SHORT_FLIP", { 0x00 }, { 0x00 }, 1, 1, true, 38, 1 };
-	//m_dlpFrm->g_iniParam_Info[7] = { "DEFAULT.LONG_FLIP", { 0x00 }, { 0x00 }, 1, 1, true, 39, 1 };
-	//m_dlpFrm->g_iniParam_Info[8] = { "DEFAULT.TRIG_OUT_1.POL", { 0x00 }, { 0x00 }, 1, 1, true, 104, 1 };
-	//m_dlpFrm->g_iniParam_Info[9] = { "DEFAULT.TRIG_OUT_1.RDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 105, 1 };
-	//m_dlpFrm->g_iniParam_Info[10] = { "DEFAULT.TRIG_OUT_1.FDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 106, 1 };
-	//m_dlpFrm->g_iniParam_Info[11] = { "DEFAULT.TRIG_OUT_2.POL", { 0x00 }, { 0x00 }, 1, 1, true, 108, 1 };
-	//m_dlpFrm->g_iniParam_Info[12] = { "DEFAULT.TRIG_OUT_2.WIDTH", { 0xBB }, { 0xBB }, 1, 1, true, 109, 1 };
-	//m_dlpFrm->g_iniParam_Info[13] = { "DEFAULT.TRIG_IN_1.DELAY", { 0x00 }, { 0x00 }, 1, 1, true, 112, 4 };
-	////{"DEFAULT.TRIG_IN_1.POL", {0x00}, {0x00}, 1, 1, false, 116, 1},
-	////{"DEFAULT.TRIG_IN_2.DELAY", {0x00}, {0x00}, 1, 1, false, 120, 4},
-	//m_dlpFrm->g_iniParam_Info[14] = { "DEFAULT.TRIG_IN_2.POL", { 0x00 }, { 0x00 }, 1, 1, true, 124, 1 };
-	//m_dlpFrm->g_iniParam_Info[15] = { "DEFAULT.RED_STROBE.RDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 128, 1 };
-	//m_dlpFrm->g_iniParam_Info[16] = { "DEFAULT.RED_STROBE.FDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 129, 1 };
-	//m_dlpFrm->g_iniParam_Info[17] = { "DEFAULT.GRN_STROBE.RDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 132, 1 };
-	//m_dlpFrm->g_iniParam_Info[18] = { "DEFAULT.GRN_STROBE.FDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 133, 1 };
-	//m_dlpFrm->g_iniParam_Info[19] = { "DEFAULT.BLU_STROBE.RDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 136, 1 };
-	//m_dlpFrm->g_iniParam_Info[20] = { "DEFAULT.BLU_STROBE.FDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 137, 1 };
-	//m_dlpFrm->g_iniParam_Info[21] = { "DEFAULT.INVERTDATA", { 0x00 }, { 0x00 }, 1, 1, true, 140, 1 };
-	//m_dlpFrm->g_iniParam_Info[22] = { "DEFAULT.LEDCURRENT_RED", { 0x97 }, { 0x97 }, 1, 1, true, 149, 1 };
-	//m_dlpFrm->g_iniParam_Info[23] = { "DEFAULT.LEDCURRENT_GRN", { 0x78 }, { 0x78 }, 1, 1, true, 150, 1 };
-	//m_dlpFrm->g_iniParam_Info[24] = { "DEFAULT.LEDCURRENT_BLU", { 0x7D }, { 0x7D }, 1, 1, true, 151, 1 };
-	//m_dlpFrm->g_iniParam_Info[25] = { "DEFAULT.PATTERNCONFIG.PAT_EXPOSURE", { 0x7A120 }, { 0x7A120 }, 1, 1, true, 156, 4 };
-	//m_dlpFrm->g_iniParam_Info[26] = { "DEFAULT.PATTERNCONFIG.PAT_PERIOD", { 0x7A120 }, { 0x7A120 }, 1, 1, true, 160, 4 };
-	//m_dlpFrm->g_iniParam_Info[27] = { "DEFAULT.PATTERNCONFIG.PAT_MODE", { 0x03 }, { 0x03 }, 1, 1, true, 164, 1 };
-	//m_dlpFrm->g_iniParam_Info[28] = { "DEFAULT.PATTERNCONFIG.TRIG_MODE", { 0x1 }, { 0x1 }, 1, 1, true, 165, 1 };
-	//m_dlpFrm->g_iniParam_Info[29] = { "DEFAULT.PATTERNCONFIG.PAT_REPEAT", { 0x1 }, { 0x1 }, 1, 1, true, 166, 1 };
-	//m_dlpFrm->g_iniParam_Info[30] = { "DEFAULT.PATTERNCONFIG.NUM_LUT_ENTRIES", { 0x02 }, { 0x1 }, 1, 1, true, 168, 2 };
-	//m_dlpFrm->g_iniParam_Info[31] = { "DEFAULT.PATTERNCONFIG.NUM_PATTERNS", { 0x02 }, { 0x1 }, 1, 1, true, 170, 2 };
-	//m_dlpFrm->g_iniParam_Info[32] = { "DEFAULT.PATTERNCONFIG.NUM_SPLASH", { 0x00 }, { 0x00 }, 1, 1, true, 172, 2 };
-	//m_dlpFrm->g_iniParam_Info[33] = { "DEFAULT.SPLASHLUT", { 0x01 }, { 0x0 }, 1, 1, true, 176, 256 };
-	//m_dlpFrm->g_iniParam_Info[34] = { "DEFAULT.SEQPATLUT", { 0x00061800, 0x00022804, 0x00024808 }, { 0x0 }, 3, 1, true, 432, 29184 };
-	//m_dlpFrm->g_iniParam_Info[35] = { "DEFAULT.LED_ENABLE_MAN_MODE", { 0x0 }, { 0x0 }, 1, 1, true, 29616, 1 };
-	//m_dlpFrm->g_iniParam_Info[36] = { "DEFAULT.MAN_ENABLE_RED_LED", { 0x0 }, { 0x0 }, 1, 1, true, 29617, 1 };
-	//m_dlpFrm->g_iniParam_Info[37] = { "DEFAULT.MAN_ENABLE_GRN_LED", { 0x0 }, { 0x0 }, 1, 1, true, 29618, 1 };
-	//m_dlpFrm->g_iniParam_Info[38] = { "DEFAULT.MAN_ENABLE_BLU_LED", { 0x0 }, { 0x0 }, 1, 1, true, 29619, 1 };
-	//m_dlpFrm->g_iniParam_Info[39] = { "DEFAULT.PORTCONFIG.PORT", { 0x0 }, { 0x0 }, 1, 1, true, 40, 1 };
-	//m_dlpFrm->g_iniParam_Info[40] = { "DEFAULT.PORTCONFIG.BPP", { 0x1 }, { 0x1 }, 1, 1, true, 41, 1 };
-	//m_dlpFrm->g_iniParam_Info[41] = { "DEFAULT.PORTCONFIG.PIX_FMT", { 0x0 }, { 0x0 }, 1, 1, true, 42, 1 };
-	//m_dlpFrm->g_iniParam_Info[42] = { "DEFAULT.PORTCONFIG.PORT_CLK", { 0x0 }, { 0x0 }, 1, 1, true, 43, 1 };
-	////{"DEFAULT.PORTCONFIG.CSC[0]", {0x0400, 0x0000, 0x0000, 0x0000, 0x0400, 0x0000, 0x0000, 0x0000, 0x0400}, {0}, 9, 1, false, 44, 18},
-	////{"DEFAULT.PORTCONFIG.CSC[1]", {0x04A8, 0xFDC7, 0xFF26, 0x04A8, 0x0715, 0x0000, 0x04A8, 0x0000, 0x0875}, {0}, 9, 1, false, 62, 18},
-	////{"DEFAULT.PORTCONFIG.CSC[2]", {0x04A8, 0xFCC0, 0xFE6F, 0x04A8, 0x0662, 0x0000, 0x04A8, 0x0000, 0x0812}, {0}, 9, 1, false, 80, 18},
-	//m_dlpFrm->g_iniParam_Info[43] = { "DEFAULT.PORTCONFIG.ABC_MUX", { 0x4 }, { 0x4 }, 1, 1, true, 100, 1 };
-	//m_dlpFrm->g_iniParam_Info[44] = { "DEFAULT.PORTCONFIG.PIX_MODE", { 0x1 }, { 0x1 }, 1, 1, true, 101, 1 };
-	//m_dlpFrm->g_iniParam_Info[45] = { "DEFAULT.PORTCONFIG.SWAP_POL", { 0x1 }, { 0x1 }, 1, 1, true, 102, 1 };
-	//m_dlpFrm->g_iniParam_Info[46] = { "DEFAULT.PORTCONFIG.FLD_SEL", { 0x0 }, { 0x0 }, 1, 1, true, 103, 1 };
-	//m_dlpFrm->g_iniParam_Info[47] = { "PERIPHERALS.I2CADDRESS[0]", { 0x34 }, { 0x34 }, 1, 1, false, 29649, 1 };
-	//m_dlpFrm->g_iniParam_Info[48] = { "PERIPHERALS.I2CADDRESS[1]", { 0x3A }, { 0x3A }, 1, 1, false, 29650, 1 };
-	////{"PERIPHERALS.USB_SRL[0]", {0x004C, 0x0043, 0x0052, 0x0032}, {0x0}, 4, 1, false, 29656, 8},
-	////{"PERIPHERALS.USB_SRL[1]", {0x004C, 0x0043, 0x0052, 0x0033}, {0x0}, 4, 1, false, 29664, 8},
-	//m_dlpFrm->g_iniParam_Info[49] = { "DATAPATH.SPLASHSTARTUPTIMEOUT", { 0x1388 }, { 0x1388 }, 1, 1, false, 29676, 2 };
-	//m_dlpFrm->g_iniParam_Info[50] = { "DATAPATH.SPLASHATSTARTUPENABLE", { 0x01 }, { 0x1 }, 1, 1, true, 29680, 1 };
-	//m_dlpFrm->g_iniParam_Info[51] = { "MACHINE_DATA.COLORPROFILE_0_BRILLIANTCOLORLOOK", { 0x0 }, { 0x0 }, 1, 1, true, 29750, 1 };
+    //m_dlpFrm->g_iniParam_Info[0] = { "APPCONFIG.VERSION.SUBMINOR", { 0x00 }, { 0x00 }, 1, 1, false, 0, 1 };//SK: Remove
+    //m_dlpFrm->g_iniParam_Info[1] = { "APPCONFIG.VERSION.MINOR", { 0x00 }, { 0x00 }, 1, 1, false, 1, 1 }; //SK: Remove
+    //m_dlpFrm->g_iniParam_Info[2] = { "APPCONFIG.VERSION.MAJOR", { 0x03 }, { 0x00 }, 1, 1, false, 2, 1 }; //SK:Remove
+    ////{"APPCONFIG.VERSION.RSERVED", {0x00}, {0x00}, 1, 1, true, 3, 1},
+    //m_dlpFrm->g_iniParam_Info[3] = { "DEFAULT.FIRMWARE_TAG", { 0x44, 0x4C, 0x50 }, { 0x00 }, 3, 1, true, 4, 32 };
+    //m_dlpFrm->g_iniParam_Info[4] = { "DEFAULT.AUTOSTART", { 0x00 }, { 0x00 }, 1, 1, false, 36, 1 };
+    //m_dlpFrm->g_iniParam_Info[5] = { "DEFAULT.DISPMODE", { 0x00 }, { 0x00 }, 1, 1, true, 37, 1 };
+    //m_dlpFrm->g_iniParam_Info[6] = { "DEFAULT.SHORT_FLIP", { 0x00 }, { 0x00 }, 1, 1, true, 38, 1 };
+    //m_dlpFrm->g_iniParam_Info[7] = { "DEFAULT.LONG_FLIP", { 0x00 }, { 0x00 }, 1, 1, true, 39, 1 };
+    //m_dlpFrm->g_iniParam_Info[8] = { "DEFAULT.TRIG_OUT_1.POL", { 0x00 }, { 0x00 }, 1, 1, true, 104, 1 };
+    //m_dlpFrm->g_iniParam_Info[9] = { "DEFAULT.TRIG_OUT_1.RDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 105, 1 };
+    //m_dlpFrm->g_iniParam_Info[10] = { "DEFAULT.TRIG_OUT_1.FDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 106, 1 };
+    //m_dlpFrm->g_iniParam_Info[11] = { "DEFAULT.TRIG_OUT_2.POL", { 0x00 }, { 0x00 }, 1, 1, true, 108, 1 };
+    //m_dlpFrm->g_iniParam_Info[12] = { "DEFAULT.TRIG_OUT_2.WIDTH", { 0xBB }, { 0xBB }, 1, 1, true, 109, 1 };
+    //m_dlpFrm->g_iniParam_Info[13] = { "DEFAULT.TRIG_IN_1.DELAY", { 0x00 }, { 0x00 }, 1, 1, true, 112, 4 };
+    ////{"DEFAULT.TRIG_IN_1.POL", {0x00}, {0x00}, 1, 1, false, 116, 1},
+    ////{"DEFAULT.TRIG_IN_2.DELAY", {0x00}, {0x00}, 1, 1, false, 120, 4},
+    //m_dlpFrm->g_iniParam_Info[14] = { "DEFAULT.TRIG_IN_2.POL", { 0x00 }, { 0x00 }, 1, 1, true, 124, 1 };
+    //m_dlpFrm->g_iniParam_Info[15] = { "DEFAULT.RED_STROBE.RDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 128, 1 };
+    //m_dlpFrm->g_iniParam_Info[16] = { "DEFAULT.RED_STROBE.FDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 129, 1 };
+    //m_dlpFrm->g_iniParam_Info[17] = { "DEFAULT.GRN_STROBE.RDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 132, 1 };
+    //m_dlpFrm->g_iniParam_Info[18] = { "DEFAULT.GRN_STROBE.FDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 133, 1 };
+    //m_dlpFrm->g_iniParam_Info[19] = { "DEFAULT.BLU_STROBE.RDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 136, 1 };
+    //m_dlpFrm->g_iniParam_Info[20] = { "DEFAULT.BLU_STROBE.FDELAY", { 0xBB }, { 0xBB }, 1, 1, true, 137, 1 };
+    //m_dlpFrm->g_iniParam_Info[21] = { "DEFAULT.INVERTDATA", { 0x00 }, { 0x00 }, 1, 1, true, 140, 1 };
+    //m_dlpFrm->g_iniParam_Info[22] = { "DEFAULT.LEDCURRENT_RED", { 0x97 }, { 0x97 }, 1, 1, true, 149, 1 };
+    //m_dlpFrm->g_iniParam_Info[23] = { "DEFAULT.LEDCURRENT_GRN", { 0x78 }, { 0x78 }, 1, 1, true, 150, 1 };
+    //m_dlpFrm->g_iniParam_Info[24] = { "DEFAULT.LEDCURRENT_BLU", { 0x7D }, { 0x7D }, 1, 1, true, 151, 1 };
+    //m_dlpFrm->g_iniParam_Info[25] = { "DEFAULT.PATTERNCONFIG.PAT_EXPOSURE", { 0x7A120 }, { 0x7A120 }, 1, 1, true, 156, 4 };
+    //m_dlpFrm->g_iniParam_Info[26] = { "DEFAULT.PATTERNCONFIG.PAT_PERIOD", { 0x7A120 }, { 0x7A120 }, 1, 1, true, 160, 4 };
+    //m_dlpFrm->g_iniParam_Info[27] = { "DEFAULT.PATTERNCONFIG.PAT_MODE", { 0x03 }, { 0x03 }, 1, 1, true, 164, 1 };
+    //m_dlpFrm->g_iniParam_Info[28] = { "DEFAULT.PATTERNCONFIG.TRIG_MODE", { 0x1 }, { 0x1 }, 1, 1, true, 165, 1 };
+    //m_dlpFrm->g_iniParam_Info[29] = { "DEFAULT.PATTERNCONFIG.PAT_REPEAT", { 0x1 }, { 0x1 }, 1, 1, true, 166, 1 };
+    //m_dlpFrm->g_iniParam_Info[30] = { "DEFAULT.PATTERNCONFIG.NUM_LUT_ENTRIES", { 0x02 }, { 0x1 }, 1, 1, true, 168, 2 };
+    //m_dlpFrm->g_iniParam_Info[31] = { "DEFAULT.PATTERNCONFIG.NUM_PATTERNS", { 0x02 }, { 0x1 }, 1, 1, true, 170, 2 };
+    //m_dlpFrm->g_iniParam_Info[32] = { "DEFAULT.PATTERNCONFIG.NUM_SPLASH", { 0x00 }, { 0x00 }, 1, 1, true, 172, 2 };
+    //m_dlpFrm->g_iniParam_Info[33] = { "DEFAULT.SPLASHLUT", { 0x01 }, { 0x0 }, 1, 1, true, 176, 256 };
+    //m_dlpFrm->g_iniParam_Info[34] = { "DEFAULT.SEQPATLUT", { 0x00061800, 0x00022804, 0x00024808 }, { 0x0 }, 3, 1, true, 432, 29184 };
+    //m_dlpFrm->g_iniParam_Info[35] = { "DEFAULT.LED_ENABLE_MAN_MODE", { 0x0 }, { 0x0 }, 1, 1, true, 29616, 1 };
+    //m_dlpFrm->g_iniParam_Info[36] = { "DEFAULT.MAN_ENABLE_RED_LED", { 0x0 }, { 0x0 }, 1, 1, true, 29617, 1 };
+    //m_dlpFrm->g_iniParam_Info[37] = { "DEFAULT.MAN_ENABLE_GRN_LED", { 0x0 }, { 0x0 }, 1, 1, true, 29618, 1 };
+    //m_dlpFrm->g_iniParam_Info[38] = { "DEFAULT.MAN_ENABLE_BLU_LED", { 0x0 }, { 0x0 }, 1, 1, true, 29619, 1 };
+    //m_dlpFrm->g_iniParam_Info[39] = { "DEFAULT.PORTCONFIG.PORT", { 0x0 }, { 0x0 }, 1, 1, true, 40, 1 };
+    //m_dlpFrm->g_iniParam_Info[40] = { "DEFAULT.PORTCONFIG.BPP", { 0x1 }, { 0x1 }, 1, 1, true, 41, 1 };
+    //m_dlpFrm->g_iniParam_Info[41] = { "DEFAULT.PORTCONFIG.PIX_FMT", { 0x0 }, { 0x0 }, 1, 1, true, 42, 1 };
+    //m_dlpFrm->g_iniParam_Info[42] = { "DEFAULT.PORTCONFIG.PORT_CLK", { 0x0 }, { 0x0 }, 1, 1, true, 43, 1 };
+    ////{"DEFAULT.PORTCONFIG.CSC[0]", {0x0400, 0x0000, 0x0000, 0x0000, 0x0400, 0x0000, 0x0000, 0x0000, 0x0400}, {0}, 9, 1, false, 44, 18},
+    ////{"DEFAULT.PORTCONFIG.CSC[1]", {0x04A8, 0xFDC7, 0xFF26, 0x04A8, 0x0715, 0x0000, 0x04A8, 0x0000, 0x0875}, {0}, 9, 1, false, 62, 18},
+    ////{"DEFAULT.PORTCONFIG.CSC[2]", {0x04A8, 0xFCC0, 0xFE6F, 0x04A8, 0x0662, 0x0000, 0x04A8, 0x0000, 0x0812}, {0}, 9, 1, false, 80, 18},
+    //m_dlpFrm->g_iniParam_Info[43] = { "DEFAULT.PORTCONFIG.ABC_MUX", { 0x4 }, { 0x4 }, 1, 1, true, 100, 1 };
+    //m_dlpFrm->g_iniParam_Info[44] = { "DEFAULT.PORTCONFIG.PIX_MODE", { 0x1 }, { 0x1 }, 1, 1, true, 101, 1 };
+    //m_dlpFrm->g_iniParam_Info[45] = { "DEFAULT.PORTCONFIG.SWAP_POL", { 0x1 }, { 0x1 }, 1, 1, true, 102, 1 };
+    //m_dlpFrm->g_iniParam_Info[46] = { "DEFAULT.PORTCONFIG.FLD_SEL", { 0x0 }, { 0x0 }, 1, 1, true, 103, 1 };
+    //m_dlpFrm->g_iniParam_Info[47] = { "PERIPHERALS.I2CADDRESS[0]", { 0x34 }, { 0x34 }, 1, 1, false, 29649, 1 };
+    //m_dlpFrm->g_iniParam_Info[48] = { "PERIPHERALS.I2CADDRESS[1]", { 0x3A }, { 0x3A }, 1, 1, false, 29650, 1 };
+    ////{"PERIPHERALS.USB_SRL[0]", {0x004C, 0x0043, 0x0052, 0x0032}, {0x0}, 4, 1, false, 29656, 8},
+    ////{"PERIPHERALS.USB_SRL[1]", {0x004C, 0x0043, 0x0052, 0x0033}, {0x0}, 4, 1, false, 29664, 8},
+    //m_dlpFrm->g_iniParam_Info[49] = { "DATAPATH.SPLASHSTARTUPTIMEOUT", { 0x1388 }, { 0x1388 }, 1, 1, false, 29676, 2 };
+    //m_dlpFrm->g_iniParam_Info[50] = { "DATAPATH.SPLASHATSTARTUPENABLE", { 0x01 }, { 0x1 }, 1, 1, true, 29680, 1 };
+    //m_dlpFrm->g_iniParam_Info[51] = { "MACHINE_DATA.COLORPROFILE_0_BRILLIANTCOLORLOOK", { 0x0 }, { 0x0 }, 1, 1, true, 29750, 1 };
 
     // Hide the Connect button
     ui->pushButton_Connect_2->hide();
@@ -351,7 +351,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->comboBox_PatSeqBitPlaneNum->hide();
     ui->label_PatSeqBitPlaneNum->hide();
 
-	//Disable auto-scroll as it is direct selection only
+    //Disable auto-scroll as it is direct selection only
     ui->listWidget_PatSeqBitPlanes->setAutoScroll(false);
     ui->listWidget_VarExpPatSeqBitPlanes->setAutoScroll(false);
 
@@ -471,7 +471,7 @@ MainWindow::MainWindow(QWidget *parent) :
                    << "DEFAULT.PORTCONFIG.SWAP_POL" \
                    << "DEFAULT.PORTCONFIG.FLD_SEL" ;
 
-	m_dlpUSB->DLPC350_USB_Init();
+    m_dlpUSB->DLPC350_USB_Init();
     ui->pushButton_Connect->setEnabled(m_dlpUSB->DLPC350_USB_IsConnected());
 
     m_usbPollTimer = new QTimer(this);
@@ -482,50 +482,50 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->comboBox_PatSeqPatBitDepthSel->setCurrentIndex(7);
     ui->comboBox_PatSeqSelPatColor->setCurrentIndex(7);
 
-	//UI initial for hiding sensitive data
-	ui->groupBox_LEDDriverCtrl->setVisible(true);
-	ui->groupBox_ImageSetting->setVisible(false);
-	ui->tabWidget->removeTab(4);
-	ui->tabWidget->removeTab(3);
-	ui->tabWidget->removeTab(2);
-	ui->tabWidget->removeTab(0);
-	ui->radioButton_VariableExpSLMode->setEnabled(false);
-	ui->radioButton_VideoMode->setEnabled(false);
-	//ui->radioButton_PatSeqDispRunOnce->setChecked(true);
+    //UI initial for hiding sensitive data
+    ui->groupBox_LEDDriverCtrl->setVisible(true);
+    ui->groupBox_ImageSetting->setVisible(false);
+    ui->tabWidget->removeTab(4);
+    ui->tabWidget->removeTab(3);
+    ui->tabWidget->removeTab(2);
+    ui->tabWidget->removeTab(0);
+    ui->radioButton_VariableExpSLMode->setEnabled(false);
+    ui->radioButton_VideoMode->setEnabled(false);
+    //ui->radioButton_PatSeqDispRunOnce->setChecked(true);
 
-	ui->tabWidget_2->removeTab(5);
-	ui->tabWidget_2->removeTab(3);
-	ui->tabWidget_2->setTabEnabled(1, false);	
-	ui->tabWidget_2->setCurrentIndex(0);
+    ui->tabWidget_2->removeTab(5);
+    ui->tabWidget_2->removeTab(3);
+    ui->tabWidget_2->setTabEnabled(1, false);    
+    ui->tabWidget_2->setCurrentIndex(0);
 
 
-	QPalette Pal(palette());
-	// set black background
-	Pal.setColor(QPalette::Background, QColor(220, 220, 220));
-	setAutoFillBackground(true);
-	setPalette(Pal);
+    QPalette Pal(palette());
+    // set black background
+    Pal.setColor(QPalette::Background, QColor(220, 220, 220));
+    setAutoFillBackground(true);
+    setPalette(Pal);
 
-	m_bApplyDefaultSolution = false;
-	m_bConnected = false;
-	m_bPatSeqValidated = false;
-	m_nDLPIndex = 0;
+    m_bApplyDefaultSolution = false;
+    m_bConnected = false;
+    m_bPatSeqValidated = false;
+    m_nDLPIndex = 0;
 }
 
 MainWindow::~MainWindow()
 {
     int i;
 
-	m_dlpUSB->DLPC350_USB_Close();
-	m_dlpUSB->DLPC350_USB_Exit();
+    m_dlpUSB->DLPC350_USB_Close();
+    m_dlpUSB->DLPC350_USB_Exit();
     m_settings.setValue("FirmwarePath", m_firmwarePath);
     m_settings.setValue("PtnImagePath", m_ptnImagePath);
     m_settings.setValue("outFileName", m_outFileName);
     m_settings.setValue("csvFileName", m_csvFileName);
-	if (g_pImageBuffer)
-	{
-		free(g_pImageBuffer);
-		g_pImageBuffer = NULL;
-	}		
+    if (g_pImageBuffer)
+    {
+        free(g_pImageBuffer);
+        g_pImageBuffer = NULL;
+    }        
     for(i = 0; i < MAX_SPLASH_IMAGES; i++)
     {
         char file_name[11];
@@ -570,10 +570,10 @@ void MainWindow::ApplyGUISettingToDLPC350()
     //Stop pattern sequence mode if it is running
     bool mode;
     unsigned int patMode;
-	m_dlpAPI->DLPC350_GetMode(&mode);
+    m_dlpAPI->DLPC350_GetMode(&mode);
     if(mode == true)
     {
-		m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
+        m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
         if(patMode == 2)
             emit on_pushButton_PatSeqCtrlStop_clicked();
     }
@@ -606,13 +606,13 @@ void MainWindow::ApplyGUISettingToDLPC350()
 
             if(ui->radioButton_PatSeqSrcFrmVideoPort->isChecked())
             {
-				m_dlpAPI->DLPC350_SetPatternTriggerMode(0x00); //Trigger Mode - 0
-				m_dlpAPI->DLPC350_SetPatternDisplayMode(true);
+                m_dlpAPI->DLPC350_SetPatternTriggerMode(0x00); //Trigger Mode - 0
+                m_dlpAPI->DLPC350_SetPatternDisplayMode(true);
             }
             else
             {
-				m_dlpAPI->DLPC350_SetPatternTriggerMode(0x01); //Trigger Mode - 1
-				m_dlpAPI->DLPC350_SetPatternDisplayMode(false);
+                m_dlpAPI->DLPC350_SetPatternTriggerMode(0x01); //Trigger Mode - 1
+                m_dlpAPI->DLPC350_SetPatternDisplayMode(false);
             }
         }
 
@@ -624,13 +624,13 @@ void MainWindow::ApplyGUISettingToDLPC350()
 
             if(ui->radioButton_VarExpPatSeqSrcFrmVideoPort->isChecked())
             {
-				m_dlpAPI->DLPC350_SetPatternTriggerMode(0x04); //Trigger Mode - 4
-				m_dlpAPI->DLPC350_SetPatternDisplayMode(true);
+                m_dlpAPI->DLPC350_SetPatternTriggerMode(0x04); //Trigger Mode - 4
+                m_dlpAPI->DLPC350_SetPatternDisplayMode(true);
             }
             else
             {
-				m_dlpAPI->DLPC350_SetPatternTriggerMode(0x03); //Trigger Mode - 3
-				m_dlpAPI->DLPC350_SetPatternDisplayMode(false);
+                m_dlpAPI->DLPC350_SetPatternTriggerMode(0x03); //Trigger Mode - 3
+                m_dlpAPI->DLPC350_SetPatternDisplayMode(false);
             }
         }
     }
@@ -640,7 +640,7 @@ int MainWindow::GetDLPC350Status()
 {
     unsigned char HWStatus, SysStatus, MainStatus;
 
-	if (m_dlpAPI->DLPC350_GetStatus(&HWStatus, &SysStatus, &MainStatus) == 0)
+    if (m_dlpAPI->DLPC350_GetStatus(&HWStatus, &SysStatus, &MainStatus) == 0)
     {
         ui->indicatorButton_statusInitDone->setEnabled((HWStatus & BIT0) == BIT0); //Init Done
         ui->indicatorButton_statusForcedSwap->setEnabled((HWStatus & BIT3) == BIT3); //Forced Swap
@@ -675,11 +675,11 @@ void MainWindow::SetDLPC350InVideoMode()
     unsigned int patMode;
 
     //Check if it is in Pattern Mode
-	m_dlpAPI->DLPC350_GetMode(&mode);
+    m_dlpAPI->DLPC350_GetMode(&mode);
     if(mode == true)
     {
        //First stop pattern sequence
-		m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
+        m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
         //if it is in PAUSE or RUN mode
         if(patMode != 0)
         {
@@ -687,11 +687,11 @@ void MainWindow::SetDLPC350InVideoMode()
         }
 
         //Switch to Video Mode
-		m_dlpAPI->DLPC350_SetMode(false);
+        m_dlpAPI->DLPC350_SetMode(false);
         SleeperThread::msleep(100);
         while(1)
         {
-			m_dlpAPI->DLPC350_GetMode(&mode);
+            m_dlpAPI->DLPC350_GetMode(&mode);
             if(!mode)
                 break;
             SleeperThread::msleep(100);
@@ -710,15 +710,15 @@ void MainWindow::SetDLPC350InPatternMode()
     unsigned int patMode;
 
     //Check if it is in Pattern Mode
-	m_dlpAPI->DLPC350_GetMode(&mode);
+    m_dlpAPI->DLPC350_GetMode(&mode);
     if(mode == false)
     {
         //Switch to Pattern Mode
-		m_dlpAPI->DLPC350_SetMode(true);
+        m_dlpAPI->DLPC350_SetMode(true);
         SleeperThread::msleep(100);
         while(1)
         {
-			m_dlpAPI->DLPC350_GetMode(&mode);
+            m_dlpAPI->DLPC350_GetMode(&mode);
             if(mode)
                 break;
             SleeperThread::msleep(100);
@@ -729,7 +729,7 @@ void MainWindow::SetDLPC350InPatternMode()
     else
     {
         //First stop pattern sequence
-		m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
+        m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
          //if it is in PAUSE or RUN mode
          if(patMode != 0)
          {
@@ -742,7 +742,7 @@ void MainWindow::SetDLPC350InPatternMode()
 
 void MainWindow::timerTimeout(void)
 {
-	if (m_dlpUSB->DLPC350_USB_IsConnected())
+    if (m_dlpUSB->DLPC350_USB_IsConnected())
     {
         if(ui->checkBox_updateStatus->isChecked())
         {
@@ -752,48 +752,48 @@ void MainWindow::timerTimeout(void)
             }
         }
 
-		if (!m_bApplyDefaultSolution)
-		{
-			ApplyDefaultSolution();
-			m_bApplyDefaultSolution = true;
-		}
+        if (!m_bApplyDefaultSolution)
+        {
+            ApplyDefaultSolution();
+            m_bApplyDefaultSolution = true;
+        }
 
-		m_bConnected = true;
+        m_bConnected = true;
     }
     else
     {
-		m_bConnected = false;		
-	
-		if (m_usbSerialNumber.empty())
-		{
-			if (m_dlpUSB->DLPC350_USB_Open(NULL) == 0)
-			{
-				System->setTrackInfo("USB connect!");
+        m_bConnected = false;        
+    
+        if (m_usbSerialNumber.empty())
+        {
+            if (m_dlpUSB->DLPC350_USB_Open(NULL) == 0)
+            {
+                System->setTrackInfo("USB connect!");
 
-				ui->pushButton_Connect->setEnabled(m_dlpUSB->DLPC350_USB_IsConnected());
+                ui->pushButton_Connect->setEnabled(m_dlpUSB->DLPC350_USB_IsConnected());
 
-				emit on_pushButton_Connect_clicked();
-			}
-		}
-		else
-		{
-			//int mystringSize = (int)(m_usbSerialNumber.length() + 1);
-			//wchar_t* mywstring = new wchar_t[mystringSize];
-			//MultiByteToWideChar(CP_ACP, 0, m_usbSerialNumber.c_str(), -1, mywstring, mystringSize);
-			//mywstring[mystringSize - 1] = '\0';
-			//use mywstring to do:
-			if (m_dlpUSB->DLPC350_USB_OpenByProductStr(m_usbSerialNumber) == 0)
-			{
-				m_bApplyDefaultSolution = false; 
+                emit on_pushButton_Connect_clicked();
+            }
+        }
+        else
+        {
+            //int mystringSize = (int)(m_usbSerialNumber.length() + 1);
+            //wchar_t* mywstring = new wchar_t[mystringSize];
+            //MultiByteToWideChar(CP_ACP, 0, m_usbSerialNumber.c_str(), -1, mywstring, mystringSize);
+            //mywstring[mystringSize - 1] = '\0';
+            //use mywstring to do:
+            if (m_dlpUSB->DLPC350_USB_OpenByProductStr(m_usbSerialNumber) == 0)
+            {
+                m_bApplyDefaultSolution = false; 
 
-				System->setTrackInfo("USB connect!");
+                System->setTrackInfo("USB connect!");
 
-				ui->pushButton_Connect->setEnabled(m_dlpUSB->DLPC350_USB_IsConnected());
+                ui->pushButton_Connect->setEnabled(m_dlpUSB->DLPC350_USB_IsConnected());
 
-				emit on_pushButton_Connect_clicked();
-			}
-			//delete[] mywstring;
-		}
+                emit on_pushButton_Connect_clicked();
+            }
+            //delete[] mywstring;
+        }
     }
 }
 
@@ -837,7 +837,7 @@ void MainWindow::on_pushButton_Connect_clicked()
         if(GetDLPC350Status() <0 )
             return ;
 
-		if (m_dlpAPI->DLPC350_GetVersion(&App_ver, &API_ver, &SWConfig_ver, &SeqConfig_ver) == 0)
+        if (m_dlpAPI->DLPC350_GetVersion(&App_ver, &API_ver, &SWConfig_ver, &SeqConfig_ver) == 0)
         {
             sprintf(versionStr, "%d.%d.%d", (App_ver >> 24), ((App_ver << 8) >> 24), ((App_ver << 16) >> 16));
             ui->label_ApiVersion->setText(versionStr);
@@ -849,7 +849,7 @@ void MainWindow::on_pushButton_Connect_clicked()
 //        ui->spinBox_PatSeqFrameImgIndex->setRange(0,(m_numImgInFlash-1));
         //Read firmware tag information
         unsigned char firmwareTag[33];
-		if (m_dlpAPI->DLPC350_GetFirmwareTagInfo(&firmwareTag[0]) == 0)
+        if (m_dlpAPI->DLPC350_GetFirmwareTagInfo(&firmwareTag[0]) == 0)
         {
             QString str((char *)firmwareTag);
             ui->label_firmwareTagInfo->setText(str);
@@ -858,13 +858,13 @@ void MainWindow::on_pushButton_Connect_clicked()
             return;
 
         //Retrieve the total number of Images in the firmware info
-		if (m_dlpAPI->DLPC350_GetNumImagesInFlash(&numImgInFlash) == 0)
+        if (m_dlpAPI->DLPC350_GetNumImagesInFlash(&numImgInFlash) == 0)
         {            
             m_numImgInFlash = numImgInFlash;
             //m_numImgInFlash = 64;
             ui->spinBox_ImgLdTmImgIndex->setRange(0,(numImgInFlash-1));
-			ui->spinBox_PatSeqFrameImgIndex->setRange(0,(m_numImgInFlash-1));
-			ui->spinBox_VarExpPatSeqFrameImgIndex->setRange(0,(m_numImgInFlash-1));
+            ui->spinBox_PatSeqFrameImgIndex->setRange(0,(m_numImgInFlash-1));
+            ui->spinBox_VarExpPatSeqFrameImgIndex->setRange(0,(m_numImgInFlash-1));
         }
         else
             return ;
@@ -873,25 +873,25 @@ void MainWindow::on_pushButton_Connect_clicked()
 
         //Update UI content based on the mode
         bool standby;
-		if (m_dlpAPI->DLPC350_GetPowerMode(&standby) != 0)
+        if (m_dlpAPI->DLPC350_GetPowerMode(&standby) != 0)
         {
             ;//ShowError("PowerMode Read failed!!!");
         }
 
         //Read Display Mode & update UI elements
-		if ((m_dlpAPI->DLPC350_GetMode(&SLmode) == 0) && (standby == false))
+        if ((m_dlpAPI->DLPC350_GetMode(&SLmode) == 0) && (standby == false))
         {
             if(SLmode)
             {
                 ui->radioButton_VideoMode->setChecked(false);
 
-				if (m_dlpAPI->DLPC350_GetPatternTriggerMode(&trigMode) == 0)
+                if (m_dlpAPI->DLPC350_GetPatternTriggerMode(&trigMode) == 0)
                 {
                     if(trigMode <= 2)
                     {
                         ui->radioButton_SLMode->setChecked(true);
                         ui->radioButton_VariableExpSLMode->setChecked(false);
-						if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
+                        if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
                         {
                             if(isExtPatDisplayMode) //if set to external DVI/FPD port
                             {
@@ -913,7 +913,7 @@ void MainWindow::on_pushButton_Connect_clicked()
                     {
                         ui->radioButton_SLMode->setChecked(false);
                         ui->radioButton_VariableExpSLMode->setChecked(true);
-						if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
+                        if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
                         {
                             if(isExtPatDisplayMode) //if set to external DVI/FPD port
                             {
@@ -963,7 +963,7 @@ void MainWindow::on_pushButton_Reset_clicked()
 {
     m_usbPollTimer->stop();
 
-	m_dlpAPI->DLPC350_SoftwareReset();
+    m_dlpAPI->DLPC350_SoftwareReset();
     m_dlpUSB->DLPC350_USB_Close();
     ui->pushButton_Connect->setEnabled(false);
 
@@ -989,7 +989,7 @@ void MainWindow::on_radioButton_VideoMode_clicked()
 
         //Wakeup from standby
         //Bug? - Response fails for DLPC350_SetPowerMode command
-		m_dlpAPI->DLPC350_SetPowerMode(0);
+        m_dlpAPI->DLPC350_SetPowerMode(0);
         //Assuming it takes around 2.0 seconds
         SleeperThread::msleep(2000);
         //        if(DLPC350_SetPowerMode(0) != 0)
@@ -1000,7 +1000,7 @@ void MainWindow::on_radioButton_VideoMode_clicked()
 
         while(1)
         {
-			m_dlpAPI->DLPC350_GetPowerMode(&mode);
+            m_dlpAPI->DLPC350_GetPowerMode(&mode);
             if(!mode)
                 break;
             SleeperThread::msleep(100);
@@ -1044,11 +1044,11 @@ void MainWindow::on_radioButton_SLMode_clicked()
     ui->tabWidget_2->setCurrentIndex(0);
 
     //Update all the settings under the page
-	if (m_dlpAPI->DLPC350_GetPatternTriggerMode(&trigMode) == 0)
+    if (m_dlpAPI->DLPC350_GetPatternTriggerMode(&trigMode) == 0)
     {
         if(trigMode <= 2)
         {
-			if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
+            if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
             {
                 if(isExtPatDisplayMode) //if set to external DVI/FPD port
                 {
@@ -1083,11 +1083,11 @@ void MainWindow::on_radioButton_VariableExpSLMode_clicked()
     ui->tabWidget_2->setCurrentIndex(1);
 
     //Update all the settings under the page
-	if (m_dlpAPI->DLPC350_GetPatternTriggerMode(&trigMode) == 0)
+    if (m_dlpAPI->DLPC350_GetPatternTriggerMode(&trigMode) == 0)
     {
         if((trigMode == 3) || (trigMode == 4))
         {
-			if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
+            if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
             {
                 if(isExtPatDisplayMode) //if set to external DVI/FPD port
                 {
@@ -1112,7 +1112,7 @@ void MainWindow::on_radioButton_StandbyMode_clicked()
     SetDLPC350InVideoMode();
 
     /* Set power mode standby */
-	m_dlpAPI->DLPC350_SetPowerMode(1);
+    m_dlpAPI->DLPC350_SetPowerMode(1);
     SleeperThread::msleep(2000);
 
     ui->radioButton_SLMode->setEnabled(false);
@@ -1127,7 +1127,7 @@ void MainWindow::on_pushButton_GetLEDConfiguration_clicked()
     unsigned char RedCurrent, GreenCurrent, BlueCurrent;
     char currentStr[8];
 
-	if (m_dlpAPI->DLPC350_GetLedEnables(&SeqCtrl, &Red, &Green, &Blue) == 0)
+    if (m_dlpAPI->DLPC350_GetLedEnables(&SeqCtrl, &Red, &Green, &Blue) == 0)
     {
         ui->radioButton_ColorDisplayAuto->setChecked(SeqCtrl);
         ui->radioButton_ColorDisplayManual->setChecked(!SeqCtrl);
@@ -1147,7 +1147,7 @@ void MainWindow::on_pushButton_GetLEDConfiguration_clicked()
     }
 
 
-	if (m_dlpAPI->DLPC350_GetLedCurrents(&RedCurrent, &GreenCurrent, &BlueCurrent) == 0)
+    if (m_dlpAPI->DLPC350_GetLedCurrents(&RedCurrent, &GreenCurrent, &BlueCurrent) == 0)
     {
         sprintf(currentStr,"%d", 255-RedCurrent);
         ui->lineEdit_RedLEDCurrent->setText(currentStr);
@@ -1157,7 +1157,7 @@ void MainWindow::on_pushButton_GetLEDConfiguration_clicked()
         ui->lineEdit_BlueLEDCurrent->setText(currentStr);
     }
 
-	if (m_dlpAPI->DLPC350_GetLEDPWMInvert(&inverted) == 0)
+    if (m_dlpAPI->DLPC350_GetLEDPWMInvert(&inverted) == 0)
     {
         ui->checkBox_LedPwmInvert->setChecked(inverted);
     }
@@ -1174,27 +1174,27 @@ void MainWindow::on_pushButton_SetLEDConfiguration_clicked()
     Green = ui->checkBox_GreenEnable->isChecked();
     Blue = ui->checkBox_BlueEnable->isChecked();
 
-	m_dlpAPI->DLPC350_SetLedEnables(SeqCtrl, Red, Green, Blue);
+    m_dlpAPI->DLPC350_SetLedEnables(SeqCtrl, Red, Green, Blue);
 
-	m_dlpAPI->DLPC350_SetLEDPWMInvert(ui->checkBox_LedPwmInvert->isChecked());
+    m_dlpAPI->DLPC350_SetLEDPWMInvert(ui->checkBox_LedPwmInvert->isChecked());
 
     RedCurrent      = 255-strToNum(ui->lineEdit_RedLEDCurrent->text());
     GreenCurrent    = 255-strToNum(ui->lineEdit_GreenLEDCurrent->text());
     BlueCurrent     = 255-strToNum(ui->lineEdit_BlueLEDCurrent->text());
 
-	m_dlpAPI->DLPC350_SetLedCurrents(RedCurrent, GreenCurrent, BlueCurrent);
+    m_dlpAPI->DLPC350_SetLedCurrents(RedCurrent, GreenCurrent, BlueCurrent);
 }
 
 void MainWindow::on_pushButton_GetFlip_clicked()
 {
-	ui->checkBox_longAxisFlip->setChecked(m_dlpAPI->DLPC350_GetLongAxisImageFlip());
-	ui->checkBox_shortAxisFlip->setChecked(m_dlpAPI->DLPC350_GetShortAxisImageFlip());
+    ui->checkBox_longAxisFlip->setChecked(m_dlpAPI->DLPC350_GetLongAxisImageFlip());
+    ui->checkBox_shortAxisFlip->setChecked(m_dlpAPI->DLPC350_GetShortAxisImageFlip());
 }
 
 void MainWindow::on_pushButton_SetFlip_clicked()
 {
-	m_dlpAPI->DLPC350_SetLongAxisImageFlip(ui->checkBox_longAxisFlip->isChecked());
-	m_dlpAPI->DLPC350_SetShortAxisImageFlip(ui->checkBox_shortAxisFlip->isChecked());
+    m_dlpAPI->DLPC350_SetLongAxisImageFlip(ui->checkBox_longAxisFlip->isChecked());
+    m_dlpAPI->DLPC350_SetShortAxisImageFlip(ui->checkBox_shortAxisFlip->isChecked());
 }
 
 void MainWindow::on_pushButton_InitPatternSeq_clicked()
@@ -1202,7 +1202,7 @@ void MainWindow::on_pushButton_InitPatternSeq_clicked()
     //DLPC350_SetFreeze(false);
 
     uint numImgInFlash = 0;
-	if (m_dlpAPI->DLPC350_GetNumImagesInFlash(&numImgInFlash) == 0)
+    if (m_dlpAPI->DLPC350_GetNumImagesInFlash(&numImgInFlash) == 0)
     {
         QString str = QString("%0").arg(numImgInFlash);
         qDebug() << "Flash Num:" << str;
@@ -1246,7 +1246,7 @@ void MainWindow::on_pushButton_InitPatternSeq_clicked()
 
     //DLPC350_SetFreeze(false);
 
-	if (m_dlpAPI->DLPC350_SetBufferWriteEnables(false) < 0)
+    if (m_dlpAPI->DLPC350_SetBufferWriteEnables(false) < 0)
     {
          qDebug() << "DLPC350_SetBufferWriteEnables error";
     }
@@ -1267,7 +1267,7 @@ void MainWindow::on_pushButton_InitPatternSeq_clicked()
 //    }
 
     bool bDisable = false;
-	if (m_dlpAPI->DLPC350_GetBufferWriteEnables(&bDisable) == 0)
+    if (m_dlpAPI->DLPC350_GetBufferWriteEnables(&bDisable) == 0)
     {
         QString str = bDisable ? "disable" : "enable";
         qDebug() << "Buffer write:" << str;
@@ -1310,7 +1310,7 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
 
     switch(g_iniGUITokens.indexOf(token))
     {
-    case 0:				//DEFAULT.DISPMODE
+    case 0:                //DEFAULT.DISPMODE
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.DISPMODE");
 
@@ -1322,7 +1322,7 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
 
         break;
 
-    case 1:				//DEFAULT.SHORT_FLIP
+    case 1:                //DEFAULT.SHORT_FLIP
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.SHORT_FLIP");
 
@@ -1333,7 +1333,7 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
 
         break;
 
-    case 2:				//DEFAULT.LONG_FLIP
+    case 2:                //DEFAULT.LONG_FLIP
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.LONG_FLIP");
 
@@ -1344,7 +1344,7 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
         break;
 
 
-    case 3:				//DEFAULT.TRIG_OUT_1.POL
+    case 3:                //DEFAULT.TRIG_OUT_1.POL
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.TRIG_OUT_1.POL");
 
@@ -1354,21 +1354,21 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
             ui->checkBox_InvertTrig1Out->setChecked(false);
         break;
 
-    case 4:				//DEFAULT.TRIG_OUT_1.RDELAY
+    case 4:                //DEFAULT.TRIG_OUT_1.RDELAY
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.TRIG_OUT_1.RDELAY");
 
         ui->spinBox_Trig1OutRDly->setValue(params[0]);
         break;
 
-    case 5:				//DEFAULT.TRIG_OUT_1.FDELAY
+    case 5:                //DEFAULT.TRIG_OUT_1.FDELAY
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.DISPMODE\n");
 
         ui->spinBox_Trig1OutFDly->setValue(params[0]);
         break;
 
-    case 6:				//DEFAULT.TRIG_OUT_2.POL
+    case 6:                //DEFAULT.TRIG_OUT_2.POL
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.TRIG_OUT_1.FDELAY");
 
@@ -1378,21 +1378,21 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
             ui->checkBox_InvertTrig2Out->setChecked(false);
         break;
 
-    case 7:				//DEFAULT.TRIG_OUT_2.WIDTH
+    case 7:                //DEFAULT.TRIG_OUT_2.WIDTH
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.TRIG_OUT_2.WIDTH");
 
         ui->spinBox_Trig2OutRDly->setValue(params[0]);
         break;
 
-    case 8:				//DEFAULT.TRIG_IN_1.DELAY
+    case 8:                //DEFAULT.TRIG_IN_1.DELAY
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.TRIG_IN_1.DELAY");
 
         ui->spinBox_TrigIn1->setValue(params[0]);
         break;
 
-    case 9:				//DEFAULT.TRIG_IN_2.POL
+    case 9:                //DEFAULT.TRIG_IN_2.POL
         if((numParams > 1) && (params[0] <= 1))
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.TRIG_IN_2.POL");
 
@@ -1400,49 +1400,49 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
         break;
 
 
-    case 10:				//DEFAULT.RED_STROBE.RDELAY
+    case 10:                //DEFAULT.RED_STROBE.RDELAY
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.RED_STROBE.RDELAY");
 
         ui->spinBox_LedDlyCtrlRedREdgeDly->setValue(params[0]);
         break;
 
-    case 11:				//DEFAULT.RED_STROBE.FDELAY
+    case 11:                //DEFAULT.RED_STROBE.FDELAY
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.RED_STROBE.FDELAY");
 
         ui->spinBox_LedDlyCtrlRedFEdgeDly->setValue(params[0]);
         break;
 
-    case 12:				//DEFAULT.GRN_STROBE.RDELAY
+    case 12:                //DEFAULT.GRN_STROBE.RDELAY
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.GRN_STROBE.RDELAY");
 
         ui->spinBox_LedDlyCtrlGreenREdgeDly->setValue(params[0]);
         break;
 
-    case 13:				//DEFAULT.GRN_STROBE.FDELAY
+    case 13:                //DEFAULT.GRN_STROBE.FDELAY
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.GRN_STROBE.FDELAY");
 
         ui->spinBox_LedDlyCtrlGreenFEdgeDly->setValue(params[0]);
         break;
 
-    case 14:				//DEFAULT.BLU_STROBE.RDELAY
+    case 14:                //DEFAULT.BLU_STROBE.RDELAY
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.BLU_STROBE.RDELAY");
 
         ui->spinBox_LedDlyCtrlBlueREdgeDly->setValue(params[0]);
         break;
 
-    case 15:				//DEFAULT.BLU_STROBE.FDELAY
+    case 15:                //DEFAULT.BLU_STROBE.FDELAY
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.BLU_STROBE.FDELAY");
 
         ui->spinBox_LedDlyCtrlBlueFEdgeDly->setValue(params[0]);
         break;
 
-    case 16:				//DEFAULT.INVERTDATA
+    case 16:                //DEFAULT.INVERTDATA
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.INVERTDATA");
         if (params[0])
@@ -1451,14 +1451,14 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
             ui->checkBox_PatSeqCtrlGlobalDataInvert->setChecked(false);
         break;
 
-    case 17:				//DEFAULT.LEDCURRENT_RED
+    case 17:                //DEFAULT.LEDCURRENT_RED
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.LEDCURRENT_RED");
 
         ui->lineEdit_RedLEDCurrent->setText(QString::number(255 - params[0]));
         break;
 
-    case 18:				//DEFAULT.LEDCURRENT_GRN
+    case 18:                //DEFAULT.LEDCURRENT_GRN
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.LEDCURRENT_GRN");
 
@@ -1466,27 +1466,27 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
 
         break;
 
-    case 19:				//DEFAULT.LEDCURRENT_BLU
+    case 19:                //DEFAULT.LEDCURRENT_BLU
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.LEDCURRENT_BLU");
 
         ui->lineEdit_BlueLEDCurrent->setText(QString::number(255 - params[0]));
         break;
 
-    case 20:				//DEFAULT.PATTERNCONFIG.PAT_EXPOSURE
+    case 20:                //DEFAULT.PATTERNCONFIG.PAT_EXPOSURE
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PATTERNCONFIG.PAT_EXPOSURE");
         ui->lineEdit_PatSeqPatExpTime->setText(QString::number(params[0]));
 
         break;
 
-    case 21:				//DEFAULT.PATTERNCONFIG.PAT_PERIOD
+    case 21:                //DEFAULT.PATTERNCONFIG.PAT_PERIOD
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PATTERNCONFIG.PAT_PERIOD");
         ui->lineEdit_PatSeqPatPeriod->setText(QString::number(params[0]));
         break;
 
-    case 22:				//DEFAULT.PATTERNCONFIG.PAT_MODE
+    case 22:                //DEFAULT.PATTERNCONFIG.PAT_MODE
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PATTERNCONFIG.PAT_MODE");
 
@@ -1510,7 +1510,7 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
             ShowError("Wrong value as argument for DEFAULT.PATTERNCONFIG.PAT_MODE");
         break;
 
-    case 23:				//DEFAULT.PATTERNCONFIG.TRIG_MODE
+    case 23:                //DEFAULT.PATTERNCONFIG.TRIG_MODE
 
         isVarExpTrigMode = false;
 
@@ -1542,7 +1542,7 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
 
         break;
 
-    case 24:				//DEFAULT.PATTERNCONFIG.PAT_REPEAT
+    case 24:                //DEFAULT.PATTERNCONFIG.PAT_REPEAT
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PATTERNCONFIG.PAT_REPEAT");
         if (params[0])
@@ -1580,7 +1580,7 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
         numSplashLutEntries++; //+1 since 0 index based
         break;
 
-    case 28:				//DEFAULT.SPLASHLUT
+    case 28:                //DEFAULT.SPLASHLUT
         if(numSplashLutEntries != numParams)
             ShowError("Number of Splash Lut entries not matching with actual Lut size");
 
@@ -1589,7 +1589,7 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
 
         break;
 
-    case 29:				//DEFAULT.SEQPATLUT
+    case 29:                //DEFAULT.SEQPATLUT
 
         if(isVarExpTrigMode == false)
         {
@@ -1823,19 +1823,19 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
             ui->checkBox_BlueEnable->setChecked(false);
         break;
 
-    case 34:				//DEFAULT.PORTCONFIG.PORT
+    case 34:                //DEFAULT.PORTCONFIG.PORT
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PORTCONFIG.PORT");
         ui->comboBox_InputSourceList->setCurrentIndex(params[0]);
         break;
 
-    case 35:				//DEFAULT.PORTCONFIG.BPP
+    case 35:                //DEFAULT.PORTCONFIG.BPP
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PORTCONFIG.BPP");
         ui->comboBox_InputSourceOptionList->setCurrentIndex(params[0]);
         break;
 
-    case 36:				//DEFAULT.PORTCONFIG.PIX_FMT
+    case 36:                //DEFAULT.PORTCONFIG.PIX_FMT
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PORTCONFIG.PIX_FMT");
         if((params[0] > 0) && ((ui->comboBox_InputSourceList->currentIndex() == 1) || (ui->comboBox_InputSourceList->currentIndex() == 3)))
@@ -1861,25 +1861,25 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
         ui->comboBox_PixelFormatList->setCurrentIndex(params[0]);
         break;
 
-    case 37:				//DEFAULT.PORTCONFIG.PORT_CLK
+    case 37:                //DEFAULT.PORTCONFIG.PORT_CLK
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PORTCONFIG.PORT_CLK");
         ui->comboBox_PortClockList->setCurrentIndex(params[0]);
         break;
 
-    case 38:				//DEFAULT.PORTCONFIG.ABC_MUX
+    case 38:                //DEFAULT.PORTCONFIG.ABC_MUX
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PORTCONFIG.ABC_MUX");
         ui->comboBox_SwapSelectList->setCurrentIndex(params[0]);
         break;
 
-    case 39:				//DEFAULT.PORTCONFIG.PIX_MODE
+    case 39:                //DEFAULT.PORTCONFIG.PIX_MODE
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PORTCONFIG.PIX_MODE");
         ui->spinBox_FPDPixMode->setValue(params[0]);
         break;
 
-    case 40:				//DEFAULT.PORTCONFIG.SWAP_POL
+    case 40:                //DEFAULT.PORTCONFIG.SWAP_POL
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PORTCONFIG.SWAP_POL");
         if(params[0])
@@ -1888,7 +1888,7 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
             ui->checkBox_FPDInvPol->setChecked(false);
         break;
 
-    case 41:				//DEFAULT.PORTCONFIG.FLD_SEL
+    case 41:                //DEFAULT.PORTCONFIG.FLD_SEL
         if(numParams > 1)
             ShowError("Wrong number of parameters in the chosen .ini file for DEFAULT.PORTCONFIG.FLD_SEL");
         ui->comboBox_FPDFieldSelectList->setCurrentIndex(params[0]);
@@ -1901,135 +1901,135 @@ void MainWindow::ApplyIniParam(QString token, uint32 *params, int numParams)
 
 void MainWindow::ApplyDefaultSolution()
 {
-	QString path = QApplication::applicationDirPath();	
+    QString path = QApplication::applicationDirPath();    
     bool bMotionCardTrigger = System->isHardwareTrigger();
-	QString fileName = path + System->getParam((bMotionCardTrigger ? QString("dlp_default_solution_file_path_motion") : QString("dlp_default_solution_file_path")) + QString("_%1").arg(m_nDLPIndex + 1)).toString();
+    QString fileName = path + System->getParam((bMotionCardTrigger ? QString("dlp_default_solution_file_path_motion") : QString("dlp_default_solution_file_path")) + QString("_%1").arg(m_nDLPIndex + 1)).toString();
 
-	if (fileName.isEmpty() || !fileName.contains(".ini"))
-		return;
+    if (fileName.isEmpty() || !fileName.contains(".ini"))
+        return;
 
-	QFileInfo firmwareFileInfo;
-	firmwareFileInfo.setFile(fileName);
-	m_firmwarePath = firmwareFileInfo.absolutePath();
+    QFileInfo firmwareFileInfo;
+    firmwareFileInfo.setFile(fileName);
+    m_firmwarePath = firmwareFileInfo.absolutePath();
 
-	QFile iniFile(fileName);
-	if (!iniFile.open(QIODevice::ReadWrite | QIODevice::Text))
-	{
-		ShowError("Unable to open .ini file");
-		return;
-	}
+    QFile iniFile(fileName);
+    if (!iniFile.open(QIODevice::ReadWrite | QIODevice::Text))
+    {
+        ShowError("Unable to open .ini file");
+        return;
+    }
 
-	QTextStream in(&iniFile);
+    QTextStream in(&iniFile);
 
-	QString firstIniToken;
-	QString line;
-	QByteArray byteArray;
-	char cFirstIniToken[128];
-	char *pCh;
-	uint32 iniParams[MAX_VAR_EXP_PAT_LUT_ENTRIES * 3];//Change for variable exposure 1824x3
-	int numIniParams;
-
-#ifdef DEBUG_LOG_EN
-	char tempString[256];
-#endif
-
-	while (!in.atEnd())
-	{
-		line = in.readLine();
-		byteArray = line.toLocal8Bit();
-		pCh = byteArray.data();
-
-		if (m_dlpFrm->DLPC350_Frmw_ParseIniLines(pCh))
-			continue;
-
-		m_dlpFrm->DLPC350_Frmw_GetCurrentIniLineParam(&cFirstIniToken[0], &iniParams[0], &numIniParams);
-		firstIniToken = QString(&cFirstIniToken[0]);
+    QString firstIniToken;
+    QString line;
+    QByteArray byteArray;
+    char cFirstIniToken[128];
+    char *pCh;
+    uint32 iniParams[MAX_VAR_EXP_PAT_LUT_ENTRIES * 3];//Change for variable exposure 1824x3
+    int numIniParams;
 
 #ifdef DEBUG_LOG_EN
-		qDebug() << "firstIniToken = " << firstIniToken << " numIniParams = " << numIniParams;
-		for (int i = 0; i < numIniParams; i++) {
-			sprintf(&tempString[0], "0x%X", iniParams[i]);
-			qDebug() << tempString;
-		}
+    char tempString[256];
 #endif
-		ApplyIniParam(firstIniToken, iniParams, numIniParams);
-	}
 
-	iniFile.close();
+    while (!in.atEnd())
+    {
+        line = in.readLine();
+        byteArray = line.toLocal8Bit();
+        pCh = byteArray.data();
 
-	//Apply GUI settings to DLPC350
-	ApplyGUISettingToDLPC350();
+        if (m_dlpFrm->DLPC350_Frmw_ParseIniLines(pCh))
+            continue;
+
+        m_dlpFrm->DLPC350_Frmw_GetCurrentIniLineParam(&cFirstIniToken[0], &iniParams[0], &numIniParams);
+        firstIniToken = QString(&cFirstIniToken[0]);
+
+#ifdef DEBUG_LOG_EN
+        qDebug() << "firstIniToken = " << firstIniToken << " numIniParams = " << numIniParams;
+        for (int i = 0; i < numIniParams; i++) {
+            sprintf(&tempString[0], "0x%X", iniParams[i]);
+            qDebug() << tempString;
+        }
+#endif
+        ApplyIniParam(firstIniToken, iniParams, numIniParams);
+    }
+
+    iniFile.close();
+
+    //Apply GUI settings to DLPC350
+    ApplyGUISettingToDLPC350();
 }
 
 bool MainWindow::isConnected()
 {
-	return m_bConnected;
+    return m_bConnected;
 }
 
 bool MainWindow::isDataValiated()
 {
-	return m_bPatSeqValidated;
+    return m_bPatSeqValidated;
 }
 
 bool MainWindow::startUpCapture()
 {
     bool bMotionCardTrigger = System->isHardwareTrigger();
 
-	if (bMotionCardTrigger)
-		ui->radioButton_PatSeqDispRunContinuous->setChecked(true);
-	else
-		ui->radioButton_PatSeqDispRunOnce->setChecked(true);
+    if (bMotionCardTrigger)
+        ui->radioButton_PatSeqDispRunContinuous->setChecked(true);
+    else
+        ui->radioButton_PatSeqDispRunOnce->setChecked(true);
 
-	emit on_pushButton_PatSeqSendLUT_clicked();
+    emit on_pushButton_PatSeqSendLUT_clicked();
 
-	emit on_pushButton_ValidatePatSeq_clicked();
+    emit on_pushButton_ValidatePatSeq_clicked();
 
-	if (bMotionCardTrigger)
-	{
-		int nRet = m_dlpAPI->DLPC350_PatternDisplay(2);
-		if (nRet < 0)
-		{
-			return false;
-		}
-	}	
+    if (bMotionCardTrigger)
+    {
+        int nRet = m_dlpAPI->DLPC350_PatternDisplay(2);
+        if (nRet < 0)
+        {
+            return false;
+        }
+    }    
 
-	return isDataValiated();
+    return isDataValiated();
 }
 
 bool MainWindow::endUpCapture()
 {
-	emit on_pushButton_PatSeqCtrlStop_clicked();
-	return true;
+    emit on_pushButton_PatSeqCtrlStop_clicked();
+    return true;
 }
 
 void MainWindow::setDLP(int nIndex)
 {
-	m_nDLPIndex = nIndex;
+    m_nDLPIndex = nIndex;
 }
 
 void MainWindow::setUSBSerialNB(std::string& serialNumber)
 {
-	m_usbSerialNumber = serialNumber;
+    m_usbSerialNumber = serialNumber;
 }
 
 std::string MainWindow::getUSBSerialNB()
 {
-	return m_usbSerialNumber;
+    return m_usbSerialNumber;
 }
 
 bool MainWindow::trigger()
 {
-	if (!m_dlpAPI->DLPC350_Check_Connected())
-	{
-		return false;
-	}
+    if (!m_dlpAPI->DLPC350_Check_Connected())
+    {
+        return false;
+    }
 
-	int nRet = m_dlpAPI->DLPC350_PatternDisplay(2);
-	if (nRet >= 0)
-	{
-		return true;
-	}
-	return false;
+    int nRet = m_dlpAPI->DLPC350_PatternDisplay(2);
+    if (nRet >= 0)
+    {
+        return true;
+    }
+    return false;
 }
 
 void MainWindow::on_pushButton_ApplySolution_clicked()
@@ -2045,7 +2045,7 @@ void MainWindow::on_pushButton_ApplySolution_clicked()
 
     QFileInfo firmwareFileInfo;
     firmwareFileInfo.setFile(fileName);
-    m_firmwarePath = firmwareFileInfo.absolutePath();	
+    m_firmwarePath = firmwareFileInfo.absolutePath();    
 
     QFile iniFile(fileName);
     if(!iniFile.open(QIODevice::ReadWrite | QIODevice::Text))
@@ -2074,10 +2074,10 @@ void MainWindow::on_pushButton_ApplySolution_clicked()
         byteArray = line.toLocal8Bit();
         pCh = byteArray.data();
 
-		if (m_dlpFrm->DLPC350_Frmw_ParseIniLines(pCh))
+        if (m_dlpFrm->DLPC350_Frmw_ParseIniLines(pCh))
             continue;
 
-		m_dlpFrm->DLPC350_Frmw_GetCurrentIniLineParam(&cFirstIniToken[0], &iniParams[0], &numIniParams);
+        m_dlpFrm->DLPC350_Frmw_GetCurrentIniLineParam(&cFirstIniToken[0], &iniParams[0], &numIniParams);
         firstIniToken = QString(&cFirstIniToken[0]);
 
 #ifdef DEBUG_LOG_EN
@@ -2107,39 +2107,39 @@ void MainWindow::on_pushButton_SaveSolution_clicked()
     bool isLegacyPatSeqConfig = false;
 
     /*Top Level Configuration*/
-	m_dlpFrm->g_iniParam_Info[DEFAULT_AUTOSTART].gui_defined_param[0] = (ui->radioButton_StandbyMode->isChecked()) ? 0x01 : 0x00;
-	m_dlpFrm->g_iniParam_Info[DEFAULT_DISPMODE].gui_defined_param[0] = (ui->radioButton_SLMode->isChecked() || ui->radioButton_VariableExpSLMode->isChecked());
+    m_dlpFrm->g_iniParam_Info[DEFAULT_AUTOSTART].gui_defined_param[0] = (ui->radioButton_StandbyMode->isChecked()) ? 0x01 : 0x00;
+    m_dlpFrm->g_iniParam_Info[DEFAULT_DISPMODE].gui_defined_param[0] = (ui->radioButton_SLMode->isChecked() || ui->radioButton_VariableExpSLMode->isChecked());
     if(ui->radioButton_SLMode->isChecked() || ui->radioButton_VariableExpSLMode->isChecked())
     {
-		m_dlpFrm->g_iniParam_Info[DATAPATH_SPLASHATSTARTUPENABLE].gui_defined_param[0] = 0x00;
+        m_dlpFrm->g_iniParam_Info[DATAPATH_SPLASHATSTARTUPENABLE].gui_defined_param[0] = 0x00;
     }
     else
     {
-		m_dlpFrm->g_iniParam_Info[DATAPATH_SPLASHATSTARTUPENABLE].gui_defined_param[0] = 0x01;
+        m_dlpFrm->g_iniParam_Info[DATAPATH_SPLASHATSTARTUPENABLE].gui_defined_param[0] = 0x01;
     }
-	m_dlpFrm->g_iniParam_Info[DEFAULT_SHORT_FLIP].gui_defined_param[0] = (ui->checkBox_shortAxisFlip->isChecked()) ? 0x01 : 0x00;
-	m_dlpFrm->g_iniParam_Info[DEFAULT_LONG_FLIP].gui_defined_param[0] = (ui->checkBox_longAxisFlip->isChecked()) ? 0x01 : 0x00;
+    m_dlpFrm->g_iniParam_Info[DEFAULT_SHORT_FLIP].gui_defined_param[0] = (ui->checkBox_shortAxisFlip->isChecked()) ? 0x01 : 0x00;
+    m_dlpFrm->g_iniParam_Info[DEFAULT_LONG_FLIP].gui_defined_param[0] = (ui->checkBox_longAxisFlip->isChecked()) ? 0x01 : 0x00;
 
     /*Trigger I/O Configuration*/
-	m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_OUT_1_POL].gui_defined_param[0] = (ui->checkBox_InvertTrig1Out->isChecked()) ? 0x01 : 0x00;
-	m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_OUT_1_RDELAY].gui_defined_param[0] = ui->spinBox_Trig1OutRDly->value();
-	m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_OUT_1_FDELAY].gui_defined_param[0] = ui->spinBox_Trig1OutFDly->value();
-	m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_OUT_2_POL].gui_defined_param[0] = (ui->checkBox_InvertTrig2Out->isChecked()) ? 0x01 : 0x00;
-	m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_OUT_2_WIDTH].gui_defined_param[0] = ui->spinBox_Trig2OutRDly->value();
-	m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_IN_1_DELAY].gui_defined_param[0] = ui->spinBox_TrigIn1->value();
-	m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_IN_2_POL].gui_defined_param[0] = ui->comboBox_TrigIn2Pol->currentIndex();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_OUT_1_POL].gui_defined_param[0] = (ui->checkBox_InvertTrig1Out->isChecked()) ? 0x01 : 0x00;
+    m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_OUT_1_RDELAY].gui_defined_param[0] = ui->spinBox_Trig1OutRDly->value();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_OUT_1_FDELAY].gui_defined_param[0] = ui->spinBox_Trig1OutFDly->value();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_OUT_2_POL].gui_defined_param[0] = (ui->checkBox_InvertTrig2Out->isChecked()) ? 0x01 : 0x00;
+    m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_OUT_2_WIDTH].gui_defined_param[0] = ui->spinBox_Trig2OutRDly->value();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_IN_1_DELAY].gui_defined_param[0] = ui->spinBox_TrigIn1->value();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_TRIG_IN_2_POL].gui_defined_param[0] = ui->comboBox_TrigIn2Pol->currentIndex();
 
     /*LED Configuration*/
-	m_dlpFrm->g_iniParam_Info[DEFAULT_RED_STROBE_RDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlRedREdgeDly->value();
-	m_dlpFrm->g_iniParam_Info[DEFAULT_RED_STROBE_FDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlRedFEdgeDly->value();
-	m_dlpFrm->g_iniParam_Info[DEFAULT_GRN_STROBE_RDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlGreenREdgeDly->value();
-	m_dlpFrm->g_iniParam_Info[DEFAULT_GRN_STROBE_FDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlGreenFEdgeDly->value();
-	m_dlpFrm->g_iniParam_Info[DEFAULT_BLU_STROBE_RDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlBlueREdgeDly->value();
-	m_dlpFrm->g_iniParam_Info[DEFAULT_BLU_STROBE_FDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlBlueFEdgeDly->value();
-	m_dlpFrm->g_iniParam_Info[DEFAULT_INVERTDATA].gui_defined_param[0] = ui->checkBox_PatSeqCtrlGlobalDataInvert->isChecked();
-	m_dlpFrm->g_iniParam_Info[DEFAULT_LEDCURRENT_RED].gui_defined_param[0] = 255 - strToNum(ui->lineEdit_RedLEDCurrent->text());
-	m_dlpFrm->g_iniParam_Info[DEFAULT_LEDCURRENT_GRN].gui_defined_param[0] = 255 - strToNum(ui->lineEdit_GreenLEDCurrent->text());
-	m_dlpFrm->g_iniParam_Info[DEFAULT_LEDCURRENT_BLU].gui_defined_param[0] = 255 - strToNum(ui->lineEdit_BlueLEDCurrent->text());
+    m_dlpFrm->g_iniParam_Info[DEFAULT_RED_STROBE_RDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlRedREdgeDly->value();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_RED_STROBE_FDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlRedFEdgeDly->value();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_GRN_STROBE_RDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlGreenREdgeDly->value();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_GRN_STROBE_FDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlGreenFEdgeDly->value();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_BLU_STROBE_RDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlBlueREdgeDly->value();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_BLU_STROBE_FDELAY].gui_defined_param[0] = ui->spinBox_LedDlyCtrlBlueFEdgeDly->value();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_INVERTDATA].gui_defined_param[0] = ui->checkBox_PatSeqCtrlGlobalDataInvert->isChecked();
+    m_dlpFrm->g_iniParam_Info[DEFAULT_LEDCURRENT_RED].gui_defined_param[0] = 255 - strToNum(ui->lineEdit_RedLEDCurrent->text());
+    m_dlpFrm->g_iniParam_Info[DEFAULT_LEDCURRENT_GRN].gui_defined_param[0] = 255 - strToNum(ui->lineEdit_GreenLEDCurrent->text());
+    m_dlpFrm->g_iniParam_Info[DEFAULT_LEDCURRENT_BLU].gui_defined_param[0] = 255 - strToNum(ui->lineEdit_BlueLEDCurrent->text());
 
     /*Pattern Sequence LUT Configuration*/
 
@@ -2169,7 +2169,7 @@ void MainWindow::on_pushButton_SaveSolution_clicked()
     {
         isLegacyPatSeqConfig = true;
 
-		m_dlpFrm->g_iniParam_Info[DEFAULT_PATTERNCONFIG_PAT_EXPOSURE].gui_defined_param[0] = ui->lineEdit_PatSeqPatExpTime->text().toUInt();
+        m_dlpFrm->g_iniParam_Info[DEFAULT_PATTERNCONFIG_PAT_EXPOSURE].gui_defined_param[0] = ui->lineEdit_PatSeqPatExpTime->text().toUInt();
         m_dlpFrm->g_iniParam_Info[DEFAULT_PATTERNCONFIG_PAT_PERIOD].gui_defined_param[0] = ui->lineEdit_PatSeqPatPeriod->text().toUInt();
 
         if (ui->radioButton_PatSeqSrcFrmFlash->isChecked())
@@ -2387,39 +2387,39 @@ void MainWindow::on_pushButton_SaveSolution_clicked()
 #endif
 
     /*Save settings into the user provided .ini file*/
-	QString path = QApplication::applicationDirPath();
-	path += "/config/";
+    QString path = QApplication::applicationDirPath();
+    path += "/config/";
 
     QString fileName;
 
     fileName = QFileDialog::getSaveFileName(this,
                                             QString("Enter name of the .ini file"),
-											path/*m_firmwarePath*/,
+                                            path/*m_firmwarePath*/,
                                             tr("ini files(*.ini)"));
 
     //if(fileName.isEmpty())
     //    return;
 
-	QDir dir(path);
-	if (fileName.isEmpty() || fileName.indexOf(dir.absolutePath()) < 0)
-	{
-		return;
-	}
+    QDir dir(path);
+    if (fileName.isEmpty() || fileName.indexOf(dir.absolutePath()) < 0)
+    {
+        return;
+    }
 
     QFileInfo firmwareFileInfo;
     firmwareFileInfo.setFile(fileName);
     m_firmwarePath = firmwareFileInfo.absolutePath();
 
-	QString str = fileName;
-	if (!str.isEmpty())
-	{
-		path = QApplication::applicationDirPath();
-		QDir dir(path);
-		QString szSavePath = str.remove(dir.absolutePath());
+    QString str = fileName;
+    if (!str.isEmpty())
+    {
+        path = QApplication::applicationDirPath();
+        QDir dir(path);
+        QString szSavePath = str.remove(dir.absolutePath());
 
         bool bMotionCardTrigger = System->isHardwareTrigger();
-		System->setParam((bMotionCardTrigger ? QString("dlp_default_solution_file_path_motion") : QString("dlp_default_solution_file_path")) + QString("_%1").arg(m_nDLPIndex + 1), szSavePath);
-	}
+        System->setParam((bMotionCardTrigger ? QString("dlp_default_solution_file_path_motion") : QString("dlp_default_solution_file_path")) + QString("_%1").arg(m_nDLPIndex + 1), szSavePath);
+    }
 
     QFile iniFile(fileName);
     if(!iniFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -2566,21 +2566,21 @@ void MainWindow::on_pushButton_SetPortSource_clicked()
     unsigned int index = ui->comboBox_InputSourceList->currentIndex();
     if(index == 0 || index == 3)
     {
-		m_dlpAPI->DLPC350_SetInputSource(ui->comboBox_InputSourceList->currentIndex(), ui->comboBox_InputSourceOptionList->currentIndex());
+        m_dlpAPI->DLPC350_SetInputSource(ui->comboBox_InputSourceList->currentIndex(), ui->comboBox_InputSourceOptionList->currentIndex());
     }
     else if (index == 1)
     {
-		m_dlpAPI->DLPC350_SetInputSource(ui->comboBox_InputSourceList->currentIndex(), 0);
-		m_dlpAPI->DLPC350_SetTPGSelect(ui->comboBox_InputSourceOptionList->currentIndex());
+        m_dlpAPI->DLPC350_SetInputSource(ui->comboBox_InputSourceList->currentIndex(), 0);
+        m_dlpAPI->DLPC350_SetTPGSelect(ui->comboBox_InputSourceOptionList->currentIndex());
     }
     else
     {
         unsigned int source, portWidth;
 
-		m_dlpAPI->DLPC350_GetInputSource(&source, &portWidth);
+        m_dlpAPI->DLPC350_GetInputSource(&source, &portWidth);
         if (source != 2)
-			m_dlpAPI->DLPC350_SetInputSource(ui->comboBox_InputSourceList->currentIndex(), 0);
-		m_dlpAPI->DLPC350_LoadImageIndex(ui->comboBox_InputSourceOptionList->currentIndex());
+            m_dlpAPI->DLPC350_SetInputSource(ui->comboBox_InputSourceList->currentIndex(), 0);
+        m_dlpAPI->DLPC350_LoadImageIndex(ui->comboBox_InputSourceOptionList->currentIndex());
     }
 
 }
@@ -2589,7 +2589,7 @@ void MainWindow::on_pushButton_GetPortSource_clicked()
 {
     unsigned int source, portWidth, pattern, splashindex;
 
-	if (m_dlpAPI->DLPC350_GetInputSource(&source, &portWidth) >= 0)
+    if (m_dlpAPI->DLPC350_GetInputSource(&source, &portWidth) >= 0)
     {
         ui->comboBox_InputSourceList->setCurrentIndex(source);
 
@@ -2599,13 +2599,13 @@ void MainWindow::on_pushButton_GetPortSource_clicked()
         }
         else if(source == 1)
         {
-			m_dlpAPI->DLPC350_GetTPGSelect(&pattern);
+            m_dlpAPI->DLPC350_GetTPGSelect(&pattern);
             ui->comboBox_InputSourceOptionList->setCurrentIndex(pattern);
         }
         else
         {
 
-			m_dlpAPI->DLPC350_GetImageIndex(&splashindex);
+            m_dlpAPI->DLPC350_GetImageIndex(&splashindex);
             ui->comboBox_InputSourceOptionList->setCurrentIndex(splashindex);
         }
     }
@@ -2709,13 +2709,13 @@ void MainWindow::on_pushButton_SetPortSwap_clicked()
         portSelect = 1;
     else
         return;
-	m_dlpAPI->DLPC350_SetDataChannelSwap(portSelect, ui->comboBox_SwapSelectList->currentIndex());
+    m_dlpAPI->DLPC350_SetDataChannelSwap(portSelect, ui->comboBox_SwapSelectList->currentIndex());
 }
 
 void MainWindow::on_pushButton_GetPortSwap_clicked()
 {
     unsigned int port, swap;
-	if (m_dlpAPI->DLPC350_GetDataChannelSwap(&port, &swap) == 0)
+    if (m_dlpAPI->DLPC350_GetDataChannelSwap(&port, &swap) == 0)
     {
         ui->comboBox_SwapSelectList->setCurrentIndex(swap);
     }
@@ -2732,7 +2732,7 @@ void MainWindow::on_pushButton_SetPortPixelFormat_clicked()
         if(ui->comboBox_PixelFormatList->currentIndex() == 1)
             PixelFormat = 2;
     }
-	m_dlpAPI->DLPC350_SetPixelFormat(PixelFormat);
+    m_dlpAPI->DLPC350_SetPixelFormat(PixelFormat);
 }
 
 void MainWindow::on_pushButton_GetPortPixelFormat_clicked()
@@ -2742,7 +2742,7 @@ void MainWindow::on_pushButton_GetPortPixelFormat_clicked()
     //Get input source first so that the options for formatlist is correctly popoulated.
     emit on_pushButton_GetPortSource_clicked();
 
-	if (m_dlpAPI->DLPC350_GetPixelFormat(&pixelFormat) == 0)
+    if (m_dlpAPI->DLPC350_GetPixelFormat(&pixelFormat) == 0)
     {
         //If input source selected is splash
         if(ui->comboBox_InputSourceList->currentIndex() == 2)
@@ -2757,19 +2757,19 @@ void MainWindow::on_pushButton_GetPortPixelFormat_clicked()
 
 void MainWindow::on_pushButton_SetPortClock_clicked()
 {
-	m_dlpAPI->DLPC350_SetPortClock(ui->comboBox_PortClockList->currentIndex());
+    m_dlpAPI->DLPC350_SetPortClock(ui->comboBox_PortClockList->currentIndex());
 }
 
 void MainWindow::on_pushButton_GetPortClock_clicked()
 {
     unsigned int portClock;
-	if (m_dlpAPI->DLPC350_GetPortClock(&portClock) == 0)
+    if (m_dlpAPI->DLPC350_GetPortClock(&portClock) == 0)
         ui->comboBox_PortClockList->setCurrentIndex(portClock);
 }
 
 void MainWindow::on_pushButton_SetFPDMode_clicked()
 {
-	m_dlpAPI->DLPC350_SetFPD_Mode_Field(ui->spinBox_FPDPixMode->value(), \
+    m_dlpAPI->DLPC350_SetFPD_Mode_Field(ui->spinBox_FPDPixMode->value(), \
                               ui->checkBox_FPDInvPol->isChecked(), \
                               ui->comboBox_FPDFieldSelectList->currentIndex());
 }
@@ -2779,7 +2779,7 @@ void MainWindow::on_pushButton_GetFPDMode_clicked()
     unsigned int pixelMappingMode, signalSelect;
     bool pol;
 
-	if (m_dlpAPI->DLPC350_GetFPD_Mode_Field(&pixelMappingMode, &pol, &signalSelect) == 0)
+    if (m_dlpAPI->DLPC350_GetFPD_Mode_Field(&pixelMappingMode, &pol, &signalSelect) == 0)
     {
         ui->spinBox_FPDPixMode->setValue(pixelMappingMode);
         ui->checkBox_FPDInvPol->setChecked(pol);
@@ -2791,7 +2791,7 @@ void MainWindow::on_pushButton_GetFPDMode_clicked()
 
 void MainWindow::on_pushButton_SetTPGColor_clicked()
 {
-	m_dlpAPI->DLPC350_SetTPGColor(ui->spinBox_TPGForegroundColorRed->value(), ui->spinBox_TPGForegroundColorGreen->value(), ui->spinBox_TPGForegroundColorBlue->value(), ui->spinBox_TPGBackgroundColorRed->value(), ui->spinBox_TPGBackgroundColorGreen->value(), ui->spinBox_TPGBackgroundColorBlue->value());
+    m_dlpAPI->DLPC350_SetTPGColor(ui->spinBox_TPGForegroundColorRed->value(), ui->spinBox_TPGForegroundColorGreen->value(), ui->spinBox_TPGForegroundColorBlue->value(), ui->spinBox_TPGBackgroundColorRed->value(), ui->spinBox_TPGBackgroundColorGreen->value(), ui->spinBox_TPGBackgroundColorBlue->value());
 }
 
 void MainWindow::on_pushButton_GetTPGColor_clicked()
@@ -2799,7 +2799,7 @@ void MainWindow::on_pushButton_GetTPGColor_clicked()
     unsigned short redFG, greenFG, blueFG;
     unsigned short redBG, greenBG, blueBG;
 
-	if (m_dlpAPI->DLPC350_GetTPGColor(&redFG, &greenFG, &blueFG, &redBG, &greenBG, &blueBG) == 0)
+    if (m_dlpAPI->DLPC350_GetTPGColor(&redFG, &greenFG, &blueFG, &redBG, &greenBG, &blueBG) == 0)
     {
         ui->spinBox_TPGForegroundColorRed->setValue(redFG);
         ui->spinBox_TPGForegroundColorGreen->setValue(greenFG);
@@ -2826,14 +2826,14 @@ void MainWindow::on_pushButton_SetDisplayConfiguration_clicked()
     displayArea.pixelsPerLine = strToNum(ui->lineEdit_DispAreaPixPerFrame->text());
     displayArea.linesPerFrame = strToNum(ui->lineEdit_DispAreaLinesPerFrame->text());
 
-	m_dlpAPI->DLPC350_SetDisplay(croppedArea, displayArea);
+    m_dlpAPI->DLPC350_SetDisplay(croppedArea, displayArea);
 }
 
 void MainWindow::on_pushButton_GetDisplayConfiguration_clicked()
 {
     rectangle croppedArea, displayArea;
 
-	if (m_dlpAPI->DLPC350_GetDisplay(&croppedArea, &displayArea) == 0)
+    if (m_dlpAPI->DLPC350_GetDisplay(&croppedArea, &displayArea) == 0)
     {
         ui->lineEdit_CropAreaFirstPix->setText(numToStr(croppedArea.firstPixel));
         ui->lineEdit_CropAreaFirstLine->setText(numToStr(croppedArea.firstLine));
@@ -2869,9 +2869,9 @@ void MainWindow::on_pushButton_GetVideoSingalInfo_clicked()
     ui->lineEdit_VidActvFirstPix->setText(numToStr(0));
     ui->lineEdit_VidActvFirstLine->setText(numToStr(0));
 
-	if (m_dlpAPI->DLPC350_GetMode(&isSLMode) == 0)
+    if (m_dlpAPI->DLPC350_GetMode(&isSLMode) == 0)
     {
-		if (m_dlpAPI->DLPC350_GetVideoSignalStatus(&vidoSignInfo) == 0)
+        if (m_dlpAPI->DLPC350_GetVideoSignalStatus(&vidoSignInfo) == 0)
         {
             ui->comboBox_VidLockSatus->setCurrentIndex((vidoSignInfo.Status&0x03));
 
@@ -3536,7 +3536,7 @@ void MainWindow::on_pushButton_PatSeqSendLUT_clicked()
         return;
     }
 
-	m_dlpAPI->DLPC350_ClearPatLut();
+    m_dlpAPI->DLPC350_ClearPatLut();
     for(i=0; i<ui->listWidget_PatSeqLUT->count(); i++)
     {
         if(ui->listWidget_PatSeqLUT->item(i)->icon().isNull()) //only if pattern item (skip trigger items)
@@ -3584,7 +3584,7 @@ void MainWindow::on_pushButton_PatSeqSendLUT_clicked()
                      << "BufSwap = " << ui->listWidget_PatSeqLUT->item(i)->data(Qt::UserRole+BufSwap).toBool() << "," \
                      << "TrigOutPrev = " << ui->listWidget_PatSeqLUT->item(i)->data(Qt::UserRole+trigOutPrev).toBool();
 #endif
-			if (m_dlpAPI->DLPC350_AddToPatLut(ui->listWidget_PatSeqLUT->item(i)->data(Qt::UserRole + TrigType).toInt(), \
+            if (m_dlpAPI->DLPC350_AddToPatLut(ui->listWidget_PatSeqLUT->item(i)->data(Qt::UserRole + TrigType).toInt(), \
                                    ui->listWidget_PatSeqLUT->item(i)->data(Qt::UserRole+PatNum).toInt(), \
                                    ui->listWidget_PatSeqLUT->item(i)->data(Qt::UserRole+BitDepth).toInt(), \
                                    ui->listWidget_PatSeqLUT->item(i)->data(Qt::UserRole+LEDSelect).toInt(), \
@@ -3632,7 +3632,7 @@ void MainWindow::on_pushButton_PatSeqSendLUT_clicked()
         }
     }
 
-	m_dlpAPI->DLPC350_SetPatternDisplayMode(ui->radioButton_PatSeqSrcFrmVideoPort->isChecked());
+    m_dlpAPI->DLPC350_SetPatternDisplayMode(ui->radioButton_PatSeqSrcFrmVideoPort->isChecked());
 
     //if play once is selected
     if(ui->radioButton_PatSeqDispRunOnce->isChecked())
@@ -3644,12 +3644,12 @@ void MainWindow::on_pushButton_PatSeqSendLUT_clicked()
         numPatterns = ui->spinBox_TrigOut2PulsePerNumPat->value();
     }
 
-	if (m_dlpAPI->DLPC350_SetPatternConfig(numLutEntries, ui->radioButton_PatSeqDispRunContinuous->isChecked(), numPatterns, numSplashLutEntries) < 0)
+    if (m_dlpAPI->DLPC350_SetPatternConfig(numLutEntries, ui->radioButton_PatSeqDispRunContinuous->isChecked(), numPatterns, numSplashLutEntries) < 0)
     {
         ShowError("Error Sending Pattern Config");
         return;
     }
-	if (m_dlpAPI->DLPC350_SetExposure_FramePeriod(ui->lineEdit_PatSeqPatExpTime->text().toInt(), ui->lineEdit_PatSeqPatPeriod->text().toInt()) < 0)
+    if (m_dlpAPI->DLPC350_SetExposure_FramePeriod(ui->lineEdit_PatSeqPatExpTime->text().toInt(), ui->lineEdit_PatSeqPatPeriod->text().toInt()) < 0)
     {
         ShowError("Error Sending Exposure period");
         return;
@@ -3665,20 +3665,20 @@ void MainWindow::on_pushButton_PatSeqSendLUT_clicked()
     }
 
     //Configure Trigger Mode - 0 or 1
-	if (m_dlpAPI->DLPC350_SetPatternTriggerMode(trigMode) < 0)
+    if (m_dlpAPI->DLPC350_SetPatternTriggerMode(trigMode) < 0)
     {
         ShowError("Error Sending trigger Mode");
         return;
     }
 
     //Send Pattern LUT
-	if (m_dlpAPI->DLPC350_SendPatLut() < 0)
+    if (m_dlpAPI->DLPC350_SendPatLut() < 0)
     {
         ShowError("Error Sending Pattern LUT");
         return;
     }
 
-	if (m_dlpAPI->DLPC350_SendImageLut(&splashLut[0], numSplashLutEntries) < 0)
+    if (m_dlpAPI->DLPC350_SendImageLut(&splashLut[0], numSplashLutEntries) < 0)
     {
         ShowError("Error Sending Image LUT");
         return;
@@ -3715,12 +3715,12 @@ void MainWindow::on_pushButton_PatSeqReadLUTFrmHW_clicked()
     int patLutBytesRead, numLUTEntriesRead;
     char dbgMsg[256];
 
-	if (m_dlpAPI->DLPC350_GetPatternTriggerMode(&trigMode) == 0)
+    if (m_dlpAPI->DLPC350_GetPatternTriggerMode(&trigMode) == 0)
     {
         //Only if the trigger mode is 0 or 1 or 2 refresh GUI
         if(trigMode <= 2)
         {
-			if (m_dlpAPI->DLPC350_GetExposure_FramePeriod(&exposure, &framePeriod) == 0)
+            if (m_dlpAPI->DLPC350_GetExposure_FramePeriod(&exposure, &framePeriod) == 0)
             {
                 ui->lineEdit_PatSeqPatExpTime->setText(numToStr(exposure));
                 ui->lineEdit_PatSeqPatPeriod->setText(numToStr(framePeriod));
@@ -3734,7 +3734,7 @@ void MainWindow::on_pushButton_PatSeqReadLUTFrmHW_clicked()
 #ifdef DEBUG_LOG_EN
             qDebug() << "Pattern exposure = " << exposure << " Pattern Period = " << framePeriod;
 #endif
-			if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
+            if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
             {
                 if (isExtPatDisplayMode)
                 {
@@ -3748,7 +3748,7 @@ void MainWindow::on_pushButton_PatSeqReadLUTFrmHW_clicked()
                 }
             }
 
-			if (m_dlpAPI->DLPC350_GetPatternConfig(&numLutEntries, &repeat, &numPatsForTrigOut2, &numSplash) == 0)
+            if (m_dlpAPI->DLPC350_GetPatternConfig(&numLutEntries, &repeat, &numPatsForTrigOut2, &numSplash) == 0)
             {
                 if(repeat == true)
                 {
@@ -3764,7 +3764,7 @@ void MainWindow::on_pushButton_PatSeqReadLUTFrmHW_clicked()
 #ifdef DEBUG_LOG_EN
             qDebug() << "numLutEntries = " << numLutEntries << "repeat = " << repeat << "numPatsForTrigOut2 = " << numPatsForTrigOut2 << "numSplash = " << numSplash;
 #endif
-			if ((patLutBytesRead = m_dlpAPI->DLPC350_GetPatLut(numLutEntries)) < 0)
+            if ((patLutBytesRead = m_dlpAPI->DLPC350_GetPatLut(numLutEntries)) < 0)
             {
                 ShowError("Could not read pattern LUT from target");
                 return;
@@ -3782,7 +3782,7 @@ void MainWindow::on_pushButton_PatSeqReadLUTFrmHW_clicked()
                 ShowError(dbgMsg);
             }
 
-			if (m_dlpAPI->DLPC350_GetImageLut(&splashLut[0], numSplash) < 0)
+            if (m_dlpAPI->DLPC350_GetImageLut(&splashLut[0], numSplash) < 0)
             {
                 ShowError("Could not read image LUT from target");
                 return;
@@ -3809,7 +3809,7 @@ void MainWindow::on_pushButton_PatSeqReadLUTFrmHW_clicked()
 
             for(i=0; i<numLutEntries; i++)
             {
-				m_dlpAPI->DLPC350_GetPatLutItem(i, &trig_type, &Pat_Num, &Bit_Depth, &LED_Select, &Invert_Pat, &Insert_Black, &Buf_Swap, &TrigOutPrev);
+                m_dlpAPI->DLPC350_GetPatLutItem(i, &trig_type, &Pat_Num, &Bit_Depth, &LED_Select, &Invert_Pat, &Insert_Black, &Buf_Swap, &TrigOutPrev);
 #ifdef DEBUG_LOG_EN
                 qDebug() << "Pat_Num[" << i << "] " << "TrigType = " << trig_type << "," << "PatIndex = " << Pat_Num << "," \
                          << "Bit-Depth = " << Bit_Depth << "," << "LED_Color = " << LED_Select << "Invert = " << Invert_Pat << "," \
@@ -4716,7 +4716,7 @@ void MainWindow::on_pushButton_VarExpPatSeqSendLUT_clicked()
     if(ui->listWidget_VarExpPatSeqLUT->count() == 0)
         return;
 
-	m_dlpAPI->DLPC350_ClearExpLut();
+    m_dlpAPI->DLPC350_ClearExpLut();
 
     for(i=0; i<ui->listWidget_VarExpPatSeqLUT->count(); i++)
     {
@@ -4775,7 +4775,7 @@ void MainWindow::on_pushButton_VarExpPatSeqSendLUT_clicked()
                      << "PatPeriod = "  << ui->listWidget_VarExpPatSeqLUT->item(i)->data(Qt::UserRole+PatPeriod).toInt();
 #endif
 
-			if (m_dlpAPI->DLPC350_AddToExpLut(\
+            if (m_dlpAPI->DLPC350_AddToExpLut(\
                         ui->listWidget_VarExpPatSeqLUT->item(i)->data(Qt::UserRole+TrigType).toInt(), \
                         ui->listWidget_VarExpPatSeqLUT->item(i)->data(Qt::UserRole+PatNum).toInt(), \
                         ui->listWidget_VarExpPatSeqLUT->item(i)->data(Qt::UserRole+BitDepth).toInt(), \
@@ -4796,7 +4796,7 @@ void MainWindow::on_pushButton_VarExpPatSeqSendLUT_clicked()
     }
 
     //Set Pattern Mode - Video or Flash
-	m_dlpAPI->DLPC350_SetPatternDisplayMode(ui->radioButton_VarExpPatSeqSrcFrmVideoPort->isChecked());
+    m_dlpAPI->DLPC350_SetPatternDisplayMode(ui->radioButton_VarExpPatSeqSrcFrmVideoPort->isChecked());
 
     //if play once is selected
     if(ui->radioButton_VarExpPatSeqDispRunOnce->isChecked())
@@ -4809,7 +4809,7 @@ void MainWindow::on_pushButton_VarExpPatSeqSendLUT_clicked()
     }
 
     //Pattern Sequence Configuration
-	if (m_dlpAPI->DLPC350_SetVarExpPatternConfig(numPatLutEntries, numPatsPerTrigOut2, numSplashLutEntries, ui->radioButton_VarExpPatSeqDispRunContinuous->isChecked()) < 0)
+    if (m_dlpAPI->DLPC350_SetVarExpPatternConfig(numPatLutEntries, numPatsPerTrigOut2, numSplashLutEntries, ui->radioButton_VarExpPatSeqDispRunContinuous->isChecked()) < 0)
     {
         ShowError("Error Sending Pattern Config");
         return;
@@ -4825,20 +4825,20 @@ void MainWindow::on_pushButton_VarExpPatSeqSendLUT_clicked()
     }
 
     //Configure Trigger Mode - 3 or 4 //Applicable for Variable Exposure pat sequence
-	if (m_dlpAPI->DLPC350_SetPatternTriggerMode(trigMode) < 0)
+    if (m_dlpAPI->DLPC350_SetPatternTriggerMode(trigMode) < 0)
     {
         ShowError("Error Sending trigger Mode");
         return;
     }
 
     //Send Variable Exposure pattern LUT
-	if (m_dlpAPI->DLPC350_SendVarExpPatLut() < 0)
+    if (m_dlpAPI->DLPC350_SendVarExpPatLut() < 0)
     {
         ShowError("Error Sending Variable Exposure Pattern LUT");
         return;
     }
 
-	if (m_dlpAPI->DLPC350_SendVarExpImageLut(&splashLut[0], numSplashLutEntries) < 0)
+    if (m_dlpAPI->DLPC350_SendVarExpImageLut(&splashLut[0], numSplashLutEntries) < 0)
     {
         ShowError("Error Sending Variable Exposure Image LUT");
         return;
@@ -4877,12 +4877,12 @@ void MainWindow::on_pushButton_VarExpPatSeqReadLUTFrmHW_clicked()
     unsigned int i, j;
 
     //Read update the trigger mode and then update
-	if (m_dlpAPI->DLPC350_GetPatternTriggerMode(&trigMode) == 0)
+    if (m_dlpAPI->DLPC350_GetPatternTriggerMode(&trigMode) == 0)
     {
         if(trigMode == 3 || trigMode == 4)
         {
             //Read the display Mode
-			if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
+            if (m_dlpAPI->DLPC350_GetPatternDisplayMode(&isExtPatDisplayMode) == 0)
             {
                 if (isExtPatDisplayMode)
                 {
@@ -4901,7 +4901,7 @@ void MainWindow::on_pushButton_VarExpPatSeqReadLUTFrmHW_clicked()
             }
 
             //Get the variable Exposure Pattern Configurarion
-			if (m_dlpAPI->DLPC350_GetVarExpPatternConfig(&NumPatLutEntries, &NumPatsPerTrigOut2, &NumImages, &Repeat) == 0)
+            if (m_dlpAPI->DLPC350_GetVarExpPatternConfig(&NumPatLutEntries, &NumPatsPerTrigOut2, &NumImages, &Repeat) == 0)
             {
                 if(Repeat == true)
                 {
@@ -4914,13 +4914,13 @@ void MainWindow::on_pushButton_VarExpPatSeqReadLUTFrmHW_clicked()
                 }
             }
 
-			if (m_dlpAPI->DLPC350_GetVarExpPatLut(NumPatLutEntries) < 0)
+            if (m_dlpAPI->DLPC350_GetVarExpPatLut(NumPatLutEntries) < 0)
             {
                 ShowError("Could not read variable exposure pattern LUT from target");
                 return;
             }
 
-			if (m_dlpAPI->DLPC350_GetvarExpImageLut(&NumImagesLUT[0], NumImages) < 0)
+            if (m_dlpAPI->DLPC350_GetvarExpImageLut(&NumImagesLUT[0], NumImages) < 0)
             {
                 ShowError("Could not read image LUT from target");
                 return;
@@ -4948,7 +4948,7 @@ void MainWindow::on_pushButton_VarExpPatSeqReadLUTFrmHW_clicked()
 
             for(i=0; i<NumPatLutEntries; i++)
             {
-				m_dlpAPI->DLPC350_GetVarExpPatLutItem(i, &trig_type, &Pat_Num, &Bit_Depth, &LED_Select, &Invert_Pat, &Insert_Black, &Buf_Swap, &TrigOutPrev, &Pat_Exposure, &Pat_Period);
+                m_dlpAPI->DLPC350_GetVarExpPatLutItem(i, &trig_type, &Pat_Num, &Bit_Depth, &LED_Select, &Invert_Pat, &Insert_Black, &Buf_Swap, &TrigOutPrev, &Pat_Exposure, &Pat_Period);
 
 #ifdef DEBUG_LOG_EN
                 qDebug() << "Pat_Num[" << i << "] " << "TrigType = " << trig_type << "," << "PatIndex = " << Pat_Num << "," \
@@ -5076,7 +5076,7 @@ void MainWindow::on_pushButton_ValidatePatSeq_clicked()
     ui->pushButton_PatSeqCtrlStop->setEnabled(false);
 
 
-	if (m_dlpAPI->DLPC350_StartPatLutValidate())
+    if (m_dlpAPI->DLPC350_StartPatLutValidate())
     {
         ShowError("Error validating LUT data");
         return;
@@ -5086,7 +5086,7 @@ void MainWindow::on_pushButton_ValidatePatSeq_clicked()
 
     do
     {
-		if (m_dlpAPI->DLPC350_CheckPatLutValidate(&ready, &status) < 0)
+        if (m_dlpAPI->DLPC350_CheckPatLutValidate(&ready, &status) < 0)
         {
             ShowError("Error validating LUT data");
             return;
@@ -5119,7 +5119,7 @@ void MainWindow::on_pushButton_ValidatePatSeq_clicked()
         ui->pushButton_PatSeqCtrlPause->setEnabled(true);
         ui->pushButton_PatSeqCtrlStop->setEnabled(true);
 
-		m_bPatSeqValidated = true;
+        m_bPatSeqValidated = true;
     }
     else
     {
@@ -5128,7 +5128,7 @@ void MainWindow::on_pushButton_ValidatePatSeq_clicked()
         ui->pushButton_PatSeqCtrlPause->setEnabled(false);
         ui->pushButton_PatSeqCtrlStop->setEnabled(false);
 
-		m_bPatSeqValidated = false;
+        m_bPatSeqValidated = false;
     }
 }
 
@@ -5136,15 +5136,15 @@ void MainWindow::on_pushButton_PatSeqCtrlStart_clicked()
 {
     int i = 0;
     unsigned int patMode;
-	m_dlpAPI->DLPC350_PatternDisplay(2);
+    m_dlpAPI->DLPC350_PatternDisplay(2);
     SleeperThread::msleep(100);
     while(1)
     {
-		m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
+        m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
         if(patMode == 2)
             break;
         else
-			m_dlpAPI->DLPC350_PatternDisplay(2);
+            m_dlpAPI->DLPC350_PatternDisplay(2);
         SleeperThread::msleep(100);
 
         if(i++ > MAX_NUM_RETRIES)
@@ -5156,15 +5156,15 @@ void MainWindow::on_pushButton_PatSeqCtrlPause_clicked()
 {
     int i = 0;
     unsigned int patMode;
-	m_dlpAPI->DLPC350_PatternDisplay(1);
+    m_dlpAPI->DLPC350_PatternDisplay(1);
     SleeperThread::msleep(100);
     while(1)
     {
-		m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
+        m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
         if(patMode == 1)
             break;
         else
-			m_dlpAPI->DLPC350_PatternDisplay(1);
+            m_dlpAPI->DLPC350_PatternDisplay(1);
         SleeperThread::msleep(100);
         if(i++ > MAX_NUM_RETRIES)
             break;
@@ -5176,15 +5176,15 @@ void MainWindow::on_pushButton_PatSeqCtrlStop_clicked()
     int i = 0;
     unsigned int patMode;
 
-	m_dlpAPI->DLPC350_PatternDisplay(0);
+    m_dlpAPI->DLPC350_PatternDisplay(0);
     SleeperThread::msleep(100);
     while(1)
     {
-		m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
+        m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
         if(patMode == 0)
             break;
         else
-			m_dlpAPI->DLPC350_PatternDisplay(0);
+            m_dlpAPI->DLPC350_PatternDisplay(0);
         SleeperThread::msleep(100);
         if(i++ > MAX_NUM_RETRIES)
             break;
@@ -5193,7 +5193,7 @@ void MainWindow::on_pushButton_PatSeqCtrlStop_clicked()
 
 void MainWindow::on_checkBox_PatSeqCtrlGlobalDataInvert_toggled(bool checked)
 {
-	m_dlpAPI->DLPC350_SetInvertData(checked);
+    m_dlpAPI->DLPC350_SetInvertData(checked);
 }
 
 /* Image Load timing information retrive */
@@ -5205,16 +5205,16 @@ void MainWindow::on_pushButton_GetImgLoadTimingInfo_clicked()
 
     ui->lineEdit_ImgLoadTmInMs->clear();
 
-	if (m_dlpAPI->DLPC350_MeasureImageLoadTiming(ui->spinBox_ImgLdTmImgIndex->value(), 1) >= 0)
+    if (m_dlpAPI->DLPC350_MeasureImageLoadTiming(ui->spinBox_ImgLdTmImgIndex->value(), 1) >= 0)
     {
 
-		if (m_dlpAPI->DLPC350_GetStatus(&HWStatus, &SysStatus, &MainStatus) != 0)
+        if (m_dlpAPI->DLPC350_GetStatus(&HWStatus, &SysStatus, &MainStatus) != 0)
         {
             ShowError("Unable to read status");
             return;
         }
 
-		if (m_dlpAPI->DLPC350_ReadImageLoadTiming(&pTimingData) >= 0)
+        if (m_dlpAPI->DLPC350_ReadImageLoadTiming(&pTimingData) >= 0)
         {
             ui->lineEdit_ImgLoadTmInMs->setText(numToStr(pTimingData/18667));
         }
@@ -5231,11 +5231,11 @@ void MainWindow::on_pushButton_SetTrigConfig_clicked() //Also sends trig in1dela
     unsigned int patMode;
 
     //Allow settings to be applied only in Pattern Mode
-	m_dlpAPI->DLPC350_GetMode(&mode);
+    m_dlpAPI->DLPC350_GetMode(&mode);
     if(mode == true)
     {
        //First stop pattern sequence
-		m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
+        m_dlpAPI->DLPC350_GetPatternDisplay(&patMode);
         //if it is in PAUSE or RUN mode
         if(patMode != 0)
         {
@@ -5245,18 +5245,18 @@ void MainWindow::on_pushButton_SetTrigConfig_clicked() //Also sends trig in1dela
         //Apply the settings
 
         // Send trigger 1 input delay
-		m_dlpAPI->DLPC350_SetTrigIn1Delay(ui->spinBox_TrigIn1->value());
+        m_dlpAPI->DLPC350_SetTrigIn1Delay(ui->spinBox_TrigIn1->value());
 
         // Send trigger 2 input polarity
-		m_dlpAPI->DLPC350_SetTrigIn2Pol(ui->comboBox_TrigIn2Pol->currentIndex());
+        m_dlpAPI->DLPC350_SetTrigIn2Pol(ui->comboBox_TrigIn2Pol->currentIndex());
 
         // Send trigger 1 output delays
-		m_dlpAPI->DLPC350_SetTrigOutConfig(1, ui->checkBox_InvertTrig1Out->isChecked(), \
+        m_dlpAPI->DLPC350_SetTrigOutConfig(1, ui->checkBox_InvertTrig1Out->isChecked(), \
                                     ui->spinBox_Trig1OutRDly->value(),\
                                     ui->spinBox_Trig1OutFDly->value());
 
         // Send trigger 2 output delay
-		m_dlpAPI->DLPC350_SetTrigOutConfig(2, ui->checkBox_InvertTrig2Out->isChecked(), \
+        m_dlpAPI->DLPC350_SetTrigOutConfig(2, ui->checkBox_InvertTrig2Out->isChecked(), \
                                     ui->spinBox_Trig2OutRDly->value(),0);
 
         ui->pushButton_PatSeqValIndExpOOR->setEnabled(false);
@@ -5284,7 +5284,7 @@ void MainWindow::on_pushButton_GetTrigConfig_clicked()
     bool isFallingEdge;
 
     // Get trigger 1 output delays
-	if (m_dlpAPI->DLPC350_GetTrigOutConfig(1, &invert, &risingDelay, &fallingDelay) == 0)
+    if (m_dlpAPI->DLPC350_GetTrigOutConfig(1, &invert, &risingDelay, &fallingDelay) == 0)
     {
         ui->checkBox_InvertTrig1Out->setChecked(invert);
         ui->spinBox_Trig1OutRDly->setValue(risingDelay);
@@ -5300,7 +5300,7 @@ void MainWindow::on_pushButton_GetTrigConfig_clicked()
 #endif
 
     // Get trigger 2 output delay
-	if (m_dlpAPI->DLPC350_GetTrigOutConfig(2, &invert, &risingDelay, &fallingDelay) == 0)
+    if (m_dlpAPI->DLPC350_GetTrigOutConfig(2, &invert, &risingDelay, &fallingDelay) == 0)
     {
         ui->checkBox_InvertTrig2Out->setChecked(invert);
         ui->spinBox_Trig2OutRDly->setValue(risingDelay);
@@ -5314,7 +5314,7 @@ void MainWindow::on_pushButton_GetTrigConfig_clicked()
 #endif
 
     // Get trigger 1 input delay
-	if (m_dlpAPI->DLPC350_GetTrigIn1Delay(&delay) == 0)
+    if (m_dlpAPI->DLPC350_GetTrigIn1Delay(&delay) == 0)
     {
         ui->spinBox_TrigIn1->setValue(delay);
         emit on_spinBox_TrigIn1_valueChanged(delay);
@@ -5327,7 +5327,7 @@ void MainWindow::on_pushButton_GetTrigConfig_clicked()
 #endif
 
     //get trigger 2 input polarity
-	if (m_dlpAPI->DLPC350_GetTrigIn2Pol(&isFallingEdge) == 0)
+    if (m_dlpAPI->DLPC350_GetTrigIn2Pol(&isFallingEdge) == 0)
     {
         if(isFallingEdge == true)
             ui->comboBox_TrigIn2Pol->setCurrentIndex(1);
@@ -5518,17 +5518,17 @@ void MainWindow::on_pushButton_GetLEDDlyCtrlConfig_clicked()
 {
     unsigned char rising, falling;
 
-	if (m_dlpAPI->DLPC350_GetRedLEDStrobeDelay(&rising, &falling) == 0)
+    if (m_dlpAPI->DLPC350_GetRedLEDStrobeDelay(&rising, &falling) == 0)
     {
         ui->spinBox_LedDlyCtrlRedREdgeDly->setValue(rising);
         ui->spinBox_LedDlyCtrlRedFEdgeDly->setValue(falling);
     }
-	if (m_dlpAPI->DLPC350_GetGreenLEDStrobeDelay(&rising, &falling) == 0)
+    if (m_dlpAPI->DLPC350_GetGreenLEDStrobeDelay(&rising, &falling) == 0)
     {
         ui->spinBox_LedDlyCtrlGreenREdgeDly->setValue(rising);
         ui->spinBox_LedDlyCtrlGreenFEdgeDly->setValue(falling);
     }
-	if (m_dlpAPI->DLPC350_GetBlueLEDStrobeDelay(&rising, &falling) == 0)
+    if (m_dlpAPI->DLPC350_GetBlueLEDStrobeDelay(&rising, &falling) == 0)
     {
         ui->spinBox_LedDlyCtrlBlueREdgeDly->setValue(rising);
         ui->spinBox_LedDlyCtrlBlueFEdgeDly->setValue(falling);
@@ -5538,9 +5538,9 @@ void MainWindow::on_pushButton_GetLEDDlyCtrlConfig_clicked()
 
 void MainWindow::on_pushButton_SetLedDlyCtrlConfig_clicked()
 {
-	m_dlpAPI->DLPC350_SetRedLEDStrobeDelay(ui->spinBox_LedDlyCtrlRedREdgeDly->value(), ui->spinBox_LedDlyCtrlRedFEdgeDly->value());
-	m_dlpAPI->DLPC350_SetGreenLEDStrobeDelay(ui->spinBox_LedDlyCtrlGreenREdgeDly->value(), ui->spinBox_LedDlyCtrlGreenFEdgeDly->value());
-	m_dlpAPI->DLPC350_SetBlueLEDStrobeDelay(ui->spinBox_LedDlyCtrlBlueREdgeDly->value(), ui->spinBox_LedDlyCtrlBlueFEdgeDly->value());
+    m_dlpAPI->DLPC350_SetRedLEDStrobeDelay(ui->spinBox_LedDlyCtrlRedREdgeDly->value(), ui->spinBox_LedDlyCtrlRedFEdgeDly->value());
+    m_dlpAPI->DLPC350_SetGreenLEDStrobeDelay(ui->spinBox_LedDlyCtrlGreenREdgeDly->value(), ui->spinBox_LedDlyCtrlGreenFEdgeDly->value());
+    m_dlpAPI->DLPC350_SetBlueLEDStrobeDelay(ui->spinBox_LedDlyCtrlBlueREdgeDly->value(), ui->spinBox_LedDlyCtrlBlueFEdgeDly->value());
 }
 
 /* Peripheral Control */
@@ -5554,8 +5554,8 @@ void MainWindow::on_pushButton_SetPWMConfig_clicked()
     else
         channel = 0;
 
-	m_dlpAPI->DLPC350_SetPWMConfig(channel, ui->lineEdit_PWMPeriod->text().toUInt(), ui->spinBox_PWMDutyCycle->value());
-	m_dlpAPI->DLPC350_SetPWMEnable(channel, ui->checkBox_PWMEnable->isChecked());
+    m_dlpAPI->DLPC350_SetPWMConfig(channel, ui->lineEdit_PWMPeriod->text().toUInt(), ui->spinBox_PWMDutyCycle->value());
+    m_dlpAPI->DLPC350_SetPWMEnable(channel, ui->checkBox_PWMEnable->isChecked());
 }
 
 void MainWindow::on_pushButton_GetPWMConfig_clicked()
@@ -5568,18 +5568,18 @@ void MainWindow::on_pushButton_GetPWMConfig_clicked()
     else
         channel = 0;
 
-	if (m_dlpAPI->DLPC350_GetPWMConfig(channel, &pulsePeriod, &dutyCycle) == 0)
+    if (m_dlpAPI->DLPC350_GetPWMConfig(channel, &pulsePeriod, &dutyCycle) == 0)
     {
         ui->lineEdit_PWMPeriod->setText(numToStr(pulsePeriod));
         ui->spinBox_PWMDutyCycle->setValue(dutyCycle);
     }
-	if (m_dlpAPI->DLPC350_GetPWMEnable(channel, &enable) == 0)
+    if (m_dlpAPI->DLPC350_GetPWMEnable(channel, &enable) == 0)
         ui->checkBox_PWMEnable->setChecked(enable);
 }
 
 void MainWindow::on_pushButton_SetPWMCapConfig_clicked()
 {
-	m_dlpAPI->DLPC350_SetPWMCaptureConfig(ui->comboBox_PWMCapChannel->currentIndex(), ui->checkBox_PWMCapEnable->isChecked(), ui->lineEdit_PWMCapSampleRate->text().toUInt());
+    m_dlpAPI->DLPC350_SetPWMCaptureConfig(ui->comboBox_PWMCapChannel->currentIndex(), ui->checkBox_PWMCapEnable->isChecked(), ui->lineEdit_PWMCapSampleRate->text().toUInt());
 }
 
 void MainWindow::on_pushButton_GetPWMCapConfig_clicked()
@@ -5587,7 +5587,7 @@ void MainWindow::on_pushButton_GetPWMCapConfig_clicked()
     bool enabled;
     unsigned int sampleRate;
 
-	if (m_dlpAPI->DLPC350_GetPWMCaptureConfig(ui->comboBox_PWMCapChannel->currentIndex(), &enabled, &sampleRate) == 0)
+    if (m_dlpAPI->DLPC350_GetPWMCaptureConfig(ui->comboBox_PWMCapChannel->currentIndex(), &enabled, &sampleRate) == 0)
     {
         ui->checkBox_PWMCapEnable->setChecked(enabled);
         ui->lineEdit_PWMCapSampleRate->setText(numToStr(sampleRate));
@@ -5598,7 +5598,7 @@ void MainWindow::on_pushButton_PWMCapRead_clicked()
 {
     unsigned int lowPeriod, highPeriod, dutyCycle;
 
-	if (m_dlpAPI->DLPC350_PWMCaptureRead(ui->comboBox_PWMCapChannel->currentIndex(), \
+    if (m_dlpAPI->DLPC350_PWMCaptureRead(ui->comboBox_PWMCapChannel->currentIndex(), \
                               &lowPeriod, &highPeriod) == 0)
     {
         if((highPeriod + lowPeriod) == 0)
@@ -5668,7 +5668,7 @@ void MainWindow::on_pushBox_SetGPIOConfig_clicked()
     default:
         break;
     }
-	m_dlpAPI->DLPC350_SetGPIOConfig(ui->comboBox_GPIOPin->currentIndex(), \
+    m_dlpAPI->DLPC350_SetGPIOConfig(ui->comboBox_GPIOPin->currentIndex(), \
                           ui->checkBox_GPIOEnAltFun->isChecked(), \
                           alternativeMode, \
                           ui->comboBox_GPIOPinDir->currentIndex(),\
@@ -5680,7 +5680,7 @@ void MainWindow::on_pushBox_GetGPIOConfig_clicked()
 {
     bool enAltFunc, altFunc1, dirOutput, outTypeOpenDrain, state;
 
-	if (m_dlpAPI->DLPC350_GetGPIOConfig(ui->comboBox_GPIOPin->currentIndex(), \
+    if (m_dlpAPI->DLPC350_GetGPIOConfig(ui->comboBox_GPIOPin->currentIndex(), \
                              &enAltFunc, &altFunc1, &dirOutput, \
                              &outTypeOpenDrain, &state) == 0)
     {
@@ -5701,7 +5701,7 @@ void MainWindow::on_spinBox_GpClk_valueChanged(int arg1)
 
 void MainWindow::on_pushButton_SetGpClk_clicked()
 {
-	m_dlpAPI->DLPC350_SetGeneralPurposeClockOutFreq(ui->comboBox_GpClk->currentIndex() + 1, \
+    m_dlpAPI->DLPC350_SetGeneralPurposeClockOutFreq(ui->comboBox_GpClk->currentIndex() + 1, \
                                           ui->checkBox_GpClk->isChecked(), \
                                           ui->spinBox_GpClk->value());
 }
@@ -5711,7 +5711,7 @@ void MainWindow::on_pushButton_GetGpClk_clicked()
     bool enabled;
     unsigned int divider;
 
-	if (m_dlpAPI->DLPC350_GetGeneralPurposeClockOutFreq(\
+    if (m_dlpAPI->DLPC350_GetGeneralPurposeClockOutFreq(\
                 ui->comboBox_GpClk->currentIndex()+1, &enabled, &divider) == 0)
     {
         ui->checkBox_GpClk->setChecked(enabled);
@@ -5788,14 +5788,14 @@ void MainWindow::on_pushButton_i2cWrite_clicked()
         }
     }
 
-	if (m_dlpAPI->DLPC350_I2C0WriteData(is7BitAddr, i2cClk, devAddr, numWriteBytes, &wdata[0]) < 0)
+    if (m_dlpAPI->DLPC350_I2C0WriteData(is7BitAddr, i2cClk, devAddr, numWriteBytes, &wdata[0]) < 0)
     {
         ShowError("Failed to Write command over I2C0 port");
         return;
     }
 
     unsigned char status;
-	if (m_dlpAPI->DLPC350_I2C0TranStat(&status) < 0)
+    if (m_dlpAPI->DLPC350_I2C0TranStat(&status) < 0)
         return;
 
     if(status)
@@ -5908,11 +5908,11 @@ void MainWindow::on_pushButton_i2cRead_clicked()
         return;
     }
 
-	if (m_dlpAPI->DLPC350_I2C0ReadData(is7BitAddr, i2cClk, devAddr, numWriteBytes, numReadBytes, &wdata[0], &rdata[0]) < 0)
+    if (m_dlpAPI->DLPC350_I2C0ReadData(is7BitAddr, i2cClk, devAddr, numWriteBytes, numReadBytes, &wdata[0], &rdata[0]) < 0)
     {
         ShowError("Failed to Read response over I2C0 port");
         unsigned char status;
-		if (m_dlpAPI->DLPC350_I2C0TranStat(&status) < 0)
+        if (m_dlpAPI->DLPC350_I2C0TranStat(&status) < 0)
             return;
         //Put error message
         char tmpBuf[128];
@@ -5963,10 +5963,10 @@ void MainWindow::SaveImage()
     BMP_Image_t splashImage;
     QFile outFile(m_outFileName);
 
-	m_dlpBMPParser->BMP_InitImage(&splashImage, PTN_WIDTH, PTN_HEIGHT, 8 * BYTES_PER_PIXEL);
+    m_dlpBMPParser->BMP_InitImage(&splashImage, PTN_WIDTH, PTN_HEIGHT, 8 * BYTES_PER_PIXEL);
     if(outFile.open(QIODevice::ReadWrite))
     {
-		m_dlpBMPParser->BMP_StoreImage(&splashImage, (BMP_DataFunc_t *)My_FileWrite, \
+        m_dlpBMPParser->BMP_StoreImage(&splashImage, (BMP_DataFunc_t *)My_FileWrite, \
                        &outFile, (BMP_PixelFunc_t *)My_ImgeGet, NULL);
         outFile.close();
     }
@@ -6059,7 +6059,7 @@ void MainWindow::on_pushButton_CreaImgAddToOutFile_clicked()
     writeParam |= ((ui->comboBox_CreaImgFileBitDepth->currentIndex() & 7) << 5);
 
     file.open(QIODevice::ReadOnly);
-	m_dlpBMPParser->BMP_ParseImage((BMP_DataFunc_t *)My_FileRead, &in, (BMP_PixelFunc_t *)My_ImgeDraw, &writeParam, ui->comboBox_CreaImgFileBitDepth->currentIndex() + 1);
+    m_dlpBMPParser->BMP_ParseImage((BMP_DataFunc_t *)My_FileRead, &in, (BMP_PixelFunc_t *)My_ImgeDraw, &writeParam, ui->comboBox_CreaImgFileBitDepth->currentIndex() + 1);
     file.close();
 
     emit SaveImage();
@@ -6289,7 +6289,7 @@ void MainWindow::on_pushButton_FWSelectFWBin_clicked()
         imgFileIn.read((char *)pByteArray, fileLen);
         imgFileIn.close();
 
-		ret = m_dlpFrm->DLPC350_Frmw_CopyAndVerifyImage(pByteArray, fileLen);
+        ret = m_dlpFrm->DLPC350_Frmw_CopyAndVerifyImage(pByteArray, fileLen);
         if (ret)
         {
             switch(ret)
@@ -6309,10 +6309,10 @@ void MainWindow::on_pushButton_FWSelectFWBin_clicked()
 
         free(pByteArray);
 
-		if ((m_dlpFrm->DLPC350_Frmw_GetVersionNumber() & 0xFFFFFF) < RELEASE_FW_VERSION)
+        if ((m_dlpFrm->DLPC350_Frmw_GetVersionNumber() & 0xFFFFFF) < RELEASE_FW_VERSION)
             ShowError("WARNING: Old version of Firmware detected.\n\nDownload the latest release from http://www.ti.com/tool/dlpr350.");
 
-		splash_count = m_dlpFrm->DLPC350_Frmw_GetSplashCount();
+        splash_count = m_dlpFrm->DLPC350_Frmw_GetSplashCount();
         actual_splash_count = splash_count;
         if (splash_count < 0)
         {
@@ -6337,7 +6337,7 @@ void MainWindow::on_pushButton_FWSelectFWBin_clicked()
                 {
                     BMP_Image_t splashImage;
 
-					ret = m_dlpFrm->DLPC350_Frmw_GetSpashImage(g_pImageBuffer, i);
+                    ret = m_dlpFrm->DLPC350_Frmw_GetSpashImage(g_pImageBuffer, i);
                     if (ret)
                     {
                         outFile.close();
@@ -6354,8 +6354,8 @@ void MainWindow::on_pushButton_FWSelectFWBin_clicked()
                             continue;
                         }
                     }
-					m_dlpBMPParser->BMP_InitImage(&splashImage, PTN_WIDTH, PTN_HEIGHT, 8 * BYTES_PER_PIXEL);
-					m_dlpBMPParser->BMP_StoreImage(&splashImage, (BMP_DataFunc_t *)My_FileWrite, &outFile, (BMP_PixelFunc_t *)My_ImgeGet, NULL);
+                    m_dlpBMPParser->BMP_InitImage(&splashImage, PTN_WIDTH, PTN_HEIGHT, 8 * BYTES_PER_PIXEL);
+                    m_dlpBMPParser->BMP_StoreImage(&splashImage, (BMP_DataFunc_t *)My_FileWrite, &outFile, (BMP_PixelFunc_t *)My_ImgeGet, NULL);
                     outFile.close();
                     memset(g_pImageBuffer, 0, PTN_WIDTH*PTN_HEIGHT*BYTES_PER_PIXEL);
                     m_addedSplashImages[i] = outFile.fileName();
@@ -6378,7 +6378,7 @@ void MainWindow::on_pushButton_FWSelectFWBin_clicked()
             ui->pushButton_FWChangeSplashImage->setEnabled(true);
             ui->pushButton_FWBuildNewFrmwImage->setEnabled(true);
             ui->pushButton_FWSelectIniFile->setEnabled(true);
-            //	    ui->pushButton_FWSplashImageUpload->setEnabled(true);
+            //        ui->pushButton_FWSplashImageUpload->setEnabled(true);
             ui->label_NewFWBuildPath->setEnabled(true);
             ui->comboBox_FWSplashImageIndex->setCurrentIndex(0);
             emit on_comboBox_FWSplashImageIndex_currentIndexChanged(0);
@@ -6611,9 +6611,9 @@ void MainWindow::on_pushButton_FWSplashImageUpload_clicked()
             count++;
     }
 
-	m_dlpFrm->DLPC350_Frmw_SPLASH_InitBuffer(count);
+    m_dlpFrm->DLPC350_Frmw_SPLASH_InitBuffer(count);
 
-	if (m_dlpAPI->DLPC350_EnterProgrammingMode() < 0)
+    if (m_dlpAPI->DLPC350_EnterProgrammingMode() < 0)
     {
         ShowError("Unable to enter Programming mode");
         return;
@@ -6637,12 +6637,12 @@ void MainWindow::on_pushButton_FWSplashImageUpload_clicked()
 
     m_usbPollTimer->stop();
 
-	if (m_dlpAPI->DLPC350_GetFlashManID(&manID) < 0)
+    if (m_dlpAPI->DLPC350_GetFlashManID(&manID) < 0)
     {
         ShowError("Unable to read Flash Manufacturer ID");
         return;
     }
-	if (m_dlpAPI->DLPC350_GetFlashDevID(&devID) < 0)
+    if (m_dlpAPI->DLPC350_GetFlashDevID(&devID) < 0)
     {
         ShowError("Unable to read Flash Device ID");
         return;
@@ -6680,9 +6680,9 @@ void MainWindow::on_pushButton_FWSplashImageUpload_clicked()
         return;
     }
 
-	m_dlpAPI->DLPC350_SetFlashType(g_FlashDevice.Type);
+    m_dlpAPI->DLPC350_SetFlashType(g_FlashDevice.Type);
 
-	flashSkipSize = m_dlpFrm->DLPC350_Frmw_GetSPlashFlashStartAddress() - FLASH_BASE_ADDRESS;
+    flashSkipSize = m_dlpFrm->DLPC350_Frmw_GetSPlashFlashStartAddress() - FLASH_BASE_ADDRESS;
     startSector = GetSectorNum(flashSkipSize);
 
     if(flashSkipSize != g_FlashDevice.SectorArr[startSector])
@@ -6690,23 +6690,23 @@ void MainWindow::on_pushButton_FWSplashImageUpload_clicked()
         unsigned char *flashTableSector_Buffer = (unsigned char *) malloc(128 * 1024);
 
         startSector++;
-		m_dlpFrm->DLPC350_Frmw_UpdateFlashTableSplashAddress(flashTableSector_Buffer, g_FlashDevice.SectorArr[startSector]);
+        m_dlpFrm->DLPC350_Frmw_UpdateFlashTableSplashAddress(flashTableSector_Buffer, g_FlashDevice.SectorArr[startSector]);
         ui->label_FWFileParseStatus->setText("Updating Flash Table");
         ui->progressBar_FWFileParsing->setValue(0);
 
-		m_dlpAPI->DLPC350_SetFlashAddr(128 * 1024);
-		m_dlpAPI->DLPC350_FlashSectorErase();
-		m_dlpAPI->DLPC350_WaitForFlashReady();
+        m_dlpAPI->DLPC350_SetFlashAddr(128 * 1024);
+        m_dlpAPI->DLPC350_FlashSectorErase();
+        m_dlpAPI->DLPC350_WaitForFlashReady();
 
         dataLen = 128 * 1024;
         dataLen_full = dataLen;
 
-		m_dlpAPI->DLPC350_SetFlashAddr(128 * 1024);
-		m_dlpAPI->DLPC350_SetUploadSize(dataLen);
+        m_dlpAPI->DLPC350_SetFlashAddr(128 * 1024);
+        m_dlpAPI->DLPC350_SetUploadSize(dataLen);
 
         while(dataLen > 0)
         {
-			bytesSent = m_dlpAPI->DLPC350_UploadData(flashTableSector_Buffer + dataLen_full - dataLen, dataLen);
+            bytesSent = m_dlpAPI->DLPC350_UploadData(flashTableSector_Buffer + dataLen_full - dataLen, dataLen);
 
             if(bytesSent < 0)
             {
@@ -6725,7 +6725,7 @@ void MainWindow::on_pushButton_FWSplashImageUpload_clicked()
         }
 
         ui->label_FWFileParseStatus->setText("Flash Table Updated");
-		m_dlpAPI->DLPC350_WaitForFlashReady();
+        m_dlpAPI->DLPC350_WaitForFlashReady();
         flashSkipSize = g_FlashDevice.SectorArr[startSector] - FLASH_BASE_ADDRESS;
     }
 
@@ -6740,9 +6740,9 @@ void MainWindow::on_pushButton_FWSplashImageUpload_clicked()
 
     for(i=startSector; i <= lastSectorToErase; i++)
     {
-		m_dlpAPI->DLPC350_SetFlashAddr(g_FlashDevice.SectorArr[i]);
-		m_dlpAPI->DLPC350_FlashSectorErase();
-		m_dlpAPI->DLPC350_WaitForFlashReady();    //Wait for flash busy flag to go off
+        m_dlpAPI->DLPC350_SetFlashAddr(g_FlashDevice.SectorArr[i]);
+        m_dlpAPI->DLPC350_FlashSectorErase();
+        m_dlpAPI->DLPC350_WaitForFlashReady();    //Wait for flash busy flag to go off
         ui->progressBar_FWFileParsing->setValue(i*100/lastSectorToErase);
         QApplication::processEvents(); //Update the GUI
     }
@@ -6783,26 +6783,26 @@ void MainWindow::on_pushButton_FWSplashImageUpload_clicked()
         else
             compression = SPLASH_NOCOMP_SPECIFIED;
 
-		ret = m_dlpFrm->DLPC350_Frmw_SPLASH_AddSplash(pByteArray, &compression, &compSize);
+        ret = m_dlpFrm->DLPC350_Frmw_SPLASH_AddSplash(pByteArray, &compression, &compSize);
         if (ret < 0)
             ShowError("Error in buiding flash image with specified images\n");
         free(pByteArray);
     }
 
-	m_dlpFrm->DLPC350_Frmw_Get_NewSplashBuffer(&newSplashBuffer, &newSplashBufferSize);
+    m_dlpFrm->DLPC350_Frmw_Get_NewSplashBuffer(&newSplashBuffer, &newSplashBufferSize);
 
     dataLen = newSplashBufferSize;
     dataLen_full = dataLen;
 
-	m_dlpAPI->DLPC350_SetFlashAddr(g_FlashDevice.SectorArr[startSector]);
-	m_dlpAPI->DLPC350_SetUploadSize(dataLen);
+    m_dlpAPI->DLPC350_SetFlashAddr(g_FlashDevice.SectorArr[startSector]);
+    m_dlpAPI->DLPC350_SetUploadSize(dataLen);
 
     ui->progressBar_FWFileParsing->setValue(0);
     ui->label_FWFileParseStatus->setText("Downloading Images");
 
     while(dataLen > 0)
     {
-		bytesSent = m_dlpAPI->DLPC350_UploadData(newSplashBuffer + dataLen_full - dataLen, dataLen);
+        bytesSent = m_dlpAPI->DLPC350_UploadData(newSplashBuffer + dataLen_full - dataLen, dataLen);
 
         if(bytesSent < 0)
         {
@@ -6816,9 +6816,9 @@ void MainWindow::on_pushButton_FWSplashImageUpload_clicked()
     }
 
     ui->label_FWFileParseStatus->setText("Downloading Images Complete");
-	m_dlpAPI->DLPC350_WaitForFlashReady();
+    m_dlpAPI->DLPC350_WaitForFlashReady();
 
-	m_dlpAPI->DLPC350_ExitProgrammingMode();
+    m_dlpAPI->DLPC350_ExitProgrammingMode();
     m_usbPollTimer->start();
 }
 
@@ -6865,11 +6865,11 @@ void MainWindow::on_pushButton_FWBuildNewFrmwImage_clicked()
             byteArray = line.toLocal8Bit();
             pCh = byteArray.data();
 
-			if (!m_dlpFrm->DLPC350_Frmw_ParseIniLines(pCh))
+            if (!m_dlpFrm->DLPC350_Frmw_ParseIniLines(pCh))
             {
-				m_dlpFrm->DLPC350_Frmw_GetCurrentIniLineParam(&cFirstIniToken[0], iniParams, &numIniParams);
+                m_dlpFrm->DLPC350_Frmw_GetCurrentIniLineParam(&cFirstIniToken[0], iniParams, &numIniParams);
                 firstIniToken = QString(&cFirstIniToken[0]);
-				ret = m_dlpFrm->DLPC350_Frmw_WriteApplConfigData(&cFirstIniToken[0], iniParams, numIniParams);
+                ret = m_dlpFrm->DLPC350_Frmw_WriteApplConfigData(&cFirstIniToken[0], iniParams, numIniParams);
                 if (ret)
                 {
                     char errString[255];
@@ -6900,7 +6900,7 @@ void MainWindow::on_pushButton_FWBuildNewFrmwImage_clicked()
                 break;
         }
 
-		if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.FIRMWARE_TAG", &params[0], i))
+        if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.FIRMWARE_TAG", &params[0], i))
         {
             ShowError("Unable to add firmware tag information");
             return;
@@ -6914,7 +6914,7 @@ void MainWindow::on_pushButton_FWBuildNewFrmwImage_clicked()
 
         param = 0x01;
 
-		if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.LED_ENABLE_MAN_MODE", &param, 1))
+        if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.LED_ENABLE_MAN_MODE", &param, 1))
         {
             ShowError("Unable to add illumination configuration color/monochrome information");
             return;
@@ -6922,7 +6922,7 @@ void MainWindow::on_pushButton_FWBuildNewFrmwImage_clicked()
 
         if(ui->checkBox_FWIllumSelMonoRedCh->isChecked())
         {
-			if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_RED_LED", &param, 1))
+            if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_RED_LED", &param, 1))
             {
                 ShowError("Unable to add illumination configuration color/monochrome information");
                 return;
@@ -6934,7 +6934,7 @@ void MainWindow::on_pushButton_FWBuildNewFrmwImage_clicked()
 
         if(ui->checkBox_FWIllumSelMonoGreenCh->isChecked())
         {
-			if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_GRN_LED", &param, 1))
+            if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_GRN_LED", &param, 1))
             {
                 ShowError("Unable to add illumination configuration color/monochrome information");
                 return;
@@ -6946,7 +6946,7 @@ void MainWindow::on_pushButton_FWBuildNewFrmwImage_clicked()
 
         if(ui->checkBox_FWIllumSelMonoBlueCh->isChecked())
         {
-			if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_BLU_LED", &param, 1))
+            if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_BLU_LED", &param, 1))
             {
                 ShowError("Unable to add illumination configuration color/monochrome information");
                 return;
@@ -6956,7 +6956,7 @@ void MainWindow::on_pushButton_FWBuildNewFrmwImage_clicked()
 
         }
 
-		if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("MACHINE_DATA.COLORPROFILE_0_BRILLIANTCOLORLOOK", &param, 1))
+        if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("MACHINE_DATA.COLORPROFILE_0_BRILLIANTCOLORLOOK", &param, 1))
         {
             ShowError("Unable to add illumination configuration color/monochrome information");
             return;
@@ -6969,31 +6969,31 @@ void MainWindow::on_pushButton_FWBuildNewFrmwImage_clicked()
 
         param = 0x00;
 
-		if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.LED_ENABLE_MAN_MODE", &param, 1))
+        if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.LED_ENABLE_MAN_MODE", &param, 1))
         {
             ShowError("Unable to add illumination configuration color/monochrome information");
             return;
         }
 
-		if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_RED_LED", &param, 1))
+        if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_RED_LED", &param, 1))
         {
             ShowError("Unable to add illumination configuration color/monochrome information");
             return;
         }
 
-		if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_GRN_LED", &param, 1))
+        if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_GRN_LED", &param, 1))
         {
             ShowError("Unable to add illumination configuration color/monochrome information");
             return;
         }
 
-		if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_BLU_LED", &param, 1))
+        if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("DEFAULT.MAN_ENABLE_BLU_LED", &param, 1))
         {
             ShowError("Unable to add illumination configuration color/monochrome information");
             return;
         }
 
-		if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("MACHINE_DATA.COLORPROFILE_0_BRILLIANTCOLORLOOK", &param, 1))
+        if (m_dlpFrm->DLPC350_Frmw_WriteApplConfigData("MACHINE_DATA.COLORPROFILE_0_BRILLIANTCOLORLOOK", &param, 1))
         {
             ShowError("Unable to add illumination configuration color/monochrome information");
             return;
@@ -7007,7 +7007,7 @@ void MainWindow::on_pushButton_FWBuildNewFrmwImage_clicked()
             count++;
     }
 
-	m_dlpFrm->DLPC350_Frmw_SPLASH_InitBuffer(count);
+    m_dlpFrm->DLPC350_Frmw_SPLASH_InitBuffer(count);
 
     QFile logFile("Frmw-build.log");
     logFile.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -7052,7 +7052,7 @@ void MainWindow::on_pushButton_FWBuildNewFrmwImage_clicked()
         else
             compression = SPLASH_NOCOMP_SPECIFIED;
 
-		ret = m_dlpFrm->DLPC350_Frmw_SPLASH_AddSplash(pByteArray, &compression, &compSize);
+        ret = m_dlpFrm->DLPC350_Frmw_SPLASH_AddSplash(pByteArray, &compression, &compSize);
         if (ret < 0)
         {
             switch(ret)
@@ -7094,7 +7094,7 @@ void MainWindow::on_pushButton_FWBuildNewFrmwImage_clicked()
     }
 
     logFile.close();
-	m_dlpFrm->DLPC350_Frmw_Get_NewFlashImage(&newFrmwImage, &newFrmwSize);
+    m_dlpFrm->DLPC350_Frmw_Get_NewFlashImage(&newFrmwImage, &newFrmwSize);
 
     QFile outFile(fileName);
     if(outFile.open(QIODevice::ReadWrite))
@@ -7164,9 +7164,9 @@ void MainWindow::on_pushButton_FWUpload_clicked()
         return;
     }
     
-	imgFile.read((char *)pByteArray, dataLen);
+    imgFile.read((char *)pByteArray, dataLen);
 
-	int ret = m_dlpFrm->DLPC350_Frmw_CopyAndVerifyImage(pByteArray, dataLen);
+    int ret = m_dlpFrm->DLPC350_Frmw_CopyAndVerifyImage(pByteArray, dataLen);
     if (ret)
     {
         switch(ret)
@@ -7203,7 +7203,7 @@ void MainWindow::on_pushButton_FWUpload_clicked()
     //
     //3. Enter programming mode
     //
-	if (m_dlpAPI->DLPC350_EnterProgrammingMode() < 0)
+    if (m_dlpAPI->DLPC350_EnterProgrammingMode() < 0)
     {
         ShowError("Unable to enter Programming mode");
         return;
@@ -7231,13 +7231,13 @@ void MainWindow::on_pushButton_FWUpload_clicked()
     //
     //4. Read Flash information
     //
-	if (m_dlpAPI->DLPC350_GetFlashManID(&manID) < 0)
+    if (m_dlpAPI->DLPC350_GetFlashManID(&manID) < 0)
     {
         ShowError("Unable to read Flash Manufacturer ID");
         return;
     }
 
-	if (m_dlpAPI->DLPC350_GetFlashDevID(&devID) < 0)
+    if (m_dlpAPI->DLPC350_GetFlashDevID(&devID) < 0)
     {
         ShowError("Unable to read Flash Device ID");
         return;
@@ -7292,15 +7292,15 @@ void MainWindow::on_pushButton_FWUpload_clicked()
     if(imgFile.size() == g_FlashDevice.SectorArr[lastSectorToErase]) //If perfectly aligned with last sector start addr, no need to erase last sector.
         lastSectorToErase -= 1;
 
-	m_dlpAPI->DLPC350_SetFlashType(g_FlashDevice.Type);
+    m_dlpAPI->DLPC350_SetFlashType(g_FlashDevice.Type);
     ui->prorgessBar_FWUpload->setValue(0);
     ui->label_FWUploadProgressBar->setText("Erasing Flash Sectors");
 
     for(i=startSector; i <= lastSectorToErase; i++)
     {
-		m_dlpAPI->DLPC350_SetFlashAddr(g_FlashDevice.SectorArr[i]);
-		m_dlpAPI->DLPC350_FlashSectorErase();
-		m_dlpAPI->DLPC350_WaitForFlashReady();    //Wait for flash busy flag to go off
+        m_dlpAPI->DLPC350_SetFlashAddr(g_FlashDevice.SectorArr[i]);
+        m_dlpAPI->DLPC350_FlashSectorErase();
+        m_dlpAPI->DLPC350_WaitForFlashReady();    //Wait for flash busy flag to go off
         ui->prorgessBar_FWUpload->setValue(i*100/lastSectorToErase);
         QApplication::processEvents(); //Update the GUI
     }
@@ -7310,8 +7310,8 @@ void MainWindow::on_pushButton_FWUpload_clicked()
 
     dataLen -= BLsize;
 
-	m_dlpAPI->DLPC350_SetFlashAddr(BLsize);
-	m_dlpAPI->DLPC350_SetUploadSize(dataLen);
+    m_dlpAPI->DLPC350_SetFlashAddr(BLsize);
+    m_dlpAPI->DLPC350_SetUploadSize(dataLen);
 
     dataLen_full = dataLen;
     ui->prorgessBar_FWUpload->setValue(0);
@@ -7319,7 +7319,7 @@ void MainWindow::on_pushButton_FWUpload_clicked()
 
     while(dataLen > 0)
     {
-		bytesSent = m_dlpAPI->DLPC350_UploadData(pByteArray + BLsize + dataLen_full - dataLen, dataLen);
+        bytesSent = m_dlpAPI->DLPC350_UploadData(pByteArray + BLsize + dataLen_full - dataLen, dataLen);
 
         if(bytesSent < 0)
         {
@@ -7348,7 +7348,7 @@ void MainWindow::on_pushButton_FWUpload_clicked()
     //7. Compute checksum
     //
 
-	m_dlpAPI->DLPC350_CalculateFlashChecksum();
+    m_dlpAPI->DLPC350_CalculateFlashChecksum();
 
 #if 0
     /* More wait time for bigger files */
@@ -7365,9 +7365,9 @@ void MainWindow::on_pushButton_FWUpload_clicked()
     }
 #endif
 
-	m_dlpAPI->DLPC350_WaitForFlashReady();
+    m_dlpAPI->DLPC350_WaitForFlashReady();
 
-	if (m_dlpAPI->DLPC350_GetFlashChecksum(&checksum) < 0)
+    if (m_dlpAPI->DLPC350_GetFlashChecksum(&checksum) < 0)
     {
         ShowError("Error reading checksum from target");
     }
@@ -7378,7 +7378,7 @@ void MainWindow::on_pushButton_FWUpload_clicked()
     }
     else
     {
-		m_dlpAPI->DLPC350_ExitProgrammingMode(); //Exit programming mode; Start application.
+        m_dlpAPI->DLPC350_ExitProgrammingMode(); //Exit programming mode; Start application.
         ShowError("Download Complete");
     }
 

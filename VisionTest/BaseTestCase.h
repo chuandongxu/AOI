@@ -4,15 +4,15 @@
 
 class QBaseTestCase : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QBaseTestCase(QObject *parent=NULL);
-	~QBaseTestCase();
+    QBaseTestCase(QObject *parent=NULL);
+    ~QBaseTestCase();
 
-	virtual void setup() = 0;
-	virtual bool run() = 0;
-	virtual bool result() = 0;
+    virtual void setup() = 0;
+    virtual bool run() = 0;
+    virtual bool result() = 0;
 };
 
 
@@ -21,13 +21,13 @@ public:
 ***************/
 class QCaliper : public QBaseTestCase
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QCaliper(QObject *parent = NULL);
-	~QCaliper();
+    QCaliper(QObject *parent = NULL);
+    ~QCaliper();
 
-	virtual void setup();
-	virtual bool run();
-	virtual bool result();
+    virtual void setup();
+    virtual bool run();
+    virtual bool result();
 };

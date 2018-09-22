@@ -4,14 +4,14 @@
 QModuleBase::QModuleBase(int id,const QString &name)
     :m_id(id),m_name(name)
 {
-	QMoudleMgr * pMgr = QMoudleMgr::instance();
-	if(pMgr)pMgr->addModlue(this);
+    QMoudleMgr * pMgr = QMoudleMgr::instance();
+    if(pMgr)pMgr->addModlue(this);
 }
 
 QModuleBase::~QModuleBase()
 {
-	QMoudleMgr * pMgr = QMoudleMgr::instance();
-	if(pMgr)pMgr->removeModlue(this);
+    QMoudleMgr * pMgr = QMoudleMgr::instance();
+    if(pMgr)pMgr->removeModlue(this);
 }
 
 QString QModuleBase::getDisplayName()

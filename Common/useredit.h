@@ -11,29 +11,29 @@
 
 class QUserEdit : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QUserEdit(QWidget *parent = 0);
-	~QUserEdit();
+    QUserEdit(QWidget *parent = 0);
+    ~QUserEdit();
 
-	void initUIData(bool isEdit);
+    void initUIData(bool isEdit);
 
 protected slots:
-	void onOk();
-	void onCancel();
+    void onOk();
+    void onCancel();
 
 protected:
-	bool isExistUser(const QString &user);
+    bool isExistUser(const QString &user);
 
 private:
-	Ui::QUserEdit ui;
+    Ui::QUserEdit ui;
 
 public:
-	QString m_userName;
-	QString m_password;
-	int m_level;
-	QString m_remark;
+    QString m_userName;
+    QString m_password;
+    int m_level;
+    QString m_remark;
 };
 
 #endif // USEREDIT_H

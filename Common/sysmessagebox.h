@@ -6,21 +6,21 @@
 
 class QSysMessageBox : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QSysMessageBox(QWidget *parent = 0, bool bInteract = false);
-	~QSysMessageBox();
+    QSysMessageBox(QWidget *parent = 0, bool bInteract = false);
+    ~QSysMessageBox();
 
-	void setTitle(const QString &str);
-	void setText(const QString &msg);
-	void enableCloseBtn(bool flag);
+    void setTitle(const QString &str);
+    void setText(const QString &msg);
+    void enableCloseBtn(bool flag);
 
 protected slots:
-	void onBtnClick();
+    void onBtnClick();
 
 private:
-	Ui::QSysMessageBox ui;
+    Ui::QSysMessageBox ui;
 };
 
 #endif // SYSMESSAGEBOX_H

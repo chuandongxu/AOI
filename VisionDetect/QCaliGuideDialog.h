@@ -5,16 +5,16 @@
 
 class QCaliGuideDialog : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QCaliGuideDialog(QWidget *parent = Q_NULLPTR);
-	~QCaliGuideDialog();
+    QCaliGuideDialog(QWidget *parent = Q_NULLPTR);
+    ~QCaliGuideDialog();
 
 protected slots:
-	void onOk();
-	void onExit();
+    void onOk();
+    void onExit();
 
 private:
-	Ui::QCaliGuideDialog ui;
+    Ui::QCaliGuideDialog ui;
 };

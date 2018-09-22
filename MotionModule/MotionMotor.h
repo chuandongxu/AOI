@@ -9,88 +9,88 @@
 class MotionMotor;
 class MotionMotorOnLive : public QThread
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	MotionMotorOnLive(MotionMotor* pMotor);
-	~MotionMotorOnLive(){};
+    MotionMotorOnLive(MotionMotor* pMotor);
+    ~MotionMotorOnLive(){};
 
 public:
-	void setQuitFlag(){ m_bQuit = true; }
-	bool isRuning(){ return m_bRuning; };
+    void setQuitFlag(){ m_bQuit = true; }
+    bool isRuning(){ return m_bRuning; };
 
 private:
-	void run();
+    void run();
 
 private:
-	MotionMotor*  m_pMotor;
-	bool          m_bQuit;
-	bool          m_bRuning;
+    MotionMotor*  m_pMotor;
+    bool          m_bQuit;
+    bool          m_bRuning;
 };
 
 class MotionMotor : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	MotionMotor(MotionControl* pCtrl, QWidget *parent = Q_NULLPTR);
-	~MotionMotor();
+    MotionMotor(MotionControl* pCtrl, QWidget *parent = Q_NULLPTR);
+    ~MotionMotor();
     void updataStatus();
 
 private:
-	void initUI();
-	void loadConfig();
-	void updateUI();
+    void initUI();
+    void loadConfig();
+    void updateUI();
 
-	void loadMotorConfig();
-	void updateMotorUI();
-	void saveMotorConfig();
+    void loadMotorConfig();
+    void updateMotorUI();
+    void saveMotorConfig();
 
-	void loadMtrProfConfig();
-	void updateMtrProfData();
-	void saveMtrProfConfig();
+    void loadMtrProfConfig();
+    void updateMtrProfData();
+    void saveMtrProfConfig();
 
-	void loadMtrPointConfig();
-	void updateMtrPointData();
-	void saveMtrPointConfig();
+    void loadMtrPointConfig();
+    void updateMtrPointData();
+    void saveMtrPointConfig();
 
-	void loadMtrPointGroupConfig();
-	void updateMtrPointGroupData();
-	void updateMtrPointGroupListData(int nIndex);
-	void saveMtrPointGroupConfig();
+    void loadMtrPointGroupConfig();
+    void updateMtrPointGroupData();
+    void updateMtrPointGroupListData(int nIndex);
+    void saveMtrPointGroupConfig();
 
     void getAxisSelected(bool* axisIDs, int axisNum);
 
 private slots:
-	void onEnable();
-	void onHome();
-	void onDisable();
-	void onImStop();
-	void onClearError();
-	void onMoveRel();
-	void onMoveAbs();
-	void onStop();
-	void onParamSave();
+    void onEnable();
+    void onHome();
+    void onDisable();
+    void onImStop();
+    void onClearError();
+    void onMoveRel();
+    void onMoveAbs();
+    void onStop();
+    void onParamSave();
 
-	void onAutoLive();
-	void onAutoStop();
+    void onAutoLive();
+    void onAutoStop();
 
-	void onAddProf();
-	void onDelProf();
-	void onProfSave();
+    void onAddProf();
+    void onDelProf();
+    void onProfSave();
 
-	void onAddPoint();
-	void onDelPoint();
-	void onPointMove();
-	void onPointSave();
+    void onAddPoint();
+    void onDelPoint();
+    void onPointMove();
+    void onPointSave();
 
-	void onPointGroupIndexChanged(int nIndex);
-	void onAddPointGroup();
-	void onDelPointGroup();	
-	void onPointGroupSave();
+    void onPointGroupIndexChanged(int nIndex);
+    void onAddPointGroup();
+    void onDelPointGroup();    
+    void onPointGroupSave();
 
-	void onAddPointGroupPt();
-	void onDelPointGroupPt();
+    void onAddPointGroupPt();
+    void onDelPointGroupPt();
 
     void on_btnConvertVelocityToMotorUnit_clicked();
     void on_btnConvertVelocityToStandardUnit_clicked();
@@ -98,10 +98,10 @@ private slots:
     void on_btnConvertAccelerationToStandardUnit_clicked();
 
 private:
-	Ui::MotionMotor ui;
-	MotionControl* m_pCtrl;
-	MotionMotorOnLive *m_pThreadOnLive;
-	QStandardItemModel m_moveProfModel;
-	QStandardItemModel m_movePointModel;
-	QStandardItemModel m_movePtGroupModel;
+    Ui::MotionMotor ui;
+    MotionControl* m_pCtrl;
+    MotionMotorOnLive *m_pThreadOnLive;
+    QStandardItemModel m_moveProfModel;
+    QStandardItemModel m_movePointModel;
+    QStandardItemModel m_movePtGroupModel;
 };

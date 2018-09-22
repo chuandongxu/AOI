@@ -31,7 +31,7 @@ public:
     double m_deltaT;
 
     int m_width, m_height;
-	double m_dScaleX, m_dScaleY;
+    double m_dScaleX, m_dScaleY;
 
 public:
     SplineDisplayerWidget(double deltaT, QWidget *parent = 0);
@@ -50,7 +50,7 @@ private:
     int checkSelected(aaAaa::Vector2 point);
 
 protected:
-	//void paintEvent(QPaintEvent *event);
+    //void paintEvent(QPaintEvent *event);
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
@@ -63,7 +63,7 @@ signals:
     void selectValuesChanged(float t, float v);
 
 private:
-	void _draw_text(double x, double y, double z, QString txt);
+    void _draw_text(double x, double y, double z, QString txt);
 };
 
 

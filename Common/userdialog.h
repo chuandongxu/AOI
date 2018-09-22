@@ -6,21 +6,21 @@
 
 class QUserDialog : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QUserDialog(QWidget *parent = 0);
-	~QUserDialog();
+    QUserDialog(QWidget *parent = 0);
+    ~QUserDialog();
 
 protected slots:
-	void onOk();
-	void onCancel();
+    void onOk();
+    void onCancel();
 
 protected:
-	bool getUserPwd(const QString user,QString &pwd,int &level);
+    bool getUserPwd(const QString user,QString &pwd,int &level);
 
 private:
-	Ui::QUserDialog ui;
+    Ui::QUserDialog ui;
 };
 
 #endif // USERDIALOG_H

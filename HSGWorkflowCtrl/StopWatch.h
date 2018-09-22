@@ -12,55 +12,55 @@ using namespace std::chrono;
 class CStopWatch
 {
 public:
-	CStopWatch()
-	{
-		Start();
-	}
+    CStopWatch()
+    {
+        Start();
+    }
 
-	void Start() 
+    void Start() 
     { 
         _tpStart = high_resolution_clock::now();
     }
 
-	__int64 Now () const
-	{
-		high_resolution_clock::time_point tpNow = high_resolution_clock::now();
-		return static_cast<__int64> ( ( std::chrono::duration<double, std::milli>( tpNow - _tpStart ) ).count() );
-	}
+    __int64 Now () const
+    {
+        high_resolution_clock::time_point tpNow = high_resolution_clock::now();
+        return static_cast<__int64> ( ( std::chrono::duration<double, std::milli>( tpNow - _tpStart ) ).count() );
+    }
 
     __int64 Span() {
         high_resolution_clock::time_point tpNow = high_resolution_clock::now();
-		auto span = static_cast<__int64> ( std::chrono::duration<double, std::milli>( tpNow - _tpStart).count() );
+        auto span = static_cast<__int64> ( std::chrono::duration<double, std::milli>( tpNow - _tpStart).count() );
         _tpStart = tpNow;
         return span;
     }
 
-	__int64 static AbsNow()
-	{
-		return duration_cast<milliseconds>( high_resolution_clock::now().time_since_epoch() ).count();
-	}
+    __int64 static AbsNow()
+    {
+        return duration_cast<milliseconds>( high_resolution_clock::now().time_since_epoch() ).count();
+    }
 
-	__int64 NowInMicro () const
-	{
-		high_resolution_clock::time_point tpNow = high_resolution_clock::now();
-		return static_cast<__int64> ( ( std::chrono::duration<double, std::micro>( tpNow - _tpStart ) ).count() );
-	}
+    __int64 NowInMicro () const
+    {
+        high_resolution_clock::time_point tpNow = high_resolution_clock::now();
+        return static_cast<__int64> ( ( std::chrono::duration<double, std::micro>( tpNow - _tpStart ) ).count() );
+    }
 
     __int64 SpanInMicro () {
         high_resolution_clock::time_point tpNow = high_resolution_clock::now();
-		auto span = static_cast<__int64> ( std::chrono::duration<double, std::micro>( tpNow - _tpStart).count() );
+        auto span = static_cast<__int64> ( std::chrono::duration<double, std::micro>( tpNow - _tpStart).count() );
         _tpStart = tpNow;
         return span;
     }
 
-	__int64 static AbsNowInMicro()
-	{
-		return duration_cast<microseconds>( high_resolution_clock::now().time_since_epoch() ).count();
-	}
+    __int64 static AbsNowInMicro()
+    {
+        return duration_cast<microseconds>( high_resolution_clock::now().time_since_epoch() ).count();
+    }
 
     std::string static GetLocalTimeStr()
     {
-		char szTime[100];
+        char szTime[100];
         struct tm  stTm;
         time_t     nTimeSeconds;
         time(&nTimeSeconds);
@@ -70,7 +70,7 @@ public:
         return std::string(szTime);
     }
 private:
-	high_resolution_clock::time_point _tpStart;
+    high_resolution_clock::time_point _tpStart;
 };
 
 #endif

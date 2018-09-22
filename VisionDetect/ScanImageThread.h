@@ -13,21 +13,21 @@ class ScanImageThread : public QThread
 {
 public:
     ScanImageThread(const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr, float fLeft, float fTop, float fRight, float fBottom);
-	~ScanImageThread();
+    ~ScanImageThread();
 
-	void quit();
+    void quit();
     static bool captureAllImages(QVector<cv::Mat>& imageMats);
     Vision::VectorOfVectorOfPoint2f getFrameChartData() const { return m_vecVecFrameChartData; }
     bool isGood() const { return m_bGood; }
 
 protected:
     bool preRunning();
-	void run() override;
+    void run() override;
     bool moveToCapturePos(float fPosX, float fPosY);
-	bool isExit();
+    bool isExit();
 
 private:
-	std::atomic<bool>               m_exit;	
+    std::atomic<bool>               m_exit;    
 
     double                          m_dResolutionX;
     double                          m_dResolutionY;

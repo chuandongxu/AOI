@@ -232,7 +232,7 @@ public:
     double convertAccToPulse(AxisEnum emAxis, double dAccDist);
 
     AxisEnum changeToMtrEnum(int AxisID);
-    int		 changeToMtrID(AxisEnum emAxis);
+    int         changeToMtrID(AxisEnum emAxis);
 
 private:
     void commandhandler(char *command, short error);

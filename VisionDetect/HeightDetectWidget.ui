@@ -145,32 +145,32 @@
    </item>
    <item row="5" column="0">
     <property name="text">
-     <string>绝对高度标准</string>
+     <string>绝对高度标准(um)</string>
     </property>
    </item>
    <item row="6" column="0">
     <property name="text">
-     <string>绝对高度上限</string>
+     <string>绝对高度上限(um)</string>
     </property>
    </item>
    <item row="7" column="0">
     <property name="text">
-     <string>绝对高度下限</string>
+     <string>绝对高度下限(um)</string>
     </property>
    </item>
    <item row="8" column="0">
     <property name="text">
-     <string>相对高度</string>
+     <string>相对高度(um)</string>
     </property>
    </item>
    <item row="9" column="0">
     <property name="text">
-     <string>相对高度左右</string>
+     <string>相对高度左右(um)</string>
     </property>
    </item>
    <item row="10" column="0">
     <property name="text">
-     <string>相对高度上下</string>
+     <string>相对高度上下(um)</string>
     </property>
    </item>
   </widget>

@@ -9,41 +9,41 @@
 /*
 class QBottomModel : public QStandardItemModel
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	QBottomModel(){};
-	
+    QBottomModel(){};
+    
 public slots:
-	void onErrorInfo(const QString &data,const QString &msg,unsigned int level);
+    void onErrorInfo(const QString &data,const QString &msg,unsigned int level);
 };
 */
 
 class QBottonWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QBottonWidget(QWidget *parent = NULL);
-	~QBottonWidget();
+    QBottonWidget(QWidget *parent = NULL);
+    ~QBottonWidget();
 
-	//static void initBottomModel();
+    //static void initBottomModel();
 
 protected slots:
-	void onRunState(const QVariantList &data);
-	void onResoultEvent(const QVariantList &data);
-	void onChangeModuleType(const QVariantList &data);
-	void onDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles);
+    void onRunState(const QVariantList &data);
+    void onResoultEvent(const QVariantList &data);
+    void onChangeModuleType(const QVariantList &data);
+    void onDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles);
 
 protected:
-	void checkInitState();
-	void resizeEvent(QResizeEvent * event);
+    void checkInitState();
+    void resizeEvent(QResizeEvent * event);
 private:
-	Ui::bottonwidget ui;
-	QStandardItemModel m_checkModel;
-	QWidget * m_widgetEdit;
+    Ui::bottonwidget ui;
+    QStandardItemModel m_checkModel;
+    QWidget * m_widgetEdit;
 
 private:
-	//static QBottomModel m_model;
+    //static QBottomModel m_model;
 };
 
 #endif // BOTTONWIDGET_H

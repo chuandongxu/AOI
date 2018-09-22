@@ -19,8 +19,8 @@ public:
     graphiceditor(QWidget *parent = 0);
     ~graphiceditor();
 
-	void setViewPos(int nPosX, int nPosY);
-	void setScale(double dScaleX, double dScaleY);
+    void setViewPos(int nPosX, int nPosY);
+    void setScale(double dScaleX, double dScaleY);
 
     void clearSplines();
     void addSpline(const aaAaa::aaSpline &knot);
@@ -52,7 +52,7 @@ private slots:
     void onCurveSelectChanged(int index);
     void onCurveTypeChanged(int index);
     void onSelectPosChanged(float t, float v);
-	void onEditProfile();
+    void onEditProfile();
 };
 
 #endif // GRAPHICEDITOR_H

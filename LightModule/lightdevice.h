@@ -8,54 +8,54 @@
 
 struct CHData
 {
-	bool bOpen;
-	int iLuminance;
-	QString named;
+    bool bOpen;
+    int iLuminance;
+    QString named;
 
-	CHData()
+    CHData()
         :bOpen(false), iLuminance(0), named("")
-	{
-	}
+    {
+    }
 };
 
 class QCommPort;
 class QLightDevice : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	QLightDevice(const QString & devName, int nChnNum, QObject *parent);
-	~QLightDevice();
+    QLightDevice(const QString & devName, int nChnNum, QObject *parent);
+    ~QLightDevice();
 
-	QString getDeviceName() {return m_devName;};
+    QString getDeviceName() {return m_devName;};
     int getChnNum(){ return m_nChnNum; }
 
-	static QStringList enumCommPort();
-	static QStringList enumCommBound();
+    static QStringList enumCommPort();
+    static QStringList enumCommBound();
 
-	void openCommPort(const QString &name, int bound);
-	void closeCommPort();
-	bool isOpenCommPort() { return (m_comPort ? true : false); };
+    void openCommPort(const QString &name, int bound);
+    void closeCommPort();
+    bool isOpenCommPort() { return (m_comPort ? true : false); };
 
-	void openLight(int ch);
-	void closeLight(int ch);
-	bool isOpenLight(int ch);
+    void openLight(int ch);
+    void closeLight(int ch);
+    bool isOpenLight(int ch);
 
-	virtual void setChLuminance(int ch, int luminance) = 0;
-	void setChName(int ch, const QString &name);
+    virtual void setChLuminance(int ch, int luminance) = 0;
+    void setChName(int ch, const QString &name);
 
     virtual void setupTrigger(ILight::TRIGGER emTrig) = 0;
     virtual bool trigger() = 0;
 
-	int getChLuminance(int ch);
-	QString getChName(int ch);
+    int getChLuminance(int ch);
+    QString getChName(int ch);
 
 protected:
     void open();
-	int mapPortName(const QString &str);
+    int mapPortName(const QString &str);
 
 private:
-	QString m_devName;
-	bool m_bOpened;  
+    QString m_devName;
+    bool m_bOpened;  
     int m_nChnNum;
 
 protected:

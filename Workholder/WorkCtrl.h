@@ -21,7 +21,7 @@ public:
     void setQuitFlag(){ m_bQuit = true; }
 
 private:
-    WorkCtrl*	  m_pCtrl;
+    WorkCtrl*      m_pCtrl;
     QThreadPool*  m_pThreadPool;
     bool          m_bQuit;  
 };
@@ -39,7 +39,7 @@ public:
     void setQuitFlag(){ m_bQuit = true; }
 
 private:
-    WorkCtrl*	  m_pCtrl;
+    WorkCtrl*      m_pCtrl;
     QThreadPool*  m_pThreadPool;
     bool          m_bQuit;
 };

@@ -2,19 +2,19 @@
 #include <QApplication>
 
 QCaliGuideDialog::QCaliGuideDialog(QWidget *parent)
-	: QDialog(parent)
+    : QDialog(parent)
 {
-	ui.setupUi(this);
+    ui.setupUi(this);
 
-	QString path = QApplication::applicationDirPath();
-	path += "/image/";
+    QString path = QApplication::applicationDirPath();
+    path += "/image/";
 
-	QPixmap pixmap(path + "caliBg.png");
+    QPixmap pixmap(path + "caliBg.png");
 
-	ui.label->setPixmap(pixmap);
+    ui.label->setPixmap(pixmap);
 
-	connect(ui.pushButton_OK, SIGNAL(clicked()), SLOT(onOk()));
-	connect(ui.pushButton_Cancel, SIGNAL(clicked()), SLOT(onExit()));
+    connect(ui.pushButton_OK, SIGNAL(clicked()), SLOT(onOk()));
+    connect(ui.pushButton_Cancel, SIGNAL(clicked()), SLOT(onExit()));
 }
 
 QCaliGuideDialog::~QCaliGuideDialog()
@@ -23,10 +23,10 @@ QCaliGuideDialog::~QCaliGuideDialog()
 
 void QCaliGuideDialog::onOk()
 {
-	QDialog::accept();
+    QDialog::accept();
 }
 
 void QCaliGuideDialog::onExit()
 {
-	QDialog::reject();
+    QDialog::reject();
 }
