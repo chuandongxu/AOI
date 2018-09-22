@@ -50,6 +50,7 @@ protected:
 
 private:
     int _prepareRunData();
+    int _getGlobalHeightBaseParams();
     void _refreshDisplayImage();
     void _onAutoRunError();
 
@@ -70,6 +71,9 @@ private:
     float                           m_fOverlapX = 0, m_fOverlapY = 0;
     Vision::VectorOfVectorOfPoint2f m_vecVecFrameCtr;
     DeviceInspWindowVector          m_vecDeviceInspWindow;
+    cv::Scalar                      m_scalarGlobalBase;
+    int                             m_nGlobalBaseColorDiff;
+    int                             m_nGlobalBaseGrayDiff;    
 };
 
 #endif // FLOWCTRL_H
