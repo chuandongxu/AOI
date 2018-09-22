@@ -59,6 +59,7 @@ private slots:
     void on_btnRemoveWindow_clicked();
     void on_btnCreateGroup_clicked();
     void on_btnCopyToAll_clicked();
+    void on_btnCopyAsMirror_clicked();
     void on_btnEditMask_clicked();
     void on_btnTryInsp_clicked();
     void on_btnConfirmWindow_clicked();

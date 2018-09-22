@@ -30,6 +30,13 @@ protected slots:
 
     void onRelHtChanged(bool bInsp);
 
+protected:
+    void calcRelativeValue();
+
+private:
+    cv::Mat getGlobalBaseMask(Engine::Window& window);
+    cv::Rect calcWinBaseRect(Engine::Window& window);
+
 private:
     Ui::HeightDetectWidget ui;
 
