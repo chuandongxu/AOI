@@ -2399,9 +2399,12 @@ void MainWindow::on_pushButton_SaveSolution_clicked()
 
     //if(fileName.isEmpty())
     //    return;
-
+    
+    fileName = fileName.toLower();
     QDir dir(path);
-    if (fileName.isEmpty() || fileName.indexOf(dir.absolutePath()) < 0)
+    QString dirPath = dir.absolutePath().toLower();    
+
+    if (fileName.isEmpty() || fileName.indexOf(dirPath) < 0)
     {
         return;
     }
@@ -2415,7 +2418,8 @@ void MainWindow::on_pushButton_SaveSolution_clicked()
     {
         path = QApplication::applicationDirPath();
         QDir dir(path);
-        QString szSavePath = str.remove(dir.absolutePath());
+        QString dirPath = dir.absolutePath().toLower();
+        QString szSavePath = str.remove(dirPath);
 
         bool bMotionCardTrigger = System->isHardwareTrigger();
         System->setParam((bMotionCardTrigger ? QString("dlp_default_solution_file_path_motion") : QString("dlp_default_solution_file_path")) + QString("_%1").arg(m_nDLPIndex + 1), szSavePath);
@@ -7388,6 +7392,4 @@ void MainWindow::on_pushButton_FWUpload_clicked()
     imgFile.close();
     free(pByteArray);
     m_usbPollTimer->start();
-
 }
-
