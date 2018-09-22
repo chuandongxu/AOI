@@ -41,6 +41,7 @@ public:
 
     QString getDeviceType(long deviceID) const;
     bool copyDeviceWindow(long srcID, long destID);
+    bool copyDeviceWindowAsMirror(long srcID, bool bHorizontal);
 
 private:
     void initUI();

@@ -59,6 +59,7 @@ public:
 
     virtual QString getDeviceType(long deviceID) const = 0;
     virtual bool copyDeviceWindow(long srcID, long destID) = 0;
+    virtual bool copyDeviceWindowAsMirror(long srcID, bool bHorizontal) = 0;
 
     virtual bool displayRecord(int recordID) = 0;
 };

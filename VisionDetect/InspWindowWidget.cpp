@@ -475,6 +475,59 @@ void InspWindowWidget::on_btnCopyToAll_clicked() {
     refreshAllDeviceWindows();
 }
 
+void InspWindowWidget::on_btnCopyAsMirror_clicked() {
+    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    auto deviceId = pUI->getSelectedDevice().getId();
+    if (deviceId <= 0)
+        return;
+
+    if (m_vecWindowGroup.empty() && m_mapIdWindow.empty())
+        return;
+
+    Engine::DeviceVector vecDevices;
+    QString strTitle(QStringLiteral("镜像检测框"));
+    auto result = Engine::GetAllDevices(vecDevices);
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString strMsg(QStringLiteral("读取元件信息失败, 错误消息: "));
+        strMsg += errorMessage.c_str();
+        System->showMessage(strTitle, strMsg);
+        return;
+    }
+
+    auto iterDevice = std::find_if(vecDevices.begin(), vecDevices.end(), [deviceId](const Engine::Device &device) { return device.Id == deviceId; });
+    if (vecDevices.end() == iterDevice) {
+        QString strMsg(QStringLiteral("查询选择的元件失败."));
+        System->showMessage(strTitle, strMsg);
+        return;
+    }
+
+    auto currentDevice = *iterDevice;
+
+    if (currentDevice.type.empty()) {
+        QString strMsg(QStringLiteral("选中的元件类型为空."));
+        System->showMessage(strTitle, strMsg);
+        return;
+    }
+
+    auto pDataModule = getModule<IData>(DATA_MODEL);
+
+    if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+        QStringLiteral("【水平】镜像当前元件，确定？"), QMessageBox::Ok, QMessageBox::Cancel))
+    {
+        pDataModule->copyDeviceWindowAsMirror(currentDevice.Id, true);
+    }
+    else if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
+        QStringLiteral("【垂直】镜像当前元件，确定？"), QMessageBox::Ok, QMessageBox::Cancel))
+    {
+        pDataModule->copyDeviceWindowAsMirror(currentDevice.Id, false);
+    }
+
+    refreshAllDeviceWindows();
+    updateInspWindowList();
+}
+
 void InspWindowWidget::on_btnEditMask_clicked()
 {
     auto selectedItems = ui.treeWidget->selectedItems();
@@ -573,6 +626,8 @@ void InspWindowWidget::on_btnTryInsp_clicked() {
 }
 
 void InspWindowWidget::_tryInspHeight() {
+
+    bool bUseGloablBase = false;
     Engine::Window window = m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->getCurrentWindow();
     if (window.usage == Engine::Window::Usage::HEIGHT_MEASURE)
     {
@@ -583,12 +638,7 @@ void InspWindowWidget::_tryInspHeight() {
 
         if (parse_doucment.isObject()) {
             QJsonObject obj = parse_doucment.object();
-            bool bGloablBase = obj.take("GlobalBase").toBool();
-            if (bGloablBase)
-            {
-                m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
-                return;
-            }
+            bUseGloablBase = obj.take("GlobalBase").toBool();         
         }
     }
 
@@ -607,8 +657,11 @@ void InspWindowWidget::_tryInspHeight() {
         if (pParent != NULL)
             groupId = pParent->data(0, Qt::UserRole).toInt();
         else {
-            System->showMessage(strTitle, QStringLiteral("请选择一个已经确定的高度检测框."));
-            return;
+            if (!bUseGloablBase)
+            {
+                System->showMessage(strTitle, QStringLiteral("请选择一个已经确定的高度检测框."));
+                return;
+            }         
         }
     }
 
@@ -631,12 +684,12 @@ void InspWindowWidget::_tryInspHeight() {
             bHasBaseWindow = true;
     }
 
-    if (!bHasCheckWindow) {
+    if (!bHasCheckWindow && !bUseGloablBase) {
         System->showMessage(strTitle, QStringLiteral("分组内没有高度检测框!"));
         return;
     }
 
-    if (!bHasBaseWindow) {
+    if (!bHasBaseWindow && !bUseGloablBase) {
         System->showMessage(strTitle, QStringLiteral("分组内没有高度基准框!"));
         return;
     }
