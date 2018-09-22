@@ -65,6 +65,7 @@ static const char *WINDOW_USAGE_NAME[] {
     "Inspect Bridge",
     "Ocv",
     "Height Base Global",
+    "Inspect 3D Solder"
 };
 
 static_assert(static_cast<int>(Engine::Window::Usage::COUNT) == sizeof(WINDOW_USAGE_NAME) / sizeof(WINDOW_USAGE_NAME[0]), "The window usage size is not correct");

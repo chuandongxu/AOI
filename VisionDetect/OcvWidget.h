@@ -30,7 +30,6 @@ private:
     Ui::OcvWidget ui;
     std::unique_ptr<QLineEdit>  m_pEditCharCount;
     SpecAndResultWidgetPtr      m_pSpecAndResultMinScore;
-    bool m_bIsTryInspected = false;
 };
 
 #endif // OCVWIDGET_H

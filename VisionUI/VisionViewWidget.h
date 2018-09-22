@@ -13,7 +13,8 @@
 #include "../DataModule/QDetectObj.h"
 #include "VisionViewStruct.hpp"
 
-using namespace AOI::Vision;
+using namespace AOI;
+//using namespace AOI::Vision;
 
 class VisionViewWidget;
 class CameraOnLive :public QThread
@@ -24,14 +25,14 @@ public:
     CameraOnLive(VisionViewWidget* pView, bool bHWTrigger);
     ~CameraOnLive(){};
 
-public:
     void setQuitFlag();
     bool isRuning(){ return m_bRuning; };
+
 private:
     void run();
-
     void drawCross(cv::Mat& image);
     void showImageToScreen(cv::Mat& image);
+
 private:
     VisionViewWidget       *m_pView;
     bool                    m_bHWTrigger;
@@ -60,7 +61,9 @@ public:
 
     cv::Mat getSelectImage();
     void clearSelect();
-    cv::Rect2f getSelectedROI();
+    cv::Rect2f getSelectedROI() const;
+    Vision::VectorOfRect getSubROIs() const { return m_vecSubROIs; }
+    void setSubROIs(const Vision::VectorOfRect &vecRects);
     cv::Rect getSrchWindow() const { return m_rectSrchWindow; }
     void setSrchWindow(const cv::Rect &rectSrchWindow);
 
@@ -172,6 +175,7 @@ private:
     DViewUtility           *m_pMainViewFull3D;
     DViewUtility           *m_pView3D;
     cv::Rect                m_selectROI;
+    Vision::VectorOfRect            m_vecSubROIs;
     cv::Rect                m_rectSrchWindow;
     QDockWidget            *m_pSelectView;
     bool                    m_bShow3DInitial;

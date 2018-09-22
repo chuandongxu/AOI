@@ -13,37 +13,6 @@
 using namespace NFG::AOI;
 using namespace AOI;
 
-struct AutoRunParams
-{
-    AutoRunParams(int     nImgWidthPixel,
-                  int     nImgHeightPixel,
-                  float   fBoardLeftPos,
-                  float   fBoardTopPos,
-                  float   fBoardRightPos,
-                  float   fBoardBtmPos,
-                  float   fFrameOverlapX,
-                  float   fFrameOverlapY,
-                  Vision::PR_SCAN_IMAGE_DIR enScanDir) :
-                  nImgWidthPixel    (nImgWidthPixel),
-                  nImgHeightPixel   (nImgHeightPixel),
-                  fBoardLeftPos     (fBoardLeftPos),
-                  fBoardTopPos      (fBoardTopPos),
-                  fBoardRightPos    (fBoardRightPos),
-                  fBoardBtmPos      (fBoardBtmPos),
-                  fOverlapUmX       (fFrameOverlapX),
-                  fOverlapUmY       (fFrameOverlapY),
-                  enScanDir         (enScanDir) {}
-    int     nImgWidthPixel;
-    int     nImgHeightPixel;
-    float   fBoardLeftPos;
-    float   fBoardTopPos;
-    float   fBoardRightPos;
-    float   fBoardBtmPos;
-    float   fOverlapUmX;
-    float   fOverlapUmY;
-    Vision::PR_SCAN_IMAGE_DIR       enScanDir;
-};
-
 class AutoRunThread : public QThread
 {
     Q_OBJECT
@@ -114,16 +83,8 @@ private:
     QThreadPool                     m_threadPoolInsp2D;
     float                           m_fFovWidthUm;
     float                           m_fFovHeightUm;
-    int                             m_nImageWidthPixel;
-    int                             m_nImageHeightPixel;
     Vision::VectorOfMat             m_vecCombinedBigImages;
     cv::Mat                         m_matCombinedBigHeight;
-    float                           m_fBoardLeftPos;
-    float                           m_fBoardTopPos;
-    float                           m_fBoardRightPos;
-    float                           m_fBoardBtmPos;
-    float                           m_fOverlapUmX;
-    float                           m_fOverlapUmY;
     MapBoardInspResult             *m_pMapBoardInspResult;
     QString                         m_boardName;
     DeviceInspWindowVector          m_vecDeviceInspWindow;
@@ -132,10 +93,10 @@ private:
     Vision::VectorOfMat             m_vecFrame3DHeight;
     Vision::VectorOfMat             m_vecMatBigImage;
     cv::Mat                         m_matWhole3DHeight;
-    Vision::PR_SCAN_IMAGE_DIR       m_enScanDir;
     QString                         m_strErrorMsg;
     std::condition_variable         m_conditionVariable;
     std::mutex                      m_mutex;
+    AutoRunParams                   m_stAutoRunParams;
 };
 
 

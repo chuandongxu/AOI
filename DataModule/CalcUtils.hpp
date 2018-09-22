@@ -25,7 +25,7 @@ private:
     CalcUtils();
     CalcUtils(CalcUtils const &);
     CalcUtils(CalcUtils const &&);
-    CalcUtils &operator=(CalcUtils const &);        
+    CalcUtils &operator=(CalcUtils const &);
     ~CalcUtils();
 };
 

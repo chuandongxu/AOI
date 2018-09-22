@@ -121,6 +121,7 @@ struct Window {
         INSP_BRIDGE,
         OCV,
         HEIGHT_BASE_GLOBAL,
+        INSP_3D_SOLDER,
         COUNT,
     };
     Window() :

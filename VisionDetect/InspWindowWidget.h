@@ -22,6 +22,7 @@ enum class INSP_WIDGET_INDEX {
     INSP_BRIDGE,
     INSP_LEAD,
     OCV,
+    INSP_3D_SOLDER,
     SIZE,
 };
 

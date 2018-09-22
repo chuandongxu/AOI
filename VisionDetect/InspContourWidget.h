@@ -30,5 +30,4 @@ private:
     std::unique_ptr<QLineEdit>	m_pEditInnerMaskDepth;
     std::unique_ptr<QLineEdit>	m_pEditOuterMaskDepth;
     std::unique_ptr<QLineEdit>  m_pEditRecordID;
-    bool                        m_bIsTryInspected = false;
 };

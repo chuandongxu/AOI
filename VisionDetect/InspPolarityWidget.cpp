@@ -104,7 +104,7 @@ void InspPolarityWidget::tryInsp() {
     stCmd.rectInspROI = rectROI;
 
     auto matImage = pUI->getImage();
-    int nBigImgWidth = matImage.cols / dCombinedImageScale;
+    int nBigImgWidth  = matImage.cols / dCombinedImageScale;
     int nBigImgHeight = matImage.rows / dCombinedImageScale;
 
     for (const auto &window : m_windowGroup.vecWindows) {
@@ -241,7 +241,7 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
         ptBaseWindowCtr.y = ptWindowCtr.y;
     }else {
         ptBaseWindowCtr.x = ptWindowCtr.x;
-        ptBaseWindowCtr.y = 2 * ptCenter.y - ptWindowCtr.y;        
+        ptBaseWindowCtr.y = 2 * ptCenter.y - ptWindowCtr.y;
     }
 
     if (bBoardRotated) {

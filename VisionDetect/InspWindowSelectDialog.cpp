@@ -24,7 +24,7 @@ void InspWindowSelectDialog::on_btnFindLineWindow_clicked()
 
 void InspWindowSelectDialog::on_btnCaliperCircleWindow_clicked()
 {
-	m_enInspWidgetIndex = INSP_WIDGET_INDEX::CALIPER_CIRCLE;
+    m_enInspWidgetIndex = INSP_WIDGET_INDEX::CALIPER_CIRCLE;
 }
 
 void InspWindowSelectDialog::on_btnVoidInspWindow_clicked()
@@ -34,12 +34,17 @@ void InspWindowSelectDialog::on_btnVoidInspWindow_clicked()
 
 void InspWindowSelectDialog::on_btnAlignmentWindow_clicked()
 {
-	m_enInspWidgetIndex = INSP_WIDGET_INDEX::ALIGNMENT;
+    m_enInspWidgetIndex = INSP_WIDGET_INDEX::ALIGNMENT;
 }
 
 void InspWindowSelectDialog::on_btnHeightDetectWindow_clicked()
 {
-	m_enInspWidgetIndex = INSP_WIDGET_INDEX::HEIGHT_DETECT;
+    m_enInspWidgetIndex = INSP_WIDGET_INDEX::HEIGHT_DETECT;
+}
+
+void InspWindowSelectDialog::on_btnGlobalWindow_clicked()
+{
+    m_enInspWidgetIndex = INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE;
 }
 
 void InspWindowSelectDialog::on_btnInspPolarityWindow_clicked()
@@ -72,9 +77,9 @@ void InspWindowSelectDialog::on_btnOcvWindow_clicked()
     m_enInspWidgetIndex = INSP_WIDGET_INDEX::OCV;
 }
 
-void InspWindowSelectDialog::on_btnGlobalWindow_clicked()
+void InspWindowSelectDialog::on_btn3DSolderWindow_clicked()
 {
-    m_enInspWidgetIndex = INSP_WIDGET_INDEX::HEIGHT_GLOBAL_BASE;
+    m_enInspWidgetIndex = INSP_WIDGET_INDEX::INSP_3D_SOLDER;
 }
 
 void InspWindowSelectDialog::on_accept()
