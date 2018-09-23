@@ -87,6 +87,10 @@ HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
 
     m_pSpecAndResultTopBomRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
     ui.tableWidget->setCellWidget(MAX_TB_REL_HT, DATA_COLUMN, m_pSpecAndResultTopBomRelHt.get());
+
+    m_pCheckBoxRelHt->setChecked(false);
+    m_pSpecAndResultLefRigRelHt->setEnabled(false);
+    m_pSpecAndResultTopBomRelHt->setEnabled(false);
 }
 
 HeightDetectWidget::~HeightDetectWidget() {
@@ -104,8 +108,8 @@ void HeightDetectWidget::setDefaultValue() {
     m_pCheckBoxRelHt->setChecked(false);
     m_pSpecAndResultLefRigRelHt->setEnabled(false);
     m_pSpecAndResultTopBomRelHt->setEnabled(false);
-    m_pSpecAndResultLefRigRelHt->setSpec(1000);
-    m_pSpecAndResultTopBomRelHt->setSpec(1000);
+    m_pSpecAndResultLefRigRelHt->setSpec(100);
+    m_pSpecAndResultTopBomRelHt->setSpec(100);
 }
 
 void HeightDetectWidget::tryInsp() {
@@ -138,78 +142,9 @@ void HeightDetectWidget::tryInsp() {
 
     bool bGlobalBase = (static_cast<HDW_BASE_TYPE> (m_pComboxBaseType->currentIndex()) == HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE);
     if (bGlobalBase)
-    {     
-        Engine::WindowVector vecWindow;
-        auto result = Engine::GetAllWindows(vecWindow);
-        if (result != Engine::OK) {
-            String errorType, errorMessage;
-            Engine::GetErrorDetail(errorType, errorMessage);
-            System->setTrackInfo(QString("Error at GetAllWindows, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
-            return;
-        }
-
-        Engine::Window window;
-        for each (Engine::Window win in vecWindow)
-        {
-            if (win.usage == Engine::Window::Usage::HEIGHT_BASE_GLOBAL)
-            {
-                window = win;
-                break;
-            }
-        }
-
-        QJsonParseError json_error;
-        QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-        if (json_error.error != QJsonParseError::NoError) {
-            QMessageBox::critical(this, QStringLiteral("高度检测框"), QStringLiteral("Please check global base params to do inspection."));
-            return;
-        }
-        QJsonObject jsonValue = parse_doucment.object();
-
-        cv::Vec3b color; int nRn = 0, nTn = 0;
-        color[0] = jsonValue["ClrRVal"].toInt();
-        color[1] = jsonValue["ClrGVal"].toInt();
-        color[2] = jsonValue["ClrBVal"].toInt();
-        nRn = jsonValue["RnValue"].toInt();
-        nTn = jsonValue["TnValue"].toInt();
-
-        auto pColorWidget = m_pParent->getColorWidget();
-        cv::Mat matImage = pUI->getImage();
-
-        int nBigImgWidth  = matImage.cols / dCombinedImageScale;
-        int nBigImgHeight = matImage.rows / dCombinedImageScale;
-        auto x = m_currentWindow.x / dResolutionX;
-        auto y = m_currentWindow.y / dResolutionY;
-        if (bBoardRotated)
-            x = nBigImgWidth  - x;
-        else
-            y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
-
-        auto width  = m_currentWindow.width  / dResolutionX;
-        auto height = m_currentWindow.height / dResolutionY;
-
-        double dBaseScale = m_pEditBaseScale->text().toInt();
-
-        cv::Rect2f rectBase(x - width / 2, y - height / 2, width, height);
-        cv::Rect rectBaseDetectWin = CalcUtils::resizeRect(rectBase, cv::Size2f(rectBase.width * dBaseScale, rectBase.height * dBaseScale));
-        if (rectBaseDetectWin.x < 0) rectBaseDetectWin.x = 0;
-        else if ((rectBaseDetectWin.x + rectBaseDetectWin.width) >= matImage.cols) rectBaseDetectWin.width = rectBase.width;
-        if (rectBaseDetectWin.y < 0) rectBaseDetectWin.y = 0;
-        else if ((rectBaseDetectWin.y + rectBaseDetectWin.height) >= matImage.rows) rectBaseDetectWin.height = rectBase.height;
-        cv::Mat matROI(matImage, rectBaseDetectWin);
-        pColorWidget->setImage(matROI);
-
-        pColorWidget->holdColorImage(color, nRn, nTn);
-        cv::Mat matMask = pColorWidget->getProcessedImage();
-        pColorWidget->releaseColorImage();
-
-        cv::Mat matBigMask = cv::Mat::ones(matImage.size(), CV_8UC1);
-        matBigMask *= Vision::PR_MAX_GRAY_LEVEL;
-        cv::Mat matMaskROI(matBigMask, cv::Rect(rectBaseDetectWin));
-        matMask.copyTo(matMaskROI);
-        stCmd.matMask = matBigMask;
-
-        stCmd.vecRectBases.push_back(rectBaseDetectWin);
+    {       
+        stCmd.matMask = getGlobalBaseMask(m_currentWindow);
+        stCmd.vecRectBases.push_back(calcWinBaseRect(m_currentWindow));
     }
     else
     {
@@ -253,12 +188,84 @@ void HeightDetectWidget::tryInsp() {
         QMessageBox::information(this, "Height Detect", strMsg);
     }
 
-    bool bRelHeight = m_pCheckBoxRelHt->isChecked();
-    float fLRRelHeight = m_pSpecAndResultLefRigRelHt->getSpec();
-    float fTBRelHeight = m_pSpecAndResultTopBomRelHt->getSpec();
+    calcRelativeValue();
+}
 
+void HeightDetectWidget::calcRelativeValue()
+{
+    // Get the relative height value 
     m_pSpecAndResultLefRigRelHt->setResult(0);
     m_pSpecAndResultTopBomRelHt->setResult(0);
+
+    bool bRelHeight = m_pCheckBoxRelHt->isChecked();
+    if (bRelHeight)
+    {
+        auto pUI = getModule<IVisionUI>(UI_MODEL);
+        auto rectROI = pUI->getSelectedROI();
+        if (rectROI.width <= 0 || rectROI.height <= 0) {
+            QMessageBox::critical(this, QStringLiteral("高度检测框"), QStringLiteral("Please select a ROI to do inspection."));
+            return;
+        }
+
+        double dPosXMin = 1000000, dPosXMax = -1000000, dPosYMin = 1000000, dPosYMax = -1000000;
+        double dPosXMinHt = 0, dPosXMaxHt = 0, dPosYMinHt = 0, dPosYMaxHt = 0;
+        for (auto &window : m_windowGroup.vecWindows) {
+            if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage) {
+                QJsonParseError json_error;
+                QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+                if (json_error.error != QJsonParseError::NoError)
+                    return;
+
+                if (parse_doucment.isObject()) {
+                    QJsonObject obj = parse_doucment.object();
+
+                    if (obj.take("GlobalBase").toBool())
+                    {
+                        Vision::PR_CALC_3D_HEIGHT_DIFF_CMD stCmd;
+                        Vision::PR_CALC_3D_HEIGHT_DIFF_RPY stRpy;
+
+                        stCmd.fEffectHRatioStart = obj.take("MinRange").toDouble();
+                        stCmd.fEffectHRatioEnd = obj.take("MaxRange").toDouble();
+
+                        stCmd.matHeight = pUI->getHeightData();
+                        stCmd.rectROI = rectROI;
+
+                        stCmd.matMask = getGlobalBaseMask(window);
+                        stCmd.vecRectBases.push_back(calcWinBaseRect(window));
+
+                        Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
+                        float height = stRpy.fHeightDiff * MM_TO_UM;
+
+                        if (window.x <= dPosXMin)
+                        {
+                            dPosXMin = window.x;
+                            dPosXMinHt = height;
+                        }
+                        if (window.x > dPosXMax)
+                        {
+                            dPosXMax = window.x;
+                            dPosXMaxHt = height;
+                        }
+
+                        if (window.y <= dPosYMin)
+                        {
+                            dPosYMin = window.y;
+                            dPosYMinHt = height;
+                        }
+                        if (window.y > dPosYMax)
+                        {
+                            dPosYMax = window.y;
+                            dPosYMaxHt = height;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Result Final
+        m_pSpecAndResultLefRigRelHt->setResult(dPosXMaxHt - dPosXMinHt);
+        m_pSpecAndResultTopBomRelHt->setResult(dPosYMaxHt - dPosYMinHt);
+    }   
 }
 
 void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
@@ -435,4 +442,94 @@ void HeightDetectWidget::onRelHtChanged(bool bInsp) {
         m_pSpecAndResultLefRigRelHt->setEnabled(false);
         m_pSpecAndResultTopBomRelHt->setEnabled(false);
     }
+}
+
+cv::Mat HeightDetectWidget::getGlobalBaseMask(Engine::Window& window)
+{
+    Engine::WindowVector vecWindow;
+    auto result = Engine::GetAllWindows(vecWindow);
+    if (result != Engine::OK) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        System->setTrackInfo(QString("Error at GetAllWindows, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str()));
+        return cv::Mat();
+    }
+
+    Engine::Window windowBase;
+    for each (Engine::Window win in vecWindow)
+    {
+        if (win.usage == Engine::Window::Usage::HEIGHT_BASE_GLOBAL)
+        {
+            windowBase = win;
+            break;
+        }
+    }
+
+    QJsonParseError json_error;
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(windowBase.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
+        QMessageBox::critical(this, QStringLiteral("高度检测框"), QStringLiteral("Please check global base params to do inspection."));
+        return cv::Mat();
+    }
+    QJsonObject jsonValue = parse_doucment.object();
+
+    cv::Vec3b color; int nRn = 0, nTn = 0;
+    color[0] = jsonValue["ClrRVal"].toInt();
+    color[1] = jsonValue["ClrGVal"].toInt();
+    color[2] = jsonValue["ClrBVal"].toInt();
+    nRn = jsonValue["RnValue"].toInt();
+    nTn = jsonValue["TnValue"].toInt();
+
+    auto pColorWidget = m_pParent->getColorWidget();
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    cv::Mat matImage = pUI->getImage();
+
+    cv::Rect rectBaseDetectWin = calcWinBaseRect(window);
+
+    cv::Mat matROI(matImage, rectBaseDetectWin);
+    pColorWidget->setImage(matROI);
+    pColorWidget->holdColorImage(color, nRn, nTn);
+    cv::Mat matMask = pColorWidget->getProcessedImage();
+    pColorWidget->releaseColorImage();
+
+    cv::Mat matBigMask = cv::Mat::ones(matImage.size(), CV_8UC1);
+    matBigMask *= Vision::PR_MAX_GRAY_LEVEL;
+    cv::Mat matMaskROI(matBigMask, cv::Rect(rectBaseDetectWin));
+    matMask.copyTo(matMaskROI);
+
+    return matBigMask;
+}
+
+cv::Rect HeightDetectWidget::calcWinBaseRect(Engine::Window& window)
+{
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    cv::Mat matImage = pUI->getImage();
+
+    int nBigImgWidth = matImage.cols / dCombinedImageScale;
+    int nBigImgHeight = matImage.rows / dCombinedImageScale;
+    auto x = window.x / dResolutionX;
+    auto y = window.y / dResolutionY;
+    if (bBoardRotated)
+        x = nBigImgWidth - x;
+    else
+        y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
+
+    auto width = window.width / dResolutionX;
+    auto height = window.height / dResolutionY;
+
+    double dBaseScale = m_pEditBaseScale->text().toInt();
+
+    cv::Rect2f rectBase(x, y, width, height);
+    cv::Rect rectBaseDetectWin = CalcUtils::resizeRect(rectBase, cv::Size2f(rectBase.width * dBaseScale, rectBase.height * dBaseScale));
+    if (rectBaseDetectWin.x < 0) rectBaseDetectWin.x = 0;
+    else if ((rectBaseDetectWin.x + rectBaseDetectWin.width) >= matImage.cols) rectBaseDetectWin.width = rectBase.width;
+    if (rectBaseDetectWin.y < 0) rectBaseDetectWin.y = 0;
+    else if ((rectBaseDetectWin.y + rectBaseDetectWin.height) >= matImage.rows) rectBaseDetectWin.height = rectBase.height;
+
+    return rectBaseDetectWin;
 }

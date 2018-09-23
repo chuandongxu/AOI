@@ -182,6 +182,11 @@ bool QDataModule::copyDeviceWindow(long srcID, long destID)
     return m_pDeviceListWidget->copyDeviceWindow(srcID, destID);
 }
 
+bool QDataModule::copyDeviceWindowAsMirror(long srcID, bool bHorizontal)
+{
+    return m_pDeviceListWidget->copyDeviceWindowAsMirror(srcID, bHorizontal);
+}
+
 bool QDataModule::displayRecord(int recordID)
 {
     return m_pDataEditor->displayRecord(recordID);

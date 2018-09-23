@@ -550,6 +550,166 @@ bool SearchDeviceWidget::copyDeviceWindow(long srcID, long destID)
     return true;
 }
 
+bool SearchDeviceWidget::copyDeviceWindowAsMirror(long srcID, bool bHorizontal)
+{
+    auto deviceId = srcID;
+    if (deviceId <= 0)
+        return false;
+
+    Engine::DeviceVector vecDevices;
+    QString strTitle(QStringLiteral("复制镜像检测框"));
+    auto result = Engine::GetAllDevices(vecDevices);
+    if (Engine::OK != result) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString strMsg(QStringLiteral("读取元件信息失败, 错误消息: "));
+        strMsg += errorMessage.c_str();
+        System->showMessage(strTitle, strMsg);
+        return false;
+    }
+
+    auto iterDevice = std::find_if(vecDevices.begin(), vecDevices.end(), [deviceId](const Engine::Device &device) { return device.Id == deviceId; });
+    if (vecDevices.end() == iterDevice) {
+        QString strMsg(QStringLiteral("查询选择的元件失败."));
+        System->showMessage(strTitle, strMsg);
+        return false;
+    }
+    auto currentDevice = *iterDevice;
+
+    Engine::WindowVector vecCurrentDeviceWindows;
+    result = Engine::GetDeviceUngroupedWindows(deviceId, vecCurrentDeviceWindows);
+    if (result != Engine::OK) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString msg(QStringLiteral("Failed to get inspect windows from database, error message "));
+        msg += errorMessage.c_str();
+        System->showMessage(QStringLiteral("检测框"), msg);
+        return false;
+    }
+
+    Int64Vector vecGroupId;
+    result = Engine::GetDeviceWindowGroups(deviceId, vecGroupId);
+    if (result != Engine::OK) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString msg(QStringLiteral("Failed to get device groups from database, error message "));
+        msg += errorMessage.c_str();
+        System->showMessage(QStringLiteral("检测框"), msg);
+        return false;
+    }
+
+    std::vector<Engine::WindowGroup> vecWindowGroup;
+    for (const auto groupId : vecGroupId) {
+        Engine::WindowGroup windowGroup;
+        auto result = Engine::GetGroupWindows(groupId, windowGroup);
+        if (result != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString msg(QStringLiteral("Failed to get group windows from database, error message "));
+            msg += errorMessage.c_str();
+            System->showMessage(QStringLiteral("检测框"), msg);
+            return false;
+        }
+        vecWindowGroup.push_back(windowGroup);
+    }
+
+    auto destDevice = currentDevice;
+
+    auto offsetX = bHorizontal ? 2 : 0;
+    auto offsetY = bHorizontal ? 0 : 2;
+
+    Engine::BoardVector vecBoard;
+    result = Engine::GetAllBoards(vecBoard);
+    if (Engine::OK != result) {
+        std::string errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        errorMessage = "Failed to get board from project, error message " + errorMessage;
+        System->showMessage(strTitle, errorMessage.c_str());
+        return false;
+    }
+
+    auto boardId = currentDevice.boardId;
+    auto iterBoard = std::find_if(vecBoard.begin(), vecBoard.end(), [boardId](const Engine::Board &board) { return board.Id == boardId; });
+    if (vecBoard.end() == iterBoard) {
+        QString strMsg(QStringLiteral("查询选择的电路板失败."));
+        System->showMessage(strTitle, strMsg);
+        return false;
+    }
+    auto currentBoard = *iterBoard;
+
+    for (const auto &win : vecCurrentDeviceWindows) {
+
+        Engine::Window window = win;
+        window.deviceId = destDevice.Id;
+
+        window.x += ((currentBoard.x + currentDevice.x + currentDevice.width / 2) - (window.x + window.width / 2)) * offsetX;
+        window.y += ((currentBoard.y + currentDevice.y + currentDevice.height / 2) - (window.y + window.height / 2)) * offsetY;
+
+        char windowName[100];
+        _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), destDevice.name.c_str());
+        window.name = windowName;
+
+        auto result = Engine::CreateWindow(window, true); // true means copy mode.
+        if (result != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString strMsg(QStringLiteral("创建检测框失败, 错误消息: "));
+            strMsg += errorMessage.c_str();
+            System->showMessage(strTitle, strMsg);
+            return false;
+        }
+    }
+
+    for (auto windowGroup : vecWindowGroup) {
+        for (auto &window : windowGroup.vecWindows) {
+            window.deviceId = destDevice.Id;
+
+            window.x += ((currentBoard.x + currentDevice.x + currentDevice.width / 2) - (window.x + window.width / 2)) * offsetX;
+            window.y += ((currentBoard.y + currentDevice.y + currentDevice.height / 2) - (window.y + window.height / 2)) * offsetY;
+
+            char windowName[100];
+            _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), destDevice.name.c_str());
+            window.name = windowName;
+
+            auto result = Engine::CreateWindow(window, true); // true means copy mode.
+            if (result != Engine::OK) {
+                String errorType, errorMessage;
+                Engine::GetErrorDetail(errorType, errorMessage);
+                QString strMsg(QStringLiteral("创建检测框失败, 错误消息: "));
+                strMsg += errorMessage.c_str();
+                System->showMessage(strTitle, strMsg);
+                return false;
+            }
+        }
+        windowGroup.deviceId = destDevice.Id;
+        int nIndex = windowGroup.name.find_first_of('@');
+        if (nIndex >= 0)
+        {
+            char groupName[100];
+            _snprintf(groupName, sizeof(groupName), "%s @ %s", windowGroup.name.substr(0, nIndex - 1).c_str(), destDevice.name.c_str());
+            windowGroup.name = groupName;
+        }
+        else
+        {
+            char groupName[100];
+            _snprintf(groupName, sizeof(groupName), "%s @ %s", windowGroup.name.c_str(), destDevice.name.c_str());
+            windowGroup.name = groupName;
+        }
+
+        auto result = Engine::CreateWindowGroup(windowGroup);
+        if (Engine::OK != result) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString strMsg(QStringLiteral("创建检测框组失败, 错误消息: "));
+            strMsg += errorMessage.c_str();
+            System->showMessage(strTitle, strMsg);
+            return false;
+        }
+    }
+
+    return true;
+}
+
 cv::Rect SearchDeviceWidget::_calcRectROI(Engine::Window& window)
 {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
