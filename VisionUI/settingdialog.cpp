@@ -9,10 +9,10 @@ QSettingDialog::QSettingDialog(QWidget *parent) :
     this->setFixedSize(1200,850);
     this->setWindowTitle(QStringLiteral("设置"));
 
-	QDesktopWidget *w = QApplication::desktop();
-	QRect r = w->screenGeometry();
-	
-	this->move((r.width() - 1200) / 2, (r.height() - 850) / 4);
+    QDesktopWidget *w = QApplication::desktop();
+    QRect r = w->screenGeometry();
+    
+    this->move((r.width() - 1200) / 2, (r.height() - 850) / 4);
 
     m_tabWidget = new QTabWidget;
     m_layout = new QHBoxLayout;

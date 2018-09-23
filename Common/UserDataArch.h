@@ -8,35 +8,35 @@
 
 class QUserDataArch : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QUserDataArch();
-	~QUserDataArch();
+    QUserDataArch();
+    ~QUserDataArch();
 
-	QVariant getParam(const QString &name);
-	void setParam(const QString &name,const QVariant &data);
-	void delParam(const QString &name);
-	QStringList getParamKeys(const QString &condtion);
+    QVariant getParam(const QString &name);
+    void setParam(const QString &name,const QVariant &data);
+    void delParam(const QString &name);
+    QStringList getParamKeys(const QString &condtion);
 
-	void load(const QString & productName);
-	
+    void load(const QString & productName);
+    
 protected:
-	void save();
-	QVariant converStringToData(const QString &type,const QString &value);
-	QString converDataToString(const QVariant &value);
-	QString getValueType(const  QVariant &value);
-	
-	void initTimer();
-	virtual void timerEvent(QTimerEvent * event);
-	void unInitTimer();
+    void save();
+    QVariant converStringToData(const QString &type,const QString &value);
+    QString converDataToString(const QVariant &value);
+    QString getValueType(const  QVariant &value);
+    
+    void initTimer();
+    virtual void timerEvent(QTimerEvent * event);
+    void unInitTimer();
 
 private:
-	bool m_bTimerInit;
-	int m_timer;
-	int m_newCount;
-	QString m_file;
-	QMap<QString,QVariant> m_param;
+    bool m_bTimerInit;
+    int m_timer;
+    int m_newCount;
+    QString m_file;
+    QMap<QString,QVariant> m_param;
 };
 
 #endif // USERDATAARCH_H

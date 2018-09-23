@@ -6,15 +6,15 @@
 #include "LightWidget.h"
 
 QLightModule::QLightModule(int id,const QString &name)
-	:QModuleBase(id,name)
-	,m_devCtrl(NULL)
+    :QModuleBase(id,name)
+    ,m_devCtrl(NULL)
 {
-	QLightCtrl *ctrl = new QLightCtrl(NULL);
-	if(ctrl)
-	{
-		m_devCtrl = (void*)ctrl;
-	}
-	m_pLightWidget = new LightWidget(ctrl);
+    QLightCtrl *ctrl = new QLightCtrl(NULL);
+    if(ctrl)
+    {
+        m_devCtrl = (void*)ctrl;
+    }
+    m_pLightWidget = new LightWidget(ctrl);
 }
 
 QLightModule::~QLightModule()
@@ -24,11 +24,11 @@ QLightModule::~QLightModule()
 
 void QLightModule::init()
 {
-	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
-	if (ctrl)
-	{
-		ctrl->init();
-	}
+    QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
+    if (ctrl)
+    {
+        ctrl->init();
+    }
 
     if (m_pLightWidget)
     {
@@ -38,7 +38,7 @@ void QLightModule::init()
 
 QWidget* QLightModule::getLightWidget()
 {
-	return m_pLightWidget;
+    return m_pLightWidget;
 }
 
 void QLightModule::startUpLight()
@@ -59,66 +59,66 @@ void QLightModule::endUpLight()
 
 void QLightModule::saveLuminance(int nChannel)
 {
-	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
+    QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
 
-	if (ctrl)
-	{
+    if (ctrl)
+    {
         ctrl->saveLuminance(nChannel);
-	}
+    }
 }
 
 void QLightModule::setLuminance(int nChannel, int nLum)
 {
-	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
-	
-	if (ctrl)
-	{
+    QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
+    
+    if (ctrl)
+    {
         ctrl->setLuminance(nChannel, nLum);
-	}
+    }
 }
 
 QString QLightModule::getChName(int nChannel)
 {
-	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
-	
-	if (ctrl)
-	{		
+    QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
+    
+    if (ctrl)
+    {        
         return ctrl->getChName(nChannel);
-	}
+    }
 
-	return "";
+    return "";
 }
 
 int QLightModule::getChLuminace(int nChannel)
 {
-	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
-	
-	if (ctrl)
-	{	
+    QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
+    
+    if (ctrl)
+    {    
         return ctrl->getChLuminace(nChannel);
-	}
+    }
 
-	return 0;
+    return 0;
 }
 
 int QLightModule::getDeviceCount()
 {
-	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
-	if (ctrl)
-	{
-		return ctrl->getDeviceCount();
-	}
+    QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
+    if (ctrl)
+    {
+        return ctrl->getDeviceCount();
+    }
 
-	return 0;
+    return 0;
 }
 
 void QLightModule::addSettingWiddget(QTabWidget *tabWidget)
 {
-	QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
-	if(ctrl)
-	{
-		tabWidget->addTab(new QLightSetting(ctrl), QStringLiteral("灯光控制"));
-	}
+    QLightCtrl *ctrl = (QLightCtrl*)m_devCtrl;
+    if(ctrl)
+    {
+        tabWidget->addTab(new QLightSetting(ctrl), QStringLiteral("灯光控制"));
+    }
 }
 
 bool QLightModule::triggerCapturing(TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig)

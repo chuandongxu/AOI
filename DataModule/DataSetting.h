@@ -6,13 +6,13 @@
 
 class DataSetting : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	DataSetting(DataCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
-	~DataSetting();
+    DataSetting(DataCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
+    ~DataSetting();
 
 private:
-	Ui::DataSetting ui;
-	DataCtrl* m_pCtrl;
+    Ui::DataSetting ui;
+    DataCtrl* m_pCtrl;
 };

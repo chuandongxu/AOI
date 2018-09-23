@@ -29,6 +29,9 @@ struct AutoRunParams {
                   float   fBoardBtmPos,
                   float   fFrameOverlapX,
                   float   fFrameOverlapY,
+                  int     nGlobalBaseColorDiff,
+                  int     nGlobalBaseGrayDiff,
+                  cv::Scalar scalarGlobalBase,
                   Vision::PR_SCAN_IMAGE_DIR enScanDir) :
                   nImgWidthPixel    (nImgWidthPixel),
                   nImgHeightPixel   (nImgHeightPixel),
@@ -38,6 +41,9 @@ struct AutoRunParams {
                   fBoardBtmPos      (fBoardBtmPos),
                   fOverlapUmX       (fFrameOverlapX),
                   fOverlapUmY       (fFrameOverlapY),
+                  nGlobalBaseColorDiff(nGlobalBaseColorDiff),
+                  nGlobalBaseGrayDiff(nGlobalBaseGrayDiff),
+                  scalarGlobalBase(scalarGlobalBase),
                   enScanDir         (enScanDir) {}
     int     nImgWidthPixel;
     int     nImgHeightPixel;

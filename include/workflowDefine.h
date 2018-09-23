@@ -27,7 +27,7 @@
 //离线调试急停按钮键值
 #define OUT_LINE_EMSTOP  "OutLineEmStop"
 //离线调试安全门开关
-#define OUT_LINE_SAFE	 "OutLineSafe"
+#define OUT_LINE_SAFE     "OutLineSafe"
 
 //*********************************************************************************************
 //定义系统运行速度
@@ -58,11 +58,11 @@
 #define STATION_STATE_RESOULT             106
 
 #define EVENT_RESULT_DISPLAY "eventResultDisplay"
-#define STATION_RESULT_DISPLAY		      107
-#define STATION_RESULT_DISPLAY_PROF		  108
-#define STATION_RESULT_DISPLAY_CLEAR	  109
+#define STATION_RESULT_DISPLAY              107
+#define STATION_RESULT_DISPLAY_PROF          108
+#define STATION_RESULT_DISPLAY_CLEAR      109
 #define STATION_RESULT_DISPLAY_CLEAR_DATA 110
-#define STATION_RESULT_IMAGE_DISPLAY	  111
+#define STATION_RESULT_IMAGE_DISPLAY      111
 
 #define EVENT_GOHOME_STATE   "goHomeState"
 #define GOHOME_STATE_OK                   120
@@ -77,25 +77,25 @@
 #define GOHOMEING_STATE_NG                141
 
 #define EVENT_TAB_STATE      "tabState"
-#define RUN_TAB_RUNING					  150
+#define RUN_TAB_RUNING                      150
 #define RUN_TAB_SETTING                   151
 
-#define EVENT_OBJ_STATE		 "objState"
-#define RUN_OBJ_EDITOR					 160
+#define EVENT_OBJ_STATE         "objState"
+#define RUN_OBJ_EDITOR                     160
 #define RUN_OBJ_CHANGE                   161
-#define RUN_OBJ_PROFILE					 162
-#define RUN_OBJ_PROFILE_EDIT			 163
+#define RUN_OBJ_PROFILE                     162
+#define RUN_OBJ_PROFILE_EDIT             163
 
-#define EVENT_UI_STATE		 "eventUIState"
-#define RUN_UI_STATE_HARDWARE			 170
-#define RUN_UI_STATE_SETTING			 171
-#define RUN_UI_STATE_TOOLS				 172
+#define EVENT_UI_STATE         "eventUIState"
+#define RUN_UI_STATE_HARDWARE             170
+#define RUN_UI_STATE_SETTING             171
+#define RUN_UI_STATE_TOOLS                 172
 #define RUN_UI_STATE_DATA                173
 #define RUN_UI_STATE_CALI                174
-#define RUN_UI_STATE_AUTORUN			 175
+#define RUN_UI_STATE_AUTORUN             175
 
-#define EVENT_IMAGE_STATE	            "eventImageState"
-#define IMAGE_STATE_CHANGE				 180
+#define EVENT_IMAGE_STATE                "eventImageState"
+#define IMAGE_STATE_CHANGE                 180
 
 #define EVENT_BARCODE_CHANGE            "barCodeChange"
 #define STATION_STATE_BARCODE           190
@@ -115,8 +115,8 @@
 #define REFRESH_BIG_IMAGE               302
 #define AUTO_RUN_WITH_ERROR             303
 
-#define EVENT_SEARCH_DEVICE_STATE		 "eventSearchDeviceState"
-#define SEARCH_ALL_DEVICE   			 400
-#define SEARCH_ONE_DEVICE   			 401
+#define EVENT_SEARCH_DEVICE_STATE         "eventSearchDeviceState"
+#define SEARCH_ALL_DEVICE                400
+#define SEARCH_ONE_DEVICE                401
 
 #endif

@@ -10,20 +10,20 @@
 
 class MotionSetting : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	MotionSetting(MotionControl* pCtrl, QWidget *parent = Q_NULLPTR);
-	~MotionSetting();
+    MotionSetting(MotionControl* pCtrl, QWidget *parent = Q_NULLPTR);
+    ~MotionSetting();
 
 private:
-	void initUI();
+    void initUI();
 
 private:
-	Ui::MotionSetting ui;
-	//QTimer *m_timer;
-	MotionControl* m_pCtrl;
+    Ui::MotionSetting ui;
+    //QTimer *m_timer;
+    MotionControl* m_pCtrl;
 
-	MotionIO* m_pMotionIO;
-	MotionMotor* m_pMotionMtr;
+    MotionIO* m_pMotionIO;
+    MotionMotor* m_pMotionMtr;
 };

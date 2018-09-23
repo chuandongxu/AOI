@@ -24,9 +24,9 @@ const int IMG_DISPLAY_WIDTH = 150;
 const int IMG_DISPLAY_HEIGHT = 100;
 
 DataEditor::DataEditor(QWidget *parent)
-	: QWidget(parent)
+    : QWidget(parent)
 {
-	ui.setupUi(this);
+    ui.setupUi(this);
 
     initUI();
 }

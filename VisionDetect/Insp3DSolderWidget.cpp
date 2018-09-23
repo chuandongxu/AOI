@@ -41,7 +41,7 @@ Insp3DSolderWidget::Insp3DSolderWidget(InspWindowWidget *parent)
     m_pConductorAbsHeightUpLimit = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 0, 5000);
     ui.tableWidget->setCellWidget(CONDUCTOR_ABS_HEIGHT_UP_LIMIT, DATA_COLUMN, m_pConductorAbsHeightUpLimit.get());
 
-    m_pConductorAbsHeightLoLimit = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 0, 5000);
+    m_pConductorAbsHeightLoLimit = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -5000, 0);
     ui.tableWidget->setCellWidget(CONDUCTOR_ABS_HEIGHT_LO_LIMIT, DATA_COLUMN, m_pConductorAbsHeightLoLimit.get());
 
     m_pConductorRelHeightUpLimit = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 0, 5000);
@@ -71,7 +71,7 @@ Insp3DSolderWidget::~Insp3DSolderWidget() {
 void Insp3DSolderWidget::setDefaultValue() {
     m_pConductorAbsHeight->setSpec(500.f);
     m_pConductorAbsHeightUpLimit->setSpec(100.f);
-    m_pConductorAbsHeightLoLimit->setSpec(100.f);
+    m_pConductorAbsHeightLoLimit->setSpec(-100.f);
     m_pConductorRelHeightUpLimit->setSpec(50.f);
     m_pSolderHeightLoLimit->setSpec(150.f);
     m_pSolderHeightRatioLoLimit->setSpec(25);
@@ -222,8 +222,8 @@ void Insp3DSolderWidget::tryInsp() {
     }
 
     if (stRpy.vecResults.size() >= 2) {
-        float fRelHeight = fabs(stRpy.vecResults[0].fComponentHeight - stRpy.vecResults[1].fComponentHeight);
-        m_pConductorRelHeightUpLimit->setResult(fRelHeight * MM_TO_UM);
+        float fRelHeight = fabs(stRpy.vecResults[0].fComponentHeight - stRpy.vecResults[1].fComponentHeight)* MM_TO_UM;
+        m_pConductorRelHeightUpLimit->setResult(fRelHeight);
     }
 
     m_pSolderHeightLoLimit->setResult(stRpy.vecResults[0].fSolderHeight * MM_TO_UM);
@@ -252,7 +252,7 @@ void Insp3DSolderWidget::confirmWindow(OPERATION enOperation) {
         tryInsp();
         if (!m_bIsTryInspected)
             return;
-    }    
+    }
 
     QJsonObject json;
     json.insert("ConductorAbsHeight", m_pConductorAbsHeight->getSpec());
@@ -357,7 +357,6 @@ void Insp3DSolderWidget::confirmWindow(OPERATION enOperation) {
         if (window.usage == Engine::Window::Usage::HEIGHT_BASE_GLOBAL) {
             windowHeightBase = window;
             bFound = true;
-            break;
         }
     }
 

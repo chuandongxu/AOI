@@ -179,9 +179,9 @@ void InspVoidWidget::tryInsp() {
     QString strMsg;
     strMsg.sprintf("Inspect Status %d", Vision::ToInt32(stRpy.enStatus));
     if (Vision::PR_INSP_HOLE_MODE::RATIO == stCmd.enInspMode) {
-        strMsg += QString(", ratio mode result: bright area ratio %1").arg(stRpy.stRatioModeResult.fRatio);
-        m_pSpecAndResultMaxAreaRatio->setResult(stRpy.stRatioModeResult.fRatio);
-        m_pSpecAndResultMinAreaRatio->setResult(stRpy.stRatioModeResult.fRatio);
+        strMsg += QString(", ratio mode result: bright area percent %1").arg(stRpy.stRatioModeResult.fRatio * ONE_HUNDRED_PERCENT);
+        m_pSpecAndResultMaxAreaRatio->setResult(stRpy.stRatioModeResult.fRatio * ONE_HUNDRED_PERCENT);
+        m_pSpecAndResultMinAreaRatio->setResult(stRpy.stRatioModeResult.fRatio * ONE_HUNDRED_PERCENT);
     }else {
         strMsg += QString(", blob mode result: blob counts %1").arg(stRpy.stBlobModeResult.vecBlobs.size());
         m_pSpecAndResultMaxHoleCount->setResult(stRpy.stBlobModeResult.vecBlobs.size());
@@ -216,8 +216,8 @@ void InspVoidWidget::confirmWindow(OPERATION enOperation)
         jsonValue["BlobMode"] = jsonBlobMode;
     }
     QJsonDocument document;
-	  document.setObject(jsonValue);
-	  QByteArray byteArray = document.toJson(QJsonDocument::Compact);
+      document.setObject(jsonValue);
+      QByteArray byteArray = document.toJson(QJsonDocument::Compact);
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);  
     auto rectROI = pUI->getSelectedROI();

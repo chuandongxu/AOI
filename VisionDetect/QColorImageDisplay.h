@@ -12,27 +12,27 @@ using namespace cv;
 
 class QColorImageDisplay : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QColorImageDisplay(QWidget *parent = Q_NULLPTR);
-	~QColorImageDisplay();
+    QColorImageDisplay(QWidget *parent = Q_NULLPTR);
+    ~QColorImageDisplay();
 
 public:
-	void getSize(int& nSizeX, int& nSizeY);
-	void setImage(cv::Mat& matImage);
+    void getSize(int& nSizeX, int& nSizeY);
+    void setImage(cv::Mat& matImage);
 
 private:
-	void A_Transform(Mat& src, Mat& dst, int dx, int dy);
-	void displayImage(cv::Mat& image);
+    void A_Transform(Mat& src, Mat& dst, int dx, int dy);
+    void displayImage(cv::Mat& image);
 
 private:
-	int   m_windowWidth;
-	int   m_windowHeight;
-	int   m_imageWidth;
-	int   m_imageHeight;
+    int   m_windowWidth;
+    int   m_windowHeight;
+    int   m_imageWidth;
+    int   m_imageHeight;
 
 private:
-	Ui::QColorImageDisplay ui;
-	cv::Mat	m_hoImage;
+    Ui::QColorImageDisplay ui;
+    cv::Mat    m_hoImage;
 };

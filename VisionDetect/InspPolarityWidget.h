@@ -26,7 +26,7 @@ protected slots:
 
 private:
     Ui::InspPolarityWidget ui;
-    std::unique_ptr<QComboBox>	m_pComboBoxType;
-    std::unique_ptr<QComboBox>	m_pComboBoxAttribute;
+    std::unique_ptr<QComboBox>    m_pComboBoxType;
+    std::unique_ptr<QComboBox>    m_pComboBoxAttribute;
     SpecAndResultWidgetPtr      m_pSpecAndResultIntensityDiffTol;
 };

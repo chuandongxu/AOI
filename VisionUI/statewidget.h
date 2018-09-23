@@ -16,29 +16,29 @@ public:
     ~QStateWidget();
 
 protected slots:
-	void onClearProductCount();
-	void onGoHomeState(const QVariantList &data);
-	void onIsGoHomeIng(const QVariantList &data);
-	void onRunState(const QVariantList &data);
-	void onResoultEvent(const QVariantList &data);
+    void onClearProductCount();
+    void onGoHomeState(const QVariantList &data);
+    void onIsGoHomeIng(const QVariantList &data);
+    void onRunState(const QVariantList &data);
+    void onResoultEvent(const QVariantList &data);
 
 protected:
-	virtual void timerEvent(QTimerEvent * event);
-	void updataStates();
+    virtual void timerEvent(QTimerEvent * event);
+    void updataStates();
 
-	QString getWorkState();
-	QString getRobtState();
-	QString getLeftStationState();
-	QString getRigthStationState();
-	QString getWorkMod();
-	int    calSum();
-	double    calOkPrecent();
+    QString getWorkState();
+    QString getRobtState();
+    QString getLeftStationState();
+    QString getRigthStationState();
+    QString getWorkMod();
+    int    calSum();
+    double    calOkPrecent();
 
-	void showErrorMessage();
-	
+    void showErrorMessage();
+    
 private:
    Ui::QStateWidget *ui; 
-	//QStandardItemModel m_homeState;
+    //QStandardItemModel m_homeState;
 };
 
 #endif // STATEWIDGET_H

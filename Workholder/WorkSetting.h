@@ -23,7 +23,7 @@ private:
     void run();
 
 private:
-    WorkSetting*	  m_pSetting;
+    WorkSetting*      m_pSetting;
     bool          m_bQuit;
     bool          m_bRuning;
 };

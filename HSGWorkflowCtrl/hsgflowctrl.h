@@ -19,34 +19,34 @@
 
 class QFlowCtrl : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	QFlowCtrl(QObject *parent);
-	~QFlowCtrl();
+    QFlowCtrl(QObject *parent);
+    ~QFlowCtrl();
 
-	bool isRuning();
+    bool isRuning();
 
 protected slots:
-	void onImageEvent(const QVariantList &data);
+    void onImageEvent(const QVariantList &data);
     void onThreadState(const QVariantList &data);
 
-	void home();
-	void startAutoRun();
-	void stopAutoRun();
+    void home();
+    void startAutoRun();
+    void stopAutoRun();
 
 protected:
-	void readbarCode();
-	void checkMotionState();
-	void checkError();
-	void checkAuthError();
+    void readbarCode();
+    void checkMotionState();
+    void checkError();
+    void checkAuthError();
 
-	void initStationParam();
-	void initErrorCode();
+    void initStationParam();
+    void initErrorCode();
 
-	void imStop();
-	void reset();
-	void start();
-	void stop();
+    void imStop();
+    void reset();
+    void start();
+    void stop();
 
 private:
     int _prepareRunData();
@@ -55,15 +55,15 @@ private:
     void _onAutoRunError();
 
 private:
-	int                             m_timerId;
-	bool                            m_isHome;
-	bool                            m_homeIng;
-	bool                            m_isStart;
+    int                             m_timerId;
+    bool                            m_isHome;
+    bool                            m_homeIng;
+    bool                            m_isStart;
 
-	AutoRunThread                  *m_pAutoRunThread;
+    AutoRunThread                  *m_pAutoRunThread;
 
-	QDateTime                       m_dateTime;
-	int                             m_errorCode;
+    QDateTime                       m_dateTime;
+    int                             m_errorCode;
     MapBoardInspResult              m_mapBoardInspResult;
     Engine::AlignmentVector         m_vecAlignments;
     float                           m_fBoardLeft = 0, m_fBoardTop = 0, m_fBoardRight = 0, m_fBoardBottom = 0;

@@ -514,7 +514,6 @@ int FiducialMarkWidget::srchFiducialMark() {
             matFrameImg = _getFrameImageFromBigImage(pUI->getImage(),
             nFrameX, nFrameY, nImageWidth, nImageHeight, nOverlapX, nOverlapY);
         else {
-            
             if (vecBigImages.empty()) {
                 System->showMessage(QStringLiteral("Fiducial Mark"), QStringLiteral("请先扫描电路板!"));
                 return NOK;
@@ -708,6 +707,9 @@ cv::Mat FiducialMarkWidget::_getFrameImageFromBigImage(const cv::Mat &matBigImag
 
     float frameLeftX = nFrameX * (nImageWidth  - nOverlapX);
     float frameTopY  = nFrameY * (nImageHeight - nOverlapY);
+    if ((frameLeftX + nImageWidth  > matBigImage.cols) ||
+        (frameTopY  + nImageHeight > matBigImage.rows))
+        return cv::Mat();
     cv::Mat matFrame(nImageHeight, nImageWidth, matBigImage.type());
     cv::Mat matROI(matBigImage, cv::Rect(frameLeftX, frameTopY, nImageWidth, nImageHeight));
     matROI.copyTo(matFrame);

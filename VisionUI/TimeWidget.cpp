@@ -1,9 +1,9 @@
 ﻿#include "TimeWidget.h"
 
 QTimeWidget::QTimeWidget(QWidget *parent)
-	: QWidget(parent)
+    : QWidget(parent)
 {
-	ui.setupUi(this);
+    ui.setupUi(this);
 }
 
 QTimeWidget::~QTimeWidget()

@@ -10,16 +10,16 @@
 
 class QLightCtrl : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QLightCtrl(QObject *parent);
-	~QLightCtrl();
+    QLightCtrl(QObject *parent);
+    ~QLightCtrl();
 
     void init();
-	int getDeviceCount() { return m_deviceList.size(); };
-	void addDevice(QLightDevice *pDevice) { m_deviceList.append(pDevice); };
-	void delDevice(int nIndex);
+    int getDeviceCount() { return m_deviceList.size(); };
+    void addDevice(QLightDevice *pDevice) { m_deviceList.append(pDevice); };
+    void delDevice(int nIndex);
     QLightDevice * getLightDevice(int nIndex);
 
     void setLuminance(int nChannel, int nLum);
@@ -31,7 +31,7 @@ public:
     void setupTrigger(ILight::TRIGGER emTrig);
 
 private:
-	QLightDeviceList m_deviceList;
+    QLightDeviceList m_deviceList;
     bool m_bSetupTriggerConfig;
 };
 

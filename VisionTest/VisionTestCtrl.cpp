@@ -1,7 +1,7 @@
 ﻿#include "VisionTestCtrl.h"
 
 VisionTestCtrl::VisionTestCtrl(QObject *parent)
-	: QObject(parent)
+    : QObject(parent)
 {
 }
 

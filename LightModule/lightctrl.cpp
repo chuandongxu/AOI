@@ -11,14 +11,14 @@
 #include "lightmodule_global.h"
 
 QLightCtrl::QLightCtrl(QObject *parent)
-	: QObject(parent)
+    : QObject(parent)
 {
     m_bSetupTriggerConfig = false;
 
-	int n = System->getParam(LIGHT_COUNT).toInt();
-	for(int i = 0; i < n; ++ i)
-	{
-		QString name = QString("light%0").arg(i+1);
+    int n = System->getParam(LIGHT_COUNT).toInt();
+    for(int i = 0; i < n; ++ i)
+    {
+        QString name = QString("light%0").arg(i+1);
 
         QLightDevice * pDevice = NULL;
         if (System->isTriggerBoard())
@@ -30,25 +30,25 @@ QLightCtrl::QLightCtrl(QObject *parent)
             pDevice = new QLightDerivedDevice(name, _CHN_NUM, NULL);
         }
         m_deviceList.append(pDevice);
-	}	
+    }    
 }
 
 void QLightCtrl::init()
 {
-	int n = System->getParam(LIGHT_COUNT).toInt();
-	for (int i = 0; i<n; i++)
-	{
-		QString key = QString("%0-%1").arg(m_deviceList[i]->getDeviceName()).arg(COMM_PORT);
-		QString port = System->getParam(key).toString();
-		key = QString("%0-%1").arg(m_deviceList[i]->getDeviceName()).arg(COMM_BOUND);
-		int baud = System->getParam(key).toInt();
-		m_deviceList[i]->openCommPort(port,baud);
+    int n = System->getParam(LIGHT_COUNT).toInt();
+    for (int i = 0; i<n; i++)
+    {
+        QString key = QString("%0-%1").arg(m_deviceList[i]->getDeviceName()).arg(COMM_PORT);
+        QString port = System->getParam(key).toString();
+        key = QString("%0-%1").arg(m_deviceList[i]->getDeviceName()).arg(COMM_BOUND);
+        int baud = System->getParam(key).toInt();
+        m_deviceList[i]->openCommPort(port,baud);
         for (int j = 0; j<_MAX_CHDATA_NUM; j++)
-		{
-			m_deviceList[i]->openLight(j);
-		}
-		//m_deviceList[i]->openCommPort(->getDeviceName(),m_deviceList[i]->ge);
-	}
+        {
+            m_deviceList[i]->openLight(j);
+        }
+        //m_deviceList[i]->openCommPort(->getDeviceName(),m_deviceList[i]->ge);
+    }
 }
 QLightCtrl::~QLightCtrl()
 {
@@ -58,17 +58,17 @@ QLightCtrl::~QLightCtrl()
 void QLightCtrl::delDevice(int nIndex)
 {
     QLightDevice * device = m_deviceList[nIndex];
-	if(device)delete device;
+    if(device)delete device;
     m_deviceList.removeAt(nIndex);
 }
 
 QLightDevice * QLightCtrl::getLightDevice(int nIndex)
 {
     if (nIndex < m_deviceList.size())
-	{
+    {
         return m_deviceList[nIndex];
-	}
-	return NULL;
+    }
+    return NULL;
 }
 
 void QLightCtrl::setLuminance(int nChannel, int nLum)

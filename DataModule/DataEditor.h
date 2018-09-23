@@ -7,11 +7,11 @@
 
 class DataEditor : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	DataEditor(QWidget *parent = Q_NULLPTR);
-	~DataEditor();
+    DataEditor(QWidget *parent = Q_NULLPTR);
+    ~DataEditor();
 
     bool displayRecord(int recordID);
 
@@ -19,7 +19,7 @@ private:
     void initUI();
 
 private:
-	Ui::DataEditor ui;
+    Ui::DataEditor ui;
 
     QGraphicsScene * m_recordImgScene;
 };

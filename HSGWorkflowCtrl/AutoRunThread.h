@@ -24,7 +24,7 @@ public:
                   const AutoRunParams                   &stAutoRunParams,
                   MapBoardInspResult                    *pMapBoardInspResult);
     ~AutoRunThread();
-	
+    
     bool captureAllImages(QVector<cv::Mat>& imageMats);
     bool captureLightImages(QVector<cv::Mat>& imageMats);
     cv::Mat getBigImage() const { return m_vecMatBigImage[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]; }
@@ -47,7 +47,7 @@ protected:
     bool moveToCapturePos(float fPosX, float fPosY);
     bool isExit();
 
-private:	
+private:    
     void setResoultLight(bool isOk);
     void resetResoultLight();
 

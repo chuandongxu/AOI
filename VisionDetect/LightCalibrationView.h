@@ -6,43 +6,43 @@
 
 class LightCalibrationView : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	LightCalibrationView(VisionCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
-	~LightCalibrationView();
+    LightCalibrationView(VisionCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
+    ~LightCalibrationView();
 
 private:
-	void initUI();
+    void initUI();
 
 private slots:
-	void onReadyPosJoystick();
-	void onMoveToReady();
+    void onReadyPosJoystick();
+    void onMoveToReady();
 
-	void onStart();
-	void onEnd();
-	void onCaptureLight();
+    void onStart();
+    void onEnd();
+    void onCaptureLight();
 
-	void onSelectLightIndexChanged(int iIndex);
-	void onSliderChanged(int lum);
+    void onSelectLightIndexChanged(int iIndex);
+    void onSliderChanged(int lum);
 
-	void onDetectGrayScale();
+    void onDetectGrayScale();
 
-	void onSaveCali();
+    void onSaveCali();
 
     void onAutoCali();
 
 private:
-	bool guideReadImage(cv::Mat& matImg, int nSelectLight);
-	int getLightLum(int nIndex);
-	void setLightLum(int nIndex, int lum);
+    bool guideReadImage(cv::Mat& matImg, int nSelectLight);
+    int getLightLum(int nIndex);
+    void setLightLum(int nIndex, int lum);
 
     int grayLevel(cv::Mat matImg);
 
 private:
-	Ui::LightCalibrationView ui;
-	VisionCtrl* m_pCtrl;
-	bool m_bGuideCali;
-	cv::Mat m_matImage;
+    Ui::LightCalibrationView ui;
+    VisionCtrl* m_pCtrl;
+    bool m_bGuideCali;
+    cv::Mat m_matImage;
     cv::Rect m_selectROI;
 };

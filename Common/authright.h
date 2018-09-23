@@ -6,18 +6,18 @@
 
 class QAuthRight : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QAuthRight(QWidget *parent = 0);
-	~QAuthRight();
+    QAuthRight(QWidget *parent = 0);
+    ~QAuthRight();
 
 protected slots:
-	void onOk();
-	void onCancel();
+    void onOk();
+    void onCancel();
 
 private:
-	Ui::QAuthRight ui;
+    Ui::QAuthRight ui;
 };
 
 #endif // AUTHRIGHT_H

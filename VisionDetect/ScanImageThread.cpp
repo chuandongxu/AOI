@@ -43,7 +43,7 @@ ScanImageThread::~ScanImageThread() {
 
 void ScanImageThread::quit()
 {
-	m_exit = true;
+    m_exit = true;
 }
 
 bool ScanImageThread::preRunning()

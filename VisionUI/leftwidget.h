@@ -10,37 +10,37 @@
 
 class QLeftWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QLeftWidget(QWidget *parent = NULL);
-	~QLeftWidget();
+    QLeftWidget(QWidget *parent = NULL);
+    ~QLeftWidget();
 
-	void setStateWidget(QWidget * w);
+    void setStateWidget(QWidget * w);
 
 protected:
-	void paintEvent(QPaintEvent *event);
-	void timerEvent(QTimerEvent * event);
-	void enableButton(int iLevel);
+    void paintEvent(QPaintEvent *event);
+    void timerEvent(QTimerEvent * event);
+    void enableButton(int iLevel);
 
 private slots:
     void onDiagonseClick();
     void onSettingClick();
-	void onShowWarring();
-	void onGoHome();
-	void onChangeUser();
-	void onManageUser();
-	void onChangeLang(const QString &text);
-	void onRunState(const QVariantList &data);
+    void onShowWarring();
+    void onGoHome();
+    void onChangeUser();
+    void onManageUser();
+    void onChangeLang(const QString &text);
+    void onRunState(const QVariantList &data);
     void onUIState(const QVariantList &data);
 
 private:
-	Ui::leftWidget ui;
-	QVBoxLayout   *m_subLayout;
-	QWidget       *m_stateWidget;
+    Ui::leftWidget ui;
+    QVBoxLayout   *m_subLayout;
+    QWidget       *m_stateWidget;
     QWidget       *m_pDeviceListWidget;
-	int            m_timerId;
-	QSettingDialog m_dlgSetting;
+    int            m_timerId;
+    QSettingDialog m_dlgSetting;
 };
 
 #endif // LEFTWIDGET_H

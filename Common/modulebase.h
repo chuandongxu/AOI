@@ -8,12 +8,12 @@ class COMMON_EXPORT QModuleBase : public QModuleInterface
 {
 public:
     QModuleBase(int id,const QString &name);
-	virtual ~QModuleBase();
+    virtual ~QModuleBase();
 
     virtual QString getDisplayName();
-	//virtual void init(){};
-	//virtual void unInit(){};
-    virtual int getId();	
+    //virtual void init(){};
+    //virtual void unInit(){};
+    virtual int getId();    
 
     virtual void insertEventObserver(QHalEventObserver * pObs);
     virtual void sendNotifyHalEvent(const QHalEvent &ev);
@@ -22,13 +22,13 @@ public:
 
     virtual void addSettingWiddget(QTabWidget * tabWidget){};
     virtual void freeSettingWidget(QTabWidget * tabWidget){};
-	virtual void showSettingWidget(){};
-	virtual void showDiagonseWidget(){};
+    virtual void showSettingWidget(){};
+    virtual void showDiagonseWidget(){};
 
     virtual void addDiagonseWidget(QTabWidget * tabWidget){};
     virtual void freeDiagonseWidget(QTabWidget * tabWidget){};
 
-	virtual void preStartUp(){};
+    virtual void preStartUp(){};
 
 private:
     int m_id;

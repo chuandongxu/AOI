@@ -74,7 +74,7 @@ public:
 
 public:
     cv::Point2f _center;
-    double 	    _radius;
+    double         _radius;
 };
 
 class PolyLineMask : public MaskObj
@@ -155,7 +155,7 @@ private:
 
 private:
     Ui::InspMaskEditorWidget ui;
-    cv::Mat	m_hoImage;
+    cv::Mat    m_hoImage;
     cv::Mat m_maskMat;
 
     int m_nSelectIndex;
