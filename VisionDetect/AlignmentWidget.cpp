@@ -125,20 +125,29 @@ bool AlignmentWidget::_srchTemplate(int recordId, bool bShowResult) {
     stCmd.rectSrchWindow = pUI->getSrchWindow();
 
     Vision::PR_MatchTmpl(&stCmd, &stRpy);
-    if (Vision::VisionStatus::OK == stRpy.enStatus)
+    if (Vision::VisionStatus::OK == stRpy.enStatus) {
         pUI->displayImage(stRpy.matResultImg);
-    if (bShowResult) {
-        auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-        auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-        float fOffsetX = (stRpy.ptObjPos.x - (stCmd.rectSrchWindow.x + stCmd.rectSrchWindow.width  / 2)) * dResolutionX;
-        float fOffsetY = (stRpy.ptObjPos.y - (stCmd.rectSrchWindow.y + stCmd.rectSrchWindow.height / 2)) * dResolutionY;
-        m_pSpecAndResultMinScore->setResult(stRpy.fMatchScore);
-        m_pSpecAndResultMaxOffsetX->setResult(fOffsetX);
-        m_pSpecAndResultMaxOffsetY->setResult(fOffsetY);
-        m_pSpecAndResultMaxRotation->setResult(stRpy.fRotation);
-        QString strMsg;
-        strMsg.sprintf("Inspect Status %d, offset(%f, %f), rotation(%f), score(%f)", Vision::ToInt32(stRpy.enStatus), fOffsetX, fOffsetY, stRpy.fRotation, stRpy.fMatchScore);
-        QMessageBox::information(this, "Alignment", strMsg);
+        if (bShowResult) {
+            auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+            auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+            float fOffsetXPixel = (stRpy.ptObjPos.x - (stCmd.rectSrchWindow.x + stCmd.rectSrchWindow.width / 2));
+            float fOffsetYPixel = (stRpy.ptObjPos.y - (stCmd.rectSrchWindow.y + stCmd.rectSrchWindow.height / 2));
+            float fOffsetX = fOffsetXPixel * dResolutionX;
+            float fOffsetY = fOffsetYPixel * dResolutionY;
+            m_pSpecAndResultMinScore->setResult(stRpy.fMatchScore);
+            m_pSpecAndResultMaxOffsetX->setResult(fOffsetX);
+            m_pSpecAndResultMaxOffsetY->setResult(fOffsetY);
+            m_pSpecAndResultMaxRotation->setResult(stRpy.fRotation);
+            if (_updateDeviceWindow(fOffsetX, fOffsetY)) {
+                auto rectSrchWindow = pUI->getSrchWindow();
+                rectSrchWindow.x += fOffsetXPixel;
+                rectSrchWindow.y += fOffsetYPixel;
+                pUI->setSrchWindow(rectSrchWindow);
+            }
+        }
+    }
+    else {
+        System->showInteractMessage(QStringLiteral("定位框"), QStringLiteral("搜寻模板失败"));
     }
 
     return Vision::VisionStatus::OK == stRpy.enStatus;
@@ -328,4 +337,53 @@ void AlignmentWidget::setCurrentWindow(const Engine::Window &window) {
     m_bIsTryInspected = false;
 
     this->setMask(convertMaskBny2Mat(window.mask));
+}
+
+bool AlignmentWidget::_updateDeviceWindow(float fOffsetX, float fOffsetY) {
+    // This means this is a new alignment window, no need to update other device window.
+    if (Engine::Window::Usage::ALIGNMENT != m_currentWindow.usage)
+         return false;
+
+    QString strTitle(QStringLiteral("定位框"));
+    auto nResult = System->showInteractMessage(strTitle, QStringLiteral("定位成功, 需要自动更新当前元件的其它检测框坐标吗?"));
+    if (nResult != QDialog::Accepted)
+        return false;
+
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    auto selectedDevice = pUI->getSelectedDevice();
+    Engine::WindowVector vecWindows;
+    nResult = Engine::GetDeviceWindows(selectedDevice.getId(), vecWindows);
+    if (Engine::OK != nResult) {
+        String errorType, errorMessage;
+        Engine::GetErrorDetail(errorType, errorMessage);
+        QString msg(QStringLiteral("读取元件检测框失败, 错误消息: "));
+        msg + errorMessage.c_str();
+        System->showMessage(strTitle, msg);
+        return false;
+    }
+
+    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+
+    for (auto &window : vecWindows) {
+        if (bBoardRotated) {
+            window.x -= fOffsetX;
+            window.y += fOffsetY;
+        }
+        else {
+            window.x += fOffsetX;
+            window.y -= fOffsetY;
+        }
+
+        nResult = Engine::UpdateWindow(window);
+        if (Engine::OK != nResult) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString msg(QStringLiteral("更新元件失败, 错误消息: "));
+            msg + errorMessage.c_str();
+            System->showMessage(strTitle, msg);
+            return false;
+        }
+    }    
+    m_pParent->refreshAllDeviceWindows();
+    return true;
 }
