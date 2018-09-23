@@ -48,8 +48,7 @@ Binary EditInspWindowBaseWidget::convertMaskMat2Bny(cv::Mat& maskMat)
     return maskBinary;
 }
 
-void EditInspWindowBaseWidget::updateWindowToUI(const Engine::Window &window, OPERATION enOperation)
-{
+void EditInspWindowBaseWidget::updateWindowToUI(const Engine::Window &window, OPERATION enOperation) {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();

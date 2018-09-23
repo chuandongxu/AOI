@@ -161,18 +161,6 @@ void InspHeightBaseWidget::confirmWindow(OPERATION enOperation) {
         }
         else
             System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
-
-        QDetectObj detectObj(window.Id, window.name.c_str());
-        cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
-        if (bBoardRotated)
-            ptCenter.x = nBigImgWidth - ptCenter.x;
-        else
-            ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
-        cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
-        detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
-        auto vecDetectObjs = pUI->getDetectObjs();
-        vecDetectObjs.push_back(detectObj);
-        pUI->setDetectObjs(vecDetectObjs);
     }
     else {
         window.Id = m_currentWindow.Id;
@@ -189,6 +177,7 @@ void InspHeightBaseWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
+    updateWindowToUI(window, enOperation);
     m_pParent->updateInspWindowList();
 }
 

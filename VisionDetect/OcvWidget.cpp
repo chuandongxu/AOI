@@ -164,15 +164,6 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
     window.deviceId = pUI->getSelectedDevice().getId();
     window.angle = 0;
 
-    QDetectObj detectObj(window.Id, window.name.c_str());
-    cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
-    if (bBoardRotated)
-        ptCenter.x = nBigImgWidth  - ptCenter.x;
-    else
-        ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
-    detectObj.setFrame(cv::RotatedRect(ptCenter, rectROI.size(), window.angle));
-    auto vecDetectObjs = pUI->getDetectObjs();
-
     int result = Engine::OK;
     if (OPERATION::ADD == enOperation) {
         window.deviceId = pUI->getSelectedDevice().getId();
@@ -198,8 +189,6 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
             }
             Engine::AddRecord(recordId, recordData);
         }
-
-        vecDetectObjs.push_back(detectObj);
     }
     else {
         result = Engine::UpdateWindow(window);
@@ -211,14 +200,9 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
         }
         else
             System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
-
-        auto iter = std::find_if(vecDetectObjs.begin(), vecDetectObjs.end(), [window](const QDetectObj& obj) { return window.Id == obj.getID(); });
-        if (iter != vecDetectObjs.end()) {
-            *iter = detectObj;
-        }
     }
 
-    pUI->setDetectObjs(vecDetectObjs);
+    updateWindowToUI(window, enOperation);
     m_pParent->updateInspWindowList();
 }
 
