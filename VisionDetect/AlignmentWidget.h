@@ -27,6 +27,7 @@ public:
 
 private:
     bool _srchTemplate(int recordId, bool bShowResult = true);
+    bool _updateDeviceWindow(float fOffsetX, float fOffsetY);
 
 private:
     Ui::AlignmentWidget         ui;
