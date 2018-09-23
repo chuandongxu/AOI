@@ -1753,7 +1753,7 @@ void VisionViewWidget::_drawDeviceWindows(cv::Mat &matImg)
     int nLineWidth = _constDeviceWindowLineWidth / m_dScale;
     if (nLineWidth <= 0) nLineWidth = 1;
 
-    if (!m_vecDevices.empty()) {
+    if (m_bDisplayDevices && !m_vecDevices.empty()) {
         for (const auto &vvDevice : m_vecDevices) {
             auto rotatedRect = vvDevice.getWindow();
             rotatedRect.center.x += ptCtrOfImage.x;
@@ -1956,4 +1956,14 @@ void VisionViewWidget::_updateCursorInfo(const cv::Point &ptMouse) {
     {
         System->setTrackInfo(QString("The mouse point (%1, %2) converted to invalid image point (%3, %4).").arg(ptMouse.x).arg(ptMouse.y).arg(ptImage.x).arg(ptImage.y));
     }
+}
+
+void VisionViewWidget::setDisplayDeviceWindow(bool bDisplay) {
+    m_bDisplayDevices = bDisplay;
+    repaintAll();
+}
+
+void VisionViewWidget::setDisplayInspectWindow(bool bDisplay) {
+    m_bDisplayDetectObjs = bDisplay;
+    repaintAll();
 }
