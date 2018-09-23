@@ -78,7 +78,7 @@ public:
     void setCurrentFM(const VisionViewFM &fm);
     VisionViewFM getCurrentFM() const;
     void setHeightData(const cv::Mat& matHeight);
-    cv::Mat getHeightData() const;
+    cv::Mat getHeightData() const;    
 
     void openFile();
     void cameraFile();
@@ -98,6 +98,9 @@ public:
 
     void copyDeviceWindow();
     void pasteDevice();
+
+    void setDisplayDeviceWindow(bool bDisplay);
+    void setDisplayInspectWindow(bool bDisplay);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -175,11 +178,12 @@ private:
     DViewUtility           *m_pMainViewFull3D;
     DViewUtility           *m_pView3D;
     cv::Rect                m_selectROI;
-    Vision::VectorOfRect            m_vecSubROIs;
+    Vision::VectorOfRect    m_vecSubROIs;
     cv::Rect                m_rectSrchWindow;
     QDockWidget            *m_pSelectView;
     bool                    m_bShow3DInitial;
     bool                    m_bMainView3DInitial;
+    bool                    m_bDisplayDevices = true;
     VisionViewDeviceVector  m_vecDevices;
     VisionViewDevice        m_selectedDevice;
     VisionViewDevice        m_selectedCopyDevice;
@@ -187,7 +191,7 @@ private:
     VisionViewFM            m_currentFM;
     cv::Size                m_szCadOffset;
     cv::Size                m_szMoveRange;
-    bool                    m_bDisplayDetectObjs;
+    bool                    m_bDisplayDetectObjs = true;
     QVector<QDetectObj>     m_vecDetectObjs;
     QDetectObj              m_currentDetectObj;
 

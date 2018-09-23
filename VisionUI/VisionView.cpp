@@ -44,7 +44,7 @@ void VisionView::init()
     createToolBars();
     createStatusBar();
 
-    setUnifiedTitleAndToolBarOnMac(true);    
+    setUnifiedTitleAndToolBarOnMac(true);
 
     m_pViewWidget = new VisionViewWidget(this);
     this->setCentralWidget(m_pViewWidget);
@@ -62,6 +62,7 @@ void VisionView::init()
     {
         m_pColorWidget = pVision->getColorWeightView();
     }
+    m_pConfigDialog = std::make_unique<VisionViewConfigDialog>(m_pViewWidget, this);
 }
 
 void VisionView::createActions()
@@ -147,20 +148,25 @@ void VisionView::createActions()
 
     setContextMenuPolicy(Qt::ActionsContextMenu);
 
-    showLightAct = new QAction(QIcon("image/busy.png"), QStringLiteral("显示灯光设置"), this);
-    showLightAct->setShortcuts(QKeySequence::MoveToNextChar);
-    showLightAct->setStatusTip(tr("Show Lighting"));
-    connect(showLightAct, SIGNAL(triggered()), this, SLOT(showLight()));
+    m_pActionShowLightAct = new QAction(QIcon("image/busy.png"), QStringLiteral("显示灯光设置"), this);
+    m_pActionShowLightAct->setShortcuts(QKeySequence::MoveToNextChar);
+    m_pActionShowLightAct->setStatusTip(tr("Show Lighting"));
+    connect(m_pActionShowLightAct, SIGNAL(triggered()), this, SLOT(showLight()));
 
-    showColorSpaceAct = new QAction(QIcon("image/colorSpace.png"), QStringLiteral("显示颜色框设置"), this);
-    showColorSpaceAct->setShortcuts(QKeySequence::MoveToPreviousChar);
-    showColorSpaceAct->setStatusTip(tr("Show Color Space"));
-    connect(showColorSpaceAct, SIGNAL(triggered()), this, SLOT(showColorSpace()));
+    m_pActionShowColorSpaceAct = new QAction(QIcon("image/colorSpace.png"), QStringLiteral("显示颜色框设置"), this);
+    m_pActionShowColorSpaceAct->setShortcuts(QKeySequence::MoveToPreviousChar);
+    m_pActionShowColorSpaceAct->setStatusTip(tr("Show Color Space"));
+    connect(m_pActionShowColorSpaceAct, SIGNAL(triggered()), this, SLOT(showColorSpace()));
 
-    showJoystick = new QAction(QIcon("image/joystick.png"), QStringLiteral("移动马达"), this);
-    showJoystick->setShortcuts(QKeySequence::MoveToNextWord);
-    showJoystick->setStatusTip(tr("Show Joystick Widget"));
-    connect(showJoystick, SIGNAL(triggered()), this, SLOT(showJoystickWidget()));
+    m_pActionShowJoystick = new QAction(QIcon("image/joystick.png"), QStringLiteral("移动马达"), this);
+    m_pActionShowJoystick->setShortcuts(QKeySequence::MoveToNextWord);
+    m_pActionShowJoystick->setStatusTip(tr("Show Joystick Widget"));
+    connect(m_pActionShowJoystick, SIGNAL(triggered()), this, SLOT(showJoystickWidget()));
+
+    m_pActionShowConfig = new QAction(QIcon("image/Config.png"), QStringLiteral("设置VisionView"), this);
+    m_pActionShowConfig->setShortcuts(QKeySequence::MoveToNextLine);
+    m_pActionShowConfig->setStatusTip(tr("设置VisionView"));
+    connect(m_pActionShowConfig, SIGNAL(triggered()), this, SLOT(showConfig()));
 }
 
 void VisionView::createToolBars()
@@ -184,9 +190,10 @@ void VisionView::createToolBars()
 
     detectToolBar = addToolBar(tr("Detect"));
     detectToolBar->addAction(show3DAct);
-    detectToolBar->addAction(showLightAct);
-    detectToolBar->addAction(showColorSpaceAct);
-    detectToolBar->addAction(showJoystick);
+    detectToolBar->addAction(m_pActionShowLightAct);
+    detectToolBar->addAction(m_pActionShowColorSpaceAct);
+    detectToolBar->addAction(m_pActionShowJoystick);
+    detectToolBar->addAction(m_pActionShowConfig);
 }
 
 void VisionView::createStatusBar()
@@ -401,6 +408,10 @@ void VisionView::showJoystickWidget()
     }
 }
 
+void VisionView::showConfig() {
+    m_pConfigDialog->show();
+}
+
 cv::Mat VisionView::getSelectImage()
 {
     if (m_pViewWidget)
@@ -493,7 +504,7 @@ void VisionView::setButtonsEnable(bool flag)
     m_pMoveAct->setEnabled(flag);
 
     show3DAct->setEnabled(flag);
-    //showLightAct->setEnabled(flag);
+    //m_pActionShowLightAct->setEnabled(flag);
 }
 
 void VisionView::setLiveButtonEnable(bool flag)
