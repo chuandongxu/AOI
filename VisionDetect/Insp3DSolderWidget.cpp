@@ -152,13 +152,12 @@ void Insp3DSolderWidget::tryInsp() {
         if (vecSubROIs.empty()) {
             System->showMessage(strTitle, QStringLiteral("请选择小检测窗口!"));
             return;
-        }
-
-        auto lastSubROI = vecSubROIs.back();
-        cv::Point2f ptWindowCtr(lastSubROI.x + lastSubROI.width / 2.f, lastSubROI.y + lastSubROI.height / 2.f);
+        }        
 
         nReturn = System->showInteractMessage(strTitle, QStringLiteral("需要自动添加另一个小检测框吗?"));
         if (nReturn == QDialog::Accepted) {
+            auto lastSubROI = vecSubROIs.back();
+            cv::Point2f ptWindowCtr(lastSubROI.x + lastSubROI.width / 2.f, lastSubROI.y + lastSubROI.height / 2.f);
             auto selectedDevice = pUI->getSelectedDevice();
             auto ptCenter = selectedDevice.getWindow().center;
             auto rectDevice = selectedDevice.getWindow().boundingRect();
@@ -177,7 +176,6 @@ void Insp3DSolderWidget::tryInsp() {
         }
         else
         {
-            pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_SELECT_SUB_ROI);
             auto nReturn = System->showInteractMessage(strTitle, QStringLiteral("请拖动鼠标选择另一个小检测窗口"));
             if (nReturn != QDialog::Accepted)
                 return;
