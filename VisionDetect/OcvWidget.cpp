@@ -316,7 +316,8 @@ bool OcvWidget::_inspOcv(const std::vector<Int32> &vecRecordId, bool bShowResult
     if (bShowResult) {
         m_pSpecAndResultMinScore->setResult(stRpy.fOverallScore);
         QString strMsg;
-        strMsg.sprintf("Inspect Status %d, overall score(%f)", Vision::ToInt32(stRpy.enStatus), stRpy.fOverallScore);
+        strMsg.sprintf("Inspect Status %d, %s, overall score(%f)", Vision::ToInt32(stRpy.enStatus),
+            Vision::VisionStatus::OK == stRpy.enStatus ? "pass" : "not pass", stRpy.fOverallScore);
         QMessageBox::information(this, "Alignment", strMsg);
     }
 
