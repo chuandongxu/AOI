@@ -2,6 +2,7 @@
 #define OCVWIDGET_H
 
 #include <QLineEdit>
+#include <QComboBox>
 
 #include "ui_OcvWidget.h"
 #include "EditInspWindowBaseWidget.h"
@@ -30,6 +31,7 @@ private:
     Ui::OcvWidget ui;
     std::unique_ptr<QLineEdit>  m_pEditCharCount;
     SpecAndResultWidgetPtr      m_pSpecAndResultMinScore;
+    std::unique_ptr<QComboBox>  m_pComboBoxCharDirection;
 };
 
 #endif // OCVWIDGET_H

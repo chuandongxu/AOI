@@ -21,6 +21,7 @@ enum BASIC_PARAM
 {
     CHAR_COUNT,
     MIN_SCORE,
+    CHAR_DIRECTION,
 };
 
 OcvWidget::OcvWidget(InspWindowWidget *parent)
@@ -34,6 +35,13 @@ OcvWidget::OcvWidget(InspWindowWidget *parent)
     m_pSpecAndResultMinScore = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 40, 100);
     ui.tableWidget->setCellWidget(MIN_SCORE, DATA_COLUMN, m_pSpecAndResultMinScore.get());
 
+    m_pComboBoxCharDirection = std::make_unique<QComboBox>(this);
+    m_pComboBoxCharDirection->addItem(QStringLiteral("从下往上"));
+    m_pComboBoxCharDirection->addItem(QStringLiteral("从上往下"));
+    m_pComboBoxCharDirection->addItem(QStringLiteral("从右往左"));
+    m_pComboBoxCharDirection->addItem(QStringLiteral("从左往右"));
+    ui.tableWidget->setCellWidget(CHAR_DIRECTION, DATA_COLUMN, m_pComboBoxCharDirection.get());
+
     setDefaultValue();
 }
 
@@ -44,6 +52,7 @@ void OcvWidget::setDefaultValue() {
     m_pEditCharCount->setText(QString::number(4));
     m_pSpecAndResultMinScore->setSpec(60);
     ui.listWidgetRecordId->clear();
+    m_pComboBoxCharDirection->setCurrentIndex(Vision::ToInt32(Vision::PR_DIRECTION::RIGHT));
     m_bIsTryInspected = false;
 
     m_currentWindow.usage = Engine::Window::Usage::UNDEFINED;
@@ -64,6 +73,7 @@ void OcvWidget::setCurrentWindow(const Engine::Window &window) {
 
     m_pEditCharCount->setText(QString::number(obj.take("CharCount").toInt()));
     m_pSpecAndResultMinScore->setSpec(obj.take("MinScore").toDouble());
+    m_pComboBoxCharDirection->setCurrentIndex(obj.take("CharDirection").toInt());
 
     ui.listWidgetRecordId->clear();
     auto strRecordList = obj.take("RecordList").toString();
@@ -127,6 +137,7 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
     QJsonObject json;
     json.insert("CharCount", m_pEditCharCount->text().toInt());
     json.insert("MinScore", m_pSpecAndResultMinScore->getSpec());
+    json.insert("CharDirection", m_pComboBoxCharDirection->currentIndex());
     String strRecordList;
     for (auto recordId : vecRecordId) {
         strRecordList += std::to_string(recordId) + ",";
@@ -270,6 +281,7 @@ bool OcvWidget::_learnOcv(int &recordId) {
 
     stCmd.rectROI = rectROI;
     stCmd.nCharCount = m_pEditCharCount->text().toInt();
+    stCmd.enDirection = static_cast<Vision::PR_DIRECTION>(m_pComboBoxCharDirection->currentIndex());
     Vision::PR_LrnOcv(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {
         System->showMessage(QStringLiteral("学习OCV"), QStringLiteral("学习OCV失败"));
@@ -297,6 +309,7 @@ bool OcvWidget::_inspOcv(const std::vector<Int32> &vecRecordId, bool bShowResult
         return false;
     }
     stCmd.rectROI = rectROI;
+    stCmd.enDirection = static_cast<Vision::PR_DIRECTION>(m_pComboBoxCharDirection->currentIndex());
     Vision::PR_Ocv(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK == stRpy.enStatus)
         pUI->displayImage(stRpy.matResultImg);
