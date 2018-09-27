@@ -7,6 +7,7 @@
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
 #include "../include/IVisionUI.h"
+#include "../include/IData.h"
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../DataModule/QDetectObj.h"
@@ -103,8 +104,8 @@ void HeightDetectWidget::setDefaultValue() {
     m_pEditMinRange->setText("30");
     m_pEditMaxRange->setText("70");
     m_pSpecAndResultAbsHt->setSpec(2000);
-    m_pSpecAndResultMaxHtErr->setSpec(1000);
-    m_pSpecAndResultMinHtErr->setSpec(-1000);
+    m_pSpecAndResultMaxHtErr->setSpec(200);
+    m_pSpecAndResultMinHtErr->setSpec(-200);
     m_pCheckBoxRelHt->setChecked(false);
     m_pSpecAndResultLftRgtRelHt->setEnabled(false);
     m_pSpecAndResultTopBtmRelHt->setEnabled(false);
@@ -146,10 +147,9 @@ void HeightDetectWidget::tryInsp() {
         stCmd.matMask = getGlobalBaseMask(m_currentWindow);
         stCmd.vecRectBases.push_back(calcWinBaseRect(m_currentWindow));
     }
-    else
-    {
+    else {
         auto matImage = pUI->getImage();
-        int nBigImgWidth = matImage.cols / dCombinedImageScale;
+        int nBigImgWidth  = matImage.cols / dCombinedImageScale;
         int nBigImgHeight = matImage.rows / dCombinedImageScale;
 
         for (const auto &window : m_windowGroup.vecWindows) {
@@ -161,7 +161,7 @@ void HeightDetectWidget::tryInsp() {
                 else
                     y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
 
-                auto width = window.width / dResolutionX;
+                auto width  = window.width  / dResolutionX;
                 auto height = window.height / dResolutionY;
                 cv::RotatedRect rrBaseRect(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
                 stCmd.vecRectBases.push_back(rrBaseRect.boundingRect());
@@ -171,7 +171,7 @@ void HeightDetectWidget::tryInsp() {
 
     float fAbsHeight = m_pSpecAndResultAbsHt->getSpec();
     float fMaxHeight = m_pSpecAndResultMaxHtErr->getSpec();
-    float fMinHeigth = m_pSpecAndResultMinHtErr->getSpec();    
+    float fMinHeigth = m_pSpecAndResultMinHtErr->getSpec();
 
     Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
     float height = stRpy.fHeightDiff * MM_TO_UM;
@@ -180,6 +180,12 @@ void HeightDetectWidget::tryInsp() {
     m_pSpecAndResultAbsHt->setResult(height);
     m_pSpecAndResultMaxHtErr->setResult(heightErr > 0 ? heightErr : 0);
     m_pSpecAndResultMinHtErr->setResult(heightErr < 0 ? heightErr : 0);
+
+    if (bGlobalBase) {
+        cv::Mat matDisplayImage = pUI->getImage().clone();
+        matDisplayImage.setTo(cv::Scalar(0, 255, 255), stCmd.matMask);
+        pUI->displayImage(matDisplayImage);
+    }
 
     bool bPassed = (heightErr <= fMaxHeight) && (heightErr >= fMinHeigth);
     if (! bPassed) {
@@ -480,56 +486,40 @@ cv::Mat HeightDetectWidget::getGlobalBaseMask(Engine::Window& window)
     nRn = jsonValue["RnValue"].toInt();
     nTn = jsonValue["TnValue"].toInt();
 
-    auto pColorWidget = m_pParent->getColorWidget();
-    auto pUI = getModule<IVisionUI>(UI_MODEL);
-    cv::Mat matImage = pUI->getImage();
+    auto pData = getModule<IData>(DATA_MODEL);
+    int index = windowBase.lightId - 1;
+    auto vecCombinedBigImage = pData->getCombinedBigImages();
+    cv::Mat matBigImage;
+    if (index >= 0 && index < vecCombinedBigImage.size() && !vecCombinedBigImage[index].empty())
+        matBigImage = vecCombinedBigImage[index];
+    else
+        return cv::Mat();
 
     cv::Rect rectBaseDetectWin = calcWinBaseRect(window);
+    cv::Mat matROI(matBigImage, rectBaseDetectWin);
 
-    cv::Mat matROI(matImage, rectBaseDetectWin);
+    auto pColorWidget = m_pParent->getColorWidget();
     pColorWidget->setImage(matROI);
     pColorWidget->holdColorImage(color, nRn, nTn);
     cv::Mat matMask = pColorWidget->getProcessedImage();
     pColorWidget->releaseColorImage();
 
-    cv::Mat matBigMask = cv::Mat::ones(matImage.size(), CV_8UC1);
-    matBigMask *= Vision::PR_MAX_GRAY_LEVEL;
+    cv::Mat matBigMask = cv::Mat::zeros(matBigImage.size(), CV_8UC1);
     cv::Mat matMaskROI(matBigMask, cv::Rect(rectBaseDetectWin));
     matMask.copyTo(matMaskROI);
 
     return matBigMask;
 }
 
-cv::Rect HeightDetectWidget::calcWinBaseRect(Engine::Window& window)
-{
-    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
-
+cv::Rect HeightDetectWidget::calcWinBaseRect(Engine::Window& window) {
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     cv::Mat matImage = pUI->getImage();
 
-    int nBigImgWidth = matImage.cols / dCombinedImageScale;
-    int nBigImgHeight = matImage.rows / dCombinedImageScale;
-    auto x = window.x / dResolutionX;
-    auto y = window.y / dResolutionY;
-    if (bBoardRotated)
-        x = nBigImgWidth - x;
-    else
-        y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
+    double dBaseScale = m_pEditBaseScale->text().toDouble();
 
-    auto width = window.width / dResolutionX;
-    auto height = window.height / dResolutionY;
-
-    double dBaseScale = m_pEditBaseScale->text().toInt();
-
-    cv::Rect2f rectBase(x, y, width, height);
-    cv::Rect rectBaseDetectWin = CalcUtils::resizeRect(rectBase, cv::Size2f(rectBase.width * dBaseScale, rectBase.height * dBaseScale));
-    if (rectBaseDetectWin.x < 0) rectBaseDetectWin.x = 0;
-    else if ((rectBaseDetectWin.x + rectBaseDetectWin.width) >= matImage.cols) rectBaseDetectWin.width = rectBase.width;
-    if (rectBaseDetectWin.y < 0) rectBaseDetectWin.y = 0;
-    else if ((rectBaseDetectWin.y + rectBaseDetectWin.height) >= matImage.rows) rectBaseDetectWin.height = rectBase.height;
+    auto selctROI = pUI->getSelectedROI();
+    cv::Rect rectBaseDetectWin = CalcUtils::resizeRect(selctROI, cv::Size2f(selctROI.width * dBaseScale, selctROI.height * dBaseScale));
+    CalcUtils::adjustRectROI(rectBaseDetectWin, matImage);
 
     return rectBaseDetectWin;
 }

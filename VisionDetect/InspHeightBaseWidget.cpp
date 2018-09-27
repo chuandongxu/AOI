@@ -60,8 +60,8 @@ void InspHeightBaseWidget::setDefaultValue() {
     m_pEditColor->setText("r:0,g:0,b:0");
     m_pEditMinRange->setText("10");
     m_pEditMaxRange->setText("90");
-    m_pEditRnParam->setText("30");
-    m_pEditTnParam->setText("50");
+    m_pEditRnParam->setText("20");
+    m_pEditTnParam->setText("20");
 }
 
 void InspHeightBaseWidget::tryInsp() {
