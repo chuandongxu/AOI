@@ -298,16 +298,13 @@ void OcvWidget::on_btnEditOcv_clicked() {
             System->showMessage(strTitle, QStringLiteral("Failed to read record data."));
             return;
         }
-
-        if (Engine::Window::Usage::OCV == m_currentWindow.usage) {
-            auto nReturn = Engine::UpdateRecord(nRecordId, recordData);
-            if (nReturn != Engine::OK) {
-                String errorType, errorMessage;
-                Engine::GetErrorDetail(errorType, errorMessage);
-                QString strErrorMsg = QString("Error at UpdateRecord, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str());
-                System->showMessage(strTitle, strErrorMsg);
-                return;
-            }
+        auto nReturn = Engine::UpdateRecord(nRecordId, recordData);
+        if(nReturn != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString strErrorMsg = QString("Error at UpdateRecord, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str());
+            System->showMessage(strTitle, strErrorMsg);
+            return;
         }
 
         System->setTrackInfo(QString("Success to update record %1").arg(nRecordId));
