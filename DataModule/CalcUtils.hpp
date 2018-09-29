@@ -29,6 +29,13 @@ public:
         if ((rect.y + rect.height) > matInput.rows) rect.height = matInput.rows - rect.y;
     }
 
+    template<typename T>
+    static inline bool isRectInRect(const cv::Rect_<T> &rectIn, const cv::Rect_<T> &rectOut) {
+    if (rectOut.contains(rectIn.tl()) && rectOut.contains(rectIn.br()))
+        return true;
+    return false;
+}
+
 private:
     CalcUtils();
     CalcUtils(CalcUtils const &);

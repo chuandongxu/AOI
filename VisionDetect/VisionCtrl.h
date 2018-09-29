@@ -18,7 +18,7 @@ typedef std::vector <std::vector<float>> QResultDataVec;
 class QVLCellEditor;
 class QVLProfileEditor;
 class QDetectObj;
-Q_DECL_EXPORT class VisionCtrl : public QObject
+class VisionCtrl : public QObject
 {
     Q_OBJECT
 

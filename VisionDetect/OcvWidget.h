@@ -23,6 +23,7 @@ public:
 
 private slots:
     void on_btnLrnOcv_clicked();
+    void on_btnEditOcv_clicked();
 
 private:
     bool _learnOcv(int &recordId);

@@ -13,6 +13,7 @@
 #include "../DataModule/QDetectObj.h"
 #include "InspWindowWidget.h"
 #include "../DataModule/CalcUtils.hpp"
+#include "EditOcvRecordDialog.h"
 
 using namespace NFG::AOI;
 using namespace AOI;
@@ -261,10 +262,53 @@ void OcvWidget::on_btnLrnOcv_clicked() {
 
     Binary recordData;
     if (ReadBinaryFile(FormatRecordName(nRecordId), recordData) != 0) {
-        System->showMessage( strTitle, QStringLiteral("Failed to read record data."));
+        System->showMessage(strTitle, QStringLiteral("Failed to read record data."));
         return;
     }
     Engine::AddRecord(nRecordId, recordData);
+}
+
+void OcvWidget::on_btnEditOcv_clicked() {
+    auto selectedItems = ui.listWidgetRecordId->selectedItems();
+    if (selectedItems.size() <= 0)
+         return;
+
+    QString strTitle(QStringLiteral("编辑OCV模板"));
+    int nRecordId = selectedItems[0]->text().toInt();
+    Vision::PR_OCV_RECORD_INFO stOcvRecordInfo;
+    if (Vision::VisionStatus::OK != Vision::PR_GetOcvRecordInfo(nRecordId, &stOcvRecordInfo)) {
+        System->showMessage(strTitle, QStringLiteral("Failed to get OCV record information"));
+        return;
+    }
+
+    EditOcvRecordDialog dialog(this);
+    dialog.setModal(true);
+    dialog.setImage(stOcvRecordInfo.matTmplImg);
+    dialog.setCharRects(stOcvRecordInfo.vecCharRects);
+    auto nReturn = dialog.exec();
+    if (nReturn ==  QDialog::Accepted) {
+        stOcvRecordInfo.vecCharRects = dialog.getCharRects();
+        if (Vision::VisionStatus::OK != Vision::PR_SetOcvRecordInfo(nRecordId, &stOcvRecordInfo)) {
+            System->showMessage(strTitle, QStringLiteral("Failed to update OCV record information"));
+            return;
+        }
+
+        Binary recordData;
+        if (ReadBinaryFile(FormatRecordName(nRecordId), recordData) != 0) {
+            System->showMessage(strTitle, QStringLiteral("Failed to read record data."));
+            return;
+        }
+        auto nReturn = Engine::UpdateRecord(nRecordId, recordData);
+        if(nReturn != Engine::OK) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString strErrorMsg = QString("Error at UpdateRecord, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str());
+            System->showMessage(strTitle, strErrorMsg);
+            return;
+        }
+
+        System->setTrackInfo(QString("Success to update record %1").arg(nRecordId));
+    }
 }
 
 bool OcvWidget::_learnOcv(int &recordId) {
