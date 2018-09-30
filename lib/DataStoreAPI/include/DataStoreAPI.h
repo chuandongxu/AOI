@@ -59,6 +59,7 @@ API_CALL(int)  SetLightGroupCount(Int32 value);
 API_CALL(int)  SetLights(const LightVector &vecLights);
 API_CALL(int)  GetLights(LightVector &vecLights);
 API_CALL(int)  AddRecord(Int32 recordId, Binary recordData);
+API_CALL(int)  UpdateRecord(Int32 recordId, Binary recordData);
 API_CALL(int)  GetRecords(RecordIdDataMap &mapRecordIdData);
 }
 }
