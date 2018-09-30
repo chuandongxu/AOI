@@ -540,7 +540,7 @@ void RoamingScenceManager::render_CoordinaryDisplayText()
 		//glVertex3f(x, y, z);
 		//glVertex3f(x, y - dGraduationLen, z);
 
-		drawString(QString::number(z / AXES_UNIT, 'g', 2), x, y - (double)AXES_LEN / 20 * 1, z, axisGradFont);
+        drawString(QString::number((z + AXES_LEN_Z / 2 + AXES_LEN_Z_OFFSET) / AXES_UNIT, 'g', 2), x, y - (double)AXES_LEN / 20 * 1, z, axisGradFont);
 	}
 
 	for (int xi = 0; xi <= num; xi++)
