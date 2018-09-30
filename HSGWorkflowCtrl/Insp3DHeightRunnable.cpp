@@ -185,9 +185,11 @@ void Insp3DHeightRunnable::_insp3DHeightGlobalBase(const Engine::Window &window)
         m_nImageWidthPixel,
         m_nImageHeightPixel,
         m_dResolutionX,
-        m_dResolutionY);    
+        m_dResolutionY);
     auto rectBase = CalcUtils::resizeRect(rectROI, cv::Size(rectROI.width * baseScale, rectROI.height * baseScale));
-    cv::Mat matColorROI(m_vec2DImages[nImageIndex], rectBase);
+    auto matColorImage = m_vec2DImages[nImageIndex];
+    CalcUtils::adjustRectROI(rectBase, matColorImage);
+    cv::Mat matColorROI(matColorImage, rectBase);
 
     Vision::PR_PICK_COLOR_CMD stPickColorCmd;
     Vision::PR_PICK_COLOR_RPY stPickColorRpy;

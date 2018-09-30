@@ -415,7 +415,7 @@ int QFlowCtrl::_prepareRunData()
     if (nResult != OK) {
         System->showMessage(QStringLiteral("分配Frame"), QStringLiteral("分配Frame失败!"));
         return NOK;
-    }   
+    }
 
     Engine::DeviceVector vecDevice;
     nResult = Engine::GetAllDevices(vecDevice);
