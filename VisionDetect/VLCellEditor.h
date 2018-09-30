@@ -15,78 +15,78 @@ class IVisionUI;
 class QVLMaskEditor;
 class QVLCellEditor : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QVLCellEditor(DataTypeEnum emType, QWidget *parent = Q_NULLPTR);
-	~QVLCellEditor();
+    QVLCellEditor(DataTypeEnum emType, QWidget *parent = Q_NULLPTR);
+    ~QVLCellEditor();
 
 private:
-	IVisionUI* getVisionUI();
+    IVisionUI* getVisionUI();
 
 protected:
-	void closeEvent(QCloseEvent *e);
+    void closeEvent(QCloseEvent *e);
 
 public:
-	void setImage(cv::Mat& matImage);
+    void setImage(cv::Mat& matImage);
 
 protected slots:
-	void onCellTypeChanged(int iIndex);
-	void onCellIndexChanged(int iIndex);
-	void onAddCell();
-	void onDeleteCell();
-	void onSelectCellBitmap();
+    void onCellTypeChanged(int iIndex);
+    void onCellIndexChanged(int iIndex);
+    void onAddCell();
+    void onDeleteCell();
+    void onSelectCellBitmap();
 
-	void onEditCellROI();
-	void onEditCellFrame();
-	void onEditCellLocFrame();
-	void onEditCellLocLearn();
+    void onEditCellROI();
+    void onEditCellFrame();
+    void onEditCellLocFrame();
+    void onEditCellLocLearn();
 
-	void onEditCellBaseFrame();
-	void onEditCellDetectFrame();
+    void onEditCellBaseFrame();
+    void onEditCellDetectFrame();
 
-	void onSearchCell();
+    void onSearchCell();
 
-	void onCellDetectIndexChanged(int iIndex);
-	void onCellBaseIndexChanged(int iIndex);
+    void onCellDetectIndexChanged(int iIndex);
+    void onCellBaseIndexChanged(int iIndex);
 
-	void onAddCellRelation();
-	void onDeleteCellRelation();
+    void onAddCellRelation();
+    void onDeleteCellRelation();
 
-	void onLoadConfigFile();
-	void onSaveConfigFile();
+    void onLoadConfigFile();
+    void onSaveConfigFile();
 
-	void onAlignmentIndexChanged(int iIndex);
-	void onAddBoardAlign();
-	void onDeleteBoardAlign();
+    void onAlignmentIndexChanged(int iIndex);
+    void onAddBoardAlign();
+    void onDeleteBoardAlign();
 
 public:
-	void loadConfigData(int nIndex = 0);
+    void loadConfigData(int nIndex = 0);
 
 private:
-	void initValue();
-	void displayObj();
-	void displayAllObjs();
+    void initValue();
+    void displayObj();
+    void displayAllObjs();
 
-	void updateDBMenu();
-	void refreshDBRelation();
+    void updateDBMenu();
+    void refreshDBRelation();
 
-	void saveMapData();
-	void loadMapData();
+    void saveMapData();
+    void loadMapData();
 
-	void saveDataBase();
-	void loadDataBase();
+    void saveDataBase();
+    void loadDataBase();
 
 private:
-	Ui::QVLCellEditor ui;
-	QGraphicsScene * m_BitmapScene;
+    Ui::QVLCellEditor ui;
+    QGraphicsScene * m_BitmapScene;
 
-	QStandardItemModel m_model;
+    QStandardItemModel m_model;
 
-	QVLMaskEditor *m_pVLMaskEditor;
+    QVLMaskEditor *m_pVLMaskEditor;
 
-	QDetectObj* m_curObj;
-	int m_nObjIndex;
+    QDetectObj* m_curObj;
+    int m_nObjIndex;
 
-	DataTypeEnum m_dataTypeEnum;
+    DataTypeEnum m_dataTypeEnum;
 };

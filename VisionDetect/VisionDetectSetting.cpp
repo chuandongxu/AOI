@@ -16,11 +16,11 @@
 #include "../include/IDlp.h"
 
 VisionDetectSetting::VisionDetectSetting(VisionCtrl* pCtrl, QWidget *parent)
-	: m_pCtrl(pCtrl), QMainWindow(parent)
+    : m_pCtrl(pCtrl), QMainWindow(parent)
 {
-	ui.setupUi(this);	
+    ui.setupUi(this);    
 }
 
 VisionDetectSetting::~VisionDetectSetting()
-{	
+{    
 }

@@ -41,7 +41,7 @@ Insp3DSolderWidget::Insp3DSolderWidget(InspWindowWidget *parent)
     m_pConductorAbsHeightUpLimit = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 0, 5000);
     ui.tableWidget->setCellWidget(CONDUCTOR_ABS_HEIGHT_UP_LIMIT, DATA_COLUMN, m_pConductorAbsHeightUpLimit.get());
 
-    m_pConductorAbsHeightLoLimit = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 0, 5000);
+    m_pConductorAbsHeightLoLimit = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -5000, 0);
     ui.tableWidget->setCellWidget(CONDUCTOR_ABS_HEIGHT_LO_LIMIT, DATA_COLUMN, m_pConductorAbsHeightLoLimit.get());
 
     m_pConductorRelHeightUpLimit = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 0, 5000);
@@ -71,7 +71,7 @@ Insp3DSolderWidget::~Insp3DSolderWidget() {
 void Insp3DSolderWidget::setDefaultValue() {
     m_pConductorAbsHeight->setSpec(500.f);
     m_pConductorAbsHeightUpLimit->setSpec(100.f);
-    m_pConductorAbsHeightLoLimit->setSpec(100.f);
+    m_pConductorAbsHeightLoLimit->setSpec(-100.f);
     m_pConductorRelHeightUpLimit->setSpec(50.f);
     m_pSolderHeightLoLimit->setSpec(150.f);
     m_pSolderHeightRatioLoLimit->setSpec(25);
@@ -152,13 +152,12 @@ void Insp3DSolderWidget::tryInsp() {
         if (vecSubROIs.empty()) {
             System->showMessage(strTitle, QStringLiteral("请选择小检测窗口!"));
             return;
-        }
-
-        auto lastSubROI = vecSubROIs.back();
-        cv::Point2f ptWindowCtr(lastSubROI.x + lastSubROI.width / 2.f, lastSubROI.y + lastSubROI.height / 2.f);
+        }        
 
         nReturn = System->showInteractMessage(strTitle, QStringLiteral("需要自动添加另一个小检测框吗?"));
         if (nReturn == QDialog::Accepted) {
+            auto lastSubROI = vecSubROIs.back();
+            cv::Point2f ptWindowCtr(lastSubROI.x + lastSubROI.width / 2.f, lastSubROI.y + lastSubROI.height / 2.f);
             auto selectedDevice = pUI->getSelectedDevice();
             auto ptCenter = selectedDevice.getWindow().center;
             auto rectDevice = selectedDevice.getWindow().boundingRect();
@@ -177,7 +176,6 @@ void Insp3DSolderWidget::tryInsp() {
         }
         else
         {
-            pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_SELECT_SUB_ROI);
             auto nReturn = System->showInteractMessage(strTitle, QStringLiteral("请拖动鼠标选择另一个小检测窗口"));
             if (nReturn != QDialog::Accepted)
                 return;
@@ -222,8 +220,8 @@ void Insp3DSolderWidget::tryInsp() {
     }
 
     if (stRpy.vecResults.size() >= 2) {
-        float fRelHeight = fabs(stRpy.vecResults[0].fComponentHeight - stRpy.vecResults[1].fComponentHeight);
-        m_pConductorRelHeightUpLimit->setResult(fRelHeight * MM_TO_UM);
+        float fRelHeight = fabs(stRpy.vecResults[0].fComponentHeight - stRpy.vecResults[1].fComponentHeight)* MM_TO_UM;
+        m_pConductorRelHeightUpLimit->setResult(fRelHeight);
     }
 
     m_pSolderHeightLoLimit->setResult(stRpy.vecResults[0].fSolderHeight * MM_TO_UM);
@@ -252,7 +250,7 @@ void Insp3DSolderWidget::confirmWindow(OPERATION enOperation) {
         tryInsp();
         if (!m_bIsTryInspected)
             return;
-    }    
+    }
 
     QJsonObject json;
     json.insert("ConductorAbsHeight", m_pConductorAbsHeight->getSpec());
@@ -357,7 +355,6 @@ void Insp3DSolderWidget::confirmWindow(OPERATION enOperation) {
         if (window.usage == Engine::Window::Usage::HEIGHT_BASE_GLOBAL) {
             windowHeightBase = window;
             bFound = true;
-            break;
         }
     }
 

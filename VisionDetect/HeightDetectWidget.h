@@ -26,7 +26,7 @@ public:
 
 protected slots:
     void on_measureChanged(int index);
-    void on_baseTypeChanged(int index);   
+    void on_baseTypeChanged(int index);
 
     void onRelHtChanged(bool bInsp);
 
@@ -50,6 +50,6 @@ private:
     SpecAndResultWidgetPtr      m_pSpecAndResultMaxHtErr;
     SpecAndResultWidgetPtr      m_pSpecAndResultMinHtErr;
     std::unique_ptr<QCheckBox>  m_pCheckBoxRelHt;
-    SpecAndResultWidgetPtr      m_pSpecAndResultLefRigRelHt;
-    SpecAndResultWidgetPtr      m_pSpecAndResultTopBomRelHt;
+    SpecAndResultWidgetPtr      m_pSpecAndResultLftRgtRelHt;
+    SpecAndResultWidgetPtr      m_pSpecAndResultTopBtmRelHt;
 };

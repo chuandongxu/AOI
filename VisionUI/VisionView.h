@@ -15,6 +15,7 @@
 #include "../DataModule/QDetectObj.h"
 #include "VisionViewStruct.hpp"
 #include "VisionViewWidget.h"
+#include "VisionViewConfigDialog.h"
 
 using namespace AOI;
 
@@ -84,6 +85,7 @@ private slots:
     void showColorSpace();
 
     void showJoystickWidget();
+    void showConfig();
 
 private:
     void init();
@@ -117,10 +119,10 @@ private:
     std::unique_ptr<QAction> m_pCopy;
     std::unique_ptr<QAction> m_pPaste;
 
-    QAction *showLightAct;
-    QAction *showColorSpaceAct;
-
-    QAction *showJoystick;
+    QAction *m_pActionShowLightAct;
+    QAction *m_pActionShowColorSpaceAct;
+    QAction *m_pActionShowJoystick;
+    QAction *m_pActionShowConfig;
 
 private:
     void setButtonsEnable(bool flag);
@@ -135,4 +137,5 @@ private:
 
     QWidget* m_pLightWidget;
     QWidget* m_pColorWidget;
+    std::unique_ptr<VisionViewConfigDialog> m_pConfigDialog;
 };

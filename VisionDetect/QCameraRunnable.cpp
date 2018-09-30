@@ -8,12 +8,12 @@
 #include <qthreadpool.h>
 
 QCameraRunnable::QCameraRunnable(SysCalibrationView* pCaliView)
-	: m_pCaliView(pCaliView), QRunnable()
+    : m_pCaliView(pCaliView), QRunnable()
 {
-	m_exit = false;
-	m_bRunning = false;
-	m_bCapturEnable = false;
-	m_bCapturing = false;
+    m_exit = false;
+    m_bRunning = false;
+    m_bCapturEnable = false;
+    m_bCapturing = false;
 }
 
 QCameraRunnable::~QCameraRunnable()
@@ -22,86 +22,86 @@ QCameraRunnable::~QCameraRunnable()
 
 void QCameraRunnable::quit()
 {
-	m_exit = true;
+    m_exit = true;
 }
 
 bool QCameraRunnable::isRunning()
 {
-	return m_bRunning;
+    return m_bRunning;
 }
 
 void QCameraRunnable::startCapture()
 {
-	m_bCapturEnable = true;
+    m_bCapturEnable = true;
 }
 
 void QCameraRunnable::stopCapture()
 {
-	m_bCapturEnable = false;
+    m_bCapturEnable = false;
 }
 
 bool QCameraRunnable::isCapturing()
 {
-	return m_bCapturing;
+    return m_bCapturing;
 }
 
 void QCameraRunnable::run()
 {
-	System->setTrackInfo(QString(QStringLiteral("视频采集启动成功...")));
-	
-	m_bRunning = true;
-	while (!isExit())
-	{
-		QThread::msleep(200);
+    System->setTrackInfo(QString(QStringLiteral("视频采集启动成功...")));
+    
+    m_bRunning = true;
+    while (!isExit())
+    {
+        QThread::msleep(200);
 
-		if (!waitStartBtn())continue;
-		if (isExit())break;
+        if (!waitStartBtn())continue;
+        if (isExit())break;
 
-		if (!captureImages())continue;
-		if (isExit())break;
+        if (!captureImages())continue;
+        if (isExit())break;
 
-		if (!waitCheckDone())continue;
-		if (isExit())break;
-	}
-	m_bRunning = false;
-	
-	System->setTrackInfo(QString(QStringLiteral("视频采集已停止...")));
+        if (!waitCheckDone())continue;
+        if (isExit())break;
+    }
+    m_bRunning = false;
+    
+    System->setTrackInfo(QString(QStringLiteral("视频采集已停止...")));
 }
 
 bool QCameraRunnable::waitStartBtn()
 {
-	while (1)
-	{
-		if (m_bCapturEnable)
-		{
-			m_bCapturing = true;
-			return true;
-		}
+    while (1)
+    {
+        if (m_bCapturEnable)
+        {
+            m_bCapturing = true;
+            return true;
+        }
 
-		if (isExit()) return false;
-		QThread::msleep(50);
-	}
+        if (isExit()) return false;
+        QThread::msleep(50);
+    }
 
-	return true;
+    return true;
 }
 
 bool QCameraRunnable::captureImages()
 {
-	if (m_pCaliView)
-	{
-		m_pCaliView->guideDisplayImages();
-	}
-	
-	return true;
+    if (m_pCaliView)
+    {
+        m_pCaliView->guideDisplayImages();
+    }
+    
+    return true;
 }
 
 bool QCameraRunnable::waitCheckDone()
 {
-	m_bCapturing = false;
-	return true;
+    m_bCapturing = false;
+    return true;
 }
 
 bool QCameraRunnable::isExit()
 {
-	return m_exit;
+    return m_exit;
 }

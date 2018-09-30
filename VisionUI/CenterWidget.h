@@ -16,18 +16,18 @@ class QCenterWidget : public QFrame
 public:
     explicit QCenterWidget(QWidget *parent = 0);
 
-	void setCenterWidget(QWidget * w);
+    void setCenterWidget(QWidget * w);
 protected:
-	void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event);
 
 protected:
-	QWidget * m_widget;
+    QWidget * m_widget;
 
-	QHBoxLayout * m_subVLayout;
+    QHBoxLayout * m_subVLayout;
     QVBoxLayout * m_mainLayout;
 
-	QRightWidget * m_rightWidget;
-	QHBoxLayout * m_rightLayout;
+    QRightWidget * m_rightWidget;
+    QHBoxLayout * m_rightLayout;
 };
 
 #endif // CENTERWIDGET_H

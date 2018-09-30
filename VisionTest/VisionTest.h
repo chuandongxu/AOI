@@ -9,11 +9,11 @@
 class VisionTest : public QModuleBase, public IVisionTest
 {
 public:
-	VisionTest(int id, const QString &name);
-	~VisionTest();
+    VisionTest(int id, const QString &name);
+    ~VisionTest();
 
-	virtual void addSettingWiddget(QTabWidget * tabWidget);
+    virtual void addSettingWiddget(QTabWidget * tabWidget);
 
 private:
-	VisionTestCtrl m_ctrl;
+    VisionTestCtrl m_ctrl;
 };

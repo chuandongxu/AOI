@@ -12,14 +12,14 @@ using namespace AOI;
 class ScanImageThread : public QThread
 {
 public:
-	ScanImageThread(
+    ScanImageThread(
         const Vision::VectorOfVectorOfPoint2f &vecVecFrameCtr,
         float                                  fOverlapUmX,
         float                                  fOverlapUmY,
         Vision::PR_SCAN_IMAGE_DIR              enScanDir);
-	~ScanImageThread();
+    ~ScanImageThread();
 
-	void quit();
+    void quit();
     static bool captureAllImages(QVector<cv::Mat>& imageMats);
     Vision::VectorOfMat getCombinedBigImages() const { return m_vecCombinedBigImages; }
     cv::Mat getCombinedBigHeight() const { return m_matCombinedBigHeight; }
@@ -27,22 +27,22 @@ public:
 
 protected:
     bool preRunning();
-	void run() override;
+    void run() override;
     bool moveToCapturePos(float fPosX, float fPosY);
-	bool mergeImages(QString& szImagePath);
-	bool isExit();
+    bool mergeImages(QString& szImagePath);
+    bool isExit();
 
 private:
     Vision::VectorOfMat _generate2DImages(const Vision::VectorOfMat &vecInputImages);
 
     QString generateImagePath();
-	void saveImages(const QString& szImagePath, int nRowIndex, int nColIndex, int nCountOfImgPerRow, const QVector<cv::Mat>& imageMats);
-	void saveCombineImages(const QString& szImagePath, const QVector<cv::Mat>& imageMats);
+    void saveImages(const QString& szImagePath, int nRowIndex, int nColIndex, int nCountOfImgPerRow, const QVector<cv::Mat>& imageMats);
+    void saveCombineImages(const QString& szImagePath, const QVector<cv::Mat>& imageMats);
 
 private:
-	std::atomic<bool>               m_exit;
-	
-	cv::Mat                         m_3DMatHeight;
+    std::atomic<bool>               m_exit;
+    
+    cv::Mat                         m_3DMatHeight;
 
     float                           m_fOverlapUmX;
     float                           m_fOverlapUmY;

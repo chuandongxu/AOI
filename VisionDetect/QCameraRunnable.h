@@ -7,31 +7,31 @@ class SysCalibrationView;
 class QCameraRunnable : public QRunnable
 {
 public:
-	QCameraRunnable(SysCalibrationView* pCaliView);
-	~QCameraRunnable();
+    QCameraRunnable(SysCalibrationView* pCaliView);
+    ~QCameraRunnable();
 
-	void quit();	
-	bool isRunning();
+    void quit();    
+    bool isRunning();
 
-	void startCapture();
-	void stopCapture();	
-	bool isCapturing();
+    void startCapture();
+    void stopCapture();    
+    bool isCapturing();
 
 protected:
-	void run();
+    void run();
 
-	bool waitStartBtn();
-	bool captureImages();
-	bool waitCheckDone();
+    bool waitStartBtn();
+    bool captureImages();
+    bool waitCheckDone();
 
-	bool isExit();
+    bool isExit();
 
 private:
-	bool m_exit;
-	bool m_bRunning;
-	bool m_bCapturEnable;
-	bool m_bCapturing;
-	//QMutex m_mutex;
+    bool m_exit;
+    bool m_bRunning;
+    bool m_bCapturEnable;
+    bool m_bCapturing;
+    //QMutex m_mutex;
 
-	SysCalibrationView* m_pCaliView;
+    SysCalibrationView* m_pCaliView;
 };

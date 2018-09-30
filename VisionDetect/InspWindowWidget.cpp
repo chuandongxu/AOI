@@ -647,7 +647,6 @@ void InspWindowWidget::on_btnTryInsp_clicked() {
 }
 
 void InspWindowWidget::_tryInspHeight() {
-
     bool bUseGloablBase = false;
     Engine::Window window = m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->getCurrentWindow();
     if (window.usage == Engine::Window::Usage::HEIGHT_MEASURE)
@@ -659,63 +658,65 @@ void InspWindowWidget::_tryInspHeight() {
 
         if (parse_doucment.isObject()) {
             QJsonObject obj = parse_doucment.object();
-            bUseGloablBase = obj.take("GlobalBase").toBool();         
+            bUseGloablBase = obj.take("GlobalBase").toBool();
         }
     }
 
-    QString strTitle(QStringLiteral("高度检测"));
-    auto ptrCurrentItem = ui.treeWidget->currentItem();
-    if (!ptrCurrentItem) {
-        System->showMessage(strTitle, QStringLiteral("请先创建高度检测框组, 组里面包括高度检测框以及基准框."));
-        return;
-    }
-
-    auto groupId = 0;
-    if (ptrCurrentItem->type() == TREE_ITEM_GROUP)
-        groupId = ptrCurrentItem->data(0, Qt::UserRole).toInt();
-    else if (ptrCurrentItem->type() == TREE_ITEM_WINDOW) {
-        auto pParent = ptrCurrentItem->parent();
-        if (pParent != NULL)
-            groupId = pParent->data(0, Qt::UserRole).toInt();
-        else {
-            if (!bUseGloablBase)
-            {
-                System->showMessage(strTitle, QStringLiteral("请选择一个已经确定的高度检测框."));
-                return;
-            }         
+    if (!bUseGloablBase) {
+        QString strTitle(QStringLiteral("高度检测"));
+        auto ptrCurrentItem = ui.treeWidget->currentItem();
+        if (!ptrCurrentItem) {
+            System->showMessage(strTitle, QStringLiteral("请先创建高度检测框组, 组里面包括高度检测框以及基准框."));
+            return;
         }
-    }
 
-    Engine::WindowGroup windowGroup;
-    auto result = Engine::GetGroupWindows(groupId, windowGroup);
-    if (Engine::OK != result) {
-        String errorType, errorMessage;
-        Engine::GetErrorDetail(errorType, errorMessage);
-        QString strMsg(QStringLiteral("读取检测框组失败, 错误消息: "));
-        strMsg += errorMessage.c_str();
-        System->showMessage(strTitle, strMsg);
-        return;
-    }
+        auto groupId = 0;
+        if (ptrCurrentItem->type() == TREE_ITEM_GROUP)
+            groupId = ptrCurrentItem->data(0, Qt::UserRole).toInt();
+        else if (ptrCurrentItem->type() == TREE_ITEM_WINDOW) {
+            auto pParent = ptrCurrentItem->parent();
+            if (pParent != NULL)
+                groupId = pParent->data(0, Qt::UserRole).toInt();
+            else {
+                if (!bUseGloablBase)
+                {
+                    System->showMessage(strTitle, QStringLiteral("请选择一个已经确定的高度检测框."));
+                    return;
+                }
+            }
+        }
 
-    bool bHasCheckWindow = false, bHasBaseWindow = false;
-    for (const auto &window : windowGroup.vecWindows) {
-        if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage)
-            bHasCheckWindow = true;
-        else if (Engine::Window::Usage::HEIGHT_BASE == window.usage)
-            bHasBaseWindow = true;
-    }
+        Engine::WindowGroup windowGroup;
+        auto result = Engine::GetGroupWindows(groupId, windowGroup);
+        if (Engine::OK != result) {
+            String errorType, errorMessage;
+            Engine::GetErrorDetail(errorType, errorMessage);
+            QString strMsg(QStringLiteral("读取检测框组失败, 错误消息: "));
+            strMsg += errorMessage.c_str();
+            System->showMessage(strTitle, strMsg);
+            return;
+        }
 
-    if (!bHasCheckWindow && !bUseGloablBase) {
-        System->showMessage(strTitle, QStringLiteral("分组内没有高度检测框!"));
-        return;
-    }
+        bool bHasCheckWindow = false, bHasBaseWindow = false;
+        for (const auto &window : windowGroup.vecWindows) {
+            if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage)
+                bHasCheckWindow = true;
+            else if (Engine::Window::Usage::HEIGHT_BASE == window.usage)
+                bHasBaseWindow = true;
+        }
 
-    if (!bHasBaseWindow && !bUseGloablBase) {
-        System->showMessage(strTitle, QStringLiteral("分组内没有高度基准框!"));
-        return;
-    }
+        if (!bHasCheckWindow && !bUseGloablBase) {
+            System->showMessage(strTitle, QStringLiteral("分组内没有高度检测框!"));
+            return;
+        }
 
-    m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setWindowGroup(windowGroup);
+        if (!bHasBaseWindow && !bUseGloablBase) {
+            System->showMessage(strTitle, QStringLiteral("分组内没有高度基准框!"));
+            return;
+        }
+        m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setWindowGroup(windowGroup);
+    }
+    
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->tryInsp();
 }
 

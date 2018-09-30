@@ -8,31 +8,31 @@
 
 class QWorkFlowWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QWorkFlowWidget(QWidget *parent = 0);
-	~QWorkFlowWidget();
+    QWorkFlowWidget(QWidget *parent = 0);
+    ~QWorkFlowWidget();
 
 protected slots:
-	void onCheckerStateChange(const QVariantList &vars);
-	void onBarCodeChange(const QVariantList &vars);
-	void onChangeUser(const QVariantList &vars);
-	
-	
+    void onCheckerStateChange(const QVariantList &vars);
+    void onBarCodeChange(const QVariantList &vars);
+    void onChangeUser(const QVariantList &vars);
+    
+    
 protected:
-	void initStationState();
+    void initStationState();
 
-	void setCheckerState1(int iEvent,double data,double data2);	
+    void setCheckerState1(int iEvent,double data,double data2);    
 
-	void offset(QWidget *w,int x,int y);
-	
-	void timerEvent(QTimerEvent *event);
+    void offset(QWidget *w,int x,int y);
+    
+    void timerEvent(QTimerEvent *event);
 private:
-	Ui::QWorkFlowWidget ui;
-	int m_nTimerID;
-	QHBoxLayout * m_subVLayout;
-	QVBoxLayout * m_mainLayout;
+    Ui::QWorkFlowWidget ui;
+    int m_nTimerID;
+    QHBoxLayout * m_subVLayout;
+    QVBoxLayout * m_mainLayout;
 };
 
 #endif // WORKFLOWWIDGET_H

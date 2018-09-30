@@ -21,6 +21,21 @@ public:
             szNew.width, szNew.height );
     }
 
+    template<typename T>
+    static void inline adjustRectROI(cv::Rect_<T> &rect, const cv::Mat &matInput) {
+        if (rect.x < 0) rect.x = 0;
+        if (rect.y < 0) rect.y = 0;
+        if ((rect.x + rect.width)  > matInput.cols) rect.width  = matInput.cols - rect.x;
+        if ((rect.y + rect.height) > matInput.rows) rect.height = matInput.rows - rect.y;
+    }
+
+    template<typename T>
+    static inline bool isRectInRect(const cv::Rect_<T> &rectIn, const cv::Rect_<T> &rectOut) {
+    if (rectOut.contains(rectIn.tl()) && rectOut.contains(rectIn.br()))
+        return true;
+    return false;
+}
+
 private:
     CalcUtils();
     CalcUtils(CalcUtils const &);

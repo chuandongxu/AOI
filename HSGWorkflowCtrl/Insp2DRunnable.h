@@ -35,6 +35,7 @@ public:
     ~Insp2DRunnable();
     DeviceInspWindowVector getDeviceInspWindow() const { return m_vecDeviceWindows; };
     cv::Mat get3DHeight() const { return m_mat3DHeight; }
+    Vision::VectorOfMat get2DImages() const { return m_vec2DImages; }
 
 protected:
     virtual void run() override;

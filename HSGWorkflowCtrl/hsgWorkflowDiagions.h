@@ -6,25 +6,25 @@
 
 class QWorkflowDiagions : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QWorkflowDiagions(QWidget *parent = 0);
-	~QWorkflowDiagions();
+    QWorkflowDiagions(QWidget *parent = 0);
+    ~QWorkflowDiagions();
 
 protected slots:
-	void onOutLine(int state);
-	void onRunBtn();
-	void onStopBtn();
-	void onRestBtn();
-	void onEmStopBtn();
+    void onOutLine(int state);
+    void onRunBtn();
+    void onStopBtn();
+    void onRestBtn();
+    void onEmStopBtn();
 
-	void onLeftStart();
-	void onRightStart();
-	void onPacketout();
+    void onLeftStart();
+    void onRightStart();
+    void onPacketout();
 
 private:
-	Ui::QWorkflowDiagions ui;
+    Ui::QWorkflowDiagions ui;
 };
 
 #endif // WORKFLOWDIAGIONS_H

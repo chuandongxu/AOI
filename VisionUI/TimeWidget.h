@@ -6,14 +6,14 @@
 
 class QTimeWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QTimeWidget(QWidget *parent = 0);
-	~QTimeWidget();
+    QTimeWidget(QWidget *parent = 0);
+    ~QTimeWidget();
 
 private:
-	Ui::QTimeWidget ui;
+    Ui::QTimeWidget ui;
 };
 
 #endif // TIMEWIDGET_H

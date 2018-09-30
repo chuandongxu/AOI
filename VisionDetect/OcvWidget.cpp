@@ -13,6 +13,7 @@
 #include "../DataModule/QDetectObj.h"
 #include "InspWindowWidget.h"
 #include "../DataModule/CalcUtils.hpp"
+#include "EditOcvRecordDialog.h"
 
 using namespace NFG::AOI;
 using namespace AOI;
@@ -21,6 +22,7 @@ enum BASIC_PARAM
 {
     CHAR_COUNT,
     MIN_SCORE,
+    CHAR_DIRECTION,
 };
 
 OcvWidget::OcvWidget(InspWindowWidget *parent)
@@ -34,6 +36,13 @@ OcvWidget::OcvWidget(InspWindowWidget *parent)
     m_pSpecAndResultMinScore = std::make_unique<SpecAndResultWidget>(ui.tableWidget, 40, 100);
     ui.tableWidget->setCellWidget(MIN_SCORE, DATA_COLUMN, m_pSpecAndResultMinScore.get());
 
+    m_pComboBoxCharDirection = std::make_unique<QComboBox>(this);
+    m_pComboBoxCharDirection->addItem(QStringLiteral("从下往上"));
+    m_pComboBoxCharDirection->addItem(QStringLiteral("从上往下"));
+    m_pComboBoxCharDirection->addItem(QStringLiteral("从右往左"));
+    m_pComboBoxCharDirection->addItem(QStringLiteral("从左往右"));
+    ui.tableWidget->setCellWidget(CHAR_DIRECTION, DATA_COLUMN, m_pComboBoxCharDirection.get());
+
     setDefaultValue();
 }
 
@@ -44,6 +53,7 @@ void OcvWidget::setDefaultValue() {
     m_pEditCharCount->setText(QString::number(4));
     m_pSpecAndResultMinScore->setSpec(60);
     ui.listWidgetRecordId->clear();
+    m_pComboBoxCharDirection->setCurrentIndex(Vision::ToInt32(Vision::PR_DIRECTION::RIGHT));
     m_bIsTryInspected = false;
 
     m_currentWindow.usage = Engine::Window::Usage::UNDEFINED;
@@ -64,6 +74,7 @@ void OcvWidget::setCurrentWindow(const Engine::Window &window) {
 
     m_pEditCharCount->setText(QString::number(obj.take("CharCount").toInt()));
     m_pSpecAndResultMinScore->setSpec(obj.take("MinScore").toDouble());
+    m_pComboBoxCharDirection->setCurrentIndex(obj.take("CharDirection").toInt());
 
     ui.listWidgetRecordId->clear();
     auto strRecordList = obj.take("RecordList").toString();
@@ -127,6 +138,7 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
     QJsonObject json;
     json.insert("CharCount", m_pEditCharCount->text().toInt());
     json.insert("MinScore", m_pSpecAndResultMinScore->getSpec());
+    json.insert("CharDirection", m_pComboBoxCharDirection->currentIndex());
     String strRecordList;
     for (auto recordId : vecRecordId) {
         strRecordList += std::to_string(recordId) + ",";
@@ -164,15 +176,6 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
     window.deviceId = pUI->getSelectedDevice().getId();
     window.angle = 0;
 
-    QDetectObj detectObj(window.Id, window.name.c_str());
-    cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
-    if (bBoardRotated)
-        ptCenter.x = nBigImgWidth  - ptCenter.x;
-    else
-        ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
-    detectObj.setFrame(cv::RotatedRect(ptCenter, rectROI.size(), window.angle));
-    auto vecDetectObjs = pUI->getDetectObjs();
-
     int result = Engine::OK;
     if (OPERATION::ADD == enOperation) {
         window.deviceId = pUI->getSelectedDevice().getId();
@@ -198,8 +201,6 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
             }
             Engine::AddRecord(recordId, recordData);
         }
-
-        vecDetectObjs.push_back(detectObj);
     }
     else {
         result = Engine::UpdateWindow(window);
@@ -211,14 +212,9 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
         }
         else
             System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
-
-        auto iter = std::find_if(vecDetectObjs.begin(), vecDetectObjs.end(), [window](const QDetectObj& obj) { return window.Id == obj.getID(); });
-        if (iter != vecDetectObjs.end()) {
-            *iter = detectObj;
-        }
     }
 
-    pUI->setDetectObjs(vecDetectObjs);
+    updateWindowToUI(window, enOperation);
     m_pParent->updateInspWindowList();
 }
 
@@ -266,10 +262,56 @@ void OcvWidget::on_btnLrnOcv_clicked() {
 
     Binary recordData;
     if (ReadBinaryFile(FormatRecordName(nRecordId), recordData) != 0) {
-        System->showMessage( strTitle, QStringLiteral("Failed to read record data."));
+        System->showMessage(strTitle, QStringLiteral("Failed to read record data."));
         return;
     }
     Engine::AddRecord(nRecordId, recordData);
+}
+
+void OcvWidget::on_btnEditOcv_clicked() {
+    auto selectedItems = ui.listWidgetRecordId->selectedItems();
+    if (selectedItems.size() <= 0)
+         return;
+
+    QString strTitle(QStringLiteral("编辑OCV模板"));
+    int nRecordId = selectedItems[0]->text().toInt();
+    Vision::PR_OCV_RECORD_INFO stOcvRecordInfo;
+    if (Vision::VisionStatus::OK != Vision::PR_GetOcvRecordInfo(nRecordId, &stOcvRecordInfo)) {
+        System->showMessage(strTitle, QStringLiteral("Failed to get OCV record information"));
+        return;
+    }
+
+    EditOcvRecordDialog dialog(this);
+    dialog.setModal(true);
+    dialog.setImage(stOcvRecordInfo.matTmplImg);
+    dialog.setCharRects(stOcvRecordInfo.vecCharRects);
+    auto nReturn = dialog.exec();
+    if (nReturn ==  QDialog::Accepted) {
+        stOcvRecordInfo.vecCharRects = dialog.getCharRects();
+        if (Vision::VisionStatus::OK != Vision::PR_SetOcvRecordInfo(nRecordId, &stOcvRecordInfo)) {
+            System->showMessage(strTitle, QStringLiteral("Failed to update OCV record information"));
+            return;
+        }
+
+        Binary recordData;
+        if (ReadBinaryFile(FormatRecordName(nRecordId), recordData) != 0) {
+            System->showMessage(strTitle, QStringLiteral("Failed to read record data."));
+            return;
+        }
+
+        if (Engine::Window::Usage::OCV == m_currentWindow.usage) {
+            auto nReturn = Engine::UpdateRecord(nRecordId, recordData);
+            if (nReturn != Engine::OK) {
+                String errorType, errorMessage;
+                Engine::GetErrorDetail(errorType, errorMessage);
+                QString strErrorMsg = QString("Error at UpdateRecord, type = %1, msg= %2").arg(errorType.c_str()).arg(errorMessage.c_str());
+                System->showMessage(strTitle, strErrorMsg);
+                return;
+            }
+        }
+
+        System->setTrackInfo(QString("Success to update record %1").arg(nRecordId));
+    }
 }
 
 bool OcvWidget::_learnOcv(int &recordId) {
@@ -286,6 +328,7 @@ bool OcvWidget::_learnOcv(int &recordId) {
 
     stCmd.rectROI = rectROI;
     stCmd.nCharCount = m_pEditCharCount->text().toInt();
+    stCmd.enDirection = static_cast<Vision::PR_DIRECTION>(m_pComboBoxCharDirection->currentIndex());
     Vision::PR_LrnOcv(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {
         System->showMessage(QStringLiteral("学习OCV"), QStringLiteral("学习OCV失败"));
@@ -313,13 +356,15 @@ bool OcvWidget::_inspOcv(const std::vector<Int32> &vecRecordId, bool bShowResult
         return false;
     }
     stCmd.rectROI = rectROI;
+    stCmd.enDirection = static_cast<Vision::PR_DIRECTION>(m_pComboBoxCharDirection->currentIndex());
     Vision::PR_Ocv(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK == stRpy.enStatus)
         pUI->displayImage(stRpy.matResultImg);
     if (bShowResult) {
         m_pSpecAndResultMinScore->setResult(stRpy.fOverallScore);
         QString strMsg;
-        strMsg.sprintf("Inspect Status %d, overall score(%f)", Vision::ToInt32(stRpy.enStatus), stRpy.fOverallScore);
+        strMsg.sprintf("Inspect Status %d, %s, overall score(%f)", Vision::ToInt32(stRpy.enStatus),
+            Vision::VisionStatus::OK == stRpy.enStatus ? "pass" : "not pass", stRpy.fOverallScore);
         QMessageBox::information(this, "Alignment", strMsg);
     }
 

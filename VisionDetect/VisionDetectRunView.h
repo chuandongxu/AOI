@@ -15,146 +15,146 @@ class QDlpMTFRsltDisplay;
 class IVisionUI;
 class VisionDetectRunView : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	VisionDetectRunView(VisionCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
-	~VisionDetectRunView();
+    VisionDetectRunView(VisionCtrl* pCtrl, QWidget *parent = Q_NULLPTR);
+    ~VisionDetectRunView();
 
 public:
-	QWidget* getCellEditorView();
+    QWidget* getCellEditorView();
 
 private:
-	void initUI();
-	void initLimits();
+    void initUI();
+    void initLimits();
 
-	IVisionUI* getVisionUI();
+    IVisionUI* getVisionUI();
 
 private slots:
-	void onObjEvent(const QVariantList &data);
+    void onObjEvent(const QVariantList &data);
 
-	void onSrhLineDirIndexChanged(int iIndex);
-	void onSrhLineROI();
-	void onSrhLineDetect();
-	void onSaveDetectParam();
+    void onSrhLineDirIndexChanged(int iIndex);
+    void onSrhLineROI();
+    void onSrhLineDetect();
+    void onSaveDetectParam();
 
-	void onTmpMatchObjMotionIndexChanged(int iIndex);
-	void onSaveTmpMatchParam();
-	void onTmpMatchOpen();
-	void onTmpMatchSelectROI();
-	void onTmpMatchDeleteROI();
-	void onTmpMatchSelectDetect();
-	void onTmpMatchDetect();
-	void onComBoxSubPixel(int iState);
-
-
-	void onSaveDetectEdgeParams();
-	void onDetectEdgeROI();
-	void onDetectEdge();
-
-	void onSrhCircleROI();
-	void onSrhCircleDetect();
+    void onTmpMatchObjMotionIndexChanged(int iIndex);
+    void onSaveTmpMatchParam();
+    void onTmpMatchOpen();
+    void onTmpMatchSelectROI();
+    void onTmpMatchDeleteROI();
+    void onTmpMatchSelectDetect();
+    void onTmpMatchDetect();
+    void onComBoxSubPixel(int iState);
 
 
-	void onDetectGrayScaleOpen();
-	void onSaveDetectGrayScaleParams();
-	void onDetectGrayScale();
+    void onSaveDetectEdgeParams();
+    void onDetectEdgeROI();
+    void onDetectEdge();
 
-	// 3D Calculation
-	void onDLPIndexChanged(int iState);	
+    void onSrhCircleROI();
+    void onSrhCircleDetect();
 
-	void on3DDetectOpen();
-	void on3DDetect();
-	void onPhaseShiftValueChanged(double dValue);
-	void on3DDetectMerge();
-	void onSave3DDetectParams();
-	void on3DHeightDetect();
-	void onSaveDataParams();
-	void on3DHeightCellObjEdit();
 
-	void on3DProfileEdit();
+    void onDetectGrayScaleOpen();
+    void onSaveDetectGrayScaleParams();
+    void onDetectGrayScale();
 
-	// MTF calculation	
-	void onEditMTFLoc1();
-	void onEditMTFLocLearn1();
-	void onSearchMTFLoc1();
-	void onEditMTFDetect1();
-	void onEditMTFLoc2();
-	void onEditMTFLocLearn2();
-	void onSearchMTFLoc2();
-	void onEditMTFDetect2();
-	void onCalcMTF();
-	void onLoadMTFFile();
-	void onSaveMTFFile();
+    // 3D Calculation
+    void onDLPIndexChanged(int iState);    
 
-	// DLP MTF Detect
-	void onDlpMTFOpen();
-	void onSaveDlpMTFParams();
-	void onDetectDlpMTF();
+    void on3DDetectOpen();
+    void on3DDetect();
+    void onPhaseShiftValueChanged(double dValue);
+    void on3DDetectMerge();
+    void onSave3DDetectParams();
+    void on3DHeightDetect();
+    void onSaveDataParams();
+    void on3DHeightCellObjEdit();
 
-	// DLP Pattern distortion Detect
-	void onDlpPDOpen();
-	void onDetectDlpPD();
+    void on3DProfileEdit();
 
-private:
-	void displayMTFRect();
+    // MTF calculation    
+    void onEditMTFLoc1();
+    void onEditMTFLocLearn1();
+    void onSearchMTFLoc1();
+    void onEditMTFDetect1();
+    void onEditMTFLoc2();
+    void onEditMTFLocLearn2();
+    void onSearchMTFLoc2();
+    void onEditMTFDetect2();
+    void onCalcMTF();
+    void onLoadMTFFile();
+    void onSaveMTFFile();
 
-	double convertToPixel(double umValue);
-	double convertToUm(double pixel);
+    // DLP MTF Detect
+    void onDlpMTFOpen();
+    void onSaveDlpMTFParams();
+    void onDetectDlpMTF();
 
-	cv::Mat drawHeightGrid(const cv::Mat &matHeight, int nGridRow, int nGridCol);
-	cv::Mat drawHeightGrid2(const cv::Mat &matHeight, int nGridRow, int nGridCol);
-	cv::Mat drawHeightGray(const cv::Mat &matHeight);
-
-	void saveMTFData();
-	void loadMTFData();
-
-	cv::Point2f rotateByPoint(cv::Point2f ptSrc, cv::Point2f ptCenter, double angle);
-
-	bool convertToGrayImage(QString& szFilePath, cv::Mat &matGray);
-	bool readImages(QString& szFilePath, AOI::Vision::VectorOfMat& matImgs);
-
-	void updatePhaseShift(double dValue);
+    // DLP Pattern distortion Detect
+    void onDlpPDOpen();
+    void onDetectDlpPD();
 
 private:
-	Ui::VisionDetectRunView ui;
-	int m_nLevel;
-	VisionCtrl* m_pCtrl;
-	QVLMaskEditor *m_pVLMaskEditor;
-	QVLCellEditor *m_pVLCellObjEditor;
-	QVLProfileEditor *m_pVLProflieEditor;
+    void displayMTFRect();
 
-	QGraphicsScene * m_TmpMatchScene;
-	cv::Mat m_tmpMatchImg;
-	cv::Mat m_tmpMatchROI;
-	cv::Rect m_tmpMatchRect;
-	int m_tmpRecordID;
+    double convertToPixel(double umValue);
+    double convertToUm(double pixel);
 
-	cv::Rect m_detectEdgeROI;
-	cv::Mat m_detectEdgeImg;
-	cv::Rect m_srhCircleROI;
+    cv::Mat drawHeightGrid(const cv::Mat &matHeight, int nGridRow, int nGridCol);
+    cv::Mat drawHeightGrid2(const cv::Mat &matHeight, int nGridRow, int nGridCol);
+    cv::Mat drawHeightGray(const cv::Mat &matHeight);
 
-	QStringList m_detectGrayScaleFiles;
+    void saveMTFData();
+    void loadMTFData();
 
-	int m_nImageRow;
-	int m_nImageCol;
-	cv::Mat m_3DMatHeightMerge;
-	QVector<cv::Mat> m_3DMatHeights;
+    cv::Point2f rotateByPoint(cv::Point2f ptSrc, cv::Point2f ptCenter, double angle);
 
-	QGraphicsScene * m_TmpMatchMTFScene1;
-	QGraphicsScene * m_TmpMatchMTFScene2;
-	int m_nMTFLocRecord1;
-	int m_nMTFLocRecord2;
-	cv::Rect m_MTFLocROI1;
-	cv::Mat m_MTFRtImage;
-	cv::Rect m_MTFDetectROI1;
-	cv::Rect m_MTFLocROI2;
-	cv::Rect m_MTFDetectROI2;
+    bool convertToGrayImage(QString& szFilePath, cv::Mat &matGray);
+    bool readImages(QString& szFilePath, AOI::Vision::VectorOfMat& matImgs);
 
-	QDlpMTFRsltDisplay* m_pDlpMTFDisplay;
+    void updatePhaseShift(double dValue);
+
 private:
-	QIntValidator *inputIntRangePos;
-	QIntValidator *inputIntRangeAll;
-	QDoubleValidator *inputDoubleRangePos;
-	QDoubleValidator *inputDoubleRangeAll;	
+    Ui::VisionDetectRunView ui;
+    int m_nLevel;
+    VisionCtrl* m_pCtrl;
+    QVLMaskEditor *m_pVLMaskEditor;
+    QVLCellEditor *m_pVLCellObjEditor;
+    QVLProfileEditor *m_pVLProflieEditor;
+
+    QGraphicsScene * m_TmpMatchScene;
+    cv::Mat m_tmpMatchImg;
+    cv::Mat m_tmpMatchROI;
+    cv::Rect m_tmpMatchRect;
+    int m_tmpRecordID;
+
+    cv::Rect m_detectEdgeROI;
+    cv::Mat m_detectEdgeImg;
+    cv::Rect m_srhCircleROI;
+
+    QStringList m_detectGrayScaleFiles;
+
+    int m_nImageRow;
+    int m_nImageCol;
+    cv::Mat m_3DMatHeightMerge;
+    QVector<cv::Mat> m_3DMatHeights;
+
+    QGraphicsScene * m_TmpMatchMTFScene1;
+    QGraphicsScene * m_TmpMatchMTFScene2;
+    int m_nMTFLocRecord1;
+    int m_nMTFLocRecord2;
+    cv::Rect m_MTFLocROI1;
+    cv::Mat m_MTFRtImage;
+    cv::Rect m_MTFDetectROI1;
+    cv::Rect m_MTFLocROI2;
+    cv::Rect m_MTFDetectROI2;
+
+    QDlpMTFRsltDisplay* m_pDlpMTFDisplay;
+private:
+    QIntValidator *inputIntRangePos;
+    QIntValidator *inputIntRangeAll;
+    QDoubleValidator *inputDoubleRangePos;
+    QDoubleValidator *inputDoubleRangeAll;    
 };

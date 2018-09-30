@@ -8,19 +8,19 @@
 
 class QWarringWidget : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QWarringWidget(QWidget *parent = NULL);
-	~QWarringWidget();
+    QWarringWidget(QWidget *parent = NULL);
+    ~QWarringWidget();
 
 protected:
-	void loadData();
+    void loadData();
 
 private:
-	QTableView * m_view;
-	QHBoxLayout * m_layout;
-	QStandardItemModel m_model;
+    QTableView * m_view;
+    QHBoxLayout * m_layout;
+    QStandardItemModel m_model;
 };
 
 #endif // WARRINGWIDGET_H

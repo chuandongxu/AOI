@@ -7,6 +7,7 @@
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
 #include "../include/IVisionUI.h"
+#include "../include/IData.h"
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../DataModule/QDetectObj.h"
@@ -82,15 +83,15 @@ HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
     ui.tableWidget->setCellWidget(MAX_REL_HT, DATA_COLUMN, m_pCheckBoxRelHt.get());
     connect(m_pCheckBoxRelHt.get(), SIGNAL(toggled(bool)), this, SLOT(onRelHtChanged(bool)));
 
-    m_pSpecAndResultLefRigRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
-    ui.tableWidget->setCellWidget(MAX_LR_REL_HT, DATA_COLUMN, m_pSpecAndResultLefRigRelHt.get());
+    m_pSpecAndResultLftRgtRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
+    ui.tableWidget->setCellWidget(MAX_LR_REL_HT, DATA_COLUMN, m_pSpecAndResultLftRgtRelHt.get());
 
-    m_pSpecAndResultTopBomRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
-    ui.tableWidget->setCellWidget(MAX_TB_REL_HT, DATA_COLUMN, m_pSpecAndResultTopBomRelHt.get());
+    m_pSpecAndResultTopBtmRelHt = std::make_unique<SpecAndResultWidget>(ui.tableWidget, -10000, 10000);
+    ui.tableWidget->setCellWidget(MAX_TB_REL_HT, DATA_COLUMN, m_pSpecAndResultTopBtmRelHt.get());
 
     m_pCheckBoxRelHt->setChecked(false);
-    m_pSpecAndResultLefRigRelHt->setEnabled(false);
-    m_pSpecAndResultTopBomRelHt->setEnabled(false);
+    m_pSpecAndResultLftRgtRelHt->setEnabled(false);
+    m_pSpecAndResultTopBtmRelHt->setEnabled(false);
 }
 
 HeightDetectWidget::~HeightDetectWidget() {
@@ -103,13 +104,13 @@ void HeightDetectWidget::setDefaultValue() {
     m_pEditMinRange->setText("30");
     m_pEditMaxRange->setText("70");
     m_pSpecAndResultAbsHt->setSpec(2000);
-    m_pSpecAndResultMaxHtErr->setSpec(1000);
-    m_pSpecAndResultMinHtErr->setSpec(-1000);
+    m_pSpecAndResultMaxHtErr->setSpec(200);
+    m_pSpecAndResultMinHtErr->setSpec(-200);
     m_pCheckBoxRelHt->setChecked(false);
-    m_pSpecAndResultLefRigRelHt->setEnabled(false);
-    m_pSpecAndResultTopBomRelHt->setEnabled(false);
-    m_pSpecAndResultLefRigRelHt->setSpec(100);
-    m_pSpecAndResultTopBomRelHt->setSpec(100);
+    m_pSpecAndResultLftRgtRelHt->setEnabled(false);
+    m_pSpecAndResultTopBtmRelHt->setEnabled(false);
+    m_pSpecAndResultLftRgtRelHt->setSpec(100);
+    m_pSpecAndResultTopBtmRelHt->setSpec(100);
 }
 
 void HeightDetectWidget::tryInsp() {
@@ -146,10 +147,9 @@ void HeightDetectWidget::tryInsp() {
         stCmd.matMask = getGlobalBaseMask(m_currentWindow);
         stCmd.vecRectBases.push_back(calcWinBaseRect(m_currentWindow));
     }
-    else
-    {
+    else {
         auto matImage = pUI->getImage();
-        int nBigImgWidth = matImage.cols / dCombinedImageScale;
+        int nBigImgWidth  = matImage.cols / dCombinedImageScale;
         int nBigImgHeight = matImage.rows / dCombinedImageScale;
 
         for (const auto &window : m_windowGroup.vecWindows) {
@@ -161,7 +161,7 @@ void HeightDetectWidget::tryInsp() {
                 else
                     y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
 
-                auto width = window.width / dResolutionX;
+                auto width  = window.width  / dResolutionX;
                 auto height = window.height / dResolutionY;
                 cv::RotatedRect rrBaseRect(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
                 stCmd.vecRectBases.push_back(rrBaseRect.boundingRect());
@@ -171,7 +171,7 @@ void HeightDetectWidget::tryInsp() {
 
     float fAbsHeight = m_pSpecAndResultAbsHt->getSpec();
     float fMaxHeight = m_pSpecAndResultMaxHtErr->getSpec();
-    float fMinHeigth = m_pSpecAndResultMinHtErr->getSpec();    
+    float fMinHeigth = m_pSpecAndResultMinHtErr->getSpec();
 
     Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
     float height = stRpy.fHeightDiff * MM_TO_UM;
@@ -181,6 +181,12 @@ void HeightDetectWidget::tryInsp() {
     m_pSpecAndResultMaxHtErr->setResult(heightErr > 0 ? heightErr : 0);
     m_pSpecAndResultMinHtErr->setResult(heightErr < 0 ? heightErr : 0);
 
+    if (bGlobalBase) {
+        cv::Mat matDisplayImage = pUI->getImage().clone();
+        matDisplayImage.setTo(cv::Scalar(0, 255, 255), stCmd.matMask);
+        pUI->displayImage(matDisplayImage);
+    }
+
     bool bPassed = (heightErr <= fMaxHeight) && (heightErr >= fMinHeigth);
     if (! bPassed) {
         QString strMsg;
@@ -188,14 +194,14 @@ void HeightDetectWidget::tryInsp() {
         QMessageBox::information(this, "Height Detect", strMsg);
     }
 
-    calcRelativeValue();      
+    calcRelativeValue();
 }
 
 void HeightDetectWidget::calcRelativeValue()
 {
     // Get the relative height value 
-    m_pSpecAndResultLefRigRelHt->setResult(0);
-    m_pSpecAndResultTopBomRelHt->setResult(0);
+    m_pSpecAndResultLftRgtRelHt->setResult(0);
+    m_pSpecAndResultTopBtmRelHt->setResult(0);
 
     bool bRelHeight = m_pCheckBoxRelHt->isChecked();
     if (bRelHeight)
@@ -263,8 +269,8 @@ void HeightDetectWidget::calcRelativeValue()
         }
 
         // Result Final
-        m_pSpecAndResultLefRigRelHt->setResult(dPosXMaxHt - dPosXMinHt);
-        m_pSpecAndResultTopBomRelHt->setResult(dPosYMaxHt - dPosYMinHt);
+        m_pSpecAndResultLftRgtRelHt->setResult(dPosXMaxHt - dPosXMinHt);
+        m_pSpecAndResultTopBtmRelHt->setResult(dPosYMaxHt - dPosYMinHt);
     }   
 }
 
@@ -278,11 +284,11 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
     json.insert("MinRange", m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT);
     json.insert("MaxRange", m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT);
     json.insert("AbsHt", m_pSpecAndResultAbsHt->getSpec());
-    json.insert("MaxAbxHt", m_pSpecAndResultMaxHtErr->getSpec());
+    json.insert("MaxAbsHt", m_pSpecAndResultMaxHtErr->getSpec());
     json.insert("MinAbsHt", m_pSpecAndResultMinHtErr->getSpec());
     json.insert("RelHt", m_pCheckBoxRelHt->isChecked());
-    json.insert("LefRigRelHt", m_pSpecAndResultLefRigRelHt->getSpec());
-    json.insert("TopBomRelHt", m_pSpecAndResultTopBomRelHt->getSpec());
+    json.insert("LftRgtRelHt", m_pSpecAndResultLftRgtRelHt->getSpec());
+    json.insert("TopBtmRelHt", m_pSpecAndResultTopBtmRelHt->getSpec());
     json.insert("GlobalBase", (static_cast<HDW_BASE_TYPE> (m_pComboxBaseType->currentIndex()) == HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE) ? true : false);
     json.insert("GlobalBaseScale", m_pEditBaseScale->text().toInt());
 
@@ -314,7 +320,7 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
         window.x = ptWindowCtr.x * dResolutionX;
         window.y = (nBigImgHeight - ptWindowCtr.y) * dResolutionY;
     }
-    window.width = rectROI.width  * dResolutionX;
+    window.width  = rectROI.width  * dResolutionX;
     window.height = rectROI.height * dResolutionY;
     window.deviceId = pUI->getSelectedDevice().getId();
     window.angle = 0;
@@ -338,18 +344,6 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
         }
         else
             System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
-
-        QDetectObj detectObj(window.Id, window.name.c_str());
-        cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
-        if (bBoardRotated)
-            ptCenter.x = nBigImgWidth - ptCenter.x;
-        else
-            ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
-        cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
-        detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
-        auto vecDetectObjs = pUI->getDetectObjs();
-        vecDetectObjs.push_back(detectObj);
-        pUI->setDetectObjs(vecDetectObjs);
     }
     else {
         window.Id = m_currentWindow.Id;
@@ -366,6 +360,7 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
+    updateWindowToUI(window, enOperation);
     m_pParent->updateInspWindowList();
 }
 
@@ -390,16 +385,16 @@ void HeightDetectWidget::setCurrentWindow(const Engine::Window &window) {
         
         m_pSpecAndResultAbsHt->setSpec(obj.take("AbsHt").toDouble());
         m_pSpecAndResultAbsHt->clearResult();
-        m_pSpecAndResultMaxHtErr->setSpec(obj.take("MaxAbxHt").toDouble());
+        m_pSpecAndResultMaxHtErr->setSpec(obj.take("MaxAbsHt").toDouble());
         m_pSpecAndResultMaxHtErr->clearResult();
         m_pSpecAndResultMinHtErr->setSpec(obj.take("MinAbsHt").toDouble());
         m_pSpecAndResultMinHtErr->clearResult();
 
         m_pCheckBoxRelHt->setChecked(obj.take("RelHt").toBool());
-        m_pSpecAndResultLefRigRelHt->setSpec(obj.take("LefRigRelHt").toDouble());
-        m_pSpecAndResultLefRigRelHt->clearResult();
-        m_pSpecAndResultTopBomRelHt->setSpec(obj.take("TopBomRelHt").toDouble());
-        m_pSpecAndResultTopBomRelHt->clearResult();
+        m_pSpecAndResultLftRgtRelHt->setSpec(obj.take("LftRgtRelHt").toDouble());
+        m_pSpecAndResultLftRgtRelHt->clearResult();
+        m_pSpecAndResultTopBtmRelHt->setSpec(obj.take("TopBtmRelHt").toDouble());
+        m_pSpecAndResultTopBtmRelHt->clearResult();
 
         m_pComboxBaseType->setCurrentIndex(static_cast<int>(obj.take("GlobalBase").toBool() ? HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE : HDW_BASE_TYPE::EN_MANUAL_TYPE)); 
         m_pEditBaseScale->setText(QString::number(obj.take("GlobalBaseScale").toInt()));
@@ -407,7 +402,6 @@ void HeightDetectWidget::setCurrentWindow(const Engine::Window &window) {
 }
 
 void HeightDetectWidget::on_measureChanged(int index) {
-
     if (static_cast<HDW_MEASURE_TYPE> (index) == HDW_MEASURE_TYPE::EN_MEASURE_TYPE)
     {
         ui.tableWidget->showRow(BASE_TYPE_ATTRI);
@@ -447,12 +441,12 @@ void HeightDetectWidget::on_baseTypeChanged(int index) {
 
 void HeightDetectWidget::onRelHtChanged(bool bInsp) {
     if (bInsp) {
-        m_pSpecAndResultLefRigRelHt->setEnabled(true);
-        m_pSpecAndResultTopBomRelHt->setEnabled(true);
+        m_pSpecAndResultLftRgtRelHt->setEnabled(true);
+        m_pSpecAndResultTopBtmRelHt->setEnabled(true);
     }
     else {
-        m_pSpecAndResultLefRigRelHt->setEnabled(false);
-        m_pSpecAndResultTopBomRelHt->setEnabled(false);
+        m_pSpecAndResultLftRgtRelHt->setEnabled(false);
+        m_pSpecAndResultTopBtmRelHt->setEnabled(false);
     }
 }
 
@@ -486,64 +480,46 @@ cv::Mat HeightDetectWidget::getGlobalBaseMask(Engine::Window& window)
     QJsonObject jsonValue = parse_doucment.object();
 
     cv::Vec3b color; int nRn = 0, nTn = 0;
-    color[0] = jsonValue["ClrRVal"].toInt();
+    color[0] = jsonValue["ClrBVal"].toInt();
     color[1] = jsonValue["ClrGVal"].toInt();
-    color[2] = jsonValue["ClrBVal"].toInt();
+    color[2] = jsonValue["ClrRVal"].toInt();
     nRn = jsonValue["RnValue"].toInt();
     nTn = jsonValue["TnValue"].toInt();
 
-    auto pColorWidget = m_pParent->getColorWidget();
-    auto pUI = getModule<IVisionUI>(UI_MODEL);
-    cv::Mat matImage = pUI->getImage();
+    auto pData = getModule<IData>(DATA_MODEL);
+    int index = windowBase.lightId - 1;
+    auto vecCombinedBigImage = pData->getCombinedBigImages();
+    cv::Mat matBigImage;
+    if (index >= 0 && index < vecCombinedBigImage.size() && !vecCombinedBigImage[index].empty())
+        matBigImage = vecCombinedBigImage[index];
+    else
+        return cv::Mat();
 
     cv::Rect rectBaseDetectWin = calcWinBaseRect(window);
+    cv::Mat matROI(matBigImage, rectBaseDetectWin);
 
-    cv::Mat matROI(matImage, rectBaseDetectWin);
+    auto pColorWidget = m_pParent->getColorWidget();
     pColorWidget->setImage(matROI);
     pColorWidget->holdColorImage(color, nRn, nTn);
     cv::Mat matMask = pColorWidget->getProcessedImage();
     pColorWidget->releaseColorImage();
 
-    cv::Mat matBigMask = cv::Mat::ones(matImage.size(), CV_8UC1);
-    matBigMask *= Vision::PR_MAX_GRAY_LEVEL;
+    cv::Mat matBigMask = cv::Mat::zeros(matBigImage.size(), CV_8UC1);
     cv::Mat matMaskROI(matBigMask, cv::Rect(rectBaseDetectWin));
     matMask.copyTo(matMaskROI);
 
     return matBigMask;
 }
 
-cv::Rect HeightDetectWidget::calcWinBaseRect(Engine::Window& window)
-{
-    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
-
+cv::Rect HeightDetectWidget::calcWinBaseRect(Engine::Window& window) {
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     cv::Mat matImage = pUI->getImage();
 
-    int nBigImgWidth = matImage.cols / dCombinedImageScale;
-    int nBigImgHeight = matImage.rows / dCombinedImageScale;
-    auto x = window.x / dResolutionX;
-    auto y = window.y / dResolutionY;
-    if (bBoardRotated)
-        x = nBigImgWidth - x;
-    else
-        y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
+    double dBaseScale = m_pEditBaseScale->text().toDouble();
 
-    auto width = window.width / dResolutionX;
-    auto height = window.height / dResolutionY;
-
-    double dBaseScale = m_pEditBaseScale->text().toInt();
-
-    cv::Rect2f rectBase(x, y, width, height);
-    cv::Rect rectBaseDetectWin = CalcUtils::resizeRect(rectBase, cv::Size2f(rectBase.width * dBaseScale, rectBase.height * dBaseScale));
-    if (rectBaseDetectWin.x < 0) rectBaseDetectWin.x = 0;
-    else if ((rectBaseDetectWin.x + rectBaseDetectWin.width) >= matImage.cols) rectBaseDetectWin.width = rectBase.width;
-    if (rectBaseDetectWin.y < 0) rectBaseDetectWin.y = 0;
-    else if ((rectBaseDetectWin.y + rectBaseDetectWin.height) >= matImage.rows) rectBaseDetectWin.height = rectBase.height;
+    auto selctROI = pUI->getSelectedROI();
+    cv::Rect rectBaseDetectWin = CalcUtils::resizeRect(selctROI, cv::Size2f(selctROI.width * dBaseScale, selctROI.height * dBaseScale));
+    CalcUtils::adjustRectROI(rectBaseDetectWin, matImage);
 
     return rectBaseDetectWin;
 }
-
-

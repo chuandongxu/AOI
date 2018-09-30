@@ -21,50 +21,50 @@
 
 struct QPoint1D
 {
-	double x;
+    double x;
 };
 
 struct QPoint2D
 {
-	double x;
-	double y;
+    double x;
+    double y;
 };
 
 struct QPoint3D
 {
-	double x;
-	double y;
-	double z;
+    double x;
+    double y;
+    double z;
 };
 
 struct QPoint4D
 {
-	double x;
-	double y;
-	double z;
-	double c;
-	QPoint4D()
-	{
-		x = 0.0;
-		y = 0.0;
-	    z = 0.0;
-		c = 0.0;
-	}
+    double x;
+    double y;
+    double z;
+    double c;
+    QPoint4D()
+    {
+        x = 0.0;
+        y = 0.0;
+        z = 0.0;
+        c = 0.0;
+    }
 };
 
 struct QPoint6D
 {
-	double x;
-	double y;
-	double z;
-	double a;
-	double b;
-	double c;
+    double x;
+    double y;
+    double z;
+    double a;
+    double b;
+    double c;
 
-	QPoint6D()
-		:x(0),y(0),z(0),a(0),b(0),c(0)
-	{
-	}
+    QPoint6D()
+        :x(0),y(0),z(0),a(0),b(0),c(0)
+    {
+    }
 };
 
 
@@ -91,150 +91,150 @@ void randData(char * buffer,int size);
 
 class COMMON_EXPORT QSystem : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	QSystem();
-	~QSystem();
+    QSystem();
+    ~QSystem();
 
-	static QSystem * instance();
+    static QSystem * instance();
 
-	static void showMessage(const QString &title, const QString &msg, int ErrorLevel = 4);
-	static void closeMessage();
-	static bool isMessageShowed();
+    static void showMessage(const QString &title, const QString &msg, int ErrorLevel = 4);
+    static void closeMessage();
+    static bool isMessageShowed();
 
     static int showInteractMessage(const QString &title, const QString &msg);
 
-	static bool ChangeUser();
-	static void ManagerUser();
+    static bool ChangeUser();
+    static void ManagerUser();
 
-	static void loadQss(const QString &file);
-	static void waitTime(int msTime);
+    static void loadQss(const QString &file);
+    static void waitTime(int msTime);
 
-	static void queryWarring(QStandardItemModel &model);
-	static void queryOptLog(QStandardItemModel &model);	
+    static void queryWarring(QStandardItemModel &model);
+    static void queryOptLog(QStandardItemModel &model);    
 
 public:
-	void * dataPtr(const QString &key);
-	void setDataPtr(const QString &key,void * data);
+    void * dataPtr(const QString &key);
+    void setDataPtr(const QString &key,void * data);
 
-	QVariant data(const QString &key);
-	void setData(const QString &key,const QVariant &data);
+    QVariant data(const QString &key);
+    void setData(const QString &key,const QVariant &data);
 
-	QVariant getParam(const QString &name);
-	void setParam(const QString &name,const QVariant &data);
-	void delParam(const QString &name);
-	QStringList getParamKeys(const QString &condtion);
+    QVariant getParam(const QString &name);
+    void setParam(const QString &name,const QVariant &data);
+    void delParam(const QString &name);
+    QStringList getParamKeys(const QString &condtion);
 
-	QVariant getSysParam(const QString &name);
-	void setSysParam(const QString &name,const QVariant &data);
-	void delSysParam(const QString &name);
-	QStringList getSysParamKeys(const QString &condtion);
+    QVariant getSysParam(const QString &name);
+    void setSysParam(const QString &name,const QVariant &data);
+    void delSysParam(const QString &name);
+    QStringList getSysParamKeys(const QString &condtion);
 
-	void addOptLog(const QString &name,const QString &val,const QString &descr);
+    void addOptLog(const QString &name,const QString &val,const QString &descr);
 
-	QErrorModel * getErrorModel();
+    QErrorModel * getErrorModel();
     void setTrackInfo(const QString &msg, bool bDisplayHM = true);
-	void setErrorCode(unsigned int code);
-	unsigned int getErrorCode(){return m_errorCode;};
-	QString getErrorString();
-	void addErrorMap(unsigned int id,const QString &descr);
+    void setErrorCode(unsigned int code);
+    unsigned int getErrorCode(){return m_errorCode;};
+    QString getErrorString();
+    void addErrorMap(unsigned int id,const QString &descr);
 
-	void setUser(const QString & user,int level);
-	void getUser(QString & user,int &level);
-	int getUserLevel();
-	bool getUserPwd(const QString user, QString &pwd, int &level);
-	bool checkUserPwd(const QString& user, const QString& pwd);
+    void setUser(const QString & user,int level);
+    void getUser(QString & user,int &level);
+    int getUserLevel();
+    bool getUserPwd(const QString user, QString &pwd, int &level);
+    bool checkUserPwd(const QString& user, const QString& pwd);
 
-	void enableRecord(bool s);
-	bool isEnableRecord();
-	void setRecordPath(const QString &path);
-	QString getRecordPath();
+    void enableRecord(bool s);
+    bool isEnableRecord();
+    void setRecordPath(const QString &path);
+    QString getRecordPath();
 
-	void enableRecordDetails(bool s);
-	bool isEnableRecordDetails();
-	void setRecordDetailsPath(const QString &path);
-	QString getRecordDetailPath();
+    void enableRecordDetails(bool s);
+    bool isEnableRecordDetails();
+    void setRecordDetailsPath(const QString &path);
+    QString getRecordDetailPath();
 
     void setSysRunMode(int nMode);
     int getSysRunMode();
     bool isHardwareTrigger();
     bool isTriggerBoard();
 
-	void enableBackupData(bool s);
-	bool isEnableBackupData();
-	void setBackupDataPath(const QString &path);
-	QString getBackupDataPath();
+    void enableBackupData(bool s);
+    bool isEnableBackupData();
+    void setBackupDataPath(const QString &path);
+    QString getBackupDataPath();
 
-	void enableOutline(bool s);
-	bool isEnableOutline();
+    void enableOutline(bool s);
+    bool isEnableOutline();
 
-	void setRunSpeed(int n);
-	int getRunSpeed();
+    void setRunSpeed(int n);
+    int getRunSpeed();
 
-	QString getLangConfig();
-	void setLangConfig(const QString & lang);
+    QString getLangConfig();
+    void setLangConfig(const QString & lang);
     bool isRunOffline() const;
     QString getOfflinePath();
     void setOfflinePath(const QString& str);
 
 public:
-	void userGoHome();
-	void userImStop();
-	void userStart();
-	void userStop();
-	void userPause();
-	void userReset();
-	bool isImStop();
+    void userGoHome();
+    void userImStop();
+    void userStart();
+    void userStop();
+    void userPause();
+    void userReset();
+    bool isImStop();
 
 public:
-	bool doAuthright(const QString &authCode);
-	bool checkAuthRight();
-	bool execAuth();
+    bool doAuthright(const QString &authCode);
+    bool checkAuthRight();
+    bool execAuth();
 
-	bool checkRuntimeAuthRight();
+    bool checkRuntimeAuthRight();
 
 signals:
-	void errorInfo(const QString &data,const QString &msg,unsigned int level);
-	void goHome();	
-	void imStop();
-	void start();
-	void stop();
-	void pause();
-	void reset();
-	void dataChange(const QString &key);
-	void paramChange(const QString &key,bool isSysParam);
-	void productChange(const QString &product);
+    void errorInfo(const QString &data,const QString &msg,unsigned int level);
+    void goHome();    
+    void imStop();
+    void start();
+    void stop();
+    void pause();
+    void reset();
+    void dataChange(const QString &key);
+    void paramChange(const QString &key,bool isSysParam);
+    void productChange(const QString &product);
 
 private:
-	static void desstory();
-	void LoadData();
-	bool isExist(const QString &filtterSql);
-	bool readAuthData(QAuthData * data);
-	bool writeAuthData(QAuthData * data);
-	void initErrorModel();
+    static void desstory();
+    void LoadData();
+    bool isExist(const QString &filtterSql);
+    bool readAuthData(QAuthData * data);
+    bool writeAuthData(QAuthData * data);
+    void initErrorModel();
     void initConfig();
 
 private:
-	QMutex m_mutex;
+    QMutex m_mutex;
 
-	unsigned int m_errorCode;
-	QErrorCode m_errCodeMap;
-	bool m_imStop;
+    unsigned int m_errorCode;
+    QErrorCode m_errCodeMap;
+    bool m_imStop;
 
-	QString m_user;
-	int m_userLevel;
+    QString m_user;
+    int m_userLevel;
 
-	QMap<QString,QVariant> m_params;
-	QMap<QString,QVariant> m_paramUserData;
-	QMap<QString,QVariant> m_data;
-	QMap<QString,void*> m_ptrData;
-	QErrorModel m_errModel;
+    QMap<QString,QVariant> m_params;
+    QMap<QString,QVariant> m_paramUserData;
+    QMap<QString,QVariant> m_data;
+    QMap<QString,void*> m_ptrData;
+    QErrorModel m_errModel;
 
     bool    m_bRunOffline = false;
 
 private:
-	static QSystem * _instance_;
-	static bool _destoryed_;
+    static QSystem * _instance_;
+    static bool _destoryed_;
 };
 
 #define System QSystem::instance()

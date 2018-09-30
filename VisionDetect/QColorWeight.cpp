@@ -1282,9 +1282,9 @@ cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage, bo
 
     if (m_bSetColor)
     {
-        Rt = m_color[0];
+        Rt = m_color[2];
         Gt = m_color[1];
-        Bt = m_color[2];
+        Bt = m_color[0];
         Tt = calcGrayValue(cv::Scalar(Bt, Gt, Rt));
         St = qMax(Rt, qMax(Gt, Bt));
     }
@@ -1331,7 +1331,7 @@ cv::Mat QColorWeight::generateColorRange(int nRn, int nTn, cv::Mat& matImage, bo
                     if (b > maxB) maxB = b;
                     if (b < minB) minB = b;
                     if (t > maxT) maxT = t;
-                    if (t < minT) minT = t;                    
+                    if (t < minT) minT = t;
                 }
             }
             else if (Gt == maxRGB)

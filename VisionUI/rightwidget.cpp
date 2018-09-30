@@ -11,28 +11,28 @@
 #include "../Common/eos.h"
 
 QRightWidget::QRightWidget(QWidget *parent)
-	: QWidget(parent)
+    : QWidget(parent)
 {
-	ui.setupUi(this);
+    ui.setupUi(this);
 
-	this->setFixedWidth(410);
+    this->setFixedWidth(410);
 
-	ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
-	if (pCam)
-	{
-		ui.stackedWidget->addWidget(new QWidget());
-	}
+    ICamera* pCam = getModule<ICamera>(CAMERA_MODEL);
+    if (pCam)
+    {
+        ui.stackedWidget->addWidget(new QWidget());
+    }
 
-	IVision* pVision = getModule<IVision>(VISION_MODEL);
-	if (pVision)
-	{
-		ui.stackedWidget->addWidget(pVision->getDetectView());
-		ui.stackedWidget->addWidget(pVision->getInspWindowView());
-		ui.stackedWidget->addWidget(pVision->getCaliView());
-	}
+    IVision* pVision = getModule<IVision>(VISION_MODEL);
+    if (pVision)
+    {
+        ui.stackedWidget->addWidget(pVision->getDetectView());
+        ui.stackedWidget->addWidget(pVision->getInspWindowView());
+        ui.stackedWidget->addWidget(pVision->getCaliView());
+    }
 
-    IData * pData = getModule<IData>(DATA_MODEL);	
-	if (pData) {
+    IData * pData = getModule<IData>(DATA_MODEL);    
+    if (pData) {
         ui.stackedWidget->addWidget(pData->getDataWidget());        
     }
     IFlowCtrl * p = getModule<IFlowCtrl>(CTRL_MODEL);
@@ -40,15 +40,15 @@ QRightWidget::QRightWidget(QWidget *parent)
     {
         ui.stackedWidget->addWidget(p->getAutoRunPanel());
     }
-	ui.stackedWidget->setCurrentIndex(0);	
+    ui.stackedWidget->setCurrentIndex(0);    
 
-	QEos::Attach(EVENT_RUN_STATE, this, SLOT(onRunState(const QVariantList &)));
-	QEos::Attach(EVENT_UI_STATE, this, SLOT(onUIState(const QVariantList &)));
+    QEos::Attach(EVENT_RUN_STATE, this, SLOT(onRunState(const QVariantList &)));
+    QEos::Attach(EVENT_UI_STATE, this, SLOT(onUIState(const QVariantList &)));
 
-	QPalette Pal(palette());
-	Pal.setColor(QPalette::Background, QColor(235, 235, 235));
-	setAutoFillBackground(true);
-	setPalette(Pal);	
+    QPalette Pal(palette());
+    Pal.setColor(QPalette::Background, QColor(235, 235, 235));
+    setAutoFillBackground(true);
+    setPalette(Pal);    
 }
 
 QRightWidget::~QRightWidget()
@@ -57,30 +57,30 @@ QRightWidget::~QRightWidget()
 
 void QRightWidget::paintEvent(QPaintEvent *event)
 {
-	QStyleOption option;
-	option.init(this);
-	QPainter painter(this);
-	style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
+    QStyleOption option;
+    option.init(this);
+    QPainter painter(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
 
-	QWidget::paintEvent(event);
+    QWidget::paintEvent(event);
 }
 
 void QRightWidget::onRunState(const QVariantList &data)
 {
-	if (data.size() == 1)
-	{
-		int iState = data[0].toInt();
-		if (RUN_STATE_RUNING == iState)
-		{
-			//m_widgetRun->setVisible(true);
-			//m_widgetEdit->setVisible(false);
-		}
-		else
-		{
-			//m_widgetRun->setVisible(false);
-			//m_widgetEdit->setVisible(true);
-		}
-	}
+    if (data.size() == 1)
+    {
+        int iState = data[0].toInt();
+        if (RUN_STATE_RUNING == iState)
+        {
+            //m_widgetRun->setVisible(true);
+            //m_widgetEdit->setVisible(false);
+        }
+        else
+        {
+            //m_widgetRun->setVisible(false);
+            //m_widgetEdit->setVisible(true);
+        }
+    }
 }
 
 void QRightWidget::onUIState(const QVariantList &data)

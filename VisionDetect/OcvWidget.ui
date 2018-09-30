@@ -19,11 +19,11 @@
      <x>10</x>
      <y>30</y>
      <width>401</width>
-     <height>81</height>
+     <height>101</height>
     </rect>
    </property>
    <property name="rowCount">
-    <number>2</number>
+    <number>3</number>
    </property>
    <property name="columnCount">
     <number>2</number>
@@ -40,6 +40,7 @@
    <attribute name="verticalHeaderVisible">
     <bool>false</bool>
    </attribute>
+   <row/>
    <row/>
    <row/>
    <column/>
@@ -67,6 +68,11 @@
      <string>60</string>
     </property>
    </item>
+   <item row="2" column="0">
+    <property name="text">
+     <string>字符方向</string>
+    </property>
+   </item>
   </widget>
   <widget class="QLabel" name="labelBasicParameter">
    <property name="geometry">
@@ -84,37 +90,50 @@
   <widget class="QPushButton" name="btnLrnOcv">
    <property name="geometry">
     <rect>
-     <x>90</x>
-     <y>130</y>
-     <width>181</width>
+     <x>130</x>
+     <y>150</y>
+     <width>141</width>
      <height>23</height>
     </rect>
    </property>
    <property name="text">
-    <string>学习Ocv模板</string>
+    <string>学习OCV模板</string>
    </property>
   </widget>
   <widget class="QListWidget" name="listWidgetRecordId">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>190</y>
+     <y>220</y>
      <width>141</width>
      <height>141</height>
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="labelBasicParameter_2">
+  <widget class="QLabel" name="labelTemplateList">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>170</y>
+     <y>200</y>
      <width>81</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
     <string>字符模板列表</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnEditOcv">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>220</y>
+     <width>131</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>编辑OCV模板</string>
    </property>
   </widget>
  </widget>

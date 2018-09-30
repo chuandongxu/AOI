@@ -134,14 +134,14 @@ private:
 
     cv::Point m_grayGenPt;
 
-	// Color Space
+    // Color Space
     bool m_bSetColor;
-	cv::Point m_colorGenPt;
+    cv::Point m_colorGenPt;
     cv::Vec3b m_color;
-	std::shared_ptr<QCustomPlot> m_customPlotR;
-	std::shared_ptr<QCustomPlot> m_customPlotG;
-	std::shared_ptr<QCustomPlot> m_customPlotB;
-	std::shared_ptr<QCustomPlot> m_customPlotGray;
+    std::shared_ptr<QCustomPlot> m_customPlotR;
+    std::shared_ptr<QCustomPlot> m_customPlotG;
+    std::shared_ptr<QCustomPlot> m_customPlotB;
+    std::shared_ptr<QCustomPlot> m_customPlotGray;
 
     QCPBars *m_regenR;
     QCPBars *m_regenG;

@@ -139,21 +139,21 @@ QTopWidget::QTopWidget(QWidget *parent) :
 
 void QTopWidget::paintEvent(QPaintEvent *event)
 {  
-	QStyleOption option;
-	option.init(this);
-	QPainter painter(this);
-	style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
-	QWidget::paintEvent(event);
+    QStyleOption option;
+    option.init(this);
+    QPainter painter(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
+    QWidget::paintEvent(event);
 }
 
 QString QTopWidget::getTitle()
 {
-	return m_titleLabel->text();
+    return m_titleLabel->text();
 }
-	
+    
 void QTopWidget::setTitle(const QString &title)
 {
-	m_titleLabel->setText(title);
+    m_titleLabel->setText(title);
 }
 
 void QTopWidget::onAbout()
@@ -210,41 +210,41 @@ void QTopWidget::onOpenProject()
 
 void QTopWidget::onAutoRun()
 {
-	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_AUTORUN);
+    QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_AUTORUN);
 }
 
 void QTopWidget::onSystem()
 {
-	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_CALI);
+    QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_CALI);
 }
 
 void QTopWidget::onHardware()
 {
-	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_HARDWARE);
+    QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_HARDWARE);
 }
 
 void QTopWidget::onTools()
 {
-	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_TOOLS);
+    QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_TOOLS);
 }
 
 void QTopWidget::onSetting()
 {
-	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_SETTING);
+    QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_SETTING);
 }
 
 void QTopWidget::onData()
 {
-	QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_DATA);
+    QEos::Notify(EVENT_UI_STATE, 0, RUN_UI_STATE_DATA);
 }
 
 void QTopWidget::timerEvent(QTimerEvent * event)
 {
-	
+    
 }
 
 void QTopWidget::setTitle(const QString &title,const QString &ver)
 {
-	m_titleLabel->setText(title);
-	m_versionLabel->setText(ver);
+    m_titleLabel->setText(title);
+    m_versionLabel->setText(ver);
 }

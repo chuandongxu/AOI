@@ -6,22 +6,22 @@
 
 class QLoginEdit : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QLoginEdit(QWidget *parent = 0);
-	~QLoginEdit();
+    QLoginEdit(QWidget *parent = 0);
+    ~QLoginEdit();
 
 signals:
-	void ok();
-	void exit();
+    void ok();
+    void exit();
 
 protected slots:
-	void onOkBtn();
-	void onExitBtn();
+    void onOkBtn();
+    void onExitBtn();
 
 private:
-	Ui::QLoginEdit ui;
+    Ui::QLoginEdit ui;
 };
 
 #endif // LOGINEDIT_H

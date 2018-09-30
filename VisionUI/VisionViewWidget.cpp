@@ -1761,7 +1761,7 @@ void VisionViewWidget::_drawDeviceWindows(cv::Mat &matImg)
     int nLineWidth = _constDeviceWindowLineWidth / m_dScale;
     if (nLineWidth <= 0) nLineWidth = 1;
 
-    if (!m_vecDevices.empty()) {
+    if (m_bDisplayDevices && !m_vecDevices.empty()) {
         for (const auto &vvDevice : m_vecDevices) {
             auto rotatedRect = vvDevice.getWindow();
             rotatedRect.center.x += ptCtrOfImage.x;
@@ -1871,9 +1871,7 @@ void VisionViewWidget::_calcMoveRange()
 bool VisionViewWidget::_checkSelectedDevice(const cv::Point &ptMousePos) {
     const auto COLS = m_hoImage.cols;
     const auto ROWS = m_hoImage.rows;
-    cv::Point ptOnImage;
-    ptOnImage.x = (ptMousePos.x - m_dMovedX - (LABEL_IMAGE_WIDTH  - COLS * m_dScale) / 2) / m_dScale;
-    ptOnImage.y = (ptMousePos.y - m_dMovedY - (LABEL_IMAGE_HEIGHT - ROWS * m_dScale) / 2) / m_dScale;
+    cv::Point ptOnImage = convertToImgPos(ptMousePos);
     bool bFoundDevice = false;
     for (const auto &vvDevice : m_vecDevices) {
         auto localRotateRect(vvDevice.getWindow());
@@ -1964,4 +1962,14 @@ void VisionViewWidget::_updateCursorInfo(const cv::Point &ptMouse) {
     {
         System->setTrackInfo(QString("The mouse point (%1, %2) converted to invalid image point (%3, %4).").arg(ptMouse.x).arg(ptMouse.y).arg(ptImage.x).arg(ptImage.y));
     }
+}
+
+void VisionViewWidget::setDisplayDeviceWindow(bool bDisplay) {
+    m_bDisplayDevices = bDisplay;
+    repaintAll();
+}
+
+void VisionViewWidget::setDisplayInspectWindow(bool bDisplay) {
+    m_bDisplayDetectObjs = bDisplay;
+    repaintAll();
 }

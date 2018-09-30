@@ -63,9 +63,9 @@ InspContourWidget::InspContourWidget(InspWindowWidget *parent)
     ui.tableWidget->setCellWidget(OUTER_MASK_DEPTH, DATA_COLUMN, m_pEditOuterMaskDepth.get());
 
     m_pEditRecordID = std::make_unique<QLineEdit>(ui.tableWidget);
-	m_pEditRecordID->setValidator(new QIntValidator(0, 1000, m_pEditRecordID.get()));
-	ui.tableWidget->setCellWidget(RECORD_ID, DATA_COLUMN, m_pEditRecordID.get());
-	m_pEditRecordID->setEnabled(false);
+    m_pEditRecordID->setValidator(new QIntValidator(0, 1000, m_pEditRecordID.get()));
+    ui.tableWidget->setCellWidget(RECORD_ID, DATA_COLUMN, m_pEditRecordID.get());
+    m_pEditRecordID->setEnabled(false);
 }
 
 InspContourWidget::~InspContourWidget() {
@@ -88,8 +88,8 @@ void InspContourWidget::setCurrentWindow(const Engine::Window &window) {
     m_currentWindow = window;
 
     QJsonParseError json_error;
-	QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-	if (json_error.error != QJsonParseError::NoError) {
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
+    if (json_error.error != QJsonParseError::NoError) {
         System->setTrackInfo(QString("Invalid inspection parameter encounted."));
         return;
     }
@@ -138,7 +138,7 @@ bool InspContourWidget::_learnContour(int &recordId) {
 bool InspContourWidget::_inspContour(int recordId, bool bShowResult /*= true*/) {
     QString strTitle(QStringLiteral("边界检测框"));
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
     Vision::PR_INSP_CONTOUR_CMD stCmd;
     Vision::PR_INSP_CONTOUR_RPY stRpy;
@@ -173,10 +173,10 @@ bool InspContourWidget::_inspContour(int recordId, bool bShowResult /*= true*/) 
 }
 
 void InspContourWidget::tryInsp() {
-	auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-	int nRecordId = 0;
+    int nRecordId = 0;
     bool bNewRecord = false;
     if (m_currentWindow.recordId > 0)
         nRecordId = m_currentWindow.recordId;
@@ -191,14 +191,14 @@ void InspContourWidget::tryInsp() {
         m_bIsTryInspected = true;
     else
         m_bIsTryInspected = false;
-	
+    
     if (bNewRecord)
-	    Vision::PR_FreeRecord(nRecordId);
+        Vision::PR_FreeRecord(nRecordId);
 }
 
 void InspContourWidget::confirmWindow(OPERATION enOperation) {    
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-	auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+    auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
 
@@ -277,18 +277,6 @@ void InspContourWidget::confirmWindow(OPERATION enOperation) {
         }
         else
             System->setTrackInfo(QString("Success to Create Window: %1.").arg(window.name.c_str()));
-
-        QDetectObj detectObj(window.Id, window.name.c_str());
-        cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);
-        if (bBoardRotated)
-            ptCenter.x = nBigImgWidth - ptCenter.x;
-        else
-            ptCenter.y = nBigImgHeight - ptCenter.y; //In cad, up is positive, but in image, down is positive.
-        cv::Size2f szROI(window.width / dResolutionX, window.height / dResolutionY);
-        detectObj.setFrame(cv::RotatedRect(ptCenter, szROI, window.angle));
-        auto vecDetectObjs = pUI->getDetectObjs();
-        vecDetectObjs.push_back(detectObj);
-        pUI->setDetectObjs(vecDetectObjs);
     }
     else {
         window.Id = m_currentWindow.Id;
@@ -305,5 +293,6 @@ void InspContourWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
+    updateWindowToUI(window, enOperation);
     m_pParent->updateInspWindowList();
 }

@@ -23,11 +23,11 @@ private:
 
 private:
     Ui::InspContourWidget ui;
-    std::unique_ptr<QLineEdit>	m_pEditDefectThreshold;
-    std::unique_ptr<QLineEdit>	m_pEditMinDefectArea;
-    std::unique_ptr<QLineEdit>	m_pEditDefectInnerLengthTol;
-    std::unique_ptr<QLineEdit>	m_pEditDefectOuterLengthTol;
-    std::unique_ptr<QLineEdit>	m_pEditInnerMaskDepth;
-    std::unique_ptr<QLineEdit>	m_pEditOuterMaskDepth;
+    std::unique_ptr<QLineEdit>    m_pEditDefectThreshold;
+    std::unique_ptr<QLineEdit>    m_pEditMinDefectArea;
+    std::unique_ptr<QLineEdit>    m_pEditDefectInnerLengthTol;
+    std::unique_ptr<QLineEdit>    m_pEditDefectOuterLengthTol;
+    std::unique_ptr<QLineEdit>    m_pEditInnerMaskDepth;
+    std::unique_ptr<QLineEdit>    m_pEditOuterMaskDepth;
     std::unique_ptr<QLineEdit>  m_pEditRecordID;
 };

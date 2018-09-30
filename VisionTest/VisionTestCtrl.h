@@ -5,9 +5,9 @@
 
 class VisionTestCtrl : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	VisionTestCtrl(QObject *parent = NULL);
-	~VisionTestCtrl();
+    VisionTestCtrl(QObject *parent = NULL);
+    ~VisionTestCtrl();
 };

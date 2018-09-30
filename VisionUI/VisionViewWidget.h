@@ -78,7 +78,7 @@ public:
     void setCurrentFM(const VisionViewFM &fm);
     VisionViewFM getCurrentFM() const;
     void setHeightData(const cv::Mat& matHeight);
-    cv::Mat getHeightData() const;
+    cv::Mat getHeightData() const;    
 
     void openFile();
     void cameraFile();
@@ -99,16 +99,19 @@ public:
     void copyDeviceWindow();
     void pasteDevice();
 
+    void setDisplayDeviceWindow(bool bDisplay);
+    void setDisplayInspectWindow(bool bDisplay);
+
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
 
-    void mouseMoveEvent(QMouseEvent * event);
-    void mousePressEvent(QMouseEvent * event);
-    void mouseDoubleClickEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void wheelEvent(QWheelEvent * event);
+    void mouseMoveEvent(QMouseEvent * event) override;
+    void mousePressEvent(QMouseEvent * event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent * event) override;
 
 private slots:
     void onResultEvent(const QVariantList &data);
@@ -175,11 +178,12 @@ private:
     DViewUtility           *m_pMainViewFull3D;
     DViewUtility           *m_pView3D;
     cv::Rect                m_selectROI;
-    Vision::VectorOfRect            m_vecSubROIs;
+    Vision::VectorOfRect    m_vecSubROIs;
     cv::Rect                m_rectSrchWindow;
     QDockWidget            *m_pSelectView;
     bool                    m_bShow3DInitial;
     bool                    m_bMainView3DInitial;
+    bool                    m_bDisplayDevices = true;
     VisionViewDeviceVector  m_vecDevices;
     VisionViewDevice        m_selectedDevice;
     VisionViewDevice        m_selectedCopyDevice;
@@ -187,7 +191,7 @@ private:
     VisionViewFM            m_currentFM;
     cv::Size                m_szCadOffset;
     cv::Size                m_szMoveRange;
-    bool                    m_bDisplayDetectObjs;
+    bool                    m_bDisplayDetectObjs = true;
     QVector<QDetectObj>     m_vecDetectObjs;
     QDetectObj              m_currentDetectObj;
 

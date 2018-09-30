@@ -269,7 +269,7 @@ void QFlowCtrl::start()
 
     auto enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(System->getParam("scan_image_Direction").toInt());
 
-    AutoRunParams stAutoRunParams(m_nImgWidth, m_nImgHeight, m_fBoardLeft, m_fBoardTop, m_fBoardRight, m_fBoardBottom, m_fOverlapX, m_fOverlapY, enScanDir);
+    AutoRunParams stAutoRunParams(m_nImgWidth, m_nImgHeight, m_fBoardLeft, m_fBoardTop, m_fBoardRight, m_fBoardBottom, m_fOverlapX, m_fOverlapY, m_nGlobalBaseColorDiff, m_nGlobalBaseGrayDiff, m_scalarGlobalBase, enScanDir);
     m_pAutoRunThread = new AutoRunThread(m_vecAlignments, m_vecDeviceInspWindow, m_vecVecFrameCtr, stAutoRunParams, &m_mapBoardInspResult);
     connect(m_pAutoRunThread, &AutoRunThread::finished, m_pAutoRunThread, &QObject::deleteLater);
     m_pAutoRunThread->start();
@@ -415,7 +415,7 @@ int QFlowCtrl::_prepareRunData()
     if (nResult != OK) {
         System->showMessage(QStringLiteral("分配Frame"), QStringLiteral("分配Frame失败!"));
         return NOK;
-    }   
+    }
 
     Engine::DeviceVector vecDevice;
     nResult = Engine::GetAllDevices(vecDevice);
@@ -521,7 +521,6 @@ int QFlowCtrl::_getGlobalHeightBaseParams() {
         if (window.usage == Engine::Window::Usage::HEIGHT_BASE_GLOBAL) {
             windowHeightBase = window;
             bFound = true;
-            break;
         }
     }
 
