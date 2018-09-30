@@ -25,7 +25,7 @@ public:
                   MapBoardInspResult                    *pMapBoardInspResult);
     ~AutoRunThread();
     
-    bool captureAllImages(QVector<cv::Mat>& imageMats);
+    bool captureAllImages(QVector<cv::Mat>& imageMats, int col);
     bool captureLightImages(QVector<cv::Mat>& imageMats);
     cv::Mat getBigImage() const { return m_vecMatBigImage[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]; }
     QString getErrorMsg() const { return m_strErrorMsg; }

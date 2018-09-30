@@ -203,20 +203,21 @@ bool AutoRunThread::moveToCapturePos(float fPosX, float fPosY)
     return true;
 }
 
-bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats)
+bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats, int col)
 {
     if (System->isRunOffline()) {
-        static QVector<cv::Mat> vecLocalImages;
-        if (vecLocalImages.empty()) {
-            std::string strImagePath = System->getOfflinePath().toStdString();
-            char strfileName[100];
-            for (int i = 1; i <= 54; ++ i) {
-                _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
-                cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
-                if (matImage.empty())
-                    return false;
-                vecLocalImages.push_back(matImage);
-            }
+        QVector<cv::Mat> vecLocalImages;
+
+        std::string strImagePath = System->getOfflinePath().toStdString();
+        if (strImagePath.back() != '/')
+            strImagePath.push_back('/');
+        char strfileName[100];
+        for (int i = 1; i <= 54; ++i) {
+            _snprintf(strfileName, sizeof(strfileName), "%d/%02d.bmp", col, i);
+            cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
+            if (matImage.empty())
+                return false;
+            vecLocalImages.push_back(matImage);
         }
         imageMats = vecLocalImages;
         return true;
@@ -534,10 +535,12 @@ bool AutoRunThread::_doInspection(BoardInspResultPtr ptrBoardInspResult) {
             if (fabs(ptFrameCtr.y) <= 0.01f)
                 ptFrameCtr.y = m_stAutoRunParams.nImgHeightPixel * m_dResolutionY / 2.f;
 
-            TimeLogInstance->addTimeLog("Move to inspect capture position.");            
+            TimeLogInstance->addTimeLog("Move to inspect capture position.");
         
             QVector<cv::Mat> vecMatImages;
-            if (! captureAllImages(vecMatImages)) {
+            if (! captureAllImages(vecMatImages, col)) {
+                m_strErrorMsg = "Capture image failed";
+                _sendErrorAndWaitForResponse();
                 bGood = false;
                 break;
             }
