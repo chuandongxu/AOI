@@ -1529,6 +1529,14 @@ void VisionViewWidget::show3DView(cv::Rect& rectROI)
 
         double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
 
+        double minv = 0.0, maxv = 0.0;
+        cv::minMaxIdx(matHeight, &minv, &maxv);
+
+        minv *= 1000.0 / dResolutionX;
+        maxv *= 1000.0 / dResolutionX;
+
+        double offsetv = (minv + maxv) / 2;
+
         QVector<double> xValues, yValues, zValues;
         for (int i = 0; i < nDataNum; i++)
         {
@@ -1540,7 +1548,7 @@ void VisionViewWidget::show3DView(cv::Rect& rectROI)
 
             if (matMask.at<bool>(col - 1, row - 1))
             {
-                zValues.push_back(matHeight.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
+                zValues.push_back((matHeight.at<float>(col - 1, row - 1) * 1000 / dResolutionX) - offsetv);
             }
             else
             {
