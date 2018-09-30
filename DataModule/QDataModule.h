@@ -58,7 +58,7 @@ public:
 
     virtual QString getDeviceType(long deviceID) const override;
     virtual bool copyDeviceWindow(long srcID, long destID) override;
-    virtual bool copyDeviceWindowAsMirror(long srcID, bool bHorizontal) override;
+    virtual bool copyDeviceWindowAsMirror(long srcID, bool bHorizontal, QVector<int>& winIDs, QVector<int>& groupIDs) override;
 
     virtual bool displayRecord(int recordID) override;
 

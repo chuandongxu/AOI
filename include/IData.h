@@ -2,6 +2,7 @@
 #define _DATA_INTERFACE_H_
 
 #include <QString>
+#include <QVector>
 #include "VisionStruct.h"
 
 using namespace AOI;
@@ -59,7 +60,7 @@ public:
 
     virtual QString getDeviceType(long deviceID) const = 0;
     virtual bool copyDeviceWindow(long srcID, long destID) = 0;
-    virtual bool copyDeviceWindowAsMirror(long srcID, bool bHorizontal) = 0;
+    virtual bool copyDeviceWindowAsMirror(long srcID, bool bHorizontal, QVector<int>& winIDs, QVector<int>& groupIDs) = 0;
 
     virtual bool displayRecord(int recordID) = 0;
 };

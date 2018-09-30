@@ -516,17 +516,33 @@ void InspWindowWidget::on_btnCopyAsMirror_clicked() {
         return;
     }
 
+    auto selectedItems = ui.treeWidget->selectedItems();
+    if (selectedItems.size() <= 0)
+        return;
+
+    QVector<int> winIDs, groupIDs;
+    for (const auto &pItem : selectedItems) {
+        if (TREE_ITEM_WINDOW == pItem->type()) {
+            auto windowId = pItem->data(0, Qt::UserRole).toInt();
+            winIDs.push_back(windowId);
+        }
+        else {
+            auto groupwId = pItem->data(0, Qt::UserRole).toInt();
+            groupIDs.push_back(groupwId);
+        }
+    }
+
     auto pDataModule = getModule<IData>(DATA_MODEL);
 
     if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
         QStringLiteral("【水平】镜像当前元件，确定？"), QMessageBox::Ok, QMessageBox::Cancel))
     {
-        pDataModule->copyDeviceWindowAsMirror(currentDevice.Id, true);
+        pDataModule->copyDeviceWindowAsMirror(currentDevice.Id, true, winIDs, groupIDs);
     }
     else if (QMessageBox::Ok == QMessageBox::question(NULL, QStringLiteral("信息提示"),
         QStringLiteral("【垂直】镜像当前元件，确定？"), QMessageBox::Ok, QMessageBox::Cancel))
     {
-        pDataModule->copyDeviceWindowAsMirror(currentDevice.Id, false);
+        pDataModule->copyDeviceWindowAsMirror(currentDevice.Id, false, winIDs, groupIDs);
     }
 
     refreshAllDeviceWindows();
