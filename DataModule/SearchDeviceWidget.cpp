@@ -550,7 +550,7 @@ bool SearchDeviceWidget::copyDeviceWindow(long srcID, long destID)
     return true;
 }
 
-bool SearchDeviceWidget::copyDeviceWindowAsMirror(long srcID, bool bHorizontal)
+bool SearchDeviceWidget::copyDeviceWindowAsMirror(long srcID, bool bHorizontal, QVector<int>& winIDs, QVector<int>& groupIDs)
 {
     auto deviceId = srcID;
     if (deviceId <= 0)
@@ -600,6 +600,8 @@ bool SearchDeviceWidget::copyDeviceWindowAsMirror(long srcID, bool bHorizontal)
 
     std::vector<Engine::WindowGroup> vecWindowGroup;
     for (const auto groupId : vecGroupId) {
+        if (groupIDs.indexOf(groupId) < 0) continue;
+
         Engine::WindowGroup windowGroup;
         auto result = Engine::GetGroupWindows(groupId, windowGroup);
         if (result != Engine::OK) {
@@ -638,12 +640,13 @@ bool SearchDeviceWidget::copyDeviceWindowAsMirror(long srcID, bool bHorizontal)
     auto currentBoard = *iterBoard;
 
     for (const auto &win : vecCurrentDeviceWindows) {
+        if (winIDs.indexOf(win.Id) < 0) continue;
 
         Engine::Window window = win;
         window.deviceId = destDevice.Id;
 
-        window.x += ((currentBoard.x + currentDevice.x + currentDevice.width / 2) - (window.x + window.width / 2)) * offsetX;
-        window.y += ((currentBoard.y + currentDevice.y + currentDevice.height / 2) - (window.y + window.height / 2)) * offsetY;
+        window.x += ((currentBoard.x + currentDevice.x ) - window.x) * offsetX;
+        window.y += ((currentBoard.y + currentDevice.y ) - window.y) * offsetY;
 
         char windowName[100];
         _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), destDevice.name.c_str());
@@ -664,8 +667,8 @@ bool SearchDeviceWidget::copyDeviceWindowAsMirror(long srcID, bool bHorizontal)
         for (auto &window : windowGroup.vecWindows) {
             window.deviceId = destDevice.Id;
 
-            window.x += ((currentBoard.x + currentDevice.x + currentDevice.width / 2) - (window.x + window.width / 2)) * offsetX;
-            window.y += ((currentBoard.y + currentDevice.y + currentDevice.height / 2) - (window.y + window.height / 2)) * offsetY;
+            window.x += ((currentBoard.x + currentDevice.x) - window.x) * offsetX;
+            window.y += ((currentBoard.y + currentDevice.y) - window.y) * offsetY;
 
             char windowName[100];
             _snprintf(windowName, sizeof(windowName), "%s [%d, %d] @ %s", WINDOW_USAGE_NAME[Vision::ToInt32(window.usage)], Vision::ToInt32(window.x), Vision::ToInt32(window.y), destDevice.name.c_str());
