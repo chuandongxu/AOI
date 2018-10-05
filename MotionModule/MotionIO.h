@@ -36,7 +36,7 @@ public:
     ~MotionIO();
 
 public:
-    void updataIO();
+	void updataIO();
 
 private slots:
     void updataOutPort0(int index);

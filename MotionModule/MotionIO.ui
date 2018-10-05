@@ -41,7 +41,7 @@
      <bool>false</bool>
     </property>
     <property name="text">
-     <string>0</string>
+     <string>进料</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -60,7 +60,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>1</string>
+     <string>减速</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
@@ -79,7 +79,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>2</string>
+     <string>停止</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
@@ -98,7 +98,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>3</string>
+     <string>出料</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
@@ -117,7 +117,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>4</string>
+     <string>急停</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
@@ -136,7 +136,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>5</string>
+     <string>启动</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
@@ -155,7 +155,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>6</string>
+     <string>复位</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
@@ -174,7 +174,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>7</string>
+     <string>停止</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
@@ -355,7 +355,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>相机Trigger1</string>
+     <string>灯源Trigger1</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_22">
@@ -368,7 +368,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>相机Trigger2</string>
+     <string>灯源Trigger2</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_23">
@@ -381,7 +381,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>DLP Trigger1</string>
+     <string>顶升气缸</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_24">
@@ -394,7 +394,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>DLP Trigger2</string>
+     <string>备用4</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_25">
@@ -407,7 +407,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>DLP Trigger3</string>
+     <string>红灯</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_26">
@@ -420,7 +420,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>DLP Trigger4</string>
+     <string>黄灯</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_27">
@@ -433,7 +433,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>频闪1_chn1</string>
+     <string>绿灯</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_28">
@@ -446,7 +446,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>频闪1_chn2</string>
+     <string>蜂鸣器</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_29">
@@ -459,7 +459,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>频闪1_chn3</string>
+     <string>启动</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_30">
@@ -472,7 +472,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>频闪1_chn4</string>
+     <string>停止</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_31">
@@ -485,7 +485,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>频闪2_chn1</string>
+     <string>复位</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_32">
@@ -498,7 +498,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>频闪2_chn2</string>
+     <string>Z轴抱闸</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_33">
@@ -511,7 +511,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>频闪2_chn3</string>
+     <string>流水线步进</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_34">
@@ -524,7 +524,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>频闪2_chn4</string>
+     <string>14</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_35">
@@ -537,7 +537,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>14</string>
+     <string>15</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_36">
@@ -550,7 +550,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>15</string>
+     <string>16</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_onCombTriggerOn">

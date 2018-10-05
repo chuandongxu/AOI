@@ -8,20 +8,20 @@
 #include <QDebug>
 #include "../include/constants.h"
 
-void setupTriggerConfig(TMPGenPara* pPara, int nDLP_ID)
-{
-    double dPatternExposure = System->getParam("motion_trigger_pattern_exposure").toDouble();
-    double dPatternPeriod = System->getParam("motion_trigger_pattern_period").toDouble();
-    int nPatternNum = System->getParam("motion_trigger_pattern_num").toInt();
-
-    pPara->DoChnJoinNo = 1;
-    pPara->DoChnMap[0] = nDLP_ID; //should confirm id start from 0 or 1?    
-    pPara->DoOutCfg[0] = 0xfff; //111111111111    
-    pPara->firstLevel = 1; //该group首先出现的电平状态,0:低电平;1:高电平
-    pPara->highLevelTime = dPatternExposure; //高电平持续时间[ms]
-    pPara->lowLevelTime = (dPatternPeriod > dPatternExposure) ? (dPatternPeriod - dPatternExposure) : 0; //低电平持续时间[ms]
-    pPara->pulseNum = nPatternNum; //该group输出脉冲的个数,取值范围:非负数,当为0时,表示无限输出脉冲,直到遇到关闭指令
-}
+//void setupTriggerConfig(TMPGenPara* pPara, int nDLP_ID)
+//{
+//    double dPatternExposure = System->getParam("motion_trigger_pattern_exposure").toDouble();
+//    double dPatternPeriod = System->getParam("motion_trigger_pattern_period").toDouble();
+//    int nPatternNum = System->getParam("motion_trigger_pattern_num").toInt();
+//
+//    pPara->DoChnJoinNo = 1;
+//    pPara->DoChnMap[0] = nDLP_ID; //should confirm id start from 0 or 1?    
+//    pPara->DoOutCfg[0] = 0xfff; //111111111111    
+//    pPara->firstLevel = 1; //该group首先出现的电平状态,0:低电平;1:高电平
+//    pPara->highLevelTime = dPatternExposure; //高电平持续时间[ms]
+//    pPara->lowLevelTime = (dPatternPeriod > dPatternExposure) ? (dPatternPeriod - dPatternExposure) : 0; //低电平持续时间[ms]
+//    pPara->pulseNum = nPatternNum; //该group输出脉冲的个数,取值范围:非负数,当为0时,表示无限输出脉冲,直到遇到关闭指令
+//}
 
 ////////////////////////////////////////
 #ifndef FALSE
@@ -70,10 +70,12 @@ MotionControl::~MotionControl()
 
 void MotionControl::loadConfig()
 {
-    m_mapMtrID.clear();    
-    m_mapMtrID.insert(AxisEnum::MTR_AXIS_Z, AXIS_MOTOR_Z);
-    m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, AXIS_MOTOR_X);
-    //m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, AXIS_MOTOR_Y);    
+	m_mapMtrID.clear();
+	m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, AXIS_MOTOR_X);
+	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, AXIS_MOTOR_Y);
+	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Z, AXIS_MOTOR_Z);
+	m_mapMtrID.insert(AxisEnum::MTR_AXIS_TRACK_WIDTH, AXIS_MOTOR_TRACK_WIDTH);
+	m_mapMtrID.insert(AxisEnum::MTR_AXIS_TRACKING, AXIS_MOTOR_TRACKING);
 }
 
 bool MotionControl::init()
@@ -158,7 +160,7 @@ void MotionControl::clearError(int AxisID)
     short sRtn = 0;
 
     // 清除轴状态
-    sRtn += GT_ClrSts(AxisID, 8);
+	sRtn += GT_ClrSts((short)AxisID, (short)8);
 
     commandhandler("GT_ClrSts", sRtn);
 }
@@ -171,7 +173,7 @@ void MotionControl::clearAllError()
     // 清除轴状态
     for (int i = 0; i < getMotorAxisNum(); i++)
     {
-        sRtn += GT_ClrSts(m_mapMtrID.values().at(i), 8);
+        sRtn += GT_ClrSts((short)(m_mapMtrID.values().at(i)), (short)8);
     }
 
     commandhandler("GT_ClrSts", sRtn);
@@ -234,7 +236,7 @@ bool MotionControl::getDO(int nPort, int &iState)
     //commandhandler("GT_GetDo", sRtn);
 
     iState = 0;
-    if (lGpiValue & (1 << nPort))
+    if (lGpiValue & (1 << (nPort-1)))
     {
         iState = 1;
     }
@@ -256,7 +258,7 @@ bool MotionControl::getDI(int nPort, int &iState)
     //commandhandler("GT_GetDi", sRtn);
 
     iState = 0;
-    if (lGpiValue & (1 << nPort))
+    if (lGpiValue & (1 << (nPort-1)))
     {
         iState = 1;
     }
@@ -267,161 +269,161 @@ bool MotionControl::getDI(int nPort, int &iState)
 // 3D Functions:
 bool MotionControl::triggerCapturing(IMotion::TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig)
 {
-    // 指令返回值
-    short rtn = 0;
+    //// 指令返回值
+    //short rtn = 0;
 
-    short sMultPulseSts = 0;
-    rtn = GT_GetPulseWaveGenStatus(&sMultPulseSts);
-    commandhandler("GT_GetPulseWaveGenStatus", rtn);
+    //short sMultPulseSts = 0;
+    //rtn = GT_GetPulseWaveGenStatus(&sMultPulseSts);
+    //commandhandler("GT_GetPulseWaveGenStatus", rtn);
 
-    if (1 == sMultPulseSts)
-    {
-        System->setTrackInfo(QStringLiteral("motion trigger signal not ready yet"));
-        return false;
-    }
+    //if (1 == sMultPulseSts)
+    //{
+    //    System->setTrackInfo(QStringLiteral("motion trigger signal not ready yet"));
+    //    return false;
+    //}
 
-    if (bClearSetupConfig) m_bSetupTriggerConfig = false;
+    //if (bClearSetupConfig) m_bSetupTriggerConfig = false;
 
-    if (!m_bSetupTriggerConfig)
-    {
-        m_bSetupTriggerConfig = true;
+    //if (!m_bSetupTriggerConfig)
+    //{
+    //    m_bSetupTriggerConfig = true;
 
-        setupTrigger(emTrig);        
-    }
+    //    setupTrigger(emTrig);        
+    //}
 
-    rtn = GT_TrigPulseWaveGen();
-    commandhandler("GT_TrigPulseWaveGen", rtn);
+    //rtn = GT_TrigPulseWaveGen();
+    //commandhandler("GT_TrigPulseWaveGen", rtn);
 
-    rtn = GT_GetPulseWaveGenStatus(&sMultPulseSts);
-    commandhandler("GT_GetPulseWaveGenStatus", rtn);
+    //rtn = GT_GetPulseWaveGenStatus(&sMultPulseSts);
+    //commandhandler("GT_GetPulseWaveGenStatus", rtn);
 
-    if (bWaitDone)
-    {
-        int nWaitTime = 30 * 100;// 10 seconds
-        while (1 == sMultPulseSts && nWaitTime-- > 0)
-        {
-            GT_GetPulseWaveGenStatus(&sMultPulseSts);
-            QThread::msleep(10);
-        }
-        if (nWaitTime <= 0) return false;
-    }    
+    //if (bWaitDone)
+    //{
+    //    int nWaitTime = 30 * 100;// 10 seconds
+    //    while (1 == sMultPulseSts && nWaitTime-- > 0)
+    //    {
+    //        GT_GetPulseWaveGenStatus(&sMultPulseSts);
+    //        QThread::msleep(10);
+    //    }
+    //    if (nWaitTime <= 0) return false;
+    //}    
 
     return true;
 }
 
 void MotionControl::setupTrigger(IMotion::TRIGGER emTrig)
 {
-    // 指令返回值
-    short rtn = 0;
+    //// 指令返回值
+    //short rtn = 0;
 
-    short sTotalSerial = 0;
+    //short sTotalSerial = 0;
 
-    TMPGenPara MGenStrPrm[MAX_WAVE_SERIALS];
-    memset(&MGenStrPrm, 0, sizeof(MGenStrPrm));
+    //TMPGenPara MGenStrPrm[MAX_WAVE_SERIALS];
+    //memset(&MGenStrPrm, 0, sizeof(MGenStrPrm));
 
-    switch (emTrig)
-    {
-    case IMotion::TRIGGER_ALL:
-    {        
-        sTotalSerial = 5;
-        setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP1);
-        setupTriggerConfig(MGenStrPrm + 1, DO_TRIGGER_DLP2);
-        setupTriggerConfig(MGenStrPrm + 2, DO_TRIGGER_DLP3);
-        setupTriggerConfig(MGenStrPrm + 3, DO_TRIGGER_DLP4);
+    //switch (emTrig)
+    //{
+    //case IMotion::TRIGGER_ALL:
+    //{        
+    //    sTotalSerial = 5;
+    //    setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP1);
+    //    setupTriggerConfig(MGenStrPrm + 1, DO_TRIGGER_DLP2);
+    //    setupTriggerConfig(MGenStrPrm + 2, DO_TRIGGER_DLP3);
+    //    setupTriggerConfig(MGenStrPrm + 3, DO_TRIGGER_DLP4);
 
-        double dLightExposure = System->getParam("motion_trigger_light_exposure").toDouble() / 1000.0;
-        double dLightPeriod = System->getParam("motion_trigger_light_period").toDouble();
-        MGenStrPrm[4].DoChnJoinNo = 7;
-        MGenStrPrm[4].DoChnMap[0] = DO_CAMERA_TRIGGER2; //should confirm id start from 0 or 1?
-        MGenStrPrm[4].DoChnMap[1] = DO_LIGHT1_CH1;
-        MGenStrPrm[4].DoChnMap[2] = DO_LIGHT1_CH2;
-        MGenStrPrm[4].DoChnMap[3] = DO_LIGHT1_CH3;
-        MGenStrPrm[4].DoChnMap[4] = DO_LIGHT1_CH4;
-        MGenStrPrm[4].DoChnMap[5] = DO_LIGHT2_CH1;
-        MGenStrPrm[4].DoChnMap[6] = DO_LIGHT2_CH2;
-        MGenStrPrm[4].DoOutCfg[0] = 0x3F; //111111
-        MGenStrPrm[4].DoOutCfg[1] = 0x4;  //000100; 信号出现的顺序是相反的，然后转成16进制
-        MGenStrPrm[4].DoOutCfg[2] = 0x21; //100001;
-        MGenStrPrm[4].DoOutCfg[3] = 0x8;  //001000;
-        MGenStrPrm[4].DoOutCfg[4] = 0x10; //010000;
-        MGenStrPrm[4].DoOutCfg[5] = 0x22; //100010;
-        MGenStrPrm[4].DoOutCfg[6] = 0x10; //010000;
-        MGenStrPrm[4].firstLevel = 1;
-        MGenStrPrm[4].highLevelTime = dLightExposure;
-        MGenStrPrm[4].lowLevelTime = (dLightPeriod > dLightExposure) ? (dLightPeriod - dLightExposure) : 0;
-        MGenStrPrm[4].pulseNum = 6;            
-    }
-    break;
-    case IMotion::TRIGGER_DLP:
-    {
-        int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
-        int nDlpNumIndex = System->getParam("motion_trigger_dlp_num_index").toInt();
-        if (0 == nDlpNumIndex)
-        {
-            sTotalSerial = nDlpNum;
-            setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP1);
-            setupTriggerConfig(MGenStrPrm + 1, DO_TRIGGER_DLP2);        
-        }
-        else if (1 == nDlpNumIndex)
-        {
-            sTotalSerial = nDlpNum;
-            setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP1);
-            setupTriggerConfig(MGenStrPrm + 1, DO_TRIGGER_DLP2);
-            setupTriggerConfig(MGenStrPrm + 2, DO_TRIGGER_DLP3);
-            setupTriggerConfig(MGenStrPrm + 3, DO_TRIGGER_DLP4);
-        }
-    }
-    break;
-    case IMotion::TRIGGER_DLP1:
-        sTotalSerial = 1;
-        setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP1);
-        break;
-    case IMotion::TRIGGER_DLP2:
-        sTotalSerial = 1;
-        setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP2);
-        break;
-    case IMotion::TRIGGER_DLP3:
-        sTotalSerial = 1;
-        setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP3);
-        break;
-    case IMotion::TRIGGER_DLP4:
-        sTotalSerial = 1;
-        setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP4);
-        break;
-    case IMotion::TRIGGER_LIGHT:
-    {
-        double dLightExposure = System->getParam("motion_trigger_light_exposure").toDouble() / 1000.0;
-        double dLightPeriod = System->getParam("motion_trigger_light_period").toDouble();
+    //    double dLightExposure = System->getParam("motion_trigger_light_exposure").toDouble() / 1000.0;
+    //    double dLightPeriod = System->getParam("motion_trigger_light_period").toDouble();
+    //    MGenStrPrm[4].DoChnJoinNo = 7;
+    //    MGenStrPrm[4].DoChnMap[0] = DO_CAMERA_TRIGGER2; //should confirm id start from 0 or 1?
+    //    MGenStrPrm[4].DoChnMap[1] = DO_LIGHT1_CH1;
+    //    MGenStrPrm[4].DoChnMap[2] = DO_LIGHT1_CH2;
+    //    MGenStrPrm[4].DoChnMap[3] = DO_LIGHT1_CH3;
+    //    MGenStrPrm[4].DoChnMap[4] = DO_LIGHT1_CH4;
+    //    MGenStrPrm[4].DoChnMap[5] = DO_LIGHT2_CH1;
+    //    MGenStrPrm[4].DoChnMap[6] = DO_LIGHT2_CH2;
+    //    MGenStrPrm[4].DoOutCfg[0] = 0x3F; //111111
+    //    MGenStrPrm[4].DoOutCfg[1] = 0x4;  //000100; 信号出现的顺序是相反的，然后转成16进制
+    //    MGenStrPrm[4].DoOutCfg[2] = 0x21; //100001;
+    //    MGenStrPrm[4].DoOutCfg[3] = 0x8;  //001000;
+    //    MGenStrPrm[4].DoOutCfg[4] = 0x10; //010000;
+    //    MGenStrPrm[4].DoOutCfg[5] = 0x22; //100010;
+    //    MGenStrPrm[4].DoOutCfg[6] = 0x10; //010000;
+    //    MGenStrPrm[4].firstLevel = 1;
+    //    MGenStrPrm[4].highLevelTime = dLightExposure;
+    //    MGenStrPrm[4].lowLevelTime = (dLightPeriod > dLightExposure) ? (dLightPeriod - dLightExposure) : 0;
+    //    MGenStrPrm[4].pulseNum = 6;            
+    //}
+    //break;
+    //case IMotion::TRIGGER_DLP:
+    //{
+    //    int nDlpNum = System->getParam("motion_trigger_dlp_num_index").toInt() == 0 ? 2 : 4;
+    //    int nDlpNumIndex = System->getParam("motion_trigger_dlp_num_index").toInt();
+    //    if (0 == nDlpNumIndex)
+    //    {
+    //        sTotalSerial = nDlpNum;
+    //        setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP1);
+    //        setupTriggerConfig(MGenStrPrm + 1, DO_TRIGGER_DLP2);        
+    //    }
+    //    else if (1 == nDlpNumIndex)
+    //    {
+    //        sTotalSerial = nDlpNum;
+    //        setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP1);
+    //        setupTriggerConfig(MGenStrPrm + 1, DO_TRIGGER_DLP2);
+    //        setupTriggerConfig(MGenStrPrm + 2, DO_TRIGGER_DLP3);
+    //        setupTriggerConfig(MGenStrPrm + 3, DO_TRIGGER_DLP4);
+    //    }
+    //}
+    //break;
+    //case IMotion::TRIGGER_DLP1:
+    //    sTotalSerial = 1;
+    //    setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP1);
+    //    break;
+    //case IMotion::TRIGGER_DLP2:
+    //    sTotalSerial = 1;
+    //    setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP2);
+    //    break;
+    //case IMotion::TRIGGER_DLP3:
+    //    sTotalSerial = 1;
+    //    setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP3);
+    //    break;
+    //case IMotion::TRIGGER_DLP4:
+    //    sTotalSerial = 1;
+    //    setupTriggerConfig(MGenStrPrm + 0, DO_TRIGGER_DLP4);
+    //    break;
+    //case IMotion::TRIGGER_LIGHT:
+    //{
+    //    double dLightExposure = System->getParam("motion_trigger_light_exposure").toDouble() / 1000.0;
+    //    double dLightPeriod = System->getParam("motion_trigger_light_period").toDouble();
 
-        sTotalSerial = 1;
-        MGenStrPrm[0].DoChnJoinNo = 7;
-        MGenStrPrm[0].DoChnMap[0] = DO_CAMERA_TRIGGER2; //should confirm id start from 0 or 1?
-        MGenStrPrm[0].DoChnMap[1] = DO_LIGHT1_CH1;
-        MGenStrPrm[0].DoChnMap[2] = DO_LIGHT1_CH2;
-        MGenStrPrm[0].DoChnMap[3] = DO_LIGHT1_CH3;
-        MGenStrPrm[0].DoChnMap[4] = DO_LIGHT1_CH4;
-        MGenStrPrm[0].DoChnMap[5] = DO_LIGHT2_CH1;
-        MGenStrPrm[0].DoChnMap[6] = DO_LIGHT2_CH2;
-        MGenStrPrm[0].DoOutCfg[0] = 0x3F; //111111
-        MGenStrPrm[0].DoOutCfg[1] = 0x4;  //000100; 信号出现的顺序是相反的，然后转成16进制
-        MGenStrPrm[0].DoOutCfg[2] = 0x21; //100001;
-        MGenStrPrm[0].DoOutCfg[3] = 0x8;  //001000;
-        MGenStrPrm[0].DoOutCfg[4] = 0x10; //010000;
-        MGenStrPrm[0].DoOutCfg[5] = 0x22; //100010;
-        MGenStrPrm[0].DoOutCfg[6] = 0x10; //010000;
-        MGenStrPrm[0].firstLevel = 1;
-        MGenStrPrm[0].highLevelTime = dLightExposure;
-        MGenStrPrm[0].lowLevelTime = (dLightPeriod > dLightExposure) ? (dLightPeriod - dLightExposure) : 0;
-        MGenStrPrm[0].pulseNum = 6;
-    }
-    break;
-    default:
-        break;
-    }
+    //    sTotalSerial = 1;
+    //    MGenStrPrm[0].DoChnJoinNo = 7;
+    //    MGenStrPrm[0].DoChnMap[0] = DO_CAMERA_TRIGGER2; //should confirm id start from 0 or 1?
+    //    MGenStrPrm[0].DoChnMap[1] = DO_LIGHT1_CH1;
+    //    MGenStrPrm[0].DoChnMap[2] = DO_LIGHT1_CH2;
+    //    MGenStrPrm[0].DoChnMap[3] = DO_LIGHT1_CH3;
+    //    MGenStrPrm[0].DoChnMap[4] = DO_LIGHT1_CH4;
+    //    MGenStrPrm[0].DoChnMap[5] = DO_LIGHT2_CH1;
+    //    MGenStrPrm[0].DoChnMap[6] = DO_LIGHT2_CH2;
+    //    MGenStrPrm[0].DoOutCfg[0] = 0x3F; //111111
+    //    MGenStrPrm[0].DoOutCfg[1] = 0x4;  //000100; 信号出现的顺序是相反的，然后转成16进制
+    //    MGenStrPrm[0].DoOutCfg[2] = 0x21; //100001;
+    //    MGenStrPrm[0].DoOutCfg[3] = 0x8;  //001000;
+    //    MGenStrPrm[0].DoOutCfg[4] = 0x10; //010000;
+    //    MGenStrPrm[0].DoOutCfg[5] = 0x22; //100010;
+    //    MGenStrPrm[0].DoOutCfg[6] = 0x10; //010000;
+    //    MGenStrPrm[0].firstLevel = 1;
+    //    MGenStrPrm[0].highLevelTime = dLightExposure;
+    //    MGenStrPrm[0].lowLevelTime = (dLightPeriod > dLightExposure) ? (dLightPeriod - dLightExposure) : 0;
+    //    MGenStrPrm[0].pulseNum = 6;
+    //}
+    //break;
+    //default:
+    //    break;
+    //}
 
-    //加载用户配置
-    rtn = GT_PreLoadPulseWaveGenParm(sTotalSerial, MGenStrPrm);
-    commandhandler("GT_PreLoadPulseWaveGenParm", rtn);
+    ////加载用户配置
+    //rtn = GT_PreLoadPulseWaveGenParm(sTotalSerial, MGenStrPrm);
+    //commandhandler("GT_PreLoadPulseWaveGenParm", rtn);
 }
 
 void MotionControl::commandhandler(char *command, short error)
@@ -670,17 +672,35 @@ bool MotionControl::IsLimit(int AxisID)
 
 bool MotionControl::homeAll(bool bSyn)
 {
-    int nMtrNum = getMotorAxisNum();
-    for (int i = 0; i < nMtrNum; i++)
-    {
-        if (!homeLimit(getMotorAxisID(i), false))
-        {
-            return false;
-        }
-    }
+	int nMtrNum = getMotorAxisNum();
+	for (int i = 0; i < nMtrNum; i++)
+	{
+		QMtrHomeProfile::HomeMode mode = m_mtrParams[i]._homeProf._mode;
+		switch (mode)
+		{
+		case QMtrHomeProfile::HOME_MODE_HOME_READY:
+		{
+			if (!home(getMotorAxisID(i), false))
+			{
+				return false;
+			}
+		}
+		break;
+		case QMtrHomeProfile::HOME_MODE_HOME_LIMIT:
+		{
+			if (!homeLimit(getMotorAxisID(i), false))
+			{
+				return false;
+			}
+		}
+		break;
+		default:
+			break;
+		}
+	}
 
-    if (bSyn) return waitDone();
-    return true;
+	if (bSyn) return waitDone();
+	return true;
 }
 
 bool MotionControl::home(int AxisID, bool bSyn)

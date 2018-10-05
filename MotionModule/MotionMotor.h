@@ -60,6 +60,7 @@ private:
     void saveMtrPointGroupConfig();
 
     void getAxisSelected(bool* axisIDs, int axisNum);
+	QMtrHomeProfile::HomeMode getAxisHomeMode(int nAxisID);
 
 private slots:
     void onEnable();

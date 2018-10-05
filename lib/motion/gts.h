@@ -1,38 +1,18 @@
 #pragma once
-#include "oci.h"
+
 #define GT_API extern "C" short __stdcall
-
-//-----------------------------------------------------------
-// 错误代码                                                  
-//-----------------------------------------------------------
-//#define CMD_SUCCESS                     0
-//#define CMD_ERROR_READ_LEN             -2     //读取数据长度错误 
-//#define CMD_ERROR_READ_CHECKSUM        -3     //读取数据校验和错误 
-//#define CMD_ERROR_WRITE_BLOCK          -4     //写入数据块错误 
-//#define CMD_ERROR_READ_BLOCK           -5     //读取数据块错误 
-//#define CMD_ERROR_OPEN                 -6     //打开设备错误 
-//#define CMD_ERROR_CLOSE                -6     //关闭设备错误 
-//#define CMD_ERROR_DSP_BUSY             -7     //DSP忙 
-//#define CMD_LOCK_ERROR                 -8     //多线程资源忙
-//#define CMD_ERROR_EXECUTE               1
-//#define CMD_ERROR_VERSION_NOT_MATCH     3
-//#define CMD_ERROR_PARAMETER             7
-//#define CMD_ERROR_UNKNOWN               8     //不支持的指令 
-//#define CMD_PARAMETER_REPAIR            9
-
 
 #define DLL_VERSION_0                   2
 #define DLL_VERSION_1                   1
-#define DLL_VERSION_2                   2
+#define DLL_VERSION_2                   0
 
 #define DLL_VERSION_3                   1
-#define DLL_VERSION_4                   7
-#define DLL_VERSION_5                   1
-#define DLL_VERSION_6                   1
-#define DLL_VERSION_7                   1
-#define DLL_VERSION_8                   5
+#define DLL_VERSION_4                   5
+#define DLL_VERSION_5                   0
+#define DLL_VERSION_6                   6
+#define DLL_VERSION_7                   0
+#define DLL_VERSION_8                   7
 
-#define AXIS_ID_FOR_EXCITATION_SIGNAL   1
 #define MC_NONE                         -1
 
 #define MC_LIMIT_POSITIVE               0
@@ -91,7 +71,12 @@
 #define FOLLOW_SEGMENT_STOP             2
 #define FOLLOW_SEGMENT_CONTINUE         3
 
-#define INTERPOLATION_AXIS_MAX          4
+
+#ifdef XYZACUVW
+#define INTERPOLATION_AXIS_MAX         8
+#else
+#define INTERPOLATION_AXIS_MAX         4
+#endif
 #define CRD_FIFO_MAX                    4096
 #define FIFO_MAX						2
 #define CRD_MAX                         2
@@ -162,11 +147,9 @@
 #define LASER_CTRL_VOLTAGE              (2)                 // ??:?
 #define LASER_CTRL_MODE_PWM2            (3)                 // ??:PWM2
 
-#define ADVANCED_OCDB                     1
-
 typedef struct TrapPrm
-{				
-	double acc;
+{
+    double acc;
     double dec;
     double velStart;
     short  smoothTime;
@@ -178,6 +161,18 @@ typedef struct JogPrm
     double dec;
     double smooth;
 } TJogPrm;
+
+typedef struct Pid
+{
+    double kp;
+    double ki;
+    double kd;
+    double kvff;
+    double kaff;
+    long   integralLimit;
+    long   derivativeLimit;
+    short  limit;
+} TPid;
 
 typedef struct ThreadSts
 {
@@ -227,9 +222,9 @@ typedef struct CrdData
     short motionType;                             // 运动类型,0:直线插补,1:圆弧插补
     short circlePlat;                             // 圆弧插补的平面
     long pos[INTERPOLATION_AXIS_MAX];             // 当前段各轴终点位置
-    double radius;                                // 圆弧插补的半径
+    double radius;                                  // 圆弧插补的半径
     short circleDir;                              // 圆弧旋转方向,0:顺时针;1:逆时针
-    double center[3];                             // 圆弧插补的圆心坐标
+    double center[3];                               // 圆弧插补的圆心坐标
     double vel;                                   // 当前段合成目标速度
     double acc;                                   // 当前段合成加速度
     short velEndZero;                             // 标志当前段的终点速度是否强制为0,0:不强制为0;1:强制为0
@@ -277,20 +272,13 @@ typedef struct
     short threshold;
 } T2DComparePrm;
 
-typedef struct PosControlConfig
+typedef struct  
 {
-	short active;
-	short axis;
-	short encoder1;
-	short encoder2;
-	long  errorLimit;
-	short filterType[3];
-	short encoderSmooth;
-	short controlSmooth;
-	//double posVelEncRatio;
-	short appType;
-	//double zeroVelBound;
-} TPosCtrlStrCfg;
+	double time;
+	long segmentUsed;
+	long segmentHead;
+	long segmentTail;
+} TCrdTime;
 
 GT_API GT_GetDllVersion(char **pDllVersion);
 
@@ -361,6 +349,7 @@ GT_API GT_GetEncVel(short encoder,double *pValue,short count=1,unsigned long *pC
 
 GT_API GT_SetCaptureMode(short encoder,short mode);
 GT_API GT_GetCaptureMode(short encoder,short *pMode,short count=1);
+GT_API GT_StopCapture(short encoder);
 GT_API GT_GetCaptureStatus(short encoder,short *pStatus,long *pValue,short count=1,unsigned long *pClock=NULL);
 GT_API GT_SetCaptureSense(short encoder,short mode,short sense);
 GT_API GT_ClearCaptureStatus(short encoder);
@@ -395,8 +384,11 @@ GT_API GT_SetLeadScrewComp(short axis,short n,long startPos,long lenPos,long *pC
 GT_API GT_EnableLeadScrewComp(short axis,short mode);
 GT_API GT_GetCompensate(short axis,double *pPitchError,double *pCrossError,double *pBacklashError,double *pEncPos,double *pPrfPos);
 
+GT_API GT_EnableGantry(short gantryMaster,short gantrySlave,double masterKp,double slaveKp);
+GT_API GT_DisableGantry();
 GT_API GT_SetGantryErrLmt(long gantryErrLmt);
 GT_API GT_GetGantryErrLmt(long *pGantryErrLmt);
+GT_API GT_ZeroGantryPos(short gantryMaster,short gantrySlave);
 
 GT_API GT_GetPrfPos(short profile,double *pValue,short count=1,unsigned long *pClock=NULL);
 GT_API GT_GetPrfVel(short profile,double *pValue,short count=1,unsigned long *pClock=NULL);
@@ -450,6 +442,13 @@ GT_API GT_PtStart(long mask,long option=0);
 GT_API GT_SetPtMemory(short profile,short memory);
 GT_API GT_GetPtMemory(short profile,short *pMemory);
 GT_API GT_PtGetSegNum(short profile,long *pSegNum);
+GT_API GT_SetPtPrecisionMode(short profile,short precisionMode);
+GT_API GT_GetPtPrecisionMode(short profile,short *pPrecisionMode);
+GT_API GT_SetPtVel(short profile,double velLast,short fifo);
+GT_API GT_SetPtLink(short profile,short fifo,short list);
+GT_API GT_GetPtLink(short profile,short fifo,short *pList);
+GT_API GT_PtDoBit(short profile,short doType,short index,short value,short fifo);
+GT_API GT_PtAo(short profile,short aoType,short index,double value,short fifo);
 
 GT_API GT_PrfGear(short profile,short dir=0);
 GT_API GT_SetGearMaster(short profile,short masterIndex,short masterType=GEAR_MASTER_PROFILE,short masterItem=0);
@@ -561,6 +560,7 @@ GT_API GT_ArcYZROverride2WN(short crd,long y,long z,double radius,short circleDi
 GT_API GT_ArcYZCOverride2WN(short crd,long y,long z,double yCenter,double zCenter,short circleDir,double synVel,double synAcc,double velEnd=0,long segNum=0,short fifo=0);
 GT_API GT_ArcZXROverride2WN(short crd,long z,long x,double radius,short circleDir,double synVel,double synAcc,double velEnd=0,long segNum=0,short fifo=0);
 GT_API GT_ArcZXCOverride2WN(short crd,long z,long x,double zCenter,double xCenter,short circleDir,double synVel,double synAcc,double velEnd=0,long segNum=0,short fifo=0);
+GT_API GT_ArcXYZOverride2WN(short crd,long x,long y,long z,double interX,double interY,double interZ,double synVel,double synAcc,double velEnd,long segNum,short fifo=0);
 GT_API GT_HelixXYRZWN(short crd,long x,long y,long z,double radius,short circleDir,double synVel,double synAcc,double velEnd=0,long segNum=0,short fifo=0);
 GT_API GT_HelixXYCZWN(short crd,long x,long y,long z,double xCenter,double yCenter,short circleDir,double synVel,double synAcc,double velEnd=0,long segNum=0,short fifo=0);
 GT_API GT_HelixYZRXWN(short crd,long x,long y,long z,double radius,short circleDir,double synVel,double synAcc,double velEnd=0,long segNum=0,short fifo=0);
@@ -597,6 +597,7 @@ GT_API GT_CrdStartStep(short mask,short option);
 GT_API GT_CrdStepMode(short mask,short option);
 GT_API GT_SetOverride(short crd,double synVelRatio);
 GT_API GT_SetOverride2(short crd,double synVelRatio);
+GT_API GT_SetMaxOverrideLA(double maxSynVelRatio);
 GT_API GT_InitLookAhead(short crd,short fifo,double T,double accMax,short n,TCrdData *pLookAheadBuf);
 GT_API GT_GetLookAheadSpace(short crd,long *pSpace,short fifo=0);
 GT_API GT_GetLookAheadSegCount(short crd,long *pSegCount,short fifo=0);
@@ -624,6 +625,14 @@ GT_API GT_BufLaserFollowRatio(short crd,double ratio,double minPower,double maxP
 GT_API GT_BufLaserFollowMode(short crd,short source =0,short fifo=0,short channel=0,double startPower =0);
 GT_API GT_BufLaserFollowOff(short crd,short fifo=0,short channel=0);
 GT_API GT_BufLaserFollowSpline(short crd,short tableId,double minPower,double maxPower,short fifo=0,short channel=0);
+GT_API GT_SetCrdBufferMode(short crd,short staticMode,short fifo);
+GT_API GT_GetCrdBufferMode(short crd,short *pStaticMode,short fifo);
+GT_API GT_GetCrdSegmentTime(short crd,long segmentIndex,double *pSegmentTime,long *pSegmentNumber,short fifo);
+GT_API GT_GetCrdTime(short crd,TCrdTime *pTime,short fifo);
+GT_API GT_LnXYZACUVW(short crd,long *pPos,short posMask,double synVel,double synAcc,double velEnd=0,short fifo=0);
+GT_API GT_LnXYZACUVWWN(short crd,long *pPos,short posMask,double synVel,double synAcc,double velEnd=0,long segNum=0,short fifo=0);
+GT_API GT_LnXYZACUVWOverride2(short crd,long *pPos,short posMask,double synVel,double synAcc,double velEnd=0,short fifo=0);
+GT_API GT_LnXYZACUVWOverride2WN(short crd,long *pPos,short posMask,double synVel,double synAcc,double velEnd=0,long segNum=0,short fifo=0);
 
 GT_API GT_PrfPvt(short profile);
 GT_API GT_SetPvtLoop(short profile,long loop);
@@ -639,9 +648,8 @@ GT_API GT_PvtTablePercent(short tableId,long count,double *pTime,double *pPos,do
 GT_API GT_PvtPercentCalculate(long n,double *pTime,double *pPos,double *pPercent,double velBegin,double *pVel);
 GT_API GT_PvtTableContinuous(short tableId,long count,double *pPos,double *pVel,double *pPercent,double *pVelMax,double *pAcc,double *pDec,double timeBegin);
 GT_API GT_PvtContinuousCalculate(long n,double *pPos,double *pVel,double *pPercent,double *pVelMax,double *pAcc,double *pDec,double *pTime);
-GT_API GT_PvtTableMove(short tableId,long distance,double vm,double am,double jm,double *pTime);
-//GT_API GT_PvtTableMovePercent(short tableId,long distance,double vm,double acc,double pa1,double pa2,double dec,double pd1,double pd2,double *pVel,double *pAcc,double *pDec,double *pTime);
-//GT_API GT_PvtTableMovePercentEx(short tableId,long distance,double vm,double acc,double pa1,double pa2,double ma,double dec,double pd1,double pd2,double md,double *pVel,double *pAcc,double *pDec,double *pTime);
+GT_API GT_PvtTableMovePercent(short tableId,long distance,double vm,double acc,double pa1,double pa2,double dec,double pd1,double pd2,double *pVel,double *pAcc,double *pDec,double *pTime);
+GT_API GT_PvtTableMovePercentEx(short tableId,long distance,double vm,double acc,double pa1,double pa2,double ma,double dec,double pd1,double pd2,double md,double *pVel,double *pAcc,double *pDec,double *pTime);
 
 GT_API GT_HomeInit();
 GT_API GT_Home(short axis,long pos,double vel,double acc,long offset);
@@ -681,6 +689,7 @@ GT_API GT_2DCompareStatus(short chn,short *pStatus,long *pCount,short *pFifo,sho
 GT_API GT_2DCompareSetPrm(short chn,T2DComparePrm *pPrm);
 GT_API GT_2DCompareData(short chn,short count,T2DCompareData *pBuf,short fifo);
 GT_API GT_2DCompareStart(short chn);
+GT_API GT_2DCompareClearData(short chn);
 
 GT_API GT_SetAxisMode(short axis,short mode);
 GT_API GT_GetAxisMode(short axis,short *pMode);
@@ -723,7 +732,9 @@ GT_API GT_GetExtMdlMode(short *pMode);
 GT_API GT_SetExtMdlMode(short mode);
 GT_API GT_UploadConfig();
 GT_API GT_DownloadConfig();
+
 GT_API GT_GetUuid(char *pCode,short count);
+
 
 //////////////////////////////////////////////////////////////////////////
 //2D Compensate
@@ -742,7 +753,6 @@ typedef struct
 	short axisType[2];	                           // 查表轴类型
 	short axisIndex[2];	                           // 查表轴索引
 } TCompensate2D;
-
 
 GT_API GT_SetCompensate2DTable(short tableIndex,TCompensate2DTable *pTable,long *pData,short externComp=0);
 GT_API GT_GetCompensate2DTable(short tableIndex,TCompensate2DTable *pTable,short *pExternComp=NULL);
@@ -796,7 +806,9 @@ GT_API GT_GetCompensate2DValue(short axis,double *pValue);
 #define HOME_MODE_LIMIT_HOME_INDEX			(13)
 
 #define HOME_MODE_HOME						(20)
+
 #define HOME_MODE_HOME_INDEX				(22)
+
 #define HOME_MODE_INDEX						(30)
 
 typedef struct  
@@ -910,91 +922,48 @@ typedef struct
 
 }TLeadScrewPrm;
 
-#define AXIS_ID_FOR_EXCITATION_SIGNAL     1
-#define ADVANCED_OCDB                     1
-
-typedef struct TPvtPrm
-{	
-	short tableId;
-	long distance;
-	double vm;
-	double am;
-	double jm;
-	double time;
-} TPvtPrm;
-
-
-#define MAX_WAVE_SERIALS                 5
-#define LMT_DO_NO                       10
-
-//A serial is called combine of pulses for single serial
-typedef struct
-{
-	short  DoChnJoinNo;         //参与该小串信号输出的DO数量
-	short  DoChnMap[LMT_DO_NO]; //参与该小串信号输出的DO通道, DO通道排序从1开始，即通道1对应端子板DO0
-	short  DoOutCfg[LMT_DO_NO]; //配置该小串DO每个通道对于每个方波是否输出
-	short  firstLevel;     //当前小串信号首先出现的电平状态,0:低电平;1:高电平                 
-	double highLevelTime;  //方波高电平持续时间[ms]，方波的描述为高电平时间和低电平时间，gts lib根据DSP周期250us，对高低电平时间进行向上取整      
-	double lowLevelTime;   //方波低电平持续时间[ms]     
-	short  pulseNum;               
-} TMPGenPara;
-
-
-//Jia Songtao Gantry Function
 GT_API GT_GetLeadScrewCompInnerValue(short axis,short dir,long pos,long *pCompValue);
-GT_API GT_SetGantryInputGain(double gain11, double gain12,double gain21, double gain22);
-GT_API GT_GetGantryInputGain(double *pgain11, double *pgain12,double *pgain21, double *pgain22);
-GT_API GT_SetGantryOutputGain(double gain11, double gain12,double gain21, double gain22);
-GT_API GT_GetGantryOutputGain(double *pgain11, double *pgain12,double *pgain21, double *pgain22);
-GT_API GT_EnableGantry(void);
-GT_API GT_DisableGantry(void);
-GT_API GT_PrfSCurve(short profile);
-GT_API GT_SetSCurvePrm(short profile,TSCurvePrm *pPrm);
-GT_API GT_GetSCurvePrm(short profile,TSCurvePrm *pPrm);
-GT_API GT_SetZeroVelBound(short control, double velBound);
-GT_API GT_GetZeroVelBound(short control, double *pvelBound);
-GT_API GT_SetPosLoopStr(short control, TPosCtrlStrCfg *pPosCtrl);
-GT_API GT_GetPosLoopStr(short control, TPosCtrlStrCfg *pPosCtrl);
-GT_API GT_CftAppType(short control, short appType);
-GT_API GT_GetGenerator(short control, OCA_CTRL_GEN *pGenStr);
-GT_API GT_SetGenerator(short control, OCA_CTRL_GEN *pGenStr);
-GT_API GT_SetCtrlLoopMode(short control, short LoopMode);
-GT_API GT_GetCtrlLoopMode(short control, short *pLoopMode);
-GT_API GT_SetExctLoopMode(short control, short ExciteLoopMode);
-GT_API GT_GetExctLoopMode(short control, short *pExciteLoopMode);
-GT_API GT_EnableRTCtrl(short control);
-GT_API GT_DisableRTCtrl(short control);
-GT_API GT_CfgVelCtrl(short axis,short mode);
-GT_API GT_SetPosLoopPid(short control,short index,TPid *pPid);
-GT_API GT_GetPosLoopPid(short control,short index,TPid *pPid);
-GT_API GT_SetYawCtrlOCDB(short control, short index, TYawCtrlOCDB *pYawCtrlOCDB);
-GT_API GT_GetYawCtrlOCDB(short control, short index, TYawCtrlOCDB *pYawCtrlOCDB);
-GT_API GT_StepResponse(short control, short gain, double time);
-GT_API GT_SetFrcComp(short control, short index, TFrcCmp *pFrcCmp);
-GT_API GT_GetFrcComp(short control, short index, TFrcCmp *pFrcCmp);
-GT_API GT_SetVelFilterII(short control, short index, TVelFiltII *pTVelFiltII);
-GT_API GT_GetVelFilterII(short control, short index, TVelFiltII *pTVelFiltII);
-GT_API GT_SetUserFunBitMask(short control, short bitMask);
-GT_API GT_GetUserFunBitMask(short control, short *pbitMask);
-GT_API GT_GetTrapFiltMaxWinSize(short *psVal);
-GT_API GT_SetPosVelEncRatio(short control, double posVelEncRatio);
-GT_API GT_GetPosVelEncRatio(short control, double *posVelEncRatio);
-GT_API GT_SetAxisInputShapeVerI(short axis, short enable, short freq, double z);
-GT_API GT_GetOCDBFs(short *psVal);
 
-GT_API GT_ResetDIETCounter(void);
-GT_API GT_StartDIETCounter(void);
-GT_API GT_GetDIETCounter(int index, long *pDIETCntr);
-GT_API GT_GetDIDOFreq(short *pFs);
+GT_API GT_SetProfileScale(short axis,long alpha,long beta);
+GT_API GT_GetProfileScale(short axis,long *pAlpha,long *pBeta);
 
-//Config single channel info, have to call multi times to set all channels data
-GT_API GT_PreLoadPulseWaveGenParm(short totalSerial, TMPGenPara (&MPGenPara)[MAX_WAVE_SERIALS]);
-GT_API GT_ConfirmPreLoadPulseWaveGenParm(void);
-GT_API GT_ResetPulseWaveGenParm(void);
-GT_API GT_TrigPulseWaveGen(void);
-GT_API GT_StopPulseWaveGen(void);
-GT_API GT_ResetPulseWaveGen(void);
-GT_API GT_GetPulseWaveGenStatus(short *pStatus);
+GT_API GT_MultiAxisOn(unsigned long mask);
+GT_API GT_MultiAxisOff(unsigned long mask);
+GT_API GT_SetAxisOnDelayTime(unsigned short ms);
+GT_API GT_GetAxisOnDelayTime(unsigned short *pMs);
+
+GT_API GT_SetLaserDisTable1D(short count,double *pRatio,long *pPos,double minPower,double maxPower,double *pLimitPower,short channel=0);
+GT_API GT_SetLaserDisTable2D(short axisIndex[2],short count[2],double *pRatio,long *pXPos,long *pYPos, 
+							 double minPower,double maxPower,double *pLimitPower,short channel=0);
+GT_API GT_SetLaserCrdMap(short channel,short map);
+GT_API GT_GetLaserCrdMap(short channel,short *pMap);
+
+//////////////////////////////////////////////////////////////////////////
+//AutoFocus
+//////////////////////////////////////////////////////////////////////////
+GT_API GT_AutoFocus(unsigned short mode,double kp,short reverse,short chanel);
+GT_API GT_SetAutoFocusRefVol(double refVol,double maxVol,double minVol,short chanel);
+GT_API GT_GetAutoFocusStatus(unsigned short *pStatus,short count);
+GT_API GT_ConfigAutoFocus(short chnAdc,short chanel);
+GT_API GT_SetAutoFocusAuxPrm(double kf,double kd,double limitKd,short chanel);
 
 
+GT_API GT_Delay(unsigned short time);
+GT_API GT_DelayHighPrecision(unsigned short time);
 
+//////////////////////////////////////////////////////////////////////////
+//Random Code
+//////////////////////////////////////////////////////////////////////////
+GT_API GT_SetRandCode(short addr,short *pData);
+GT_API GT_GetRandCode(short addr,short *pData);
+
+#define CRD_BUFFER_MODE_DYNAMIC_DEFAULT  (0)
+#define CRD_BUFFER_MODE_DYNAMIC_KEEP     (1)
+
+#define CRD_BUFFER_MODE_STATIC_INPUT     (11)
+#define CRD_BUFFER_MODE_STATIC_READY     (12)
+#define CRD_BUFFER_MODE_STATIC_START     (13)
+GT_API GT_SetCrdBufferMode(short crd,short bufferMode,short fifo);
+GT_API GT_GetCrdBufferMode(short crd,short *pBufferMode,short fifo);
+GT_API GT_GetCrdSegmentTime(short crd,long segmentIndex,double *pSegmentTime,long *pSegmentNumber,short fifo);
+GT_API GT_GetCrdTime(short crd,TCrdTime *pTime,short fifo);

@@ -55,8 +55,6 @@
 #define WATCH_ADDRESS_TYPE_CRD_VEL      (19)
 #define WATCH_ADDRESS_TYPE_ARRIVE       (20)
 #define WATCH_ADDRESS_TYPE_POS_LOOP_ERROR (21)
-
-//-------------------- Out of use --------------------
 #define WATCH_ADDRESS_TYPE_POS_LOOP_OUTPUT (22)
 #define WATCH_ADDRESS_TYPE_POS_LOOP_INTERGRAL (23)
 #define WATCH_ADDRESS_TYPE_VEL_LOOP_ERROR (24)
@@ -69,23 +67,10 @@
 #define WATCH_ADDRESS_TYPE_OBSERVER_TORQUE_CMD_PRE (31)
 #define WATCH_ADDRESS_TYPE_OBSERVER_VEL_FEEDBACK_INTERGRAL (32)
 #define WATCH_ADDRESS_TYPE_OBSERVER_VEL_ERR_FEEDBACK_INTERGRAL (33)
-//-------------------- Out of use --------------------
+#define WATCH_ADDRESS_TYPE_POS_LOOP_REF_POS (34)
+#define WATCH_ADDRESS_TYPE_ADC                   (35)               //16.0
 
-//#define WATCH_ADDRESS_TYPE_POS_LOOP_REF_POS_DELAYED             (38)
-
-#define WATCH_ADDRESS_TYPE_RTCTRL_REF_POS                       (34)
-#define WATCH_ADDRESS_TYPE_RTCTRL_REF_VEL                       (35)
-#define WATCH_ADDRESS_TYPE_RTCTRL_REF_ACC                       (36)
-#define WATCH_ADDRESS_TYPE_ADC                                  (37)  //16.0
-
-#define WATCH_ADDRESS_TYPE_EXCITATION_SIGNAL                    (39)
-#define WATCH_ADDRESS_TYPE_POS_ERR                              (40)
-#define WATCH_ADDRESS_TYPE_RTCTRL_REF_JERK                      (41) 
-#define WATCH_ADDRESS_TYPE_RTCTRL_TROUBLESHOOT                  (42) 
-
-#define WATCH_ADDRESS_TYPE_MULTIPULSE_STATUS                   (44) 
-
-#define CRD_BUF_DATA_NULL						                 0
+#define CRD_BUF_DATA_NULL						0
 
 typedef struct DiConfig
 {
@@ -133,14 +118,14 @@ typedef struct DacConfig
 
 typedef struct ControlConfig
 {
-	short active;
-	short axis;
-	short encoder1;
-	short encoder2;
-	long  errorLimit;
-	short filterType[3];
-	short encoderSmooth;
-	short controlSmooth;
+    short active;
+    short axis;
+    short encoder1;
+    short encoder2;
+    long  errorLimit;
+    short filterType[3];
+    short encoderSmooth;
+    short controlSmooth;
 } TControlConfig;
 
 typedef struct ProfileConfig
@@ -175,7 +160,7 @@ typedef struct McConfig
 {
     TProfileConfig profile[PROFILE_MAX];
     TAxisConfig    axis[AXIS_MAX];
-    TPosCtrlStrCfg control[CONTROL_MAX];
+    TControlConfig control[CONTROL_MAX];
     TDacConfig     dac[RES_DAC];
     TStepConfig    step[RES_STEP];
     TCountConfig   encoder[RES_ENCODER];
@@ -394,9 +379,11 @@ GT_API GT_GetHandle(short cardNum,HANDLE *pHandle);
 
 GT_API GT_SetServoTime(long servoTime,long delay,long stepCoef);
 GT_API GT_GetServoTime(long *pServoTime,long *pDelay,long *pStepCoef);
+
 GT_API GT_SetFollowRegist(short profile,short segment,short fifo);
 GT_API GT_GetFollowRegist(short profile,short *pSegment,short fifo);
 GT_API GT_GetFollowRegistCount(short profile,unsigned long *pCount);
+
 GT_API GT_AutoCaptureOn(short encoder);
 GT_API GT_AutoCaptureOff(short encoder);
 
@@ -419,7 +406,6 @@ GT_API GT_GetInterruptTime(double *pServoRunTime,double *pProfileRunTime);
 GT_API GT_GetInterruptTimeMax(double *pServoRunTimeMax,double *pProfileRunTimeMax);
 
 GT_API GT_Reserve(long mask);
-
 
 //////////////////////////////////////////////////////////////////////////
 //New Watch

@@ -31,13 +31,13 @@ struct QMtrHomeProfile
 
     enum HomeMode
     {
-        HOME_MODE_HOME = 0,
-        HOME_MODE_HOME_INDEX
+        HOME_MODE_HOME_READY = 0,
+        HOME_MODE_HOME_LIMIT
     };
 
     QMtrHomeProfile() {
         _dir = HOME_DIR_NEGATIVE;
-        _mode = HOME_MODE_HOME_INDEX;
+		_mode = HOME_MODE_HOME_LIMIT;
     }
 
     QMtrVelocityProfile _velPf;
@@ -119,9 +119,11 @@ public:
 public:
     enum AxisEnum
     {
-        MTR_AXIS_Z = 0,        
-        MTR_AXIS_X,
+        MTR_AXIS_X = 0,        
         MTR_AXIS_Y,
+        MTR_AXIS_Z,
+		MTR_AXIS_TRACK_WIDTH,
+		MTR_AXIS_TRACKING,
     };
 
     void loadConfig();

@@ -15,11 +15,12 @@ void MotionIOOnLive::run()
 
     while (!m_bQuit)
     {
-        m_pMotor->updataIO();
+        m_pMotor->updataIO();		
 
         if (m_bQuit)break;
 
-        QThread::msleep(200);
+		QApplication::processEvents();
+		QThread::msleep(200);
     }
 
     m_bRuning = false;
@@ -79,23 +80,19 @@ MotionIO::MotionIO(MotionControl* pCtrl, QWidget *parent)
 
 MotionIO::~MotionIO()
 {
-    if (m_pThreadOnLive)
-    {
-        delete m_pThreadOnLive;
-        m_pThreadOnLive = NULL;
-    }
+	onAutoStop();
 }
 
 void MotionIO::initDI()
 {
-    m_diIO[0] = DI_IM_STOP;
-    m_diIO[1] = DI_RESET;
-    m_diIO[2] = DI_START;
-    m_diIO[3] = DI_STOP;
-    m_diIO[4] = 0;
-    m_diIO[5] = 0;
-    m_diIO[6] = 0;
-    m_diIO[7] = 0;
+	m_diIO[0] = DI_TRACK_ARRIVED;
+	m_diIO[1] = DI_TRACK_READY;
+	m_diIO[2] = DI_TRACK_STOP;
+	m_diIO[3] = DI_TRACK_DELIVERED;
+	m_diIO[4] = DI_IM_STOP;
+	m_diIO[5] = DI_START;
+	m_diIO[6] = DI_RESET;
+	m_diIO[7] = DI_STOP;
     m_diIO[8] = 0;
     m_diIO[9] = 0;
     m_diIO[10] = 0;
@@ -107,36 +104,28 @@ void MotionIO::initDI()
 }
 
 void MotionIO::initDO()
-{
-    //m_doIO[0] = DO_YELLOW_LIGHT;
-    //m_doIO[1] = DO_GREEN_LIGHT;
-    //m_doIO[2] = DO_RED_LIGHT;
-    //m_doIO[3] = DO_BUZZER;
-    //m_doIO[4] = DO_TRIGGER_DLP1;
-    //m_doIO[5] = DO_TRIGGER_DLP2;
-    //m_doIO[6] = DO_TRIGGER_DLP3;
-    //m_doIO[7] = DO_TRIGGER_DLP4;
-    m_doIO[0] = DO_CAMERA_TRIGGER1;
+{   
+	m_doIO[0] = DO_CAMERA_TRIGGER1;
     m_doIO[1] = DO_CAMERA_TRIGGER2;
-    m_doIO[2] = DO_TRIGGER_DLP1;
-    m_doIO[3] = DO_TRIGGER_DLP2;
-    m_doIO[4] = DO_TRIGGER_DLP3;
-    m_doIO[5] = DO_TRIGGER_DLP4;
-    m_doIO[6] = DO_LIGHT1_CH1;
-    m_doIO[7] = DO_LIGHT1_CH2;
-    m_doIO[8] = DO_LIGHT1_CH3;
-    m_doIO[9] = DO_LIGHT1_CH4;
-    m_doIO[10] = DO_LIGHT2_CH1;
-    m_doIO[11] = DO_LIGHT2_CH2;
-    m_doIO[12] = DO_LIGHT2_CH3;
-    m_doIO[13] = DO_LIGHT2_CH4;
-    m_doIO[14] = DO_LIGHT1_ENABLE;
-    m_doIO[15] = DO_LIGHT2_ENABLE;
+	m_doIO[2] = DO_TRACK_CYLINDER;
+    m_doIO[3] = 0;
+	m_doIO[4] = DO_RED_LIGHT;
+	m_doIO[5] = DO_YELLOW_LIGHT;
+	m_doIO[6] = DO_GREEN_LIGHT;
+	m_doIO[7] = DO_BUZZER;
+	m_doIO[8] = DO_START;
+	m_doIO[9] = DO_STOP;
+	m_doIO[10] = DO_RESET;
+	m_doIO[11] = DO_Z_BRAKE;
+	m_doIO[12] = DO_STEPPER_RUN;
+    m_doIO[13] = 0;
+    m_doIO[14] = 0;
+    m_doIO[15] = 0;
 }
 
 void MotionIO::updataDI()
 {
-    bool val[16];
+    bool val[16] = {false};
 
     for (int i = 0; i < 16; i++)
     {
@@ -146,7 +135,7 @@ void MotionIO::updataDI()
         val[i] = iState > 0 ? true : false;
     }
 
-    ui.checkBox_5->setChecked(val[0]);
+	ui.checkBox_5->setChecked(val[0]);
     ui.checkBox_6->setChecked(val[1]);
     ui.checkBox_7->setChecked(val[2]);
     ui.checkBox_8->setChecked(val[3]);
