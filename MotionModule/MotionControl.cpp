@@ -70,12 +70,12 @@ MotionControl::~MotionControl()
 
 void MotionControl::loadConfig()
 {
-	m_mapMtrID.clear();
+	m_mapMtrID.clear();	
 	m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, AXIS_MOTOR_X);
 	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, AXIS_MOTOR_Y);
 	m_mapMtrID.insert(AxisEnum::MTR_AXIS_Z, AXIS_MOTOR_Z);
-	m_mapMtrID.insert(AxisEnum::MTR_AXIS_TRACK_WIDTH, AXIS_MOTOR_TRACK_WIDTH);
-	m_mapMtrID.insert(AxisEnum::MTR_AXIS_TRACKING, AXIS_MOTOR_TRACKING);
+	//m_mapMtrID.insert(AxisEnum::MTR_AXIS_TRACK_WIDTH, AXIS_MOTOR_TRACK_WIDTH);
+	//m_mapMtrID.insert(AxisEnum::MTR_AXIS_TRACKING, AXIS_MOTOR_TRACKING);
 }
 
 bool MotionControl::init()
@@ -672,8 +672,13 @@ bool MotionControl::IsLimit(int AxisID)
 
 bool MotionControl::homeAll(bool bSyn)
 {
+	setDO(DO_Z_BRAKE, 1);
+	QThread::msleep(100);
+	setDO(DO_Z_BRAKE, 0);
+	QThread::msleep(500);
+
 	int nMtrNum = getMotorAxisNum();
-	for (int i = 0; i < nMtrNum; i++)
+	for (int i = nMtrNum - 1; i >= 0; i--)
 	{
 		QMtrHomeProfile::HomeMode mode = m_mtrParams[i]._homeProf._mode;
 		switch (mode)
@@ -790,34 +795,37 @@ bool MotionControl::home(int AxisID, bool bSyn)
         return false;
     }
 
-    // 设定目标位置为捕获位置+偏移量
-    sRtn = GT_SetPos(AxisID, pos + HOME_OFFSET*nHomeDir);
-    commandhandler("GT_SetPos", sRtn);
-    // 启动运动
-    sRtn = GT_Update(1 << (AxisID - 1));
-    commandhandler("GT_Update", sRtn);
+	// 停止
+	stopMove(AxisID);
 
-    nTimeOut = 30 * 100;// 30 seconds
-    do 
-    {
-        // 读取规划位置
-        sRtn = GT_GetPrfPos(AxisID, &prfPos);
+    //// 设定目标位置为捕获位置+偏移量
+    //sRtn = GT_SetPos(AxisID, pos + HOME_OFFSET*nHomeDir);
+    //commandhandler("GT_SetPos", sRtn);
+    //// 启动运动
+    //sRtn = GT_Update(1 << (AxisID - 1));
+    //commandhandler("GT_Update", sRtn);
 
-        QThread::msleep(10);
-    } while (!isMoveDone(AxisID) && nTimeOut-- > 0);
+    //nTimeOut = 30 * 100;// 30 seconds
+    //do 
+    //{
+    //    // 读取规划位置
+    //    sRtn = GT_GetPrfPos(AxisID, &prfPos);
+
+    //    QThread::msleep(10);
+    //} while (!isMoveDone(AxisID) && nTimeOut-- > 0);
 
 
-    if (nTimeOut <= 0)
-    {
-        System->setTrackInfo(QStringLiteral("电机回零TimeOut！"));
-        return false;
-    }
+    //if (nTimeOut <= 0)
+    //{
+    //    System->setTrackInfo(QStringLiteral("电机回零TimeOut！"));
+    //    return false;
+    //}
 
-    if (qAbs(prfPos - (pos + HOME_OFFSET)) > 10)
-    {
-        System->setTrackInfo(QStringLiteral("电机回零位置偏移问题！"));
-        return false;
-    }
+	//if (qAbs(prfPos - (pos + HOME_OFFSET*nHomeDir)) > 50)
+	//{
+	//	System->setTrackInfo(QStringLiteral("电机回零位置偏移问题！count=%1").arg(qAbs(prfPos - (pos + HOME_OFFSET*nHomeDir))));
+	//	return false;
+	//}
 
     QThread::msleep(200);
 
@@ -861,35 +869,47 @@ bool MotionControl::home(int AxisID, bool bSyn)
         return false;
     }
 
-    // 设置捕获位置+index偏移量为目标位置
-    sRtn = GT_SetPos(AxisID, pos + INDEX_OFFSET * (-nHomeDir));
-    commandhandler("GT_SetPos", sRtn);
-    // 启动运动
-    sRtn = GT_Update(1 << (AxisID - 1));
-    commandhandler("GT_Update", sRtn);
+	// 清状态
+	sRtn = GT_ClrSts(AxisID);
+	commandhandler("GT_ClrSts", sRtn);
 
-    nTimeOut = 30 * 100;// 30 seconds
-    do
-    {
-        // 读取规划位置
-        sRtn = GT_GetPrfPos(AxisID, &prfPos);
-        // 读取编码器位置
-        sRtn = GT_GetEncPos(AxisID, &encPos);
+	// 清状态
+	sRtn = GT_ClearCaptureStatus(AxisID);
+	commandhandler("GT_ClearCaptureStatus", sRtn);
 
-        QThread::msleep(10);
-        
-    } while (!isMoveDone(AxisID) && nTimeOut-- > 0);
+	// 停止
+	stopMove(AxisID);
 
-    if (nTimeOut <= 0)
-    {
-        System->setTrackInfo(QStringLiteral("电机回零TimeOut！"));
-        return false;
-    }
-    if (qAbs(prfPos - (pos + INDEX_OFFSET * (-nHomeDir))) > 10)
-    {
-        System->setTrackInfo(QStringLiteral("电机Index位置偏移问题！"));
-        return false;
-    }
+	//QThread::msleep(200);
+	//// 设置捕获位置+index偏移量为目标位置
+	//sRtn = GT_SetPos(AxisID, pos + INDEX_OFFSET * (-nHomeDir));
+	//commandhandler("GT_SetPos", sRtn);
+	//// 启动运动
+	//sRtn = GT_Update(1 << (AxisID - 1));
+	//commandhandler("GT_Update", sRtn);
+
+	//nTimeOut = 30 * 100;// 30 seconds
+	//do
+	//{
+	//	// 读取规划位置
+	//	sRtn = GT_GetPrfPos(AxisID, &prfPos);
+	//	// 读取编码器位置
+	//	sRtn = GT_GetEncPos(AxisID, &encPos);
+
+	//	QThread::msleep(10);
+
+	//} while (!isMoveDone(AxisID) && nTimeOut-- > 0);
+
+	//if (nTimeOut <= 0)
+	//{
+	//	System->setTrackInfo(QStringLiteral("电机回零TimeOut！"));
+	//	return false;
+	//}
+	//if (qAbs(prfPos - (pos + INDEX_OFFSET * (-nHomeDir))) > 100)
+	//{
+	//	System->setTrackInfo(QStringLiteral("电机Index位置偏移问题！count=%1").arg(qAbs(prfPos - (pos + INDEX_OFFSET * (-nHomeDir)))));
+	//	return false;
+	//}
 
     QThread::msleep(200);
 
@@ -1526,7 +1546,7 @@ bool MotionControl::getCurrentPos(int AxisID, double *posMm)
     }
     else
     {
-        *posMm = convertToMm(changeToMtrEnum(AxisID), dMtrPos) * 2.0; // Unknow GT issue, that encoder position is less double times then real one.
+        *posMm = convertToMm(changeToMtrEnum(AxisID), dMtrPos); 
         return true;
     }
 }

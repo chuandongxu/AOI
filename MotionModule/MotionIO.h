@@ -36,10 +36,9 @@ public:
     MotionIO(MotionControl* pCtrl, QWidget *parent = Q_NULLPTR);
     ~MotionIO();
 
-public:
+private slots:
 	void updataIO();
 
-private slots:
     void updataOutPort0(int index);
     void updataOutPort1(int index);
     void updataOutPort2(int index);
@@ -59,7 +58,7 @@ private slots:
     void onAutoStop();
 
     void onCombTriggerOn();
-    void onCombTriggerOff();
+    void onCombTriggerOff();	
 
 protected:
     void initDI();

@@ -14,6 +14,9 @@
    <string>MotionIO</string>
   </property>
   <widget class="QGroupBox" name="groupBox_12">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -63,7 +66,7 @@
      <string>减速</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_7">
@@ -82,7 +85,7 @@
      <string>停止</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_8">
@@ -101,7 +104,7 @@
      <string>出料</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_9">
@@ -120,7 +123,7 @@
      <string>急停</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_10">
@@ -139,7 +142,7 @@
      <string>启动</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_11">
@@ -158,7 +161,7 @@
      <string>复位</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_12">
@@ -177,7 +180,7 @@
      <string>停止</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_13">
@@ -196,7 +199,7 @@
      <string>8</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_14">
@@ -215,7 +218,7 @@
      <string>9</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_15">
@@ -234,7 +237,7 @@
      <string>10</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_16">
@@ -253,7 +256,7 @@
      <string>11</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_17">
@@ -272,7 +275,7 @@
      <string>12</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_18">
@@ -291,7 +294,7 @@
      <string>13</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_19">
@@ -310,7 +313,7 @@
      <string>14</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_20">
@@ -329,7 +332,7 @@
      <string>15</string>
     </property>
     <property name="checkable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

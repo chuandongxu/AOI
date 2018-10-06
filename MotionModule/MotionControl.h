@@ -119,9 +119,9 @@ public:
 public:
     enum AxisEnum
     {
-        MTR_AXIS_X = 0,        
-        MTR_AXIS_Y,
-        MTR_AXIS_Z,
+		MTR_AXIS_X = 0,
+		MTR_AXIS_Y,
+        MTR_AXIS_Z,  
 		MTR_AXIS_TRACK_WIDTH,
 		MTR_AXIS_TRACKING,
     };

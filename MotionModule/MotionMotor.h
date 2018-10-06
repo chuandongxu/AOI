@@ -35,8 +35,7 @@ class MotionMotor : public QWidget
 
 public:
     MotionMotor(MotionControl* pCtrl, QWidget *parent = Q_NULLPTR);
-    ~MotionMotor();
-    void updataStatus();
+    ~MotionMotor();    
 
 private:
     void initUI();
@@ -64,6 +63,8 @@ private:
 	QMtrHomeProfile::HomeMode getAxisHomeMode(int nAxisID);
 
 private slots:
+	void updataStatus();
+
     void onEnable();
     void onHome();
     void onDisable();
