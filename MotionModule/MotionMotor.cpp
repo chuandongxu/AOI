@@ -5,8 +5,7 @@
 #include "opencv2/opencv.hpp"
 
 ///////////////////////////////////////
-MotionMotorOnLive::MotionMotorOnLive(MotionMotor* pMotor)
-    : m_pMotor(pMotor)
+MotionMotorOnLive::MotionMotorOnLive()  
 {
     m_bQuit = false;
     m_bRuning = false;
@@ -18,7 +17,7 @@ void MotionMotorOnLive::run()
 
     while (!m_bQuit)
     {
-        m_pMotor->updataStatus();
+        emit UpdateMsg();
 
         if (m_bQuit)break;
 
@@ -44,12 +43,7 @@ MotionMotor::MotionMotor(MotionControl* pCtrl, QWidget *parent)
 
 MotionMotor::~MotionMotor()
 {
-    onAutoStop();
-    if (m_pThreadOnLive)
-    {
-        delete m_pThreadOnLive;
-        m_pThreadOnLive = NULL;
-    }
+    onAutoStop(); 
 }
 
 void MotionMotor::initUI()
@@ -969,7 +963,8 @@ void MotionMotor::onAutoLive()
         ui.pushButton_onLive->setEnabled(false);
         ui.pushButton_onStop->setEnabled(true);
 
-        m_pThreadOnLive = new MotionMotorOnLive(this);
+        m_pThreadOnLive = new MotionMotorOnLive();
+        connect(m_pThreadOnLive, SIGNAL(UpdateMsg()), this, SLOT(updataStatus()));
         m_pThreadOnLive->start();
     }
 }
