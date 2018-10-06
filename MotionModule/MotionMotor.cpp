@@ -5,8 +5,7 @@
 #include "opencv2/opencv.hpp"
 
 ///////////////////////////////////////
-MotionMotorOnLive::MotionMotorOnLive(MotionMotor* pMotor)
-    : m_pMotor(pMotor)
+MotionMotorOnLive::MotionMotorOnLive()  
 {
     m_bQuit = false;
     m_bRuning = false;
@@ -18,7 +17,7 @@ void MotionMotorOnLive::run()
 
     while (!m_bQuit)
     {
-        m_pMotor->updataStatus();
+        emit UpdateMsg();
 
         if (m_bQuit)break;
 
@@ -44,12 +43,7 @@ MotionMotor::MotionMotor(MotionControl* pCtrl, QWidget *parent)
 
 MotionMotor::~MotionMotor()
 {
-    onAutoStop();
-    if (m_pThreadOnLive)
-    {
-        delete m_pThreadOnLive;
-        m_pThreadOnLive = NULL;
-    }
+    onAutoStop(); 
 }
 
 void MotionMotor::initUI()
@@ -67,7 +61,7 @@ void MotionMotor::initUI()
     ui.comboBox_home_dir7->addItems(ls);
 
     ls.clear();
-    ls << QStringLiteral("回零") << QStringLiteral("回零并找索引");
+    ls << QStringLiteral("回零并索引") << QStringLiteral("回限位并索引");
     ui.comboBox_home_mode0->addItems(ls);
     ui.comboBox_home_mode1->addItems(ls);
     ui.comboBox_home_mode2->addItems(ls);
@@ -101,16 +95,16 @@ void MotionMotor::initUI()
     connect(ui.pushButton_prof_del, SIGNAL(clicked()), SLOT(onDelProf()));
     connect(ui.pushButton_prof_save, SIGNAL(clicked()), SLOT(onProfSave()));
 
-    ui.lineEdit_mtr_vec->setText(QString("%1").arg(100));
-    ui.lineEdit_mtr_acc->setText(QString("%1").arg(500));
-    ui.lineEdit_mtr_dec->setText(QString("%1").arg(500));
+    ui.lineEdit_mtr_vec->setText(QString("%1").arg(10));
+    ui.lineEdit_mtr_acc->setText(QString("%1").arg(20));
+    ui.lineEdit_mtr_dec->setText(QString("%1").arg(20));
     ui.lineEdit_mtr_smooth->setText(QString("%1").arg(40));
     ui.lineEdit_mtr_dist->setText(QString("%1").arg(10));
     ui.lineEdit_mtr_posn->setText(QString("%1").arg(0));
 
-    ui.lineEdit_move_vel->setText(QString("%1").arg(100));
-    ui.lineEdit_move_acc->setText(QString("%1").arg(500));
-    ui.lineEdit_move_dec->setText(QString("%1").arg(500));
+    ui.lineEdit_move_vel->setText(QString("%1").arg(10));
+    ui.lineEdit_move_acc->setText(QString("%1").arg(20));
+    ui.lineEdit_move_dec->setText(QString("%1").arg(20));
 
     ui.tableView_pt->setModel(&m_movePointModel);
     ui.tableView_pt->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -845,7 +839,18 @@ void MotionMotor::onHome()
     {
         if (axisSelected[i] && m_pCtrl->isEnabled(m_pCtrl->getMotorAxisID(i)))
         {
-            m_pCtrl->homeLimit(m_pCtrl->getMotorAxisID(i), false);
+			QMtrHomeProfile::HomeMode mode = getAxisHomeMode(m_pCtrl->getMotorAxisID(i));
+			switch (mode)
+			{
+			case QMtrHomeProfile::HOME_MODE_HOME_READY:
+				m_pCtrl->home(m_pCtrl->getMotorAxisID(i), false);
+				break;
+			case QMtrHomeProfile::HOME_MODE_HOME_LIMIT:
+				m_pCtrl->homeLimit(m_pCtrl->getMotorAxisID(i), false);
+				break;
+			default:
+				break;
+			}           
         }
     }
 }
@@ -958,7 +963,8 @@ void MotionMotor::onAutoLive()
         ui.pushButton_onLive->setEnabled(false);
         ui.pushButton_onStop->setEnabled(true);
 
-        m_pThreadOnLive = new MotionMotorOnLive(this);
+        m_pThreadOnLive = new MotionMotorOnLive();
+        connect(m_pThreadOnLive, SIGNAL(UpdateMsg()), this, SLOT(updataStatus()));
         m_pThreadOnLive->start();
     }
 }
@@ -1016,6 +1022,46 @@ void MotionMotor::getAxisSelected(bool* axisIDs, int axisNum)
             break;
         }
     }
+}
+
+QMtrHomeProfile::HomeMode MotionMotor::getAxisHomeMode(int nAxisID)
+{
+	QMtrHomeProfile::HomeMode mode;
+
+	int nIndex = m_pCtrl->getMotorAxisIndex(nAxisID);
+    {
+        switch (nIndex)
+        {
+        case  0:
+			mode = (QMtrHomeProfile::HomeMode)ui.comboBox_home_mode0->currentIndex();
+            break;
+        case  1:
+			mode = (QMtrHomeProfile::HomeMode)ui.comboBox_home_mode1->currentIndex();
+            break;
+        case  2:
+			mode = (QMtrHomeProfile::HomeMode)ui.comboBox_home_mode2->currentIndex();
+            break;
+        case  3:
+			mode = (QMtrHomeProfile::HomeMode)ui.comboBox_home_mode3->currentIndex();
+            break;
+        case  4:
+			mode = (QMtrHomeProfile::HomeMode)ui.comboBox_home_mode4->currentIndex();
+            break;
+        case  5:
+			mode = (QMtrHomeProfile::HomeMode)ui.comboBox_home_mode5->currentIndex();
+            break;
+        case  6:
+			mode = (QMtrHomeProfile::HomeMode)ui.comboBox_home_mode6->currentIndex();
+            break;
+        case  7:
+			mode = (QMtrHomeProfile::HomeMode)ui.comboBox_home_mode7->currentIndex();
+            break;
+        default:
+            break;
+        }
+    }
+
+	return mode;
 }
 
 void MotionMotor::onAddProf()

@@ -5,14 +5,16 @@
 #include "MotionControl.h"
 #include <QThread>
 
-class MotionIO;
 class MotionIOOnLive : public QThread
 {
     Q_OBJECT
 
 public:
-    MotionIOOnLive(MotionIO* pMotor);
+    MotionIOOnLive();
     ~MotionIOOnLive(){};
+
+signals:
+    void UpdateMsg();
 
 public:
     void setQuitFlag(){ m_bQuit = true; }
@@ -22,7 +24,6 @@ private:
     void run();
 
 private:
-    MotionIO*      m_pMotor;
     bool          m_bQuit;
     bool          m_bRuning;
 };
@@ -35,10 +36,9 @@ public:
     MotionIO(MotionControl* pCtrl, QWidget *parent = Q_NULLPTR);
     ~MotionIO();
 
-public:
-    void updataIO();
-
 private slots:
+	void updataIO();
+
     void updataOutPort0(int index);
     void updataOutPort1(int index);
     void updataOutPort2(int index);
@@ -58,7 +58,7 @@ private slots:
     void onAutoStop();
 
     void onCombTriggerOn();
-    void onCombTriggerOff();
+    void onCombTriggerOff();	
 
 protected:
     void initDI();

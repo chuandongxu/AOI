@@ -6,14 +6,16 @@
 #include <QThread>
 #include <qstandarditemmodel>
 
-class MotionMotor;
 class MotionMotorOnLive : public QThread
 {
     Q_OBJECT
 
 public:
-    MotionMotorOnLive(MotionMotor* pMotor);
+    MotionMotorOnLive();
     ~MotionMotorOnLive(){};
+
+signals:
+    void UpdateMsg();
 
 public:
     void setQuitFlag(){ m_bQuit = true; }
@@ -23,7 +25,6 @@ private:
     void run();
 
 private:
-    MotionMotor*  m_pMotor;
     bool          m_bQuit;
     bool          m_bRuning;
 };
@@ -34,8 +35,7 @@ class MotionMotor : public QWidget
 
 public:
     MotionMotor(MotionControl* pCtrl, QWidget *parent = Q_NULLPTR);
-    ~MotionMotor();
-    void updataStatus();
+    ~MotionMotor();    
 
 private:
     void initUI();
@@ -60,8 +60,11 @@ private:
     void saveMtrPointGroupConfig();
 
     void getAxisSelected(bool* axisIDs, int axisNum);
+	QMtrHomeProfile::HomeMode getAxisHomeMode(int nAxisID);
 
 private slots:
+	void updataStatus();
+
     void onEnable();
     void onHome();
     void onDisable();
