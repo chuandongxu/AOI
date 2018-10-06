@@ -2,8 +2,7 @@
 #include "../common/SystemData.h"
 #include "../include/IdDefine.h"
 
-MotionIOOnLive::MotionIOOnLive(MotionIO* pMotor)
-    : m_pMotor(pMotor)
+MotionIOOnLive::MotionIOOnLive()    
 {
     m_bQuit = false;
     m_bRuning = false;
@@ -15,11 +14,10 @@ void MotionIOOnLive::run()
 
     while (!m_bQuit)
     {
-        m_pMotor->updataIO();		
+        emit UpdateMsg();
 
         if (m_bQuit)break;
-
-		QApplication::processEvents();
+	
 		QThread::msleep(200);
     }
 
@@ -330,7 +328,8 @@ void MotionIO::onAutoLive()
         ui.pushButton_onLive->setEnabled(false);
         ui.pushButton_onStop->setEnabled(true);
 
-        m_pThreadOnLive = new MotionIOOnLive(this);
+        m_pThreadOnLive = new MotionIOOnLive();
+        connect(m_pThreadOnLive, SIGNAL(UpdateMsg()), this, SLOT(updataIO()));
         m_pThreadOnLive->start();
     }
 }

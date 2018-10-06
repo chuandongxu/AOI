@@ -6,14 +6,16 @@
 #include <QThread>
 #include <qstandarditemmodel>
 
-class MotionMotor;
 class MotionMotorOnLive : public QThread
 {
     Q_OBJECT
 
 public:
-    MotionMotorOnLive(MotionMotor* pMotor);
+    MotionMotorOnLive();
     ~MotionMotorOnLive(){};
+
+signals:
+    void UpdateMsg();
 
 public:
     void setQuitFlag(){ m_bQuit = true; }
@@ -23,7 +25,6 @@ private:
     void run();
 
 private:
-    MotionMotor*  m_pMotor;
     bool          m_bQuit;
     bool          m_bRuning;
 };
