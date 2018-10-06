@@ -184,8 +184,8 @@ void Insp3DSolderWidget::tryInsp() {
 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
+    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
 
     Vision::PR_INSP_3D_SOLDER_CMD stCmd;
     Vision::PR_INSP_3D_SOLDER_RPY stRpy;
@@ -236,8 +236,8 @@ void Insp3DSolderWidget::tryInsp() {
 void Insp3DSolderWidget::confirmWindow(OPERATION enOperation) {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
+    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     auto rectROI = pUI->getSelectedROI();

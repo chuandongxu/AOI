@@ -163,10 +163,10 @@ void Inspect3DProfileWidget::inspect(cv::Rect& rectROI)
     double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     double dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-    double fOverlapUmX = System->getParam("scan_image_OverlapX").toDouble();
-    double fOverlapUmY = System->getParam("scan_image_OverlapY").toDouble();
+    double fOverlapUmX = System->getParam("ScanImageOverlapX").toDouble();
+    double fOverlapUmY = System->getParam("ScanImageOverlapY").toDouble();
 
-    Vision::PR_SCAN_IMAGE_DIR enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(System->getParam("scan_image_Direction").toInt());
+    Vision::PR_SCAN_IMAGE_DIR enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(System->getParam("ScanImageDirection").toInt());
 
     Vision::PR_COMBINE_IMG_CMD stCmd;
     Vision::PR_COMBINE_IMG_RPY stRpy;

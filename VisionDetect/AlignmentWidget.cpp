@@ -196,8 +196,8 @@ void AlignmentWidget::tryInsp() {
 void AlignmentWidget::confirmWindow(OPERATION enOperation) {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
+    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     auto rectROI = pUI->getSelectedROI();
@@ -362,7 +362,7 @@ bool AlignmentWidget::_updateDeviceWindow(float fOffsetX, float fOffsetY) {
         return false;
     }
 
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
 
     for (auto &window : vecWindows) {
         if (bBoardRotated) {

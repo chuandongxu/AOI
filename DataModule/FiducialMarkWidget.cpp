@@ -42,7 +42,7 @@ void FiducialMarkWidget::showEvent(QShowEvent *event) {
 
     auto vecCombinedBigImage = m_pDataCtrl->getCombinedBigImages();
     if (System->isRunOffline() && vecCombinedBigImage.empty()){
-        auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+        float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
         auto matImage = pUI->getImage();
         m_nBigImageWidth  = matImage.cols / dCombinedImageScale;
         m_nBigImageHeight = matImage.rows / dCombinedImageScale;
@@ -78,19 +78,24 @@ static std::vector<cv::Point> getCornerOfRotatedRect(const cv::RotatedRect &rota
 
 void FiducialMarkWidget::on_btnConfirmFiducialMark_clicked() {
     int iReturn = 0;
-    auto nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
-    auto nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
-    auto dOverlapUmX = System->getParam("scan_image_OverlapX").toDouble();
-    auto dOverlapUmY = System->getParam("scan_image_OverlapY").toDouble();
+    Int32 nCountOfFrameX = 0, nCountOfFrameY = 0, nScanDirection = 0;
+    Engine::GetParameter("ScanImageFrameCountX", nCountOfFrameX, 0);
+    Engine::GetParameter("ScanImageFrameCountY", nCountOfFrameY, 0);
+    Engine::GetParameter("ScanImageDirection", nScanDirection, 0);
+
+    float dOverlapUmX = 0.f, dOverlapUmY = 0.f;
+    Engine::GetParameter("ScanImageOverlapX", dOverlapUmX, 0.f);
+    Engine::GetParameter("ScanImageOverlapY", dOverlapUmY, 0.f);
+
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY  = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
 
     int nOverlapX = static_cast<int> (dOverlapUmX / dResolutionX + 0.5);
     int nOverlapY = static_cast<int> (dOverlapUmY / dResolutionY + 0.5);
 
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
-    auto nScanDirection = System->getParam("scan_image_Direction").toInt();
+    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
+    
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     auto pCamera = getModule<ICamera>(CAMERA_MODEL);
@@ -204,17 +209,19 @@ int FiducialMarkWidget::_learnStandardFM(float                          fFMSizeM
                                          int                            nFrameX,
                                          int                            nFrameY,
                                          const cv::Point               &ptInFrame) {
-    auto dOverlapUmX = System->getParam("scan_image_OverlapX").toDouble();
-    auto dOverlapUmY = System->getParam("scan_image_OverlapY").toDouble();
+    float fOverlapUmX = 0.f, fOverlapUmY = 0.f;
+    Engine::GetParameter("ScanImageOverlapX", fOverlapUmX, 0.f);
+    Engine::GetParameter("ScanImageOverlapY", fOverlapUmY, 0.f);
+
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-    int nOverlapX = static_cast<int> (dOverlapUmX / dResolutionX + 0.5);
-    int nOverlapY = static_cast<int> (dOverlapUmY / dResolutionY + 0.5);
+    int nOverlapX = static_cast<int> (fOverlapUmX / dResolutionX + 0.5);
+    int nOverlapY = static_cast<int> (fOverlapUmY / dResolutionY + 0.5);
 
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
-    auto nScanDirection = System->getParam("scan_image_Direction").toInt();
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
+    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
+    auto nScanDirection = System->getParam("ScanImageDirection").toInt();
 
     int nImageWidth = 0, nImageHeight = 0;
     auto pUI = getModule<IVisionUI>(UI_MODEL);
@@ -313,17 +320,19 @@ int FiducialMarkWidget::_learnRealImageFM(const cv::Mat                 &matFram
                                           int                            nFrameX,
                                           int                            nFrameY,
                                           const cv::Point               &ptInFrame) {
-    auto dOverlapUmX = System->getParam("scan_image_OverlapX").toDouble();
-    auto dOverlapUmY = System->getParam("scan_image_OverlapY").toDouble();
+    float fOverlapUmX = 0.f, fOverlapUmY = 0.f;
+    Engine::GetParameter("ScanImageOverlapX", fOverlapUmX, 0.f);
+    Engine::GetParameter("ScanImageOverlapY", fOverlapUmY, 0.f);
+
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-    int nOverlapX = static_cast<int> (dOverlapUmX / dResolutionX + 0.5);
-    int nOverlapY = static_cast<int> (dOverlapUmY / dResolutionY + 0.5);
+    int nOverlapX = static_cast<int> (fOverlapUmX / dResolutionX + 0.5);
+    int nOverlapY = static_cast<int> (fOverlapUmY / dResolutionY + 0.5);
 
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
-    auto nScanDirection = System->getParam("scan_image_Direction").toInt();
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
+    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
+    auto nScanDirection = System->getParam("ScanImageDirection").toInt();
 
     int nImageWidth = 0, nImageHeight = 0;
     auto pUI = getModule<IVisionUI>(UI_MODEL);
@@ -455,17 +464,18 @@ int FiducialMarkWidget::_learnRealImageFM(const cv::Mat                 &matFram
 
 //Search all the fiducial mark.
 int FiducialMarkWidget::srchFiducialMark() {
-    auto nCountOfImgPerRow = System->getParam("scan_image_RowImageCount").toInt();
+    float fOverlapUmX = 0.f, fOverlapUmY = 0.f;
+    Engine::GetParameter("ScanImageOverlapX", fOverlapUmX, 0.f);
+    Engine::GetParameter("ScanImageOverlapY", fOverlapUmY, 0.f);
 
-    auto dOverlapUmX = System->getParam("scan_image_OverlapX").toDouble();
-    auto dOverlapUmY = System->getParam("scan_image_OverlapY").toDouble();
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    int nOverlapX = static_cast<int> (dOverlapUmX / dResolutionX + 0.5);
-    int nOverlapY = static_cast<int> (dOverlapUmY / dResolutionY + 0.5);
+    int nOverlapX = static_cast<int> (fOverlapUmX / dResolutionX + 0.5);
+    int nOverlapY = static_cast<int> (fOverlapUmY / dResolutionY + 0.5);
 
-    auto nScanDirection = System->getParam("scan_image_Direction").toInt();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+    Int32 nScanDirection = 0;
+    Engine::GetParameter("ScanImageDirection", nScanDirection, 0);
+    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
     auto strImageFolder = System->getParam("scan_image_Folder").toString();
 
     auto result = Engine::GetAllAlignments(m_vecAlignmentDB);
@@ -621,7 +631,7 @@ int FiducialMarkWidget::_srchRealImageFM(const cv::Mat           &matFrameImg,
 }
 
 int FiducialMarkWidget::refreshFMWindow() {
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
 
     auto result = Engine::GetAllAlignments(m_vecAlignmentDB);
     if (Engine::OK != result) {
@@ -679,11 +689,10 @@ int FiducialMarkWidget::refreshFMWindow() {
 }
 
 cv::Mat FiducialMarkWidget::_readFrameImageFromFolder(int nFrameX, int nFrameY) {
-    auto nCountOfImgPerFrame = System->getParam("scan_image_OneFrameImageCount").toInt();
-    auto nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
-    auto nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
+    Int32 nCountOfImgPerFrame = 0, nCountOfImgPerRow = 0;
+    Engine::GetParameter("ScanImageOneFrameImageCount", nCountOfImgPerFrame, 0);
+    Engine::GetParameter("ScanImageRowImageCount", nCountOfImgPerRow, 0);
 
-    auto nCountOfImgPerRow = System->getParam("scan_image_RowImageCount").toInt();
     auto strImageFolder = System->getParam("scan_image_Folder").toString();
 
     char arrCharFileName[100];
@@ -733,7 +742,7 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked() {
     dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
 
     float fRotationInRadian, Tx, Ty, fScale;
     cv::Mat matTransform;

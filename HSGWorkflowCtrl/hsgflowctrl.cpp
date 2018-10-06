@@ -267,7 +267,7 @@ void QFlowCtrl::start()
         }
     }
 
-    auto enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(System->getParam("scan_image_Direction").toInt());
+    auto enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(System->getParam("ScanImageDirection").toInt());
 
     AutoRunParams stAutoRunParams(m_nImgWidth, m_nImgHeight, m_fBoardLeft, m_fBoardTop, m_fBoardRight, m_fBoardBottom, m_fOverlapX, m_fOverlapY, m_nGlobalBaseColorDiff, m_nGlobalBaseGrayDiff, m_scalarGlobalBase, enScanDir);
     m_pAutoRunThread = new AutoRunThread(m_vecAlignments, m_vecDeviceInspWindow, m_vecVecFrameCtr, stAutoRunParams, &m_mapBoardInspResult);

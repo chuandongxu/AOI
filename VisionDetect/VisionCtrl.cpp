@@ -576,50 +576,6 @@ bool VisionCtrl::merge3DHeight(const QVector<cv::Mat>& matHeights, const QVector
     return true;
 }
 
-bool VisionCtrl::mergeImage(QVector<cv::Mat>& matInputImages, QVector<cv::Mat>& matOutputImages)
-{
-    Vision::PR_COMBINE_IMG_CMD stCmd;
-    Vision::PR_COMBINE_IMG_RPY stRpy;
-
-    //for (int i = matInputImages.size() - 1; i >= 0; i--)
-    //{
-    //    stCmd.vecInputImages.push_back(matInputImages[i]);
-    //}
-
-    for (int i = 0; i < matInputImages.size(); i++)
-    {
-        stCmd.vecInputImages.push_back(matInputImages[i]);
-    }
-
-    double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
-    double dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-
-    auto nScanDirection = System->getParam("scan_image_Direction").toInt();
-
-    stCmd.nCountOfImgPerFrame = System->getParam("scan_image_OneFrameImageCount").toInt();
-    stCmd.nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
-    stCmd.nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
-    stCmd.nOverlapX = ToInt(System->getParam("scan_image_OverlapX").toDouble() / dResolutionX + 0.5);
-    stCmd.nOverlapY = ToInt(System->getParam("scan_image_OverlapY").toDouble() / dResolutionY + 0.5);
-    stCmd.nCountOfImgPerRow = System->getParam("scan_image_RowImageCount").toInt();
-    stCmd.enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR> (nScanDirection);
-
-    Vision::VisionStatus retStatus = PR_CombineImg(&stCmd, &stRpy);
-    if (retStatus == Vision::VisionStatus::OK)
-    {
-        for each (cv::Mat img in stRpy.vecResultImages)
-        {
-            matOutputImages.push_back(img);
-        }
-    }
-    else
-    {
-        System->setTrackInfo(QString("Error at PR_Merge3DHeight, error code = %1").arg((int)retStatus));
-    }
-
-    return true;
-}
-
 bool VisionCtrl::matchAlignment(cv::Mat& matDisplay, QVector<QProfileObj*>& objProfTests)
 {
     IData * pData = getModule<IData>(DATA_MODEL);

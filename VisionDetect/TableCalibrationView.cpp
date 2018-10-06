@@ -150,7 +150,6 @@ void TableCalibrationView::onEnd()
     if (!pUI) return;
 
     if (!m_bGuideCali) return;
-
     
     pUI->endUpCapture();
 
@@ -223,7 +222,6 @@ void TableCalibrationView::onRunTest()
     auto dOverlapUmY = ui.lineEditOverlapYScan->text().toDouble();
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
 
     int nOverlapX = static_cast<int> (dOverlapUmX / dResolutionX + 0.5);
     int nOverlapY = static_cast<int> (dOverlapUmY / dResolutionY + 0.5);
