@@ -180,7 +180,7 @@ void InspLeadWidget::_autoAddInspWindows(const Vision::PR_AUTO_LOCATE_LEAD_RPY &
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
-    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
+    float fCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
 
@@ -189,8 +189,8 @@ void InspLeadWidget::_autoAddInspWindows(const Vision::PR_AUTO_LOCATE_LEAD_RPY &
     window.usage = Engine::Window::Usage::INSP_LEAD;
 
     auto matBigImage = pUI->getImage();
-    int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;
-    int nBigImgHeight = matBigImage.rows / dCombinedImageScale;
+    int nBigImgWidth  = matBigImage.cols / fCombinedImageScale;
+    int nBigImgHeight = matBigImage.rows / fCombinedImageScale;
     
     window.deviceId = pUI->getSelectedDevice().getId();
     window.angle = 0;

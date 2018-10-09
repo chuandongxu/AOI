@@ -737,10 +737,10 @@ void Insp2DRunnable::_ocv(const Engine::Window &window) {
         m_dResolutionY);
     auto strRecordList = jsonValue["RecordList"].toString();
     auto datalist = strRecordList.split(',');
-    for (const auto &strRecordId : datalist) {
+    for (const auto &strRecordId : datalist)
         stCmd.vecRecordId.push_back(strRecordId.toInt());
-    }
     stCmd.fMinMatchScore = jsonValue["MinScore"].toDouble();
+    stCmd.enDirection = static_cast<Vision::PR_DIRECTION>(jsonValue["CharDirection"].toInt());
 
     Vision::PR_Ocv(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {

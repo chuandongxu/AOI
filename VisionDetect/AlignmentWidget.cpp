@@ -197,7 +197,7 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
-    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
+    float fCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     auto rectROI = pUI->getSelectedROI();
@@ -255,8 +255,8 @@ void AlignmentWidget::confirmWindow(OPERATION enOperation) {
 
     cv::Point2f ptWindowCtr(rectROI.x + rectROI.width / 2.f, rectROI.y + rectROI.height / 2.f);
     auto matBigImage = pUI->getImage();
-    int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;
-    int nBigImgHeight = matBigImage.rows / dCombinedImageScale;
+    int nBigImgWidth  = matBigImage.cols / fCombinedImageScale;
+    int nBigImgHeight = matBigImage.rows / fCombinedImageScale;
     if (bBoardRotated) {
         window.x = (nBigImgWidth - ptWindowCtr.x)  * dResolutionX;
         window.y = ptWindowCtr.y * dResolutionY;

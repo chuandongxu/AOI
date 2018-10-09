@@ -718,7 +718,7 @@ cv::Rect SearchDeviceWidget::_calcRectROI(Engine::Window& window)
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
-    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
+    float fCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);
 
     cv::Rect rectROI;
     rectROI.width = window.width / dResolutionX;
@@ -727,8 +727,8 @@ cv::Rect SearchDeviceWidget::_calcRectROI(Engine::Window& window)
     cv::Point2f ptWindowCtr;
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     auto matBigImage = pUI->getImage();
-    int nBigImgWidth = matBigImage.cols / dCombinedImageScale;
-    int nBigImgHeight = matBigImage.rows / dCombinedImageScale;
+    int nBigImgWidth = matBigImage.cols / fCombinedImageScale;
+    int nBigImgHeight = matBigImage.rows / fCombinedImageScale;
     if (bBoardRotated) {
         ptWindowCtr.x = nBigImgWidth - window.x / dResolutionX;
         ptWindowCtr.y = window.y / dResolutionY;

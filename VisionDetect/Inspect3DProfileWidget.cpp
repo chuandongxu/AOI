@@ -1,19 +1,22 @@
-﻿#include "Inspect3DProfileWidget.h"
-
-#include "qcustomplot.h"
-
-#include "../Common/SystemData.h"
-
-#include "TableCaliDataStorage.h"
-
-#include <QGraphicsScene>
+﻿#include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 
+#include "Inspect3DProfileWidget.h"
+#include "qcustomplot.h"
+#include "../Common/SystemData.h"
+#include "TableCaliDataStorage.h"
 #include "opencv2/opencv.hpp"
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include "opencv2/core.hpp"
+#include "opencv2/highgui.hpp"
 
-#define ToInt(value)                (static_cast<int>(value))
+#if defined(CreateWindow) // If Win32 defines "CreateWindow":
+#undef CreateWindow       //   Undefine it to avoid conflict
+#endif                    //   with the line display method.
+
+#include "DataStoreAPI.h"
+using namespace NFG::AOI;
+
+#define ToInt(value)        (static_cast<int>(value))
 #define ToFloat(param)      (static_cast<float>(param))
 
 const int IMG_DISPLAY_WIDTH = 350;
@@ -163,10 +166,12 @@ void Inspect3DProfileWidget::inspect(cv::Rect& rectROI)
     double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     double dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
 
-    double fOverlapUmX = System->getParam("ScanImageOverlapX").toDouble();
-    double fOverlapUmY = System->getParam("ScanImageOverlapY").toDouble();
+    float fOverlapUmX = 0.f, fOverlapUmY = 0.f;
+    Engine::GetParameter("ScanImageOverlapX", fOverlapUmX, 0.f);
+    Engine::GetParameter("ScanImageOverlapY", fOverlapUmY, 0.f);
 
-    Vision::PR_SCAN_IMAGE_DIR enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(System->getParam("ScanImageDirection").toInt());
+    Int32 nScanDirection = 0; Engine::GetParameter("ScanImageDirection", nScanDirection, 0);
+    Vision::PR_SCAN_IMAGE_DIR enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(nScanDirection);
 
     Vision::PR_COMBINE_IMG_CMD stCmd;
     Vision::PR_COMBINE_IMG_RPY stRpy;

@@ -1,5 +1,7 @@
 ﻿#include <QMessageBox>
-#include <qthread.h>
+#include <QThread>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "InspWindowWidget.h"
 #include "../include/IVisionUI.h"
@@ -28,8 +30,6 @@
 #include "InspMaskEditorWidget.h"
 #include "InspHeightBaseWidget.h"
 #include "VisionAPI.h"
-#include <QJsonObject>
-#include <QJsonDocument>
 
 static const QString DEFAULT_WINDOW_NAME[] =
 {
@@ -201,11 +201,11 @@ void InspWindowWidget::refreshAllDeviceWindows() {
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
-    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
+    float fCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);
 
     auto matImage = pUI->getImage();
-    m_nBigImgWidth  = matImage.cols / dCombinedImageScale;
-    m_nBigImgHeight = matImage.rows / dCombinedImageScale;
+    m_nBigImgWidth  = matImage.cols / fCombinedImageScale;
+    m_nBigImgHeight = matImage.rows / fCombinedImageScale;
 
     Engine::WindowVector vecWindow;
     auto result = Engine::GetAllWindows(vecWindow);

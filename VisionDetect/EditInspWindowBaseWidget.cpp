@@ -52,12 +52,12 @@ void EditInspWindowBaseWidget::updateWindowToUI(const Engine::Window &window, OP
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
-    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
+    float fCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     auto matBigImage = pUI->getImage();
-    int nBigImgWidth  = matBigImage.cols / dCombinedImageScale;
-    int nBigImgHeight = matBigImage.rows / dCombinedImageScale;
+    int nBigImgWidth  = matBigImage.cols / fCombinedImageScale;
+    int nBigImgHeight = matBigImage.rows / fCombinedImageScale;
 
     QDetectObj detectObj(window.Id, window.name.c_str());
     cv::Point2f ptCenter(window.x / dResolutionX, window.y / dResolutionY);

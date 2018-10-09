@@ -39,10 +39,10 @@ void ScanImageWidget::showEvent(QShowEvent *event) {
     Engine::GetParameter("ScanImageRowImageCount", nCountOfImgPerRow, 0);
     Engine::GetParameter("ScanImageDirection", nScanDirection, 0);
 
-    float dOverlapUmX = 0.f, dOverlapUmY = 0.f, dCombinedImageScale = 1.f;
+    float dOverlapUmX = 0.f, dOverlapUmY = 0.f, fCombinedImageScale = 1.f;
     Engine::GetParameter("ScanImageOverlapX", dOverlapUmX, 0.f);
     Engine::GetParameter("ScanImageOverlapY", dOverlapUmY, 0.f);
-    Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);
+    Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);
 
     ui.lineEditOneFrameImageCountScan->setText(QString("%1").arg(nCountOfImgPerFrame));
     ui.lineEditFrameCountXScan->setText(QString("%1").arg(nCountOfFrameX));
@@ -50,7 +50,7 @@ void ScanImageWidget::showEvent(QShowEvent *event) {
     ui.lineEditOverlapXScan->setText(QString("%1").arg(dOverlapUmX));
     ui.lineEditOverlapYScan->setText(QString("%1").arg(dOverlapUmY));
     ui.lineEditRowImageCountScan->setText(QString("%1").arg(nCountOfImgPerRow));
-    ui.lineEditCombinedImageZoomFactorScan->setText(QString("%1").arg(dCombinedImageScale));
+    ui.lineEditCombinedImageZoomFactorScan->setText(QString("%1").arg(fCombinedImageScale));
     ui.comboBoxScanDirection->setCurrentIndex(nScanDirection);
 }
 
@@ -178,7 +178,7 @@ cv::Mat ScanImageWidget::_combineImage(const QString &strInputFolder) {
     int nOverlapX = static_cast<int> (fOverlapUmX / dResolutionX + 0.5f);
     int nOverlapY = static_cast<int> (fOverlapUmY / dResolutionY + 0.5f);
     
-    float dCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", dCombinedImageScale, 1.f);    
+    float fCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);    
 
     Vision::PR_COMBINE_IMG_CMD stCmd;
     Vision::PR_COMBINE_IMG_RPY stRpy;
@@ -218,7 +218,7 @@ cv::Mat ScanImageWidget::_combineImage(const QString &strInputFolder) {
     }
 
     cv::Mat matResize;
-    cv::resize(stRpy.vecResultImages[0], matResize, cv::Size(), dCombinedImageScale, dCombinedImageScale);
+    cv::resize(stRpy.vecResultImages[0], matResize, cv::Size(), fCombinedImageScale, fCombinedImageScale);
 
     int imgNo = 1;
     for (const auto &mat : stRpy.vecResultImages) {
@@ -226,7 +226,7 @@ cv::Mat ScanImageWidget::_combineImage(const QString &strInputFolder) {
         _snprintf(arrChFileName, sizeof(arrChFileName), "CombineResult_%d.bmp", imgNo);
         std::string strResultFile = strFolder + arrChFileName;
         cv::Mat matResize;
-        cv::resize(mat, matResize, cv::Size(), dCombinedImageScale, dCombinedImageScale);
+        cv::resize(mat, matResize, cv::Size(), fCombinedImageScale, fCombinedImageScale);
         cv::imwrite(strResultFile, matResize);
         ++ imgNo;
     }
@@ -355,7 +355,7 @@ void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage) {
     Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    float fCombinedImgScale = System->getParam("ScanImageZoomFactor").toDouble();
+    float fCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);
 
     VisionViewDeviceVector vecVisionViewDevices;
     Engine::BoardVector vecBoard;
@@ -383,14 +383,14 @@ void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage) {
             if (device.isBottom)
                 continue;
 
-            auto x = (device.x + board.x) / dResolutionX * fCombinedImgScale;
-            auto y = (device.y + board.y) / dResolutionY * fCombinedImgScale;
+            auto x = (device.x + board.x) / dResolutionX * fCombinedImageScale;
+            auto y = (device.y + board.y) / dResolutionY * fCombinedImageScale;
             if (bBoardRotated)
                 x = matImage.cols - x;
             else
                 y = matImage.rows - y; //In cad, up is positive, but in image, down is positive.
-            auto width = device.width / dResolutionX * fCombinedImgScale;
-            auto height = device.height / dResolutionY * fCombinedImgScale;
+            auto width  = device.width  / dResolutionX * fCombinedImageScale;
+            auto height = device.height / dResolutionY * fCombinedImageScale;
             cv::RotatedRect deviceWindow(cv::Point2f(x, y), cv::Size2f(width, height), device.angle);
             vecVisionViewDevices.emplace_back(device.Id, device.name, deviceWindow);
         }

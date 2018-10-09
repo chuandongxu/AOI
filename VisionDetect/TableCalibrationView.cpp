@@ -227,7 +227,7 @@ void TableCalibrationView::onRunTest()
     int nOverlapY = static_cast<int> (dOverlapUmY / dResolutionY + 0.5);
 
     auto nCountOfImgPerRow = ui.lineEditRowImageCountScan->text().toInt();
-    auto dCombinedImageScale = ui.lineEditCombinedImageZoomFactorScan->text().toDouble();
+    auto fCombinedImageScale = ui.lineEditCombinedImageZoomFactorScan->text().toDouble();
     auto nScanDirection = ui.comboBoxScanDirection->currentIndex();
 
     Vision::PR_COMBINE_IMG_CMD stCmd;
@@ -255,7 +255,7 @@ void TableCalibrationView::onRunTest()
     }
 
     cv::Mat matResize;
-    cv::resize(stRpy.vecResultImages[0], matResize, cv::Size(), dCombinedImageScale, dCombinedImageScale);
+    cv::resize(stRpy.vecResultImages[0], matResize, cv::Size(), fCombinedImageScale, fCombinedImageScale);
     
     IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
     if (pUI)
