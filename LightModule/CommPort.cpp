@@ -111,7 +111,6 @@ bool QCommPort::read(QByteArray &ar)
     PurgeComm(m_hCom, PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_TXABORT);//清空缓存
 
     return true;
-
 }
 
 bool QCommPort::readSyn(QByteArray &ar)
@@ -155,7 +154,6 @@ bool QCommPort::readSyn(QByteArray &ar)
             return true;
         }
     }
-   
 
     return false;
 }

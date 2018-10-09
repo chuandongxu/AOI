@@ -61,6 +61,10 @@ API_CALL(int)  GetLights(LightVector &vecLights);
 API_CALL(int)  AddRecord(Int32 recordId, Binary recordData);
 API_CALL(int)  UpdateRecord(Int32 recordId, Binary recordData);
 API_CALL(int)  GetRecords(RecordIdDataMap &mapRecordIdData);
+API_CALL(int)  GetParameter(const String &name, float &value, float defaultValue);
+API_CALL(int)  SetParameter(const String &name, float value);
+API_CALL(int)  GetParameter(const String &name, Int32 &value, Int32 defaultValue);
+API_CALL(int)  SetParameter(const String &name, Int32 value);
 }
 }
 }

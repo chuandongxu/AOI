@@ -16,6 +16,9 @@ public:
     ScanImageWidget(DataCtrl *pDataCtrl, QWidget *parent = Q_NULLPTR);
     ~ScanImageWidget();
 
+protected:
+    virtual void showEvent(QShowEvent *event) override;
+
 private slots:
     void on_btnCombineImageParamsSave_clicked();
     void on_btnPrepareScanImage_clicked();
