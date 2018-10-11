@@ -13,6 +13,7 @@
 #include "../DataModule/QDetectObj.h"
 #include "InspWindowWidget.h"
 #include "../DataModule/CalcUtils.hpp"
+#include "../DataModule/DataUtils.h"
 
 using namespace NFG::AOI;
 using namespace AOI;
@@ -90,6 +91,7 @@ HeightDetectWidget::HeightDetectWidget(InspWindowWidget *parent)
     ui.tableWidget->setCellWidget(MAX_TB_REL_HT, DATA_COLUMN, m_pSpecAndResultTopBtmRelHt.get());
 
     m_pCheckBoxRelHt->setChecked(false);
+    m_pCheckBoxRelHt->setEnabled(false);
     m_pSpecAndResultLftRgtRelHt->setEnabled(false);
     m_pSpecAndResultTopBtmRelHt->setEnabled(false);
 }
@@ -107,10 +109,13 @@ void HeightDetectWidget::setDefaultValue() {
     m_pSpecAndResultMaxHtErr->setSpec(200);
     m_pSpecAndResultMinHtErr->setSpec(-200);
     m_pCheckBoxRelHt->setChecked(false);
+    m_pCheckBoxRelHt->setEnabled(false);
     m_pSpecAndResultLftRgtRelHt->setEnabled(false);
     m_pSpecAndResultTopBtmRelHt->setEnabled(false);
     m_pSpecAndResultLftRgtRelHt->setSpec(100);
     m_pSpecAndResultTopBtmRelHt->setSpec(100);
+    m_bIsTryInspected = false;
+    m_currentWindow.usage = Engine::Window::Usage::UNDEFINED;
 }
 
 void HeightDetectWidget::tryInsp() {
@@ -119,6 +124,60 @@ void HeightDetectWidget::tryInsp() {
         strMsg.sprintf("Select Measure Window to measure height!");
         QMessageBox::information(this, "Measure Height", strMsg);
         return;
+    }
+
+    QString strTitle(QStringLiteral("3D 高度检测"));
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+
+    if (Engine::Window::Usage::UNDEFINED == m_currentWindow.usage) {
+        auto nReturn = System->showInteractMessage(strTitle, QStringLiteral("是否检测相对高度？"));
+        if (nReturn == QDialog::Accepted)
+        {
+            //nReturn = System->showInteractMessage(strTitle, QStringLiteral("请拖动鼠标选择检测窗口"));
+            //if (nReturn != QDialog::Accepted)
+            //    return;
+
+            pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_SELECT_SUB_ROI);
+            nReturn = System->showInteractMessage(strTitle, QStringLiteral("请拖动鼠标选择第一个小检测窗口"));
+            if (nReturn != QDialog::Accepted)
+                return;
+
+            auto vecSubROIs = pUI->getSubROIs();
+            if (vecSubROIs.empty()) {
+                System->showMessage(strTitle, QStringLiteral("请选择小检测窗口!"));
+                return;
+            }
+
+            auto lastSubROI = vecSubROIs.back();
+            cv::Point2f ptWindowCtr(lastSubROI.x + lastSubROI.width / 2.f, lastSubROI.y + lastSubROI.height / 2.f);
+            auto selectedDevice = pUI->getSelectedDevice();
+            auto ptCenter = selectedDevice.getWindow().center;
+            auto rectDevice = selectedDevice.getWindow().boundingRect();
+
+            cv::Point ptNewWindowCtr;
+            ptNewWindowCtr.x = 2 * ptCenter.x - ptWindowCtr.x;
+            ptNewWindowCtr.y = ptWindowCtr.y;
+            cv::Rect rectNewWindow(ptNewWindowCtr.x - lastSubROI.width / 2, ptNewWindowCtr.y - lastSubROI.height / 2, lastSubROI.width, lastSubROI.height);
+            vecSubROIs.push_back(rectNewWindow);
+ 
+            ptNewWindowCtr.x = ptWindowCtr.x;
+            ptNewWindowCtr.y = 2 * ptCenter.y - ptWindowCtr.y;
+            rectNewWindow = cv::Rect(ptNewWindowCtr.x - lastSubROI.width / 2, ptNewWindowCtr.y - lastSubROI.height / 2, lastSubROI.width, lastSubROI.height);
+            vecSubROIs.push_back(rectNewWindow);
+
+            ptNewWindowCtr.x = 2 * ptCenter.x - ptWindowCtr.x;
+            ptNewWindowCtr.y = 2 * ptCenter.y - ptWindowCtr.y;
+            rectNewWindow = cv::Rect(ptNewWindowCtr.x - lastSubROI.width / 2, ptNewWindowCtr.y - lastSubROI.height / 2, lastSubROI.width, lastSubROI.height);
+            vecSubROIs.push_back(rectNewWindow); 
+
+            pUI->setSubROIs(vecSubROIs);
+
+            m_pCheckBoxRelHt->setChecked(true);
+        }
+        else
+        {
+            m_pCheckBoxRelHt->setChecked(false);
+        }
     }
 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
@@ -131,8 +190,7 @@ void HeightDetectWidget::tryInsp() {
 
     stCmd.fEffectHRatioStart = m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT;
     stCmd.fEffectHRatioEnd = m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT;
-
-    auto pUI = getModule<IVisionUI>(UI_MODEL);
+ 
     stCmd.matHeight = pUI->getHeightData();
     auto rectROI = pUI->getSelectedROI();
     if (rectROI.width <= 0 || rectROI.height <= 0) {
@@ -195,6 +253,8 @@ void HeightDetectWidget::tryInsp() {
     }
 
     calcRelativeValue();
+
+    m_bIsTryInspected = true;
 }
 
 void HeightDetectWidget::calcRelativeValue()
@@ -207,71 +267,80 @@ void HeightDetectWidget::calcRelativeValue()
     if (bRelHeight)
     {
         auto pUI = getModule<IVisionUI>(UI_MODEL);
-        auto rectROI = pUI->getSelectedROI();
-        if (rectROI.width <= 0 || rectROI.height <= 0) {
-            QMessageBox::critical(this, QStringLiteral("高度检测框"), QStringLiteral("Please select a ROI to do inspection."));
-            return;
-        }
 
-        double dPosXMin = 1000000, dPosXMax = -1000000, dPosYMin = 1000000, dPosYMax = -1000000;
-        double dPosXMinHt = 0, dPosXMaxHt = 0, dPosYMinHt = 0, dPosYMaxHt = 0;
-        for (auto &window : m_windowGroup.vecWindows) {
-            if (Engine::Window::Usage::HEIGHT_MEASURE == window.usage) {
-                QJsonParseError json_error;
-                QJsonDocument parse_doucment = QJsonDocument::fromJson(window.inspParams.c_str(), &json_error);
-                if (json_error.error != QJsonParseError::NoError)
-                    return;
+        auto vecRectSubROIS = pUI->getSubROIs();
 
-                if (parse_doucment.isObject()) {
-                    QJsonObject obj = parse_doucment.object();
+        double dPosXMaxHt = 0, dPosXMinHt = 0;
+        double dPosYMaxHt = 0, dPosYMinHt = 0;
 
-                    if (obj.take("GlobalBase").toBool())
-                    {
-                        Vision::PR_CALC_3D_HEIGHT_DIFF_CMD stCmd;
-                        Vision::PR_CALC_3D_HEIGHT_DIFF_RPY stRpy;
+        int nIndex = 0;
+        for (auto &rectROI : vecRectSubROIS) {
+            auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+            auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
+            auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+            auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
 
-                        stCmd.fEffectHRatioStart = obj.take("MinRange").toDouble();
-                        stCmd.fEffectHRatioEnd = obj.take("MaxRange").toDouble();
+            Vision::PR_CALC_3D_HEIGHT_DIFF_CMD stCmd;
+            Vision::PR_CALC_3D_HEIGHT_DIFF_RPY stRpy;
 
-                        stCmd.matHeight = pUI->getHeightData();
-                        stCmd.rectROI = rectROI;
+            stCmd.fEffectHRatioStart = m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT;
+            stCmd.fEffectHRatioEnd = m_pEditMaxRange->text().toFloat() / ONE_HUNDRED_PERCENT;
 
-                        stCmd.matMask = getGlobalBaseMask(window);
-                        stCmd.vecRectBases.push_back(calcWinBaseRect(window));
+            stCmd.matHeight = pUI->getHeightData();
+            stCmd.rectROI = rectROI;
 
-                        Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
-                        float height = stRpy.fHeightDiff * MM_TO_UM;
+            bool bGlobalBase = (static_cast<HDW_BASE_TYPE> (m_pComboxBaseType->currentIndex()) == HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE);
+            if (bGlobalBase)
+            {
+                stCmd.matMask = getGlobalBaseMask(m_currentWindow);
+                stCmd.vecRectBases.push_back(calcWinBaseRect(m_currentWindow));
+            }
+            else {
+                auto matImage = pUI->getImage();
+                int nBigImgWidth = matImage.cols / dCombinedImageScale;
+                int nBigImgHeight = matImage.rows / dCombinedImageScale;
 
-                        if (window.x <= dPosXMin)
-                        {
-                            dPosXMin = window.x;
-                            dPosXMinHt = height;
-                        }
-                        if (window.x > dPosXMax)
-                        {
-                            dPosXMax = window.x;
-                            dPosXMaxHt = height;
-                        }
+                for (const auto &window : m_windowGroup.vecWindows) {
+                    if (Engine::Window::Usage::HEIGHT_BASE == window.usage) {
+                        auto x = window.x / dResolutionX;
+                        auto y = window.y / dResolutionY;
+                        if (bBoardRotated)
+                            x = nBigImgWidth - x;
+                        else
+                            y = nBigImgHeight - y; //In cad, up is positive, but in image, down is positive.
 
-                        if (window.y <= dPosYMin)
-                        {
-                            dPosYMin = window.y;
-                            dPosYMinHt = height;
-                        }
-                        if (window.y > dPosYMax)
-                        {
-                            dPosYMax = window.y;
-                            dPosYMaxHt = height;
-                        }
+                        auto width = window.width / dResolutionX;
+                        auto height = window.height / dResolutionY;
+                        cv::RotatedRect rrBaseRect(cv::Point2f(x, y), cv::Size2f(width, height), window.angle);
+                        stCmd.vecRectBases.push_back(rrBaseRect.boundingRect());
                     }
                 }
             }
+
+            Vision::PR_Calc3DHeightDiff(&stCmd, &stRpy);
+            float height = stRpy.fHeightDiff * MM_TO_UM;   
+
+            if (0 == nIndex)
+            {
+                dPosXMinHt = height;
+                dPosYMinHt = height;
+            }
+            else if (1 == nIndex)
+            {
+                dPosXMaxHt = height;             
+            }
+            else if (2 == nIndex)
+            {
+                dPosYMaxHt = height;
+            }
+
+            nIndex++;
         }
 
         // Result Final
         m_pSpecAndResultLftRgtRelHt->setResult(dPosXMaxHt - dPosXMinHt);
         m_pSpecAndResultTopBtmRelHt->setResult(dPosYMaxHt - dPosYMinHt);
-    }   
+    }
 }
 
 void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
@@ -279,6 +348,19 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
     auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
     auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    auto rectROI = pUI->getSelectedROI();
+    if (rectROI.width <= 0 || rectROI.height <= 0) {
+        QMessageBox::critical(this, QStringLiteral("Add Alignment Window"), QStringLiteral("Please select a ROI to do inspection."));
+        return;
+    }
+
+    if (!m_bIsTryInspected) {
+        tryInsp();
+        if (!m_bIsTryInspected)
+            return;
+    }
 
     QJsonObject json;
     json.insert("MinRange", m_pEditMinRange->text().toFloat() / ONE_HUNDRED_PERCENT);
@@ -291,18 +373,28 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
     json.insert("TopBtmRelHt", m_pSpecAndResultTopBtmRelHt->getSpec());
     json.insert("GlobalBase", (static_cast<HDW_BASE_TYPE> (m_pComboxBaseType->currentIndex()) == HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE) ? true : false);
     json.insert("GlobalBaseScale", m_pEditBaseScale->text().toInt());
+   
+    if (m_pCheckBoxRelHt->isChecked())
+    {
+        auto selectedDevice = pUI->getSelectedDevice();
+        auto ptCenter = selectedDevice.getWindow().center;
+
+        auto vecRectSubROIS = pUI->getSubROIs();
+        json.insert("NumSubROI", Vision::ToInt32(vecRectSubROIS.size()));
+        int index = 0;
+        for (auto &rectSubROI : vecRectSubROIS) {
+            rectSubROI.x -= ptCenter.x;
+            rectSubROI.y -= ptCenter.y;
+            QString strKey = "SubROI_" + QString::number(index);
+            json.insert(strKey, DataUtils::formatRect(rectSubROI).c_str());
+            ++index;
+        }
+    }
 
     QJsonDocument document;
     document.setObject(json);
     QByteArray byte_array = document.toJson(QJsonDocument::Compact);
-
-    auto pUI = getModule<IVisionUI>(UI_MODEL);
-    auto rectROI = pUI->getSelectedROI();
-    if (rectROI.width <= 0 || rectROI.height <= 0) {
-        QMessageBox::critical(this, QStringLiteral("Add Height Detect Window"), QStringLiteral("Please select a ROI to do inspection."));
-        return;
-    }
-
+  
     Engine::Window window;
     window.lightId = m_pParent->getSelectedLighting() + 1;
     window.usage = (static_cast<HDW_MEASURE_TYPE> (m_pComboxMeasureType->currentIndex()) == HDW_MEASURE_TYPE::EN_MEASURE_TYPE) ? Engine::Window::Usage::HEIGHT_MEASURE : Engine::Window::Usage::HEIGHT_BASE;
@@ -398,7 +490,31 @@ void HeightDetectWidget::setCurrentWindow(const Engine::Window &window) {
 
         m_pComboxBaseType->setCurrentIndex(static_cast<int>(obj.take("GlobalBase").toBool() ? HDW_BASE_TYPE::EN_GLOBAL_BASE_TYPE : HDW_BASE_TYPE::EN_MANUAL_TYPE)); 
         m_pEditBaseScale->setText(QString::number(obj.take("GlobalBaseScale").toInt()));
-    }
+
+        if (m_pCheckBoxRelHt->isChecked())
+        {
+            auto pUI = getModule<IVisionUI>(UI_MODEL);
+
+            auto selectedDevice = pUI->getSelectedDevice();
+            auto ptCenter = selectedDevice.getWindow().center;
+
+            auto vecRectSubROIS = pUI->getSubROIs();
+            int nNumSubROI = obj["NumSubROI"].toInt();
+
+            Vision::VectorOfRect vecSubROIs;
+            for (int index = 0; index < nNumSubROI; ++index) {
+                QString strKey = "SubROI_" + QString::number(index);
+                auto strRect = obj[strKey].toString().toStdString();
+                auto rectSubROI = DataUtils::parseRect(strRect);
+                rectSubROI.x += ptCenter.x;
+                rectSubROI.y += ptCenter.y;
+                vecSubROIs.push_back(rectSubROI);
+            }
+            pUI->setSubROIs(vecSubROIs);
+        }       
+    }   
+
+    m_bIsTryInspected = false;
 }
 
 void HeightDetectWidget::on_measureChanged(int index) {
