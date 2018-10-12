@@ -19,16 +19,9 @@ ScanImageWidget::ScanImageWidget(DataCtrl *pDataCtrl, QWidget *parent)
       QWidget(parent)
 {
     ui.setupUi(this);
-
-    ui.lineEditOneFrameImageCountScan->setText(QString("%1").arg(System->getParam("scan_image_OneFrameImageCount").toInt()));
-    ui.lineEditFrameCountXScan->setText(QString("%1").arg(System->getParam("scan_image_FrameCountX").toInt()));
-    ui.lineEditFrameCountYScan->setText(QString("%1").arg(System->getParam("scan_image_FrameCountY").toInt()));
-    ui.lineEditOverlapXScan->setText(QString("%1").arg(System->getParam("scan_image_OverlapX").toDouble()));
-    ui.lineEditOverlapYScan->setText(QString("%1").arg(System->getParam("scan_image_OverlapY").toDouble()));
-    ui.lineEditRowImageCountScan->setText(QString("%1").arg(System->getParam("scan_image_RowImageCount").toInt()));
-    ui.lineEditCombinedImageZoomFactorScan->setText(QString("%1").arg(System->getParam("scan_image_ZoomFactor").toDouble()));
+    
     ui.lineEditFrameImageFolder->setText(System->getParam("scan_image_Folder").toString());
-    ui.comboBoxScanDirection->setCurrentIndex(System->getParam("scan_image_Direction").toInt());
+    
     ui.btnScanImage->setEnabled(false);
     ui.comboBoxDisplayImage->setEnabled(false);
 
@@ -38,15 +31,38 @@ ScanImageWidget::ScanImageWidget(DataCtrl *pDataCtrl, QWidget *parent)
 ScanImageWidget::~ScanImageWidget() {
 }
 
+void ScanImageWidget::showEvent(QShowEvent *event) {
+    Int32 nCountOfFrameX = 0, nCountOfFrameY = 0, nCountOfImgPerFrame = 0, nCountOfImgPerRow = 0, nScanDirection = 0;
+    Engine::GetParameter("ScanImageFrameCountX", nCountOfFrameX, 0);
+    Engine::GetParameter("ScanImageFrameCountY", nCountOfFrameY, 0);
+    Engine::GetParameter("ScanImageOneFrameImageCount", nCountOfImgPerFrame, 0);
+    Engine::GetParameter("ScanImageRowImageCount", nCountOfImgPerRow, 0);
+    Engine::GetParameter("ScanImageDirection", nScanDirection, 0);
+
+    float dOverlapUmX = 0.f, dOverlapUmY = 0.f, fCombinedImageScale = 1.f;
+    Engine::GetParameter("ScanImageOverlapX", dOverlapUmX, 0.f);
+    Engine::GetParameter("ScanImageOverlapY", dOverlapUmY, 0.f);
+    Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);
+
+    ui.lineEditOneFrameImageCountScan->setText(QString("%1").arg(nCountOfImgPerFrame));
+    ui.lineEditFrameCountXScan->setText(QString("%1").arg(nCountOfFrameX));
+    ui.lineEditFrameCountYScan->setText(QString("%1").arg(nCountOfFrameY));
+    ui.lineEditOverlapXScan->setText(QString("%1").arg(dOverlapUmX));
+    ui.lineEditOverlapYScan->setText(QString("%1").arg(dOverlapUmY));
+    ui.lineEditRowImageCountScan->setText(QString("%1").arg(nCountOfImgPerRow));
+    ui.lineEditCombinedImageZoomFactorScan->setText(QString("%1").arg(fCombinedImageScale));
+    ui.comboBoxScanDirection->setCurrentIndex(nScanDirection);
+}
+
 void ScanImageWidget::on_btnCombineImageParamsSave_clicked() {
-    System->setParam("scan_image_OneFrameImageCount", ui.lineEditOneFrameImageCountScan->text().toInt());
-    System->setParam("scan_image_FrameCountX", ui.lineEditFrameCountXScan->text().toInt());
-    System->setParam("scan_image_FrameCountY", ui.lineEditFrameCountYScan->text().toInt());
-    System->setParam("scan_image_OverlapX", ui.lineEditOverlapXScan->text().toDouble());
-    System->setParam("scan_image_OverlapY", ui.lineEditOverlapYScan->text().toDouble());
-    System->setParam("scan_image_RowImageCount", ui.lineEditRowImageCountScan->text().toInt());
-    System->setParam("scan_image_ZoomFactor", ui.lineEditCombinedImageZoomFactorScan->text().toDouble());
-    System->setParam("scan_image_Direction", ui.comboBoxScanDirection->currentIndex());
+    Engine::SetParameter("ScanImageOneFrameImageCount", ui.lineEditOneFrameImageCountScan->text().toInt());
+    Engine::SetParameter("ScanImageFrameCountX", ui.lineEditFrameCountXScan->text().toInt());
+    Engine::SetParameter("ScanImageFrameCountY", ui.lineEditFrameCountYScan->text().toInt());
+    Engine::SetParameter("ScanImageOverlapX", ui.lineEditOverlapXScan->text().toFloat());
+    Engine::SetParameter("ScanImageOverlapY", ui.lineEditOverlapYScan->text().toFloat());
+    Engine::SetParameter("ScanImageRowImageCount", ui.lineEditRowImageCountScan->text().toInt());
+    Engine::SetParameter("ScanImageZoomFactor", ui.lineEditCombinedImageZoomFactorScan->text().toFloat());
+    Engine::SetParameter("ScanImageDirection", ui.comboBoxScanDirection->currentIndex());
 }
 
 void ScanImageWidget::on_btnPrepareScanImage_clicked() {
@@ -74,18 +90,18 @@ void ScanImageWidget::on_btnPrepareScanImage_clicked() {
     float overlapX = 0.f, overlapY = 0.f;
 
     int result = DataUtils::assignFrames(left, top, right, bottom, fovWidth, fovHeight, m_vecVecFrameCtr, overlapX, overlapY);
-    auto frameCountX = m_vecVecFrameCtr[0].size();
-    auto frameCountY = m_vecVecFrameCtr.size();
+    Int32 frameCountX = m_vecVecFrameCtr[0].size();
+    Int32 frameCountY = m_vecVecFrameCtr.size();
 
     ui.lineEditFrameCountXScan->setText(QString::number(frameCountX));
     ui.lineEditFrameCountYScan->setText(QString::number(frameCountY));
     ui.lineEditOverlapXScan->setText(QString::number(overlapX));
     ui.lineEditOverlapYScan->setText(QString::number(overlapY));
 
-    System->setParam("scan_image_FrameCountX", frameCountX);
-    System->setParam("scan_image_FrameCountY", frameCountY);
-    System->setParam("scan_image_OverlapX", overlapX);
-    System->setParam("scan_image_OverlapY", overlapY);
+    Engine::SetParameter("ScanImageFrameCountX", frameCountX);
+    Engine::SetParameter("ScanImageFrameCountY", frameCountY);
+    Engine::SetParameter("ScanImageOverlapX", overlapX);
+    Engine::SetParameter("ScanImageOverlapY", overlapY);
 
     ui.btnScanImage->setEnabled(true);
 }
@@ -144,21 +160,25 @@ void ScanImageWidget::on_btnSelectFrameImages_clicked() {
 }
 
 cv::Mat ScanImageWidget::_combineImage(const QString &strInputFolder) {
-    auto nCountOfImgPerFrame = System->getParam("scan_image_OneFrameImageCount").toInt();
-    auto nCountOfFrameX = System->getParam("scan_image_FrameCountX").toInt();
-    auto nCountOfFrameY = System->getParam("scan_image_FrameCountY").toInt();
-    auto dOverlapUmX = System->getParam("scan_image_OverlapX").toDouble();
-    auto dOverlapUmY = System->getParam("scan_image_OverlapY").toDouble();
+    Int32 nCountOfFrameX = 0, nCountOfFrameY = 0, nCountOfImgPerFrame = 0, nCountOfImgPerRow = 0, nScanDirection = 0;
+    Engine::GetParameter("ScanImageFrameCountX", nCountOfFrameX, 0);
+    Engine::GetParameter("ScanImageFrameCountY", nCountOfFrameY, 0);
+    Engine::GetParameter("ScanImageOneFrameImageCount", nCountOfImgPerFrame, 0);
+    Engine::GetParameter("ScanImageRowImageCount", nCountOfImgPerRow, 0);
+    Engine::GetParameter("ScanImageDirection", nScanDirection, 0);
+
+    float fOverlapUmX = 0.f, fOverlapUmY = 0.f;
+    Engine::GetParameter("ScanImageOverlapX", fOverlapUmX, 0.f);
+    Engine::GetParameter("ScanImageOverlapY", fOverlapUmY, 0.f);
+
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
 
-    int nOverlapX = static_cast<int> (dOverlapUmX / dResolutionX + 0.5);
-    int nOverlapY = static_cast<int> (dOverlapUmY / dResolutionY + 0.5);
-
-    auto nCountOfImgPerRow = System->getParam("scan_image_RowImageCount").toInt();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
-    auto nScanDirection = System->getParam("scan_image_Direction").toInt();
+    int nOverlapX = static_cast<int> (fOverlapUmX / dResolutionX + 0.5f);
+    int nOverlapY = static_cast<int> (fOverlapUmY / dResolutionY + 0.5f);
+    
+    float fCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);    
 
     Vision::PR_COMBINE_IMG_CMD stCmd;
     Vision::PR_COMBINE_IMG_RPY stRpy;
@@ -198,7 +218,7 @@ cv::Mat ScanImageWidget::_combineImage(const QString &strInputFolder) {
     }
 
     cv::Mat matResize;
-    cv::resize(stRpy.vecResultImages[0], matResize, cv::Size(), dCombinedImageScale, dCombinedImageScale);
+    cv::resize(stRpy.vecResultImages[0], matResize, cv::Size(), fCombinedImageScale, fCombinedImageScale);
 
     int imgNo = 1;
     for (const auto &mat : stRpy.vecResultImages) {
@@ -206,7 +226,7 @@ cv::Mat ScanImageWidget::_combineImage(const QString &strInputFolder) {
         _snprintf(arrChFileName, sizeof(arrChFileName), "CombineResult_%d.bmp", imgNo);
         std::string strResultFile = strFolder + arrChFileName;
         cv::Mat matResize;
-        cv::resize(mat, matResize, cv::Size(), dCombinedImageScale, dCombinedImageScale);
+        cv::resize(mat, matResize, cv::Size(), fCombinedImageScale, fCombinedImageScale);
         cv::imwrite(strResultFile, matResize);
         ++ imgNo;
     }
@@ -222,7 +242,7 @@ void ScanImageWidget::on_btnCombineLoadImage_clicked() {
     System->setParam("scan_image_Folder", strFolder);
     System->setSysParam("CAM_RESOLUTION_X", dResolutionX);
     System->setSysParam("CAM_RESOLUTION_Y", dResolutionY);
-    System->setSysParam("BOARD_ROTATED", bBoardRotated);
+    Engine::SetParameter("BOARD_ROTATED", bBoardRotated);
 
     auto matImage = _combineImage(strFolder);
     if (matImage.empty())
@@ -251,7 +271,8 @@ void ScanImageWidget::on_btnSelectCombinedImage_clicked() {
     System->setParam("scan_image_Folder", strFolder);
     System->setSysParam("CAM_RESOLUTION_X", dResolutionX);
     System->setSysParam("CAM_RESOLUTION_Y", dResolutionY);
-    System->setSysParam("BOARD_ROTATED", bBoardRotated);
+
+    Engine::SetParameter("BOARD_ROTATED", bBoardRotated);
 
     auto matImage = cv::imread(fileNames[0].toStdString());
     updateImageDeviceWindows(matImage);
@@ -330,11 +351,11 @@ void ScanImageWidget::on_btnOpenScanImage_clicked() {
     pUI->setHeightData(matHeight);
 }
 
-void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage) {
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage) {    
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    float fCombinedImgScale = System->getParam("scan_image_ZoomFactor").toDouble();
+    float fCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);
 
     VisionViewDeviceVector vecVisionViewDevices;
     Engine::BoardVector vecBoard;
@@ -362,14 +383,14 @@ void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage) {
             if (device.isBottom)
                 continue;
 
-            auto x = (device.x + board.x) / dResolutionX * fCombinedImgScale;
-            auto y = (device.y + board.y) / dResolutionY * fCombinedImgScale;
+            auto x = (device.x + board.x) / dResolutionX * fCombinedImageScale;
+            auto y = (device.y + board.y) / dResolutionY * fCombinedImageScale;
             if (bBoardRotated)
                 x = matImage.cols - x;
             else
                 y = matImage.rows - y; //In cad, up is positive, but in image, down is positive.
-            auto width = device.width / dResolutionX * fCombinedImgScale;
-            auto height = device.height / dResolutionY * fCombinedImgScale;
+            auto width  = device.width  / dResolutionX * fCombinedImageScale;
+            auto height = device.height / dResolutionY * fCombinedImageScale;
             cv::RotatedRect deviceWindow(cv::Point2f(x, y), cv::Size2f(width, height), device.angle);
             vecVisionViewDevices.emplace_back(device.Id, device.name, deviceWindow);
         }

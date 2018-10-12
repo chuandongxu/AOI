@@ -1,5 +1,7 @@
 ﻿#include <QMessageBox>
-#include <qthread.h>
+#include <QThread>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "InspWindowWidget.h"
 #include "../include/IVisionUI.h"
@@ -28,8 +30,6 @@
 #include "InspMaskEditorWidget.h"
 #include "InspHeightBaseWidget.h"
 #include "VisionAPI.h"
-#include <QJsonObject>
-#include <QJsonDocument>
 
 static const QString DEFAULT_WINDOW_NAME[] =
 {
@@ -200,12 +200,12 @@ void InspWindowWidget::refreshAllDeviceWindows() {
 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
-    auto dCombinedImageScale = System->getParam("scan_image_ZoomFactor").toDouble();
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
+    float fCombinedImageScale = 1.f; Engine::GetParameter("ScanImageZoomFactor", fCombinedImageScale, 1.f);
 
     auto matImage = pUI->getImage();
-    m_nBigImgWidth  = matImage.cols / dCombinedImageScale;
-    m_nBigImgHeight = matImage.rows / dCombinedImageScale;
+    m_nBigImgWidth  = matImage.cols / fCombinedImageScale;
+    m_nBigImgHeight = matImage.rows / fCombinedImageScale;
 
     Engine::WindowVector vecWindow;
     auto result = Engine::GetAllWindows(vecWindow);
@@ -592,7 +592,7 @@ void InspWindowWidget::on_btnEditMask_clicked()
 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
 
     auto x = window.x / dResolutionX;
     auto y = window.y / dResolutionY;
@@ -914,7 +914,7 @@ void InspWindowWidget::onSelectedWindowChanged() {
 
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
-    auto bBoardRotated = System->getSysParam("BOARD_ROTATED").toBool();
+    Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
 
     auto x = window.x / dResolutionX;
     auto y = window.y / dResolutionY;

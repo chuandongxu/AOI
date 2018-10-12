@@ -37,7 +37,6 @@ public:
     bool matchPosition(cv::Mat& matDisplay, QVector<QDetectObj*>& objTests);
     bool calculateDetectHeight(cv::Mat& matHeight, QVector<QDetectObj*>& objTests);
     bool merge3DHeight(const QVector<cv::Mat>& matHeights, const QVector<cv::Mat>& vecMatNanMask, cv::Mat& matHeight, cv::Mat &matNamMask, cv::Point2f& ptFramePos);
-    bool mergeImage(QVector<cv::Mat>& matInputImages, QVector<cv::Mat>& matOutputImages);
 
     bool matchAlignment(cv::Mat& matDisplay, QVector<QProfileObj*>& objProfTests);
     bool calculateDetectProfile(cv::Mat& matHeight, QVector<QProfileObj*>& objProfTests);
