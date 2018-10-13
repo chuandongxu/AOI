@@ -149,7 +149,7 @@ void QWorkSetting::initUI()
 
     connect(ui.comboBox_dlpMode, SIGNAL(currentIndexChanged(int)), SLOT(onDlpModeIndexChanged(int)));
     ls.clear();
-    ls << QStringLiteral("DLP触发模式") << QStringLiteral("控制卡触发模式") << QStringLiteral("Trigger版触发模式");
+    ls << QStringLiteral("DLP触发模式") << QStringLiteral("Trigger版触发模式");
     ui.comboBox_dlpMode->addItems(ls);
     int nDlpMode = System->getSysRunMode();
     ui.comboBox_dlpMode->setCurrentIndex(nDlpMode);

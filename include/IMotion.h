@@ -24,17 +24,7 @@ public:
         STATE_ALM,
         STATE_EMG
     };
-
-    enum TRIGGER
-    {
-        TRIGGER_ALL,
-        TRIGGER_DLP,
-        TRIGGER_DLP1,
-        TRIGGER_DLP2,
-        TRIGGER_DLP3,
-        TRIGGER_DLP4,
-        TRIGGER_LIGHT
-    };
+   
 public:
     // General Functions:
     virtual bool init() = 0;
@@ -49,8 +39,10 @@ public:
     virtual bool getDO(int nPort, int &iState) = 0;
     virtual bool getDI(int nPort, int &iState) = 0;
 
-    // 3D Functions:
-    virtual bool triggerCapturing(TRIGGER emTrig, bool bWaitDone, bool bClearSetupConfig = false) = 0;
+    virtual bool setDOs(QVector<QString>& szPorts, int iState) = 0;
+    virtual bool setDO(const QString& szPort, int iState) = 0;// nPort 0 : n-1
+    virtual bool getDO(const QString& szPort, int &iState) = 0;
+    virtual bool getDI(const QString& szPort, int &iState) = 0;   
 
     // Motor Functions:
     virtual bool enable(int AxisID) = 0;
@@ -61,10 +53,21 @@ public:
     virtual bool IsEMStopError(int AxisID) = 0;
     virtual bool IsLimit(int AxisID) = 0;
 
+    virtual bool enable(const QString& AxisID) = 0;
+    virtual bool disable(const QString& AxisID) = 0;
+    virtual bool isEnabled(const QString& AxisID) = 0;
+    virtual bool IsError(const QString& AxisID) = 0;
+    virtual bool IsEMStopError(const QString& AxisID) = 0;
+    virtual bool IsLimit(const QString& AxisID) = 0;
+
     virtual bool homeAll(bool bSyn) = 0;
     virtual bool home(int AxisID, bool bSyn) = 0;
     virtual bool move(int AxisID, int nProfile, double dDist, bool bSyn) = 0;
     virtual bool moveTo(int AxisID, int nProfile, double dPos, bool bSyn) = 0;
+
+    virtual bool home(const QString& AxisID, bool bSyn) = 0;
+    virtual bool move(const QString& AxisID, int nProfile, double dDist, bool bSyn) = 0;
+    virtual bool moveTo(const QString& AxisID, int nProfile, double dPos, bool bSyn) = 0;
 
     virtual bool movePos(int nPointTable, bool bSyn) = 0;
     virtual bool moveToPos(int nPointTable, bool bSyn) = 0;
@@ -75,6 +78,9 @@ public:
     virtual bool moveToGroup(std::vector<int>& axis, std::vector<double>& pos, std::vector<int>& profiles, bool bSyn) = 0;
     virtual bool moveGroup(std::vector<int>& axis, std::vector<double>& dists, std::vector<int>& profiles, bool bSyn) = 0;
 
+    virtual bool moveToGroup(std::vector<QString>& axis, std::vector<double>& pos, std::vector<int>& profiles, bool bSyn) = 0;
+    virtual bool moveGroup(std::vector<QString>& axis, std::vector<double>& dists, std::vector<int>& profiles, bool bSyn) = 0;
+
     virtual bool waitDone() = 0;
 
     virtual bool isHomed(int AxisID) = 0;
@@ -82,51 +88,23 @@ public:
     virtual bool stopMove(int AxisID) = 0;
     virtual bool EmStop(int AxisID) = 0;
 
+    virtual bool isHomed(const QString& AxisID) = 0;
+    virtual bool isMoveDone(const QString& AxisID) = 0;
+    virtual bool stopMove(const QString& AxisID) = 0;
+    virtual bool EmStop(const QString& AxisID) = 0;
+
     virtual bool getCurrentPos(int AxisID, double *pos) = 0;
+    virtual bool getCurrentPos(const QString& AxisID, double *pos) = 0;
     
     virtual void setJoystickXMotor(int AxisID, double dStep, QLineEdit *pEdit = NULL) = 0;
     virtual void setJoystickYMotor(int AxisID, double dStep, QLineEdit *pEdit = NULL) = 0;
+
+    virtual void setJoystickXMotor(const QString& AxisID, double dStep, QLineEdit *pEdit = NULL) = 0;
+    virtual void setJoystickYMotor(const QString& AxisID, double dStep, QLineEdit *pEdit = NULL) = 0;
+
     virtual void startJoystick() = 0;
 
-    virtual QWidget *getJoyStickWidget() = 0;
-    //virtual bool AxisAbsoluteMove_SafeCheck(int nAxisCount, int* nAxisID, int* nProfile, bool* bIsSafetyCheck, bool* bIsSignalInversion, bool bSynchronize) = 0;
-    //virtual bool isHomed(int nAxis,int *axis) = 0;
-    //virtual bool isZSafe(int AxisID) = 0;
-
-    ////virtual bool movStepper(int nAxis, int *axis, int *dirs, bool bSynchronize) = 0;
-    //
-    //virtual bool getState(int &nAxis,int *axis,STATE *state) = 0;
-    //virtual bool isMoveDone(int nAxis) = 0;
-    //virtual bool stopMove(int nAxis) = 0;
-    //
-    //virtual bool getCurrentPos(int nAxis,int *axis, double *pos) = 0;
-    //
-    //virtual bool setDO(int nChange,int iState) = 0;      
-    //virtual bool getDI(int nChange,int &iState) = 0;      
-    //virtual bool getDO(int nChange,int &iState) = 0;  
-
-    //virtual bool setExtDO(int nChange,int iState) = 0;      
-    //virtual bool getExtDI(int nChange,int &iState) = 0;      
-    //virtual bool getExtDO(int nChange,int &iState) = 0; 
-
-    ////获取温度AI输入
-    //virtual bool getExtAI(int nChange,double &val) = 0;
-    //virtual bool getExtAIs(int n,int *change,double *val) = 0;
-
- //   /// Special Functions: 
-    ////virtual bool initModule(int nStations, int nSteppers) = 0;
-    //virtual bool addPressure(int nStationID,bool isSpecialMaterial) = 0;
-    //virtual bool releasePressure(int nStationID) = 0;
-    //virtual bool releasePressuretoPreP(int nStationID) = 0;
-
-    //virtual bool addStep(int nStation) = 0;
-    //virtual bool releaseStep(int nStation) = 0;
-    //virtual bool stopStep(int nStation) = 0;
-    //virtual bool requestInputLock() = 0;
-    //virtual void releaseInputLock() = 0;
-    //virtual void setStationStart(int nStation) = 0;
-    //virtual bool queryAllStationStart() = 0;
-    //virtual void releaseAllStationStart() = 0;
+    virtual QWidget *getJoyStickWidget() = 0;   
 };
 
 

@@ -21,11 +21,11 @@
 #define AXIS_MOTOR_NUM		8
 
 //定义轴ID
-#define AXIS_MOTOR_X            1
-#define AXIS_MOTOR_Y            2
-#define AXIS_MOTOR_Z            3
-#define AXIS_MOTOR_TRACK_WIDTH  4
-#define AXIS_MOTOR_TRACKING     5
+#define AXIS_MOTOR_X            "AXIS_MOTOR_X"
+#define AXIS_MOTOR_Y            "AXIS_MOTOR_Y"
+#define AXIS_MOTOR_Z            "AXIS_MOTOR_Z"
+#define AXIS_MOTOR_TRACK_WIDTH  "AXIS_MOTOR_TRACK_WIDTH"
+#define AXIS_MOTOR_TRACKING     "AXIS_MOTOR_TRACKING"
 
 /* ************* 定义AI ********************************* */
 //#define CHECK_AI_1     0
@@ -34,46 +34,32 @@
 
 /* ************* 定义I/O ********************************* */
 ////输入模块1
-#define DI_TRACK_ARRIVED          1
-#define DI_TRACK_READY  		  2
-#define DI_TRACK_STOP			  3
-#define DI_TRACK_DELIVERED		  4
+#define DI_TRACK_ARRIVED          "DI_TRACK_ARRIVED"
+#define DI_TRACK_READY  		  "DI_TRACK_READY"
+#define DI_TRACK_STOP			  "DI_TRACK_STOP"
+#define DI_TRACK_DELIVERED		  "DI_TRACK_DELIVERED"
 
-#define DI_IM_STOP				  5
-#define DI_START				  6
-#define DI_RESET				  7
-#define DI_STOP					  8
-#define DI_SAFE_DOOR			  0
+#define DI_IM_STOP				  "DI_IM_STOP"
+#define DI_START				  "DI_START"
+#define DI_RESET				  "DI_RESET"
+#define DI_STOP					  "DI_STOP"
+#define DI_SAFE_DOOR			  "DI_SAFE_DOOR"
 
 /////输出模块1
-#define DO_CAMERA_TRIGGER1         1
-#define DO_CAMERA_TRIGGER2         2
+#define DO_CAMERA_TRIGGER1         "DO_CAMERA_TRIGGER1"
+#define DO_CAMERA_TRIGGER2         "DO_CAMERA_TRIGGER2"
 
-#define DO_TRACK_CYLINDER		   3
+#define DO_TRACK_CYLINDER		   "DO_TRACK_CYLINDER"
 
-#define DO_RED_LIGHT               5
-#define DO_YELLOW_LIGHT            6
-#define DO_GREEN_LIGHT             7
-#define DO_BUZZER                  8
+#define DO_RED_LIGHT               "DO_RED_LIGHT"
+#define DO_YELLOW_LIGHT            "DO_YELLOW_LIGHT"
+#define DO_GREEN_LIGHT             "DO_GREEN_LIGHT"
+#define DO_BUZZER                  "DO_BUZZER"
 
-#define DO_START                   9
-#define DO_STOP                    10
-#define DO_RESET                   11
-#define DO_Z_BRAKE                 12
-#define DO_STEPPER_RUN             13
+#define DO_START                   "DO_START"
+#define DO_STOP                    "DO_STOP"
+#define DO_RESET                   "DO_RESET"
+#define DO_Z_BRAKE                 "DO_Z_BRAKE"
+#define DO_STEPPER_RUN             "DO_STEPPER_RUN"
 
-#define DO_TRIGGER_DLP1            0
-#define DO_TRIGGER_DLP2            0
-#define DO_TRIGGER_DLP3            0
-#define DO_TRIGGER_DLP4		       0
-#define DO_LIGHT1_CH1			   0
-#define DO_LIGHT1_CH2	           0
-#define DO_LIGHT1_CH3              0
-#define DO_LIGHT1_CH4              0
-#define DO_LIGHT2_CH1              0
-#define DO_LIGHT2_CH2              0
-#define DO_LIGHT2_CH3              0
-#define DO_LIGHT2_CH4              0
-#define DO_LIGHT1_ENABLE           0
-#define DO_LIGHT2_ENABLE           0
 #endif
