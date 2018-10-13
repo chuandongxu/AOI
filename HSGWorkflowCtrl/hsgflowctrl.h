@@ -73,7 +73,8 @@ private:
     DeviceInspWindowVector          m_vecDeviceInspWindow;
     cv::Scalar                      m_scalarGlobalBase;
     int                             m_nGlobalBaseColorDiff;
-    int                             m_nGlobalBaseGrayDiff;    
+    int                             m_nGlobalBaseGrayDiff;
+    int                             m_nGlobalBaseLightId;
 };
 
 #endif // FLOWCTRL_H

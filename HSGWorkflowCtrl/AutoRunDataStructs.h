@@ -31,6 +31,7 @@ struct AutoRunParams {
                   float   fFrameOverlapY,
                   int     nGlobalBaseColorDiff,
                   int     nGlobalBaseGrayDiff,
+                  int     nGlobalBaseLightId,
                   cv::Scalar scalarGlobalBase,
                   Vision::PR_SCAN_IMAGE_DIR enScanDir) :
                   nImgWidthPixel    (nImgWidthPixel),
@@ -43,6 +44,7 @@ struct AutoRunParams {
                   fOverlapUmY       (fFrameOverlapY),
                   nGlobalBaseColorDiff(nGlobalBaseColorDiff),
                   nGlobalBaseGrayDiff(nGlobalBaseGrayDiff),
+                  nGlobalBaseLightId(nGlobalBaseLightId),
                   scalarGlobalBase(scalarGlobalBase),
                   enScanDir         (enScanDir) {}
     int     nImgWidthPixel;
@@ -52,9 +54,10 @@ struct AutoRunParams {
     float   fBoardRightPos;
     float   fBoardBtmPos;
     float   fOverlapUmX;
-    float   fOverlapUmY;    
+    float   fOverlapUmY;
     int     nGlobalBaseColorDiff;
     int     nGlobalBaseGrayDiff;
+    int     nGlobalBaseLightId;
     cv::Scalar                      scalarGlobalBase;
     Vision::PR_SCAN_IMAGE_DIR       enScanDir;
 };
