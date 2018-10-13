@@ -1,6 +1,7 @@
 ﻿#include "MotionIO.h"
 #include "../common/SystemData.h"
 #include "../include/IdDefine.h"
+#include "ConfigData.h"
 
 MotionIOOnLive::MotionIOOnLive()    
 {
@@ -83,14 +84,14 @@ MotionIO::~MotionIO()
 
 void MotionIO::initDI()
 {
-	m_diIO[0] = DI_TRACK_ARRIVED;
-	m_diIO[1] = DI_TRACK_READY;
-	m_diIO[2] = DI_TRACK_STOP;
-	m_diIO[3] = DI_TRACK_DELIVERED;
-	m_diIO[4] = DI_IM_STOP;
-	m_diIO[5] = DI_START;
-	m_diIO[6] = DI_RESET;
-	m_diIO[7] = DI_STOP;
+    m_diIO[0] = Config->ID(DI_TRACK_ARRIVED);
+    m_diIO[1] = Config->ID(DI_TRACK_READY);
+    m_diIO[2] = Config->ID(DI_TRACK_STOP);
+    m_diIO[3] = Config->ID(DI_TRACK_DELIVERED);
+    m_diIO[4] = Config->ID(DI_IM_STOP);
+    m_diIO[5] = Config->ID(DI_START);
+    m_diIO[6] = Config->ID(DI_RESET);
+    m_diIO[7] = Config->ID(DI_STOP);
     m_diIO[8] = 0;
     m_diIO[9] = 0;
     m_diIO[10] = 0;
@@ -99,26 +100,46 @@ void MotionIO::initDI()
     m_diIO[13] = 0;
     m_diIO[14] = 0;
     m_diIO[15] = 0;
+
+    QCheckBox * checkBoxInput[16] = { ui.checkBox_5, ui.checkBox_6, ui.checkBox_7, ui.checkBox_8,
+        ui.checkBox_9, ui.checkBox_10, ui.checkBox_11, ui.checkBox_12,
+        ui.checkBox_13, ui.checkBox_14, ui.checkBox_15, ui.checkBox_16,
+        ui.checkBox_17, ui.checkBox_18, ui.checkBox_19, ui.checkBox_20 };
+    for (int i = 0; i < 16; i++)
+    {
+        QString name = Config->getInpName(m_diIO[i]);
+        if (!name.isEmpty()) checkBoxInput[i]->setText(name);
+    }
 }
 
 void MotionIO::initDO()
 {   
-	m_doIO[0] = DO_CAMERA_TRIGGER1;
-    m_doIO[1] = DO_CAMERA_TRIGGER2;
-	m_doIO[2] = DO_TRACK_CYLINDER;
+    m_doIO[0] = Config->ID(DO_CAMERA_TRIGGER1);
+    m_doIO[1] = Config->ID(DO_CAMERA_TRIGGER2);
+    m_doIO[2] = Config->ID(DO_TRACK_CYLINDER);
     m_doIO[3] = 0;
-	m_doIO[4] = DO_RED_LIGHT;
-	m_doIO[5] = DO_YELLOW_LIGHT;
-	m_doIO[6] = DO_GREEN_LIGHT;
-	m_doIO[7] = DO_BUZZER;
-	m_doIO[8] = DO_START;
-	m_doIO[9] = DO_STOP;
-	m_doIO[10] = DO_RESET;
-	m_doIO[11] = DO_Z_BRAKE;
-	m_doIO[12] = DO_STEPPER_RUN;
+    m_doIO[4] = Config->ID(DO_RED_LIGHT);
+    m_doIO[5] = Config->ID(DO_YELLOW_LIGHT);
+    m_doIO[6] = Config->ID(DO_GREEN_LIGHT);
+    m_doIO[7] = Config->ID(DO_BUZZER);
+    m_doIO[8] = Config->ID(DO_START);
+    m_doIO[9] = Config->ID(DO_STOP);
+    m_doIO[10] = Config->ID(DO_RESET);
+    m_doIO[11] = Config->ID(DO_Z_BRAKE);
+    m_doIO[12] = Config->ID(DO_STEPPER_RUN);
     m_doIO[13] = 0;
     m_doIO[14] = 0;
     m_doIO[15] = 0;
+
+    QCheckBox * checkBoxOutput[16] = { ui.checkBox_21, ui.checkBox_22, ui.checkBox_23, ui.checkBox_24,
+        ui.checkBox_25, ui.checkBox_26, ui.checkBox_27, ui.checkBox_28,
+        ui.checkBox_29, ui.checkBox_30, ui.checkBox_31, ui.checkBox_32,
+        ui.checkBox_33, ui.checkBox_34, ui.checkBox_35, ui.checkBox_36 };
+    for (int i = 0; i < 16; i++)
+    {
+        QString name = Config->getOupName(m_doIO[i]);
+        if (!name.isEmpty()) checkBoxOutput[i]->setText(name);
+    }
 }
 
 void MotionIO::updataDI()

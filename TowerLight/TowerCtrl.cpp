@@ -133,12 +133,12 @@ bool TowerCtrl::stopLight()
 {
     auto pMotion = getModule<IMotion>(MOTION_MODEL);
 
-    QVector<int> nPorts;
+    QVector<QString> szPorts;
 
-    nPorts.push_back(DO_RED_LIGHT);
-    nPorts.push_back(DO_YELLOW_LIGHT);
-    nPorts.push_back(DO_GREEN_LIGHT);
-    nPorts.push_back(DO_BUZZER);
+    szPorts.push_back(DO_RED_LIGHT);
+    szPorts.push_back(DO_YELLOW_LIGHT);
+    szPorts.push_back(DO_GREEN_LIGHT);
+    szPorts.push_back(DO_BUZZER);
 
-    return pMotion->setDOs(nPorts, 0);
+    return pMotion->setDOs(szPorts, 0);
 }

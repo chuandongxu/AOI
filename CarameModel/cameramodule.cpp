@@ -173,11 +173,7 @@ bool CameraModule::captureAllImages(QVector<cv::Mat>& imageMats)
     }
     else
     {
-        if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true))
-        {
-            System->setTrackInfo(QString("triggerCapturing error."));
-            return false;
-        }
+       // Not Support
     }
 
     if (!getLastImages(imageMats))
@@ -209,11 +205,7 @@ bool CameraModule::captureLightImages(QVector<cv::Mat>& imageMats)
     }
     else
     {
-        if (!pMotion->triggerCapturing(IMotion::TRIGGER_LIGHT, true))
-        {
-            System->setTrackInfo(QString("triggerCapturing error."));
-            return false;
-        }
+        // Not Support
     }
 
     if (!getLastImages(imageMats))

@@ -798,11 +798,7 @@ bool SysCalibrationView::guideReadImages(QVector<cv::Mat>& matImgs)
     }
     else
     {
-        if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP, true))
-        {
-            System->setTrackInfo(QString("triggerCapturing error"));
-            return false;
-        }
+        // Not Support
     }
 
     if (!pCam->getLastImages(matImgs))
@@ -847,15 +843,7 @@ bool SysCalibrationView::guideReadImage(cv::Mat& matImg)
     }
     else
     {
-        QVector<int> nPorts;
-
-        nPorts.push_back(DO_LIGHT1_CH2);
-        nPorts.push_back(DO_LIGHT2_CH1);
-        nPorts.push_back(DO_CAMERA_TRIGGER2);
-
-        pMotion->setDOs(nPorts, 1);
-        QThread::msleep(10);
-        pMotion->setDOs(nPorts, 0);
+        // Not Support
     }
 
     QVector<cv::Mat> matImgs;

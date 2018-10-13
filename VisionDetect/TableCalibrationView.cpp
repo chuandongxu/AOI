@@ -79,13 +79,13 @@ void TableCalibrationView::onMoveToReady()
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
     if (pMotion)
     {
-        std::vector<int> axis;
+        std::vector<QString> axis;
         std::vector<double> pos;
         std::vector<int> profs;
 
         axis.push_back(AXIS_MOTOR_X); axis.push_back(AXIS_MOTOR_Y); axis.push_back(AXIS_MOTOR_Z);
         pos.push_back(dCaliReadyPositionX); pos.push_back(dCaliReadyPositionY); pos.push_back(dCaliReadyPositionZ);
-        profs.push_back(1); axis.push_back(1); axis.push_back(1);
+        profs.push_back(1); profs.push_back(1); profs.push_back(1);
 
         pMotion->moveToGroup(axis, pos, profs, true);
     }
@@ -170,13 +170,13 @@ void TableCalibrationView::onRunTest()
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
     if (pMotion)
     {
-        std::vector<int> axis;
+        std::vector<QString> axis;
         std::vector<double> pos;
         std::vector<int> profs;
 
         axis.push_back(AXIS_MOTOR_X); axis.push_back(AXIS_MOTOR_Y); axis.push_back(AXIS_MOTOR_Z);
         pos.push_back(dCaliReadyPositionX); pos.push_back(dCaliReadyPositionY); pos.push_back(dCaliReadyPositionZ);
-        profs.push_back(1); axis.push_back(1); axis.push_back(1);
+        profs.push_back(1); profs.push_back(1); profs.push_back(1);
 
         pMotion->moveToGroup(axis, pos, profs, true);
     }
@@ -196,13 +196,13 @@ void TableCalibrationView::onRunTest()
     dCaliReadyPositionX += dCaliMoveDist;
     if (pMotion)
     {
-        std::vector<int> axis;
+        std::vector<QString> axis;
         std::vector<double> pos;
         std::vector<int> profs;
 
         axis.push_back(AXIS_MOTOR_X); axis.push_back(AXIS_MOTOR_Y); axis.push_back(AXIS_MOTOR_Z);
         pos.push_back(dCaliReadyPositionX); pos.push_back(dCaliReadyPositionY); pos.push_back(dCaliReadyPositionZ);
-        profs.push_back(1); axis.push_back(1); axis.push_back(1);
+        profs.push_back(1); profs.push_back(1); profs.push_back(1);
 
         pMotion->moveToGroup(axis, pos, profs, true);
     }
@@ -297,14 +297,7 @@ bool TableCalibrationView::guideReadImage(cv::Mat& matImg)
     }
     else
     {
-        QVector<int> nPorts;
-
-        nPorts.push_back(DO_LIGHT1_CH1);
-        nPorts.push_back(DO_CAMERA_TRIGGER2);
-
-        pMotion->setDOs(nPorts, 1);
-        QThread::msleep(10);
-        pMotion->setDOs(nPorts, 0);
+        // Not Support
     }
 
     QVector<cv::Mat> matImgs;
