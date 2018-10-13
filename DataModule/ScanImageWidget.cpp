@@ -407,7 +407,7 @@ bool ScanImageWidget::_moveToCapturePos(float fPosX, float fPosY)
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
     if (!pMotion) return false;
 
-    if (! pMotion->moveToGroup(std::vector<int>({AXIS_MOTOR_X, AXIS_MOTOR_Y}), std::vector<double>({fPosX, fPosY}), std::vector<int>({0, 0}), true)) {
+    if (!pMotion->moveToGroup(std::vector<QString>({ AXIS_MOTOR_X, AXIS_MOTOR_Y }), std::vector<double>({ fPosX, fPosY }), std::vector<int>({ 0, 0 }), true)) {
         System->setTrackInfo(QString("move to position error."));
         return false;
     }
