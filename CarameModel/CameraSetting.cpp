@@ -524,10 +524,7 @@ void CameraSetting::onCaptureDLP()
         }
         else
         {
-            if (!pMotion->triggerCapturing(IMotion::TRIGGER_ALL, true, bClearSteup))
-            {
-                System->setTrackInfo(QString("triggerCapturing error!"));
-            }
+            // Not Support
         }
     }
     break;
@@ -543,10 +540,7 @@ void CameraSetting::onCaptureDLP()
         }
         else
         {
-            if (!pMotion->triggerCapturing(IMotion::TRIGGER_DLP, true, bClearSteup))
-            {
-                System->setTrackInfo(QString("triggerCapturing error!"));
-            }
+            // Not Support
         }
     }
     break;
@@ -562,10 +556,7 @@ void CameraSetting::onCaptureDLP()
         }
         else
         {
-            if (!pMotion->triggerCapturing(IMotion::TRIGGER(IMotion::TRIGGER_DLP1 + nSelectDLP), true, bClearSteup))
-            {
-                System->setTrackInfo(QString("triggerCapturing error!"));
-            }
+            // Not Support
         }
     }
     break;
@@ -621,35 +612,7 @@ void CameraSetting::onCaptureLight()
         }
         else
         {
-            QVector<int> nPorts;
-            switch (nSelectLight)
-            {
-            case 0:
-                nPorts.push_back(DO_LIGHT1_CH1);
-                break;
-            case 1:
-                nPorts.push_back(DO_LIGHT1_CH2);
-                break;
-            case 2:
-                nPorts.push_back(DO_LIGHT1_CH3);
-                break;
-            case 3:
-                nPorts.push_back(DO_LIGHT1_CH4);
-                break;
-            case 4:
-                nPorts.push_back(DO_LIGHT2_CH1);
-                break;
-            case 5:
-                nPorts.push_back(DO_LIGHT2_CH2);
-                break;
-            default:
-                break;
-            }
-            nPorts.push_back(DO_CAMERA_TRIGGER2);
-
-            pMotion->setDOs(nPorts, 1);
-            QThread::msleep(10);
-            pMotion->setDOs(nPorts, 0);
+            // Not Support
         }
     }
     break;
@@ -665,10 +628,7 @@ void CameraSetting::onCaptureLight()
         }
         else
         {
-            if (!pMotion->triggerCapturing(IMotion::TRIGGER_LIGHT, true, bClearSteup))
-            {
-                System->setTrackInfo(QString("triggerCapturing error!"));
-            }
+            // Not Support
         }
     }
     break;

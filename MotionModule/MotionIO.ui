@@ -44,7 +44,7 @@
      <bool>false</bool>
     </property>
     <property name="text">
-     <string>进料</string>
+     <string>0</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -63,7 +63,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>减速</string>
+     <string>1</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -82,7 +82,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>停止</string>
+     <string>2</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -101,7 +101,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>出料</string>
+     <string>3</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -120,7 +120,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>急停</string>
+     <string>4</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -139,7 +139,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>启动</string>
+     <string>5</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -158,7 +158,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>复位</string>
+     <string>6</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -177,7 +177,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>停止</string>
+     <string>7</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -358,7 +358,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>灯源Trigger1</string>
+     <string>1</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_22">
@@ -371,7 +371,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>灯源Trigger2</string>
+     <string>2</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_23">
@@ -384,7 +384,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>顶升气缸</string>
+     <string>3</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_24">
@@ -397,7 +397,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>备用4</string>
+     <string>4</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_25">
@@ -410,7 +410,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>红灯</string>
+     <string>5</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_26">
@@ -423,7 +423,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>黄灯</string>
+     <string>6</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_27">
@@ -436,7 +436,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>绿灯</string>
+     <string>7</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_28">
@@ -449,7 +449,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>蜂鸣器</string>
+     <string>8</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_29">
@@ -462,7 +462,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>启动</string>
+     <string>9</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_30">
@@ -475,7 +475,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>停止</string>
+     <string>10</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_31">
@@ -488,7 +488,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>复位</string>
+     <string>11</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_32">
@@ -501,7 +501,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Z轴抱闸</string>
+     <string>12</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_33">
@@ -514,7 +514,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>流水线步进</string>
+     <string>13</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_34">

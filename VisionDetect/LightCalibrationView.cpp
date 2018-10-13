@@ -98,7 +98,7 @@ void LightCalibrationView::onMoveToReady()
     IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
     if (pMotion)
     {
-        std::vector<int> axis;
+        std::vector<QString> axis;
         std::vector<double> pos;
         std::vector<int> profs;
 
@@ -262,36 +262,8 @@ bool LightCalibrationView::guideReadImage(cv::Mat& matImg, int nSelectLight)
         }
     }
     else
-    {
-        QVector<int> nPorts;
-        switch (nSelectLight)
-        {
-        case 0:
-            nPorts.push_back(DO_LIGHT1_CH1);
-            break;
-        case 1:
-            nPorts.push_back(DO_LIGHT1_CH2);
-            break;
-        case 2:
-            nPorts.push_back(DO_LIGHT1_CH3);
-            break;
-        case 3:
-            nPorts.push_back(DO_LIGHT1_CH4);
-            break;
-        case 4:
-            nPorts.push_back(DO_LIGHT2_CH1);
-            break;
-        case 5:
-            nPorts.push_back(DO_LIGHT2_CH2);
-            break;
-        default:
-            break;
-        }
-        nPorts.push_back(DO_CAMERA_TRIGGER2);
-
-        pMotion->setDOs(nPorts, 1);
-        QThread::msleep(10);
-        pMotion->setDOs(nPorts, 0);
+    {   
+        // Not Support
     }
 
     QVector<cv::Mat> matImgs;

@@ -1,6 +1,7 @@
 ﻿#include "MotionMotor.h"
 #include "../Common/SystemData.h"
 #include "../include/IdDefine.h"
+#include "ConfigData.h"
 
 #include "opencv2/opencv.hpp"
 
@@ -217,11 +218,14 @@ void MotionMotor::updateMotorUI()
     for (int i = 0; i < m_pCtrl->getMotorParamsNum(); i++)
     {
         QMotorParam mtrParam = m_pCtrl->getMotorParamByIndex(i);
+        QString mtrName = Config->getAxisName(mtrParam._ID);
 
         switch (i)
         {
         case 0:
-            ui.lineEdit_name0->setText(mtrParam._name);
+            ui.checkBox_ch0->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.lineEdit_name0->setEnabled(false);
+            ui.lineEdit_name0->setText(mtrName);
             ui.doubleSpinBox_resn0->setValue(mtrParam._res);
             ui.lineEdit_home_vec0->setText(QString("%1").arg(mtrParam._homeProf._velPf._vel));
             ui.lineEdit_home_acc0->setText(QString("%1").arg(mtrParam._homeProf._velPf._acc));
@@ -229,7 +233,9 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode0->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 1:
-            ui.lineEdit_name1->setText(mtrParam._name);
+            ui.checkBox_ch1->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.lineEdit_name1->setEnabled(false);
+            ui.lineEdit_name1->setText(mtrName);
             ui.doubleSpinBox_resn1->setValue(mtrParam._res);
             ui.lineEdit_home_vec1->setText(QString("%1").arg(mtrParam._homeProf._velPf._vel));
             ui.lineEdit_home_acc1->setText(QString("%1").arg(mtrParam._homeProf._velPf._acc));
@@ -237,7 +243,9 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode1->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 2:
-            ui.lineEdit_name2->setText(mtrParam._name);
+            ui.checkBox_ch2->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.lineEdit_name2->setEnabled(false);
+            ui.lineEdit_name2->setText(mtrName);
             ui.doubleSpinBox_resn2->setValue(mtrParam._res);
             ui.lineEdit_home_vec2->setText(QString("%1").arg(mtrParam._homeProf._velPf._vel));
             ui.lineEdit_home_acc2->setText(QString("%1").arg(mtrParam._homeProf._velPf._acc));
@@ -245,7 +253,9 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode2->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 3:
-            ui.lineEdit_name3->setText(mtrParam._name);
+            ui.checkBox_ch3->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.lineEdit_name3->setEnabled(false);
+            ui.lineEdit_name3->setText(mtrName);
             ui.doubleSpinBox_resn3->setValue(mtrParam._res);
             ui.lineEdit_home_vec3->setText(QString("%1").arg(mtrParam._homeProf._velPf._vel));
             ui.lineEdit_home_acc3->setText(QString("%1").arg(mtrParam._homeProf._velPf._acc));
@@ -253,7 +263,9 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode3->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 4:
-            ui.lineEdit_name4->setText(mtrParam._name);
+            ui.checkBox_ch4->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.lineEdit_name4->setEnabled(false);
+            ui.lineEdit_name4->setText(mtrName);
             ui.doubleSpinBox_resn4->setValue(mtrParam._res);
             ui.lineEdit_home_vec4->setText(QString("%1").arg(mtrParam._homeProf._velPf._vel));
             ui.lineEdit_home_acc4->setText(QString("%1").arg(mtrParam._homeProf._velPf._acc));
@@ -261,7 +273,9 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode4->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 5:
-            ui.lineEdit_name5->setText(mtrParam._name);
+            ui.checkBox_ch5->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.lineEdit_name5->setEnabled(false);
+            ui.lineEdit_name5->setText(mtrName);
             ui.doubleSpinBox_resn5->setValue(mtrParam._res);
             ui.lineEdit_home_vec5->setText(QString("%1").arg(mtrParam._homeProf._velPf._vel));
             ui.lineEdit_home_acc5->setText(QString("%1").arg(mtrParam._homeProf._velPf._acc));
@@ -269,7 +283,9 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode5->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 6:
-            ui.lineEdit_name6->setText(mtrParam._name);
+            ui.checkBox_ch6->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.lineEdit_name6->setEnabled(false);
+            ui.lineEdit_name6->setText(mtrName);
             ui.doubleSpinBox_resn6->setValue(mtrParam._res);
             ui.lineEdit_home_vec6->setText(QString("%1").arg(mtrParam._homeProf._velPf._vel));
             ui.lineEdit_home_acc6->setText(QString("%1").arg(mtrParam._homeProf._velPf._acc));
@@ -277,7 +293,9 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode6->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 7:
-            ui.lineEdit_name7->setText(mtrParam._name);
+            ui.checkBox_ch7->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.lineEdit_name7->setEnabled(false);
+            ui.lineEdit_name7->setText(mtrName);
             ui.doubleSpinBox_resn7->setValue(mtrParam._res);
             ui.lineEdit_home_vec7->setText(QString("%1").arg(mtrParam._homeProf._velPf._vel));
             ui.lineEdit_home_acc7->setText(QString("%1").arg(mtrParam._homeProf._velPf._acc));

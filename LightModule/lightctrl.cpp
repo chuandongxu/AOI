@@ -183,12 +183,12 @@ bool QLightCtrl::triggerCapturing(ILight::TRIGGER emTrig, bool bWaitDone, bool b
             IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
             if (pMotion)
             {
-                QVector<int> nPorts;
-                nPorts.push_back(DO_CAMERA_TRIGGER1);
+                QVector<QString> szPorts;
+                szPorts.push_back(DO_CAMERA_TRIGGER1);
 
-                pMotion->setDOs(nPorts, 0);
+                pMotion->setDOs(szPorts, 0);
                 QThread::msleep(10);
-                pMotion->setDOs(nPorts, 1);
+                pMotion->setDOs(szPorts, 1);
             }
         }
         break;
@@ -197,12 +197,12 @@ bool QLightCtrl::triggerCapturing(ILight::TRIGGER emTrig, bool bWaitDone, bool b
             IMotion* pMotion = getModule<IMotion>(MOTION_MODEL);
             if (pMotion)
             {
-                QVector<int> nPorts;
-                nPorts.push_back(DO_CAMERA_TRIGGER2);
+                QVector<QString> szPorts;
+                szPorts.push_back(DO_CAMERA_TRIGGER2);
 
-                pMotion->setDOs(nPorts, 0);
+                pMotion->setDOs(szPorts, 0);
                 QThread::msleep(10);
-                pMotion->setDOs(nPorts, 1);
+                pMotion->setDOs(szPorts, 1);
             }
         }
         break;
