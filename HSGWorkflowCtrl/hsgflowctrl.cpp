@@ -270,7 +270,8 @@ void QFlowCtrl::start()
     Int32 nScanDirection = 0; Engine::GetParameter("ScanImageDirection", nScanDirection, 0);
     auto enScanDir = static_cast<Vision::PR_SCAN_IMAGE_DIR>(nScanDirection);
 
-    AutoRunParams stAutoRunParams(m_nImgWidth, m_nImgHeight, m_fBoardLeft, m_fBoardTop, m_fBoardRight, m_fBoardBottom, m_fOverlapX, m_fOverlapY, m_nGlobalBaseColorDiff, m_nGlobalBaseGrayDiff, m_scalarGlobalBase, enScanDir);
+    AutoRunParams stAutoRunParams(m_nImgWidth, m_nImgHeight, m_fBoardLeft, m_fBoardTop, m_fBoardRight, 
+        m_fBoardBottom, m_fOverlapX, m_fOverlapY, m_nGlobalBaseColorDiff, m_nGlobalBaseGrayDiff, m_nGlobalBaseLightId, m_scalarGlobalBase, enScanDir);
     m_pAutoRunThread = new AutoRunThread(m_vecAlignments, m_vecDeviceInspWindow, m_vecVecFrameCtr, stAutoRunParams, &m_mapBoardInspResult);
     connect(m_pAutoRunThread, &AutoRunThread::finished, m_pAutoRunThread, &QObject::deleteLater);
     m_pAutoRunThread->start();
@@ -544,6 +545,7 @@ int QFlowCtrl::_getGlobalHeightBaseParams() {
     m_nGlobalBaseGrayDiff = obj.take("TnValue").toInt();
 
     m_scalarGlobalBase = cv::Scalar(obj["ClrBVal"].toInt(), obj["ClrGVal"].toInt(), obj["ClrRVal"].toInt());
+    m_nGlobalBaseLightId = windowHeightBase.lightId;
     return OK;
 }
 

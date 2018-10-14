@@ -7,6 +7,7 @@
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
 #include "../include/IVisionUI.h"
+#include "../include/IData.h"
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../Common/CommonFunc.h"
@@ -79,10 +80,15 @@ void OcvWidget::setCurrentWindow(const Engine::Window &window) {
     ui.listWidgetRecordId->clear();
     auto strRecordList = obj.take("RecordList").toString();
     auto datalist = strRecordList.split(',');
-    for (const auto &strRecordId : datalist) {
+    for (const auto &strRecordId : datalist)
         ui.listWidgetRecordId->addItem(strRecordId);
-    }
 
+    if (ui.listWidgetRecordId->count() > 0) {
+        ui.listWidgetRecordId->setCurrentRow(0);
+        auto nRecordId = ui.listWidgetRecordId->currentItem()->text().toInt();
+        auto pData = getModule<IData>(DATA_MODEL);
+        pData->displayRecord(nRecordId);
+    }
     m_bIsTryInspected = false;
 }
 
@@ -231,6 +237,10 @@ void OcvWidget::on_btnLrnOcv_clicked() {
     }
 
     ui.listWidgetRecordId->addItem(QString::number(nRecordId));
+    auto totalRow = ui.listWidgetRecordId->count();
+    ui.listWidgetRecordId->setCurrentRow(totalRow - 1);
+    auto pData = getModule<IData>(DATA_MODEL);
+    pData->displayRecord(nRecordId);
 
     if (m_currentWindow.usage != Engine::Window::Usage::OCV)
         return;

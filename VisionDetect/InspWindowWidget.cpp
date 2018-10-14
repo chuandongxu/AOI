@@ -905,8 +905,10 @@ void InspWindowWidget::onSelectedWindowChanged() {
     m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->setCurrentWindow(window);
     ui.stackedWidget->setCurrentIndex(static_cast<int>(m_enCurrentInspWidget));
 
-    auto pData = getModule<IData>(DATA_MODEL);
-    pData->displayRecord(window.recordId);
+    if (window.recordId > 0) {
+        auto pData = getModule<IData>(DATA_MODEL);
+        pData->displayRecord(window.recordId);
+    }
 
     ui.btnEditMask->setEnabled(m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->isSupportMask());
 

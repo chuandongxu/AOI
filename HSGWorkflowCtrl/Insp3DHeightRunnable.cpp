@@ -167,13 +167,13 @@ void Insp3DHeightRunnable::_insp3DHeightGlobalBase(const Engine::Window &window)
         return;
     }
 
-    int nImageIndex = window.lightId - 1;
+    int nImageIndex = m_stAutoRunParams.nGlobalBaseLightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        std::string strErrorMsg = "Window \"" + window.name + "\" image id " + std::to_string(window.lightId) + " is invalid.";
+        std::string strErrorMsg = "Global base \"" + window.name + "\" image id " + std::to_string(m_stAutoRunParams.nGlobalBaseLightId) + " is invalid.";
         m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
         m_ptrBoardInspResult->setFatalError();
         return;
-    }    
+    }  
 
     int baseScale = jsonValue["GlobalBaseScale"].toInt();
     if (baseScale < 2)
@@ -253,9 +253,9 @@ void Insp3DHeightRunnable::_insp3DHeightGlobalBase(const Engine::Window &window)
 }
 
 void Insp3DHeightRunnable::_insp3DSolder(const Engine::Window &window) {
-    int nImageIndex = window.lightId - 1;
+    int nImageIndex = m_stAutoRunParams.nGlobalBaseLightId - 1;
     if (nImageIndex < 0 || nImageIndex >= m_vec2DImages.size()) {
-        std::string strErrorMsg = "Window \"" + window.name + "\" image id " + std::to_string(window.lightId) + " is invalid.";
+        std::string strErrorMsg = "Global base \"" + window.name + "\" image id " + std::to_string(m_stAutoRunParams.nGlobalBaseLightId) + " is invalid.";
         m_ptrBoardInspResult->setErrorMsg(strErrorMsg.c_str());
         m_ptrBoardInspResult->setFatalError();
         return;
