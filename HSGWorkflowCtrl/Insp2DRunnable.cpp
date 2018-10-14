@@ -741,6 +741,7 @@ void Insp2DRunnable::_ocv(const Engine::Window &window) {
         stCmd.vecRecordId.push_back(strRecordId.toInt());
     stCmd.fMinMatchScore = jsonValue["MinScore"].toDouble();
     stCmd.enDirection = static_cast<Vision::PR_DIRECTION>(jsonValue["CharDirection"].toInt());
+    stCmd.bAcceptReverse = jsonValue["AcceptReverse"].toBool();
 
     Vision::PR_Ocv(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {

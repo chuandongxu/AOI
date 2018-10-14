@@ -3,6 +3,7 @@
 
 #include <QLineEdit>
 #include <QComboBox>
+#include <QCheckBox>
 
 #include "ui_OcvWidget.h"
 #include "EditInspWindowBaseWidget.h"
@@ -33,6 +34,7 @@ private:
     std::unique_ptr<QLineEdit>  m_pEditCharCount;
     SpecAndResultWidgetPtr      m_pSpecAndResultMinScore;
     std::unique_ptr<QComboBox>  m_pComboBoxCharDirection;
+    std::unique_ptr<QCheckBox>  m_pCheckBoxAcceptReverse;
 };
 
 #endif // OCVWIDGET_H
