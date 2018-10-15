@@ -337,15 +337,13 @@ int MotionControl::getMotorAxisNum()
 }
 
 int MotionControl::getMotorAxisID(int nIndex)
-{
-    if (nIndex < 0 || nIndex >= m_mapMtrID.size()) return 0;
-    return m_mapMtrID.values().at(nIndex);
+{  
+    return m_mapMtrID.value(nIndex, 0);
 }
 
 int MotionControl::getMotorAxisIndex(int AxisID)
 {
-    int nIndex = m_mapMtrID.values().indexOf(AxisID, 0);
-    return nIndex >= 0 ? nIndex : -1;
+    return m_mapMtrID.key(AxisID, -1);  
 }
 
 bool MotionControl::enable(int AxisID)
