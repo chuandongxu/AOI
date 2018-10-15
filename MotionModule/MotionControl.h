@@ -178,11 +178,7 @@ public:
 
     bool getCurrentPos(int AxisID, double *posMm);
 
-    QString getCurrentStatus(int AxisID);
-
-    int getMotorAxisNum();
-    int getMotorAxisID(int nIndex);
-    int getMotorAxisIndex(int AxisID);
+    QString getCurrentStatus(int AxisID);   
 
     void clearMotorParams();
     void addMotorParam(QMotorParam& mtrParam);
@@ -230,8 +226,13 @@ public:
     double convertAccToMm(AxisEnum emAxis, double dAccPulse);
     double convertAccToPulse(AxisEnum emAxis, double dAccDist);
 
+    // Motor ID and enum mapping table
     AxisEnum changeToMtrEnum(int AxisID);
-    int         changeToMtrID(AxisEnum emAxis);
+    int      changeToMtrID(AxisEnum emAxis);
+
+    int getMotorAxisNum();
+    int getMotorAxisID(int nIndex);
+    int getMotorAxisIndex(int AxisID);
 
 private:
     void commandhandler(char *command, short error);
