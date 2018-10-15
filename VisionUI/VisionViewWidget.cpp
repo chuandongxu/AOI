@@ -1830,6 +1830,7 @@ void VisionViewWidget::_drawDetectObjs()
             cv::line(m_dispImage, vertices[i], vertices[(i + 1) % 4], scalarWindowColor, nLineWidth);
         }
 
+        auto rectSrchWindow = obj.getSrchWindow().boundingRect();
         obj.getSrchWindow().points(vertices);
 
         for (int i = 0; i < 4; ++ i)

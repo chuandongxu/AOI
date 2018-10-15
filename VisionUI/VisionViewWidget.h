@@ -205,7 +205,7 @@ private:
     const float             _constMinZoomScale = 0.25;
     const float             _constZoomInStep = 2.0;
     const float             _constZoomOutStep = 0.5;
-    const int               _constDeviceWindowLineWidth = 2;
+    const int               _constDeviceWindowLineWidth = 1;
 
     QWidget* m_pInspectWidget;
 };

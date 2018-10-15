@@ -24,6 +24,7 @@ enum BASIC_PARAM
     CHAR_COUNT,
     MIN_SCORE,
     CHAR_DIRECTION,
+    ACCEPT_REVERSE,
 };
 
 OcvWidget::OcvWidget(InspWindowWidget *parent)
@@ -44,6 +45,9 @@ OcvWidget::OcvWidget(InspWindowWidget *parent)
     m_pComboBoxCharDirection->addItem(QStringLiteral("从左往右"));
     ui.tableWidget->setCellWidget(CHAR_DIRECTION, DATA_COLUMN, m_pComboBoxCharDirection.get());
 
+    m_pCheckBoxAcceptReverse = std::make_unique<QCheckBox>(this);
+    ui.tableWidget->setCellWidget(ACCEPT_REVERSE, DATA_COLUMN, m_pCheckBoxAcceptReverse.get());
+
     setDefaultValue();
 }
 
@@ -56,7 +60,7 @@ void OcvWidget::setDefaultValue() {
     ui.listWidgetRecordId->clear();
     m_pComboBoxCharDirection->setCurrentIndex(Vision::ToInt32(Vision::PR_DIRECTION::RIGHT));
     m_bIsTryInspected = false;
-
+    m_pCheckBoxAcceptReverse->setChecked(false);
     m_currentWindow.usage = Engine::Window::Usage::UNDEFINED;
 }
 
@@ -76,6 +80,7 @@ void OcvWidget::setCurrentWindow(const Engine::Window &window) {
     m_pEditCharCount->setText(QString::number(obj.take("CharCount").toInt()));
     m_pSpecAndResultMinScore->setSpec(obj.take("MinScore").toDouble());
     m_pComboBoxCharDirection->setCurrentIndex(obj.take("CharDirection").toInt());
+    m_pCheckBoxAcceptReverse->setChecked(obj.take("AcceptReverse").toBool());
 
     ui.listWidgetRecordId->clear();
     auto strRecordList = obj.take("RecordList").toString();
@@ -145,6 +150,7 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
     json.insert("CharCount", m_pEditCharCount->text().toInt());
     json.insert("MinScore", m_pSpecAndResultMinScore->getSpec());
     json.insert("CharDirection", m_pComboBoxCharDirection->currentIndex());
+    json.insert("AcceptReverse", m_pCheckBoxAcceptReverse->isChecked());
     String strRecordList;
     for (auto recordId : vecRecordId) {
         strRecordList += std::to_string(recordId) + ",";
@@ -367,6 +373,7 @@ bool OcvWidget::_inspOcv(const std::vector<Int32> &vecRecordId, bool bShowResult
     }
     stCmd.rectROI = rectROI;
     stCmd.enDirection = static_cast<Vision::PR_DIRECTION>(m_pComboBoxCharDirection->currentIndex());
+    stCmd.bAcceptReverse = m_pCheckBoxAcceptReverse->isChecked();
     Vision::PR_Ocv(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK == stRpy.enStatus)
         pUI->displayImage(stRpy.matResultImg);
