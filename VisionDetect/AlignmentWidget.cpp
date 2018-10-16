@@ -7,6 +7,7 @@
 #include "DataStoreAPI.h"
 #include "VisionAPI.h"
 #include "../include/IVisionUI.h"
+#include "../include/IData.h"
 #include "../include/IdDefine.h"
 #include "../Common/ModuleMgr.h"
 #include "../Common/CommonFunc.h"
@@ -87,16 +88,31 @@ void AlignmentWidget::setDefaultValue() {
     m_currentWindow.usage = Engine::Window::Usage::UNDEFINED;
 }
 
-/*static*/ bool AlignmentWidget::learnTemplate(Vision::PR_MATCH_TMPL_ALGORITHM enAlgo, cv::Mat& matMask, const cv::Rect &rectROI, int &recordId) {
+bool AlignmentWidget::learnTemplate(Vision::PR_MATCH_TMPL_ALGORITHM enAlgo, cv::Mat& matMask, const cv::Rect &rectROI, int &recordId) {
     Vision::PR_LRN_TEMPLATE_CMD stCmd;
     Vision::PR_LRN_TEMPLATE_RPY stRpy;
 
     stCmd.enAlgorithm = enAlgo;
-    stCmd.rectROI = rectROI;  
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
-    stCmd.matInputImg = pUI->getImage();  
-    stCmd.matMask = matMask;
+    if (m_pParent->getSelectedLighting() == PROCESSED_IMAGE_SEQUENCE::HEIGHT_GRAY) {
+        auto pData = getModule<IData>(DATA_MODEL);
+        auto matBigHeight = pData->getCombinedBigHeight();
+        cv::Mat matHeightROI(matBigHeight, rectROI);
+        Vision::PR_HEIGHT_TO_GRAY_CMD stConvertCmd;
+        Vision::PR_HEIGHT_TO_GRAY_RPY stConvertRpy;
+        stConvertCmd.matHeight = matHeightROI.clone();
+        Vision::PR_HeightToGray(&stConvertCmd, &stConvertRpy);
+        stCmd.matInputImg = stConvertRpy.matGray;
+        stCmd.rectROI = cv::Rect(0, 0, rectROI.width, rectROI.height);
+        if (!matMask.empty()) {
+            stCmd.matMask = cv::Mat(matMask, rectROI);
+        }
+    }else {
+        stCmd.matInputImg = pUI->getImage();
+        stCmd.rectROI = rectROI;
+        stCmd.matMask = matMask;
+    }
 
     Vision::PR_LrnTmpl(&stCmd, &stRpy);
     if (Vision::VisionStatus::OK != stRpy.enStatus) {
