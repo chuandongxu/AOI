@@ -58,7 +58,7 @@ void MotionControl::loadConfig()
 {
 	m_mapMtrID.clear();	
     m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, Config->ID(AXIS_MOTOR_X));
-    m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, Config->ID(AXIS_MOTOR_Y));
+    //m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, Config->ID(AXIS_MOTOR_Y));
     m_mapMtrID.insert(AxisEnum::MTR_AXIS_Z, Config->ID(AXIS_MOTOR_Z));
 	//m_mapMtrID.insert(AxisEnum::MTR_AXIS_TRACK_WIDTH, AXIS_MOTOR_TRACK_WIDTH);
 	//m_mapMtrID.insert(AxisEnum::MTR_AXIS_TRACKING, AXIS_MOTOR_TRACKING);
@@ -338,12 +338,14 @@ int MotionControl::getMotorAxisNum()
 
 int MotionControl::getMotorAxisID(int nIndex)
 {  
-    return m_mapMtrID.value(nIndex, 0);
+    if (nIndex < 0 || nIndex >= m_mapMtrID.size()) return 0;
+    return m_mapMtrID.values().at(nIndex);
 }
 
 int MotionControl::getMotorAxisIndex(int AxisID)
 {
-    return m_mapMtrID.key(AxisID, -1);  
+    int nIndex = m_mapMtrID.values().indexOf(AxisID, 0);
+    return nIndex >= 0 ? nIndex : -1;
 }
 
 bool MotionControl::enable(int AxisID)
