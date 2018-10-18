@@ -93,7 +93,7 @@ void QFlowCtrl::onThreadState(const QVariantList &data)
     switch (iEvent)
     {
     case THREAD_CLOSED:
-        stop();
+        postStop();
         break;
 
     case REFRESH_BIG_IMAGE:
@@ -153,6 +153,9 @@ void QFlowCtrl::home()
 
 void QFlowCtrl::startAutoRun()
 {
+    auto pUI = getModule<IVisionUI>(UI_MODEL);
+    pUI->disableBtnWhenAutoRun();
+
     start();
 }
 
@@ -162,7 +165,7 @@ void QFlowCtrl::stopAutoRun()
 }
 
 void QFlowCtrl::readbarCode()
-{    
+{
 }
 
 void QFlowCtrl::imStop()
@@ -287,7 +290,7 @@ void QFlowCtrl::start()
     
 void QFlowCtrl::stop()
 {        
-    //m_isHome = false;   
+    //m_isHome = false;
     QSystem::showMessage(QStringLiteral("提示"), QStringLiteral("设备正在停止中..."), 0);
     QApplication::processEvents();
 
@@ -303,7 +306,7 @@ void QFlowCtrl::stop()
     IDlp* pDlp = getModule<IDlp>(DLP_MODEL);
     if (!pDlp) return;
 
-    if (!System->isRunOffline()) {       
+    if (!System->isRunOffline()) {
         if (pCam->getCameraNum() > 0) {
             if (!pUI->endUpCapture()) {
                 QSystem::closeMessage();
@@ -335,6 +338,11 @@ void QFlowCtrl::stop()
     m_isStart = false;
     QEos::Notify(EVENT_RUN_STATE, RUN_STATE_STOP);
     QSystem::closeMessage();
+}
+
+void QFlowCtrl::postStop() {
+    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    pUI->enableBtnAfterAutoRun();
 }
 
 void QFlowCtrl::initStationParam()

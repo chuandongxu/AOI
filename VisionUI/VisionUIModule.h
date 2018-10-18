@@ -1,7 +1,6 @@
 ﻿#ifndef VISIONUI_H
 #define VISIONUI_H
 
-#include "visionui_global.h"
 #include "../include/IVisionUI.h"
 #include "../Common/modulebase.h"
 #include "VisionView.h"
@@ -53,9 +52,11 @@ public:
     virtual void setConfirmedFM(const VisionViewFMVector &vecFM) override;
     virtual void setCurrentFM(const VisionViewFM &fm) override;
     virtual VisionViewFM getCurrentFM() const override;
+    virtual void disableBtnWhenAutoRun() override;
+    virtual void enableBtnAfterAutoRun() override;
 
 private:
-    void * m_mainWidget;
+    QWidget*    m_mainWidget;
     VisionView* m_pVisionView;
 };
 

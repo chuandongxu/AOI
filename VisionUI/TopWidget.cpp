@@ -156,6 +156,26 @@ void QTopWidget::setTitle(const QString &title)
     m_titleLabel->setText(title);
 }
 
+void QTopWidget::disableBtnWhenAutoRun() {
+    m_toolBtnNewProject->setEnabled(false);
+    m_toolBtnOpenProject->setEnabled(false);
+    m_toolBtnSys->setEnabled(false);
+    m_toolBtnHw->setEnabled(false);
+    m_toolBtnTools->setEnabled(false);
+    m_toolBtnSetting->setEnabled(false);
+    m_toolBtnData->setEnabled(false);
+}
+
+void QTopWidget::enableBtnAfterAutoRun() {
+    m_toolBtnNewProject->setEnabled(true);
+    m_toolBtnOpenProject->setEnabled(true);
+    m_toolBtnSys->setEnabled(true);
+    m_toolBtnHw->setEnabled(true);
+    m_toolBtnTools->setEnabled(true);
+    m_toolBtnSetting->setEnabled(true);
+    m_toolBtnData->setEnabled(true);
+}
+
 void QTopWidget::onAbout()
 {
     AboutDialog aboutDialog;

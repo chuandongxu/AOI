@@ -56,6 +56,8 @@ public:
     virtual void setConfirmedFM(const VisionViewFMVector &vecFM) = 0;
     virtual void setCurrentFM(const VisionViewFM &fm) = 0;
     virtual VisionViewFM getCurrentFM() const = 0;
+    virtual void disableBtnWhenAutoRun() = 0;
+    virtual void enableBtnAfterAutoRun() = 0;
 };
 
 #endif

@@ -47,6 +47,7 @@ protected:
     void reset();
     void start();
     void stop();
+    void postStop();
 
 private:
     int _prepareRunData();

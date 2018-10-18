@@ -20,6 +20,8 @@ public:
     void setStateWidget(QWidget * w);
     void setCenterWidget(QWidget * w);
     void setTitle(const QString &title,const QString &ver);
+    void disableBtnWhenAutoRun();
+    void enableBtnAfterAutoRun();
 
 protected slots:
     void onCloseBtnclick();

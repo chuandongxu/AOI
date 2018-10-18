@@ -5,6 +5,7 @@
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../include/IData.h"
+#include "../include/IVisionUI.h"
 
 AutoRunPanel::AutoRunPanel(QWidget *parent)
     : QWidget(parent)
@@ -163,12 +164,12 @@ void AutoRunPanel::onRunOnce()
     {
         if (m_bAutoRunning)
         {
-            ui.pushButton_runOnce->setText(QStringLiteral("自动测试"));          
+            ui.pushButton_runOnce->setText(QStringLiteral("自动测试"));
             m_bAutoRunning = false;
         }
         else
         {
-            ui.pushButton_runOnce->setText(QStringLiteral("停止测试"));           
+            ui.pushButton_runOnce->setText(QStringLiteral("停止测试"));
             m_bAutoRunning = true;
         }
     }
