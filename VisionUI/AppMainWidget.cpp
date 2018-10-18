@@ -22,13 +22,13 @@ QAppMainWidget::QAppMainWidget(QWidget *parent)
 
     this->setObjectName("mainWidget");
     m_topwidget = new QTopWidget;
-    m_leftWidget = new QLeftWidget;    
+    m_leftWidget = new QLeftWidget;
     m_centerWidget = new QCenterWidget;
     m_bottonWidget = new QBottonWidget;
     m_dispBkWidget = new QWidget;
     
-    m_topwidget->setObjectName("topWidget");    
-    m_leftWidget->setObjectName("leftWidget");    
+    m_topwidget->setObjectName("topWidget");
+    m_leftWidget->setObjectName("leftWidget");
     m_dispBkWidget->setObjectName("dispBkwidget");
 
     m_dispBkLayout = new QVBoxLayout;
@@ -37,7 +37,7 @@ QAppMainWidget::QAppMainWidget(QWidget *parent)
     m_mainLayout = new QVBoxLayout;
 
     m_topwidget->setFixedHeight(95);
-    m_centerWidget->setFixedHeight(900);    
+    m_centerWidget->setFixedHeight(900);
     m_bottonWidget->setFixedHeight(150);
     QDesktopWidget* desktopWidget = QApplication::desktop();
     if(desktopWidget)
@@ -156,4 +156,14 @@ void QAppMainWidget::setCenterWidget(QWidget * w)
 void QAppMainWidget::setTitle(const QString &title,const QString &ver)
 {
     m_topwidget->setTitle(title,ver);
+}
+
+void QAppMainWidget::disableBtnWhenAutoRun()
+{
+    m_topwidget->disableBtnWhenAutoRun();
+}
+
+void QAppMainWidget::enableBtnAfterAutoRun()
+{
+    m_topwidget->enableBtnAfterAutoRun();
 }

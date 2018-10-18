@@ -65,7 +65,6 @@ protected slots:
     void onSaveDBPath();
 
     void onSelectOffLnPath();
-    void onSaveOffLnPath();
 
 private:
     Ui::QWorkSetting ui;

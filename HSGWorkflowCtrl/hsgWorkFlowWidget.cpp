@@ -75,7 +75,7 @@ void QWorkFlowWidget::onBarCodeChange(const QVariantList &vars)
     if(vars.size() < 3)return;
 
     int iStation = vars[0].toInt();
-    QString barcode = vars[2].toString();    
+    QString barcode = vars[2].toString();
 }
 
 void QWorkFlowWidget::onChangeUser(const QVariantList &vars)

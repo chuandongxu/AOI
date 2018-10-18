@@ -16,6 +16,8 @@ public:
     void setTitle(const QString &title,const QString &ver);
     QString getTitle();
     void setTitle(const QString &title);
+    void disableBtnWhenAutoRun();
+    void enableBtnAfterAutoRun();
 
 signals:
     void closeBtnclick();
@@ -34,6 +36,7 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *event);
     virtual void timerEvent(QTimerEvent * event);
+
 private:
     QHBoxLayout * m_mainLayout;
     QHBoxLayout * m_titleLayout;

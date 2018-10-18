@@ -252,13 +252,11 @@ void QWorkSetting::initUI()
     ui.lineEdit_OffLnPath->setText(QString("%1").arg(szOffLnPath));
 
     connect(ui.pushButton_selectOffLnPath, SIGNAL(clicked()), SLOT(onSelectOffLnPath()));
-    connect(ui.pushButton_saveOffLnPath, SIGNAL(clicked()), SLOT(onSaveOffLnPath()));
 
     if (!System->isRunOffline())
     {
         ui.lineEdit_OffLnPath->setEnabled(false);
         ui.pushButton_selectOffLnPath->setEnabled(false);
-        ui.pushButton_saveOffLnPath->setEnabled(false);
     }
 }
 
@@ -625,7 +623,7 @@ void QWorkSetting::onSelectOffLnPath()
 {
     QFileDialog dialog(this);
     dialog.setFileMode(QFileDialog::Directory);
-    dialog.setAcceptMode(QFileDialog::AcceptOpen);   
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
     dialog.setViewMode(QFileDialog::Detail);
     QStringList fileNames;
     if (dialog.exec())  {
@@ -635,11 +633,8 @@ void QWorkSetting::onSelectOffLnPath()
         return;
 
     QString str = fileNames[0];
-    if (!str.isEmpty())ui.lineEdit_OffLnPath->setText(str + "/");
-}
-
-void QWorkSetting::onSaveOffLnPath()
-{
-    QString str = ui.lineEdit_OffLnPath->text();
-    if (!str.isEmpty()) System->setOfflinePath(str);
+    if (!str.isEmpty()) {
+        ui.lineEdit_OffLnPath->setText(str + "/");
+        System->setOfflinePath(str + "/");
+    }
 }

@@ -219,9 +219,6 @@
     <CustomBuild Include="TopWidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="visionui_global.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="VisionUIModule.h">
       <Filter>Header Files</Filter>
     </CustomBuild>

@@ -125,7 +125,7 @@ void AutoRunThread::run()
         ptrBoardInspResult = std::make_shared<BoardInspResult>(m_boardName);
         m_pMapBoardInspResult->insert(m_boardName, ptrBoardInspResult);
 
-        if (! _doAlignment()) {
+        if (!_doAlignment()) {
             if (isExit()) break;
             else continue;
         }
@@ -236,20 +236,18 @@ bool AutoRunThread::captureAllImages(QVector<cv::Mat>& imageMats, int col)
     return true;
 }
 
-bool AutoRunThread::captureLightImages(QVector<cv::Mat>& imageMats)
+bool AutoRunThread::captureLightImages(QVector<cv::Mat>& imageMats, int index)
 {
     if (System->isRunOffline()) {
-        static QVector<cv::Mat> vecLocalImages;
-        if (vecLocalImages.empty()) {         
-            std::string strImagePath = System->getOfflinePath().toStdString();
-            char strfileName[100];
-            for (int i = 49; i <= 54; ++i) {
-                _snprintf(strfileName, sizeof(strfileName), "%02d.bmp", i);
-                cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
-                if (matImage.empty())
-                    return false;
-                vecLocalImages.push_back(matImage);
-            }
+        QVector<cv::Mat> vecLocalImages;
+        std::string strImagePath = System->getOfflinePath().toStdString();
+        char strfileName[100];
+        for (int i = 1; i <= 6; ++i) {
+            _snprintf(strfileName, sizeof(strfileName), "alignment_%d/%02d.bmp", index, i);
+            cv::Mat matImage = cv::imread(strImagePath + strfileName, cv::IMREAD_GRAYSCALE);
+            if (matImage.empty())
+                return false;
+            vecLocalImages.push_back(matImage);
         }
         imageMats = vecLocalImages;
         return true;
@@ -385,14 +383,14 @@ bool AutoRunThread::_doAlignment() {
     for (const auto &alignment : m_vecAlignments) {
         vecCadPoint.push_back(cv::Point2f(alignment.tmplPosX, alignment.tmplPosY));
 
-        if (! moveToCapturePos(alignment.tmplPosX, alignment.tmplPosY)) {
+        if (!moveToCapturePos(alignment.tmplPosX, alignment.tmplPosY)) {
             bResult = false;
             break;
         }
         TimeLogInstance->addTimeLog("Move to alignment capture position.");
         
         QVector<cv::Mat> vecMatImages;
-        if (! captureLightImages(vecMatImages)) {
+        if (!captureLightImages(vecMatImages, index)) {
             System->setTrackInfo(QString(QStringLiteral("Capture 2D light image fail.")));
             bResult = false;
             break;
@@ -401,23 +399,20 @@ bool AutoRunThread::_doAlignment() {
 
         cv::Mat matAlignmentImg = vecMatImages[0];
         cv::Point2f ptFrameCtr(alignment.tmplPosX, alignment.tmplPosY), ptAlignment(alignment.tmplPosX, alignment.tmplPosY);
+
         if (System->isRunOffline()) {
-            //Here is just for offline test.
-            //if (0 == index)
-                ptFrameCtr = m_vecVecFrameCtr[0][0];
-            //else
-            //    ptFrameCtr = m_vecVecFrameCtr[0].back();
+            ptFrameCtr.y = m_stAutoRunParams.nImgHeightPixel * m_dResolutionY / 2.f;
         }else {
             auto pMotion = getModule<IMotion>(MOTION_MODEL);
             double dPosX = 0., dPosY = 0.;
             pMotion->getCurrentPos(AXIS_MOTOR_X, &dPosX);
             pMotion->getCurrentPos(AXIS_MOTOR_Y, &dPosY);
             ptFrameCtr = cv::Point2f(dPosX * MM_TO_UM, dPosY * MM_TO_UM);
-        }
 
-        // Only has frame in X direction. It should only happen when there is only X axis can move.
-        if (fabs(ptFrameCtr.y) <= 0.01f)
-            ptFrameCtr.y = m_stAutoRunParams.nImgHeightPixel * m_dResolutionY / 2.f;
+            // Only has frame in X direction. It should only happen when there is only X axis can move.
+            if (fabs(ptFrameCtr.y) <= 0.01f)
+                ptFrameCtr.y = m_stAutoRunParams.nImgHeightPixel * m_dResolutionY / 2.f;
+        }
 
         cv::Rect rectSrchWindow = DataUtils::convertWindowToFrameRect(ptAlignment, alignment.srchWinWidth, alignment.srchWinHeight, ptFrameCtr, m_stAutoRunParams.nImgWidthPixel, m_stAutoRunParams.nImgHeightPixel, m_dResolutionX, m_dResolutionY);
         auto pAlignmentRunnable = std::make_unique<AlignmentRunnable>(matAlignmentImg, alignment, rectSrchWindow);

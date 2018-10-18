@@ -253,4 +253,16 @@ VisionViewFM QVisionUIModule::getCurrentFM() const {
     return m_pVisionView->getCurrentFM();
 }
 
+void QVisionUIModule::disableBtnWhenAutoRun()
+{
+    QAppMainWidget *p = (QAppMainWidget*)m_mainWidget;
+    p->disableBtnWhenAutoRun();
+}
+
+void QVisionUIModule::enableBtnAfterAutoRun()
+{
+    QAppMainWidget *p = (QAppMainWidget*)m_mainWidget;
+    p->enableBtnAfterAutoRun();
+}
+
 QMOUDLE_INSTANCE(QVisionUIModule)
