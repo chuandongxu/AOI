@@ -483,7 +483,7 @@ void MotionMotor::updateMtrProfData()
 
     QStringList ls;
     ls << QStringLiteral("名称") << QStringLiteral("ID") << QStringLiteral("运行速度")
-        << QStringLiteral("加速度") << QStringLiteral("减速度") << QStringLiteral("平滑时间");
+        << QStringLiteral("加速度") << QStringLiteral("减速度") << QStringLiteral("加速比例");
     m_moveProfModel.setHorizontalHeaderLabels(ls);
 
     for (int i = 0; i < m_pCtrl->getMotorProfilesNum(); i++)
@@ -927,7 +927,7 @@ void MotionMotor::onMoveRel()
                 break;
             }
 
-            if (!m_pCtrl->move(m_pCtrl->getMotorAxisID(i), dVec, acc, dec, smooth, dCurPos + dDist, false))
+            if (!m_pCtrl->moveAbs(m_pCtrl->getMotorAxisID(i), dVec, acc, dec, smooth, dCurPos + dDist, false))
             {
                 System->setTrackInfo(QStringLiteral("Move Motor Error!, AxisID=%1").arg(m_pCtrl->getMotorAxisID(i)));
                 break;
@@ -951,7 +951,7 @@ void MotionMotor::onMoveAbs()
     {
         if (axisSelected[i] && m_pCtrl->isEnabled(m_pCtrl->getMotorAxisID(i)))
         {
-            if (!m_pCtrl->move(m_pCtrl->getMotorAxisID(i), dVec, acc, dec, smooth, dPos, false))
+            if (!m_pCtrl->moveAbs(m_pCtrl->getMotorAxisID(i), dVec, acc, dec, smooth, dPos, false))
             {
                 System->setTrackInfo(QStringLiteral("Move Motor Error!, AxisID=%1").arg(m_pCtrl->getMotorAxisID(i)));
                 break;

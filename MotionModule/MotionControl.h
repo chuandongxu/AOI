@@ -166,7 +166,8 @@ public:
     bool moveToGroup(std::vector<int>& axis, std::vector<double>& pos, std::vector<int>& profiles, bool bSyn);
     bool moveGroup(std::vector<int>& axis, std::vector<double>& dists, std::vector<int>& profiles, bool bSyn);
 
-    bool move(int AxisID, double dVec, double acc, double dec, int smooth, double dPos, bool bSyn);
+    bool moveTrap(int AxisID, double dVec, double acc, double dec, int smooth, double dPos, bool bSyn);
+    bool moveAbs(int AxisID, double dVec, double acc, double dec, short percent, double dPos, bool bSyn);
 
     bool waitDone();
 
