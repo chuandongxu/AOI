@@ -58,7 +58,7 @@ void MotionControl::loadConfig()
 {
 	m_mapMtrID.clear();	
     m_mapMtrID.insert(AxisEnum::MTR_AXIS_X, Config->ID(AXIS_MOTOR_X));
-    //m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, Config->ID(AXIS_MOTOR_Y));
+    m_mapMtrID.insert(AxisEnum::MTR_AXIS_Y, Config->ID(AXIS_MOTOR_Y));
     m_mapMtrID.insert(AxisEnum::MTR_AXIS_Z, Config->ID(AXIS_MOTOR_Z));
 	//m_mapMtrID.insert(AxisEnum::MTR_AXIS_TRACK_WIDTH, AXIS_MOTOR_TRACK_WIDTH);
 	//m_mapMtrID.insert(AxisEnum::MTR_AXIS_TRACKING, AXIS_MOTOR_TRACKING);
