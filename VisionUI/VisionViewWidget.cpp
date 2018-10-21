@@ -1559,7 +1559,8 @@ void VisionViewWidget::show3DView(cv::Rect& rectROI)
         m_pView3D->previousROIDisplay();
         m_pView3D->loadFile(true, nSizeY, nSizeX, xValues, yValues, zValues);
 
-        cv::Mat matTexture = m_hoImage(rectROI);
+        cv::Mat matTexture = m_hoImage(rectROI).clone();
+        cv::cvtColor(matTexture, matTexture, CV_BGR2RGB);
         /*    cv::Mat matTextureTranspose;
         cv::transpose(matTexture, matTextureTranspose);
         cv::Mat matTextureFlip;
