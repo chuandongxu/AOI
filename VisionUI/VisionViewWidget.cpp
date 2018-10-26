@@ -1659,13 +1659,20 @@ void VisionViewWidget::fullImage()
 
 void VisionViewWidget::zoomImage(double scale)
 {
+    m_dScale *= scale;
+
     if (m_dScale >= _constMaxZoomScale && scale > 1.)
+    {
+        m_dScale = _constMaxZoomScale;
         return;
+    }
 
     if (m_dScale <= _constMinZoomScale && scale < 1.)
+    {
+        m_dScale = _constMinZoomScale;
         return;
-
-    m_dScale *= scale;
+    }
+   
     repaintAll();
 }
 
@@ -1941,10 +1948,14 @@ void VisionViewWidget::_moveToSelectDevice(const QString& name)
         localRotateRect.center.y += m_szCadOffset.height;
         if (QString::fromStdString(vvDevice.getName()) == name)
         {
+            float scale = localRotateRect.size.width > 0 ? m_windowWidth * 0.25 / localRotateRect.size.width : 1.0;
+            zoomImage(scale);
+
             cv::Point2f ptImgPos = localRotateRect.center;         
-            cv::Point ptMousePos = convertToMousePos(ptImgPos);
+            cv::Point ptMousePos = convertToMousePos(ptImgPos);          
 
             moveImage(-(ptMousePos.x - LABEL_IMAGE_WIDTH / 2), -(ptMousePos.y - LABEL_IMAGE_HEIGHT / 2));
+            
             m_selectedDevice = vvDevice;
             //QEos::Notify(EVENT_INSP_WINDOW_STATE, 0);
             auto pVision = getModule<IVision>(VISION_MODEL);
