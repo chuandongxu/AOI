@@ -109,6 +109,7 @@ void MotionMotor::initUI()
 
     ui.tableView_pt->setModel(&m_movePointModel);
     ui.tableView_pt->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui.tableView_pt->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     connect(ui.pushButton_pt_add, SIGNAL(clicked()), SLOT(onAddPoint()));
     connect(ui.pushButton_pt_del, SIGNAL(clicked()), SLOT(onDelPoint()));
@@ -119,10 +120,13 @@ void MotionMotor::initUI()
 
     for (int i = 0; i < m_pCtrl->getMotorAxisNum(); i++)
     {
-        ui.comboBox_pt_mtr->addItem(QString("%1").arg(m_pCtrl->getMotorAxisID(i)));
+        int nID = m_pCtrl->getMotorAxisID(i);
+        QString mtrName = Config->getAxisName(nID);
+        ui.comboBox_pt_mtr->addItem(QString("%1").arg(mtrName));
     }
 
     ui.tableView_ptList->setModel(&m_movePointModel);
+    ui.tableView_ptList->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui.tableView_ptGroupList->setModel(&m_movePtGroupModel);
     connect(ui.comboBox_ptGroup, SIGNAL(currentIndexChanged(int)), SLOT(onPointGroupIndexChanged(int)));
     connect(ui.pushButton_ptGroupAdd, SIGNAL(clicked()), SLOT(onAddPointGroup()));
@@ -218,12 +222,13 @@ void MotionMotor::updateMotorUI()
     for (int i = 0; i < m_pCtrl->getMotorParamsNum(); i++)
     {
         QMotorParam mtrParam = m_pCtrl->getMotorParamByIndex(i);
-        QString mtrName = Config->getAxisName(mtrParam._ID);
+        int nID = m_pCtrl->getMotorAxisID(i);
+        QString mtrName = Config->getAxisName(nID);
 
         switch (i)
         {
         case 0:
-            ui.checkBox_ch0->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.checkBox_ch0->setEnabled(nID > 0 ? true : false);
             ui.lineEdit_name0->setEnabled(false);
             ui.lineEdit_name0->setText(mtrName);
             ui.doubleSpinBox_resn0->setValue(mtrParam._res);
@@ -233,7 +238,7 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode0->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 1:
-            ui.checkBox_ch1->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.checkBox_ch1->setEnabled(nID > 0 ? true : false);
             ui.lineEdit_name1->setEnabled(false);
             ui.lineEdit_name1->setText(mtrName);
             ui.doubleSpinBox_resn1->setValue(mtrParam._res);
@@ -243,7 +248,7 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode1->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 2:
-            ui.checkBox_ch2->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.checkBox_ch2->setEnabled(nID > 0 ? true : false);
             ui.lineEdit_name2->setEnabled(false);
             ui.lineEdit_name2->setText(mtrName);
             ui.doubleSpinBox_resn2->setValue(mtrParam._res);
@@ -253,7 +258,7 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode2->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 3:
-            ui.checkBox_ch3->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.checkBox_ch3->setEnabled(nID > 0 ? true : false);
             ui.lineEdit_name3->setEnabled(false);
             ui.lineEdit_name3->setText(mtrName);
             ui.doubleSpinBox_resn3->setValue(mtrParam._res);
@@ -263,7 +268,7 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode3->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 4:
-            ui.checkBox_ch4->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.checkBox_ch4->setEnabled(nID > 0 ? true : false);
             ui.lineEdit_name4->setEnabled(false);
             ui.lineEdit_name4->setText(mtrName);
             ui.doubleSpinBox_resn4->setValue(mtrParam._res);
@@ -273,7 +278,7 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode4->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 5:
-            ui.checkBox_ch5->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.checkBox_ch5->setEnabled(nID > 0 ? true : false);
             ui.lineEdit_name5->setEnabled(false);
             ui.lineEdit_name5->setText(mtrName);
             ui.doubleSpinBox_resn5->setValue(mtrParam._res);
@@ -283,7 +288,7 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode5->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 6:
-            ui.checkBox_ch6->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.checkBox_ch6->setEnabled(nID > 0 ? true : false);
             ui.lineEdit_name6->setEnabled(false);
             ui.lineEdit_name6->setText(mtrName);
             ui.doubleSpinBox_resn6->setValue(mtrParam._res);
@@ -293,7 +298,7 @@ void MotionMotor::updateMotorUI()
             ui.comboBox_home_mode6->setCurrentIndex(mtrParam._homeProf._mode);
             break;
         case 7:
-            ui.checkBox_ch7->setEnabled(mtrParam._ID > 0 ? true : false);
+            ui.checkBox_ch7->setEnabled(nID > 0 ? true : false);
             ui.lineEdit_name7->setEnabled(false);
             ui.lineEdit_name7->setText(mtrName);
             ui.doubleSpinBox_resn7->setValue(mtrParam._res);
@@ -478,7 +483,7 @@ void MotionMotor::updateMtrProfData()
 
     QStringList ls;
     ls << QStringLiteral("名称") << QStringLiteral("ID") << QStringLiteral("运行速度")
-        << QStringLiteral("加速度") << QStringLiteral("减速度") << QStringLiteral("平滑时间");
+        << QStringLiteral("加速度") << QStringLiteral("减速度") << QStringLiteral("加速比例");
     m_moveProfModel.setHorizontalHeaderLabels(ls);
 
     for (int i = 0; i < m_pCtrl->getMotorProfilesNum(); i++)
@@ -610,7 +615,7 @@ void MotionMotor::updateMtrPointData()
 
         m_movePointModel.setData(m_movePointModel.index(nr, 0), mtrPoint._name);
         m_movePointModel.setData(m_movePointModel.index(nr, 1), mtrPoint._ID);
-        m_movePointModel.setData(m_movePointModel.index(nr, 2), mtrPoint._AxisID);
+        m_movePointModel.setData(m_movePointModel.index(nr, 2), Config->getAxisName(mtrPoint._AxisID));
         m_movePointModel.setData(m_movePointModel.index(nr, 3), mtrPoint._ProfID);
         m_movePointModel.setData(m_movePointModel.index(nr, 4), mtrPoint._posn);
     }
@@ -618,7 +623,7 @@ void MotionMotor::updateMtrPointData()
 
 void MotionMotor::saveMtrPointConfig()
 {
-    for (int i = 0; i < m_pCtrl->getMotorPointsNum(); i++)
+    /*for (int i = 0; i < m_pCtrl->getMotorPointsNum(); i++)
     {
         QMtrMovePoint mtrPoint = m_pCtrl->getMotorPointByIndex(i);
 
@@ -628,7 +633,7 @@ void MotionMotor::saveMtrPointConfig()
         mtrPoint._posn = m_movePointModel.data(m_movePointModel.index(i, 4)).toDouble();
 
         m_pCtrl->updateMotorPoint(mtrPoint._ID, mtrPoint);
-    }
+    }*/
 
     QString path = QApplication::applicationDirPath();
     path += "/data/";
@@ -922,7 +927,7 @@ void MotionMotor::onMoveRel()
                 break;
             }
 
-            if (!m_pCtrl->move(m_pCtrl->getMotorAxisID(i), dVec, acc, dec, smooth, dCurPos + dDist, false))
+            if (!m_pCtrl->moveAbs(m_pCtrl->getMotorAxisID(i), dVec, acc, dec, smooth, dCurPos + dDist, false))
             {
                 System->setTrackInfo(QStringLiteral("Move Motor Error!, AxisID=%1").arg(m_pCtrl->getMotorAxisID(i)));
                 break;
@@ -946,7 +951,7 @@ void MotionMotor::onMoveAbs()
     {
         if (axisSelected[i] && m_pCtrl->isEnabled(m_pCtrl->getMotorAxisID(i)))
         {
-            if (!m_pCtrl->move(m_pCtrl->getMotorAxisID(i), dVec, acc, dec, smooth, dPos, false))
+            if (!m_pCtrl->moveAbs(m_pCtrl->getMotorAxisID(i), dVec, acc, dec, smooth, dPos, false))
             {
                 System->setTrackInfo(QStringLiteral("Move Motor Error!, AxisID=%1").arg(m_pCtrl->getMotorAxisID(i)));
                 break;
@@ -1132,7 +1137,7 @@ void MotionMotor::onAddPoint()
 
     mtrParam._name = ui.lineEdit_pt_name->text();
     mtrParam._ID = m_pCtrl->incrementMotorPointID();
-    mtrParam._AxisID = ui.comboBox_pt_mtr->currentText().toInt();
+    mtrParam._AxisID = m_pCtrl->getMotorAxisID(ui.comboBox_pt_mtr->currentIndex());
     mtrParam._ProfID = ui.comboBox_pt_prof->currentText().toInt();
     mtrParam._posn = ui.lineEdit_pt_posn->text().toDouble();
 
@@ -1143,7 +1148,7 @@ void MotionMotor::onAddPoint()
 
     m_movePointModel.setData(m_movePointModel.index(nr, 0), mtrParam._name);
     m_movePointModel.setData(m_movePointModel.index(nr, 1), mtrParam._ID);
-    m_movePointModel.setData(m_movePointModel.index(nr, 2), mtrParam._AxisID);
+    m_movePointModel.setData(m_movePointModel.index(nr, 2), Config->getAxisName(mtrParam._AxisID));
     m_movePointModel.setData(m_movePointModel.index(nr, 3), mtrParam._ProfID);
     m_movePointModel.setData(m_movePointModel.index(nr, 4), mtrParam._posn);
 }

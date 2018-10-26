@@ -29,7 +29,8 @@
 
 #define USER_VAR_LENGTH                 16
 
-#define WATCH_LIST_MAX                  8
+#define WATCH_EVENT_MAX					8
+#define WATCH_LIST_MAX                  12
 #define WATCH_LENGTH_MAX                32
 #define WATCH_FIFO_SIZE                 0x1E0       // 480 word
 
@@ -235,69 +236,6 @@ typedef struct RtcTime
     short seconds;
 }TRtcTime;
 
-
-typedef struct  
-{
-	unsigned short doType;
-	unsigned short doMask;
-	unsigned short doValue;
-	unsigned short delayTime;
-	short fifo;
-}TBufIoDelayData;
-
-typedef struct  
-{
-	short doType;
-	short doIndex;
-	unsigned short highLevelTime;
-	unsigned short lowLevelTime;
-	long pulseNum;
-	short firstLevel;
-	short fifo;
-}TBufDoBitPulseData;
-
-typedef struct  
-{
-	short channel;
-	short daValue;
-	short fifo;
-}TBufDaData;
-
-typedef struct  
-{
-	short channel;
-	short fifo;
-	short source;
-	double laserPower;
-	double ratio;
-	double minPower;
-	double maxPower;
-	short tableId;
-}TBufLaserData;
-
-typedef struct  
-{
-	short axis;
-	double deltaPos;
-	short fifo;
-}TBufGearData;
-
-typedef struct  
-{
-	short axis;
-	double pos;
-	double vel;
-	double acc;
-	short modal;
-	short fifo;
-}TBufMoveData;
-
-typedef struct
-{
-	long segNum;
-	short fifo;
-}TBufSegNumData;
-
 GT_API GT_SetDiConfig(short diType,short diIndex,TDiConfig *pDi);
 GT_API GT_GetDiConfig(short diType,short diIndex,TDiConfig *pDi);
 GT_API GT_SetDoConfig(short doType,short doIndex,TDoConfig *pDo);
@@ -442,6 +380,7 @@ GT_API GT_Reserve(long mask);
 #define WATCH_VAR_COMMAND_CODE				(1220)
 #define WATCH_VAR_COMMAND_DATA				(1221)
 #define WATCH_VAR_COMMAND_COUNT				(1222)
+#define WATCH_VAR_COMMAND_READ_FLAG			(1223)
 
 #define WATCH_VAR_PRF_POS					(6000)
 #define WATCH_VAR_PRF_VEL					(6001)
@@ -459,6 +398,11 @@ GT_API GT_Reserve(long mask);
 #define WATCH_VAR_CRD_SEGMENT_NUMBER_USER	(8203)
 #define WATCH_VAR_CRD_COMMAND_RECEIVE		(8204)
 #define WATCH_VAR_CRD_COMMAND_EXECUTE		(8205)
+
+#define WATCH_VAR_CRD_FOLLOW_SLAVE_POS		(8600)
+#define WATCH_VAR_CRD_FOLLOW_SLAVE_VEL		(8601)
+
+#define WATCH_VAR_CRD_FOLLOW_STAGE			(8610)
 
 #define WATCH_VAR_SCAN_PRF_POS				(18000)
 #define WATCH_VAR_SCAN_PRF_VEL				(18001)
@@ -478,8 +422,13 @@ GT_API GT_Reserve(long mask);
 #define WATCH_VAR_AXIS_PRF_POS				(20000)
 #define WATCH_VAR_AXIS_PRF_VEL				(20001)
 #define WATCH_VAR_AXIS_PRF_ACC				(20002)
+#define WATCH_VAR_AXIS_ENC_POS				(20003)
+
+#define WATCH_VAR_AXIS_PRF_VEL_FILTER		(20011)
 
 #define WATCH_VAR_ENC_POS					(30000)
+
+#define WATCH_VAR_ENC_VEL					(30001)
 
 #define WATCH_VAR_GPI						(31000)
 
@@ -491,11 +440,22 @@ GT_API GT_Reserve(long mask);
 
 #define WATCH_VAR_AUTO_FOCUS_OUT			(34006)
 
+#define WATCH_VAR_TRIGGER_EXECUTE			(38000)
 #define WATCH_VAR_TRIGGER_STATUS			(38001)
+#define WATCH_VAR_TRIGGER_POSITION			(38002)
+#define WATCH_VAR_TRIGGER_COUNT				(38010)
 
 #define WATCH_VAR_POS_LOOP_ERROR			(40000)
 
+#define WATCH_VAR_CONTROL_REF_VEL			(41000)
+
 #define WATCH_VAR_WATCH_TIME				(52001)
+
+#define WATCH_VAR_INT32						(52020)
+#define WATCH_VAR_INT64						(52021)
+#define WATCH_VAR_FLOAT						(52022)
+#define WATCH_VAR_DOUBLE					(52023)
+#define WATCH_VAR_BOOL						(52024)
 
 
 typedef struct  
@@ -520,8 +480,14 @@ GT_API GT_AddWatchVar(const TWatchVar *pVar);
 GT_API GT_AddWatchEvent(const TWatchEvent *pEvent);
 GT_API GT_WatchOn(short interval=0,short mode=WATCH_MODE_STATIC,unsigned short count=0);
 GT_API GT_WatchOff(void);
-GT_API GT_PrintWatch(const char *pFileName);
+GT_API GT_PrintWatch(const char *pFileName,long start=0,unsigned long printCount=0);
 GT_API GT_GetMcVar(const TWatchVar *pVar,double *pValue);
+
+GT_API GT_SetWatchGroup(short group);
+GT_API GT_GetWatchGroup(short *pGroup);
+GT_API GT_LoadWatchConfig(char *pFile);
+GT_API GT_SaveWatchConfig(short group,char *pFile);
+GT_API GT_ReadWatch(short varIndex,double *pBuffer,unsigned long bufferSize,unsigned long *pReadCount);
 
 typedef struct  
 {
@@ -571,3 +537,97 @@ GT_API GT_GetWatchFormat(TWatchFormat *pFormat);
 
 GT_API GT_SetUserPassword(char *pCode,short count);
 GT_API GT_GetUserPassword(char *pCode,short count);
+
+//////////////////////////////////////////////////////////////////////////
+//Event and Task
+//////////////////////////////////////////////////////////////////////////
+#define TASK_SET_DO_BIT							(0x1101)
+#define TASK_CRD_START							(0x4004)
+#define TASK_CRD_STOP							(0x4005)
+#define TASK_CRD_OVERRIDE						(0x4006)
+
+typedef struct  
+{
+	short doType;
+	short doIndex;
+	short doValue;
+	short mode;
+	long parameter[8];
+} TTaskSetDoBit;
+
+typedef struct  
+{
+	short mask;
+	short option;
+} TTaskCrdStart;
+
+typedef struct  
+{
+	short mask;
+	short option;
+} TTaskCrdStop;
+
+typedef struct  
+{
+	short crd;
+	double synVelOverride;
+} TTaskCrdOverride;
+
+typedef struct  
+{
+	unsigned long loop;
+	TWatchVar var;
+	unsigned short condition;
+	double value;
+} TEvent;
+
+GT_API GT_ClearEvent(void);
+GT_API GT_ClearTask(void);
+GT_API GT_ClearEventTaskLink(void);
+GT_API GT_AddEvent(TEvent *pEvent,short *pEventIndex);
+GT_API GT_AddTask(short taskType,void *pTaskData,short *pTaskIndex);
+GT_API GT_AddEventTaskLink(short eventIndex,short taskIndex,short *pLinkIndex);
+GT_API GT_GetEventCount(short *pCount);
+GT_API GT_GetEvent(short eventIndex,TEvent *pEvent);
+GT_API GT_GetEventLoop(short eventIndex,unsigned long *pCount);
+GT_API GT_GetTaskCount(short *pCount);
+GT_API GT_GetTask(short taskIndex,short *pTaskType,void *pTaskData);
+GT_API GT_GetEventTaskLinkCount(short *pCount);
+GT_API GT_GetEventTaskLink(short linkIndex,short *pEventIndex,short *pTaskIndex);
+GT_API GT_EventOn(short eventIndex,short count);
+GT_API GT_EventOff(short eventIndex,short count);
+GT_API GT_BufEventOn(short crd,short eventIndex,short count,short fifo);
+GT_API GT_BufEventOff(short crd,short eventIndex,short count,short fifo);
+
+#define VAR_CALCULATE_NONE					(0)
+#define VAR_CALCULATE_OR					(1)
+#define VAR_CALCULATE_AND					(3)
+#define VAR_CALCULATE_NOT					(5)
+
+#define VAR_CALCULATE_ADD					(11)
+#define VAR_CALCULATE_SUB					(12)
+#define VAR_CALCULATE_MUL					(13)
+#define VAR_CALCULATE_DIV					(14)
+
+typedef struct  
+{
+	TWatchVar var;
+	unsigned short condition;
+	double value;
+} TWatchCondition;
+
+typedef struct  
+{
+	unsigned short operation;
+	unsigned short varType;
+	unsigned short result;
+	unsigned short lhs;
+	unsigned short rhs;
+} TVarCalculate;
+
+GT_API GT_ClearVar(void);
+GT_API GT_SetVarBoolCondition(short varIndex,TWatchCondition *pWatchCondition);
+GT_API GT_GetVarBoolCondition(short varIndex,TWatchCondition *pWatchCondition);
+GT_API GT_AddVarCalculate(TVarCalculate *pVarCalculate,short *pIndex);
+GT_API GT_GetVarCalculateCount(short *pCount);
+GT_API GT_GetVarCalculate(short index,TVarCalculate *pVarCalculate);

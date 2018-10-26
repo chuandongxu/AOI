@@ -337,7 +337,7 @@ int MotionControl::getMotorAxisNum()
 }
 
 int MotionControl::getMotorAxisID(int nIndex)
-{
+{  
     if (nIndex < 0 || nIndex >= m_mapMtrID.size()) return 0;
     return m_mapMtrID.values().at(nIndex);
 }
@@ -991,7 +991,7 @@ bool MotionControl::move(int AxisID, int nProfile, double dDist, bool bSyn)
         return false;
     }
   
-    return move(AxisID, dVec, acc, dec, smooth, dCurPos + dDist, bSyn);
+    return moveAbs(AxisID, dVec, acc, dec, smooth, dCurPos + dDist, bSyn);
 }
 
 bool MotionControl::moveTo(int AxisID, int nProfile, double dPos, bool bSyn)
@@ -1004,7 +1004,7 @@ bool MotionControl::moveTo(int AxisID, int nProfile, double dPos, bool bSyn)
     double dec = mtrProf._velPf._dec;
     int smooth = mtrProf._smooth;
 
-    return move(AxisID, dVec, acc, dec, smooth, dPos, bSyn);
+    return moveAbs(AxisID, dVec, acc, dec, smooth, dPos, bSyn);
 }
 
 bool MotionControl::movePos(int nPointTable, bool bSyn)
@@ -1022,7 +1022,7 @@ bool MotionControl::movePos(int nPointTable, bool bSyn)
         return false;
     }
 
-    return move(mtrPt._AxisID, dVec, acc, dec, smooth, dCurPos + mtrPt._posn, bSyn);
+    return moveAbs(mtrPt._AxisID, dVec, acc, dec, smooth, dCurPos + mtrPt._posn, bSyn);
 }
 
 bool MotionControl::moveToPos(int nPointTable, bool bSyn)
@@ -1034,7 +1034,7 @@ bool MotionControl::moveToPos(int nPointTable, bool bSyn)
     double dec = mtrProf._velPf._dec;
     int smooth = mtrProf._smooth;
 
-    return move(mtrPt._AxisID, dVec, acc, dec, smooth, mtrPt._posn, bSyn);
+    return moveAbs(mtrPt._AxisID, dVec, acc, dec, smooth, mtrPt._posn, bSyn);
 }
 
 bool MotionControl::movePosGroup(int nPtGroup, bool bSyn)
@@ -1161,7 +1161,7 @@ bool MotionControl::moveGroup(std::vector<int>& axis, std::vector<double>& dists
     return true;
 }
 
-bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int smooth, double dPos, bool bSyn)
+bool MotionControl::moveTrap(int AxisID, double dVec, double acc, double dec, int smooth, double dPos, bool bSyn)
 {
     if (System->isRunOffline()) {
         m_dRunOfflinePos[AxisID] = dPos * MM_TO_UM;
@@ -1197,6 +1197,64 @@ bool MotionControl::move(int AxisID, double dVec, double acc, double dec, int sm
     // 设置AXIS轴的目标速度
     sRtn = GT_SetVel(AxisID, convertVelToPulse(changeToMtrEnum(AxisID), dVec));
     commandhandler("GT_SetVel", sRtn);
+
+    // 启动AXIS轴的运动
+    sRtn = GT_Update(1 << (AxisID - 1));
+    commandhandler("GT_Update", sRtn);
+
+    if (bSyn)
+    {
+        // 分别是规划位置，编码器位
+        //double prfPos = 0, encPos = 0;
+        int nTimeOut = 30 * 100;// 30 seconds
+        do
+        {
+            // 读取规划位置
+            //sRtn = GT_GetPrfPos(AxisID, &prfPos);
+            // 读取编码器位置
+            //sRtn = GT_GetEncPos(AxisID, &encPos);
+
+            QThread::msleep(10);
+
+        } while (!isMoveDone(AxisID) && nTimeOut-- > 0);
+
+        if (nTimeOut <= 0)
+        {
+            System->setTrackInfo(QStringLiteral("电机运动TimeOut！"));
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool MotionControl::moveAbs(int AxisID, double dVec, double acc, double dec, short percent, double dPos, bool bSyn)
+{
+    if (System->isRunOffline()) {
+        m_dRunOfflinePos[AxisID] = dPos * MM_TO_UM;
+        return true;
+    }
+
+    short sRtn = 0; // 指令返回值变量
+
+    // 将AXIS轴设为点位模式
+    sRtn = GT_PrfTrap(AxisID);
+    commandhandler("GT_PrfTrap", sRtn);
+
+    TMoveAbsolutePrm trap;
+    // 读取点位运动参数
+    sRtn = GT_GetMoveAbsolute(AxisID, &trap);
+    commandhandler("GT_GetTrapPrm", sRtn);
+
+    trap.acc = convertAccToPulse(changeToMtrEnum(AxisID), acc);
+    trap.dec = convertAccToPulse(changeToMtrEnum(AxisID), dec);
+    trap.percent = percent;
+    trap.pos = convertMmToPulse(changeToMtrEnum(AxisID), dPos);
+    trap.vel = convertVelToPulse(changeToMtrEnum(AxisID), dVec);
+
+    // 设置点位运动参数
+    sRtn = GT_MoveAbsolute(AxisID, &trap);
+    commandhandler("GT_SetTrapPrm", sRtn);   
 
     // 启动AXIS轴的运动
     sRtn = GT_Update(1 << (AxisID - 1));
