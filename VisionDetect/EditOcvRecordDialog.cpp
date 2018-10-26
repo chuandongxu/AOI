@@ -15,8 +15,7 @@ EditOcvRecordDialog::EditOcvRecordDialog(QWidget *parent)
     ui.setupUi(this);
 }
 
-EditOcvRecordDialog::~EditOcvRecordDialog()
-{
+EditOcvRecordDialog::~EditOcvRecordDialog() {
 }
 
 void EditOcvRecordDialog::setImage(const cv::Mat &matImage) {

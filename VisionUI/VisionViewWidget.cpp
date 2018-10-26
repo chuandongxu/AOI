@@ -970,6 +970,10 @@ void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
         case MODE_VIEW_SET_FIDUCIAL_MARK:
             _checkSelectedDevice(cv::Point(pos.x(), pos.y()));
             break;
+        case MODE_VIEW_EDIT_DEVICE:
+            if (_checkSelectedDevice(cv::Point(pos.x(), pos.y())))
+                m_selectROI = m_selectedDevice.getWindow().boundingRect();
+            break;
         case MODE_VIEW_EDIT_INSP_WINDOW:
             if (pos.x() == m_startX || pos.y() == m_startY) {
                 if(_checkSelectedDevice(cv::Point(pos.x(), pos.y())))
@@ -979,7 +983,7 @@ void VisionViewWidget::mouseReleaseEvent(QMouseEvent *event)
             break;
         case MODE_VIEW_EDIT_SRCH_WINDOW:
             QEos::Notify(EVENT_COLOR_WIDGET_STATE, CHANGE_SRCH_WINDOW);
-            break;       
+            break;
         case MODE_VIEW_NONE:
             break;
         default:

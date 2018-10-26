@@ -79,6 +79,7 @@
     <ClCompile Include="..\DataModule\QDetectObj.cpp" />
     <ClCompile Include="..\DataModule\QProfileObj.cpp" />
     <ClCompile Include="..\HSGWorkflowCtrl\Calc3DHeightRunnable.cpp" />
+    <ClCompile Include="..\HSGWorkflowCtrl\TimeLog.cpp" />
     <ClCompile Include="AlignmentWidget.cpp" />
     <ClCompile Include="DialogCreateGroup.cpp" />
     <ClCompile Include="DLPTableCalibrationRstWidget.cpp" />

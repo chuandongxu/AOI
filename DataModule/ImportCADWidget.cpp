@@ -1,12 +1,13 @@
-#include "ImportCADWidget.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <fstream>
 #include <set>
+#include <map>
+
+#include "ImportCADWidget.h"
 #include "DataStoreAPI.h"
 #include "constants.h"
 #include "SystemData.h"
-#include <map>
 #include "../Common/ModuleMgr.h"
 #include "../include/IdDefine.h"
 #include "../include/IVisionUI.h"
