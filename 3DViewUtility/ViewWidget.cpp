@@ -45,6 +45,8 @@
 #define VIEW_POINT_XY_SCALE 1.5
 #define VIEW_POINT_Z_SCALE 1.2
 
+#define PI 3.14159265
+
 using namespace cv;
 
 ViewWidget::ViewWidget(QWidget *parent /* = 0 */)
@@ -266,7 +268,7 @@ void ViewWidget::mouseReleaseEvent(QMouseEvent *event)
 	}
 	else if (event->button() & Qt::RightButton)
 	{
-		setViewAction(ACTION_SELECT);
+		//setViewAction(ACTION_SELECT);
 	}	
 }
 
@@ -429,14 +431,14 @@ void ViewWidget::excuteRotate(int x, int y)
     if ((fabs(OldMouse->X()) >= 0.01) && (fabs(OldMouse->X()) >= 0.01))
     {
         Vector3D rotateAxis; rotateAxis.setX(0); rotateAxis.setY(0); rotateAxis.setZ(1.0);
-        Vector3D MouseTrace = rotateAxis*(Mouse->X() - OldMouse->X())*0.02;
+        Vector3D MouseTrace = rotateAxis*(Mouse->X() - OldMouse->X())*0.2;
         rotateAxis.normalize();
 
         float angle = (Mouse->X() - OldMouse->X()) > 0 ? -MouseTrace.length() : MouseTrace.length();       
 
-        m_csgMesh->rotate(rotateAxis, angle);
+        m_csgMesh->rotate(rotateAxis, -angle);
 
-        m_csgWorld->rotate(1, Vector(0, 0, 1), Vector(0, 0, -1), angle);
+        m_csgWorld->rotate(1, Vector(0, 0, 1), Vector(0, 0, -1), angle*PI/180);
     }
 
     //¸üĞÂÊó±ê

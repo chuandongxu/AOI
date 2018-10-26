@@ -25,6 +25,7 @@
 
 #include "../DataModule/QDetectObj.h"
 #include "../DataModule/CalcUtils.hpp"
+#include "../DataModule/CalcUtils.hpp"
 
 #include "../3DViewUtility/DViewUtility.h"
 
@@ -522,6 +523,12 @@ void VisionViewWidget::show3D()
         return;
     }
 
+    if (m_selectedDevice.getId() <= 0)
+    {
+        QMessageBox::warning(this, QStringLiteral("提示"), QStringLiteral("请先选择元件！"));
+        return;
+    }
+
     if (!m_bMainView3DInitial)
     {
         QVector<double> xValues, yValues, zValues;
@@ -552,8 +559,25 @@ void VisionViewWidget::show3D()
 
     if (!m_3DMatHeight.empty())
     {
+        cv::Point ptCtrOfImage(0, 0);
+        ptCtrOfImage.x += m_szCadOffset.width;
+        ptCtrOfImage.y += m_szCadOffset.height;
+
+        auto localSelectedDevice(m_selectedDevice.getWindow());
+        localSelectedDevice.center.x += ptCtrOfImage.x;
+        localSelectedDevice.center.y += ptCtrOfImage.y;
+      
+        cv::Rect rectROI = localSelectedDevice.boundingRect();
+
+        cv::Rect2f rectWin = rectROI;
+        float dBaseScale = 1.5;
+        cv::Rect rectDetectWin = CalcUtils::resizeRect(rectWin, cv::Size2f(rectWin.width * dBaseScale, rectWin.height * dBaseScale));
+        CalcUtils::adjustRectROI(rectDetectWin, m_3DMatHeight);
+
+        rectROI = rectDetectWin;
+
         //auto vecMatNewPhase = matToVector<float>(m_3DMatHeight);
-        cv::Mat mat3DHeight = m_3DMatHeight.clone();
+        cv::Mat mat3DHeight = m_3DMatHeight(rectROI).clone();
         cv::patchNaNs(mat3DHeight, 0);
 
         int nSizeY = mat3DHeight.rows;
@@ -562,6 +586,14 @@ void VisionViewWidget::show3D()
         int nDataNum = nSizeX * nSizeY;
 
         double dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
+
+        double minv = 0.0, maxv = 0.0;
+        cv::minMaxIdx(mat3DHeight, &minv, &maxv);
+
+        minv *= 1000.0 / dResolutionX;
+        maxv *= 1000.0 / dResolutionX;
+
+        double offsetv = (minv + maxv) / 2;
 
         QVector<double> xValues, yValues, zValues;
         for (int i = 0; i < nDataNum; i++)
@@ -572,13 +604,19 @@ void VisionViewWidget::show3D()
             xValues.push_back(col - nSizeY / 2);
             yValues.push_back(row - nSizeX / 2);
 
-            zValues.push_back(mat3DHeight.at<float>(col - 1, row - 1) * 1000 / dResolutionX);
+            zValues.push_back((mat3DHeight.at<float>(col - 1, row - 1) * 1000 / dResolutionX) - offsetv);
         }
 
+        m_pMainViewFull3D->previousROIDisplay();
         m_pMainViewFull3D->show();
-        m_pMainViewFull3D->loadFile(false, nSizeY, nSizeX, xValues, yValues, zValues);
+        m_pMainViewFull3D->loadFile(true, nSizeY, nSizeX, xValues, yValues, zValues);
         m_pMainViewFull3D->show();
-        m_pMainViewFull3D->changeToMesh();
+        //m_pMainViewFull3D->changeToMesh();
+
+        cv::Mat matTexture = m_hoImage(rectROI).clone();
+        cv::cvtColor(matTexture, matTexture, CV_BGR2RGB);
+        QImage imageTexture = QImage((uchar*)matTexture.data, matTexture.cols, matTexture.rows, ToInt(matTexture.step), QImage::Format_RGB888);
+        m_pMainViewFull3D->prepareROIDisplay(imageTexture, true);
 
         m_selectROI.width = 0;
         m_selectROI.height = 0;
