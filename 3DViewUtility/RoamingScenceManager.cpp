@@ -12,6 +12,10 @@
 
 //#include "GLFont.h"
 
+#include <qdebug.h>
+
+//#define ROTATE_AS_Z
+
 RoamingScenceManager::RoamingScenceManager(QGLWidget* pWidget)
 	: m_viewWidget(pWidget)
 {
@@ -152,7 +156,16 @@ void RoamingScenceManager::executeRotateOperation(int x, int y)
     Vector3D RotateAsix=Vector3D::crossProduct(MouseTrace,*AuxZ);
     RotateAsix.normalize();
 
-    float angle=MouseTrace.length();
+    float angle = MouseTrace.length();
+
+    #ifdef ROTATE_AS_Z    
+    RotateAsix = *AuxZ;
+    RotateAsix.normalize();
+
+    MouseTrace = *AuxX*(Mouse->X() - OldMouse->X())*0.2;
+    angle = (Mouse->X() - OldMouse->X()) > 0 ? -MouseTrace.length() : MouseTrace.length();   
+    #endif
+    
     Matrix4D rotatMatrix=Matrix4D::getRotateMatrix(angle,RotateAsix);
 
     *NewEye=rotatMatrix*(*NewEye);

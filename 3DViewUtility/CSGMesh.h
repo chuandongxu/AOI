@@ -10,6 +10,10 @@
 
 #include <QVector>
 
+class Vector3D;
+class Position3D;
+class Matrix4D;
+
 class CSGMesh : public QObject
 {
 	Q_OBJECT
@@ -27,6 +31,9 @@ public:
 	VectorSet* getVerticesMeshData();
 	IntSet* getIndicesMeshData();
 	bool isConvertToMesh();
+
+    void rotate(Vector3D& rotateAxis, float angle);
+    void transform(Matrix4D& m);
 
 	void init();
 	void Render();

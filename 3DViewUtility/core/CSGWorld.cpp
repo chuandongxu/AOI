@@ -11,6 +11,7 @@
 #include "IntSet.h"
 #include "FaceSet.h"
 #include "VertexSet.h"
+#include "VectorSet.h"
 #include "ColorSet.h"
 
 #include "Color.h"
@@ -350,6 +351,17 @@ void CSGWorld::Render(int nNum)
 			pSolid->Render();
 		}		
 	}
+}
+
+void CSGWorld::rotate(int nNum, Vector& p1, Vector& p2, float angle)
+{
+    int nLoopNum = nNum <= m_Solids.size() ? nNum : m_Solids.size();
+    for (int i = 0; i < nLoopNum; i++)
+    {
+        Solid * pSolid = m_Solids[i];
+
+        pSolid->Rotate(p1, p2, angle);
+    }
 }
 
 bool CSGWorld::isBindTexture()

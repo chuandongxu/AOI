@@ -14,6 +14,7 @@ class BooleanModeller;
 class Solid;
 class Color;
 class VectorSet;
+class Vector;
 class IntSet;
 
 class CSGWorld
@@ -41,6 +42,7 @@ public:
 
 	void init();
 	void Render(int nNum = 0);
+    void rotate(int nNum, Vector& p1, Vector& p2, float angle);
 
 	typedef std::vector<Solid *> SolidSet;
 	typedef std::vector<bool> BoolSet;

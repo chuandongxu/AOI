@@ -34,12 +34,18 @@
 #include "../include/IdDefine.h"
 #include "../include/IVision.h"
 
+#include"MathAPIKernel/Vector3D.h"
+#include"MathAPIKernel/Position3D.h"
+#include"MathAPIKernel/Matrix4D.h"
+
 #include "opencv2/opencv.hpp"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 #define VIEW_POINT_XY_SCALE 1.5
 #define VIEW_POINT_Z_SCALE 1.2
+
+#define PI 3.14159265
 
 using namespace cv;
 
@@ -76,6 +82,9 @@ ViewWidget::ViewWidget(QWidget *parent /* = 0 */)
 	m_idCutMeshLine = 0;
 	m_idCutMesh = 0;
 
+    OldMouse = new Position3D();
+    Mouse = new Position3D();
+
 	setMouseTracking(true);
 }
 
@@ -96,6 +105,9 @@ ViewWidget::~ViewWidget()
 		delete m_pGraphicsEditor;
 		m_pGraphicsEditor = NULL;
 	}
+
+    delete OldMouse;
+    delete Mouse;
 }
 
 //void ViewWidget::paintEvent(QPaintEvent *event)
@@ -256,7 +268,7 @@ void ViewWidget::mouseReleaseEvent(QMouseEvent *event)
 	}
 	else if (event->button() & Qt::RightButton)
 	{
-		setViewAction(ACTION_SELECT);
+		//setViewAction(ACTION_SELECT);
 	}	
 }
 
@@ -319,7 +331,8 @@ void ViewWidget::mouseMoveEvent(QMouseEvent *event)
 		}
 		else if (ACTION_ROTATE == m_viewAction)
 		{
-			manager->executeRotateOperation(posX, posY);
+			//manager->executeRotateOperation(posX, posY);
+            excuteRotate(posX, posY);
 
 			updateGL();
 		}
@@ -353,8 +366,7 @@ void ViewWidget::mouseMoveEvent(QMouseEvent *event)
 	}
 	else if (event->buttons() & Qt::MiddleButton)
 	{
-		manager->executeRotateOperation(posX, posY);
-
+		//manager->executeRotateOperation(posX, posY);
 		updateGL();
 	}
 	else
@@ -409,6 +421,28 @@ void ViewWidget::mouseMoveEvent(QMouseEvent *event)
 
 	m_nPosXPre = posX;
 	m_nPosYPre = posY;
+}
+
+void ViewWidget::excuteRotate(int x, int y)
+{
+    Mouse->setX(x);
+    Mouse->setY(y);
+
+    if ((fabs(OldMouse->X()) >= 0.01) && (fabs(OldMouse->X()) >= 0.01))
+    {
+        Vector3D rotateAxis; rotateAxis.setX(0); rotateAxis.setY(0); rotateAxis.setZ(1.0);
+        Vector3D MouseTrace = rotateAxis*(Mouse->X() - OldMouse->X())*0.2;
+        rotateAxis.normalize();
+
+        float angle = (Mouse->X() - OldMouse->X()) > 0 ? -MouseTrace.length() : MouseTrace.length();       
+
+        m_csgMesh->rotate(rotateAxis, -angle);
+
+        m_csgWorld->rotate(1, Vector(0, 0, 1), Vector(0, 0, -1), angle*PI/180);
+    }
+
+    //¸üÐÂÊó±ê
+    *OldMouse = *Mouse;
 }
 
 void ViewWidget::wheelEvent(QWheelEvent *e)
