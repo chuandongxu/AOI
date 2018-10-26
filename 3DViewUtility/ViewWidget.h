@@ -17,6 +17,10 @@ enum ViewAction
 	ACTION_NULL
 };
 
+class Vector3D;
+class Position3D;
+class Matrix4D;
+
 class CSGWorld;
 class BooleanModeller;
 class Solid;
@@ -83,6 +87,9 @@ protected:
 	void wheelEvent(QWheelEvent *);
 
 private:
+    void excuteRotate(int x, int y);
+
+private:
 	void cutingMesh(double dPosX1, double dPosY1, double dPosX2, double dPosY2);
 	void changeCutingMesh(Vector pt1, Vector pt2);
 
@@ -139,4 +146,7 @@ private:
 
 private:
 	IGraphicEditor *m_pGraphicsEditor;
+
+    Position3D *OldMouse;
+    Position3D *Mouse;
 };

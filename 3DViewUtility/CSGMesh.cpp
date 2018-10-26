@@ -10,6 +10,10 @@
 
 #include "../Common/SystemData.h"
 
+#include"MathAPIKernel/Vector3D.h"
+#include"MathAPIKernel/Position3D.h"
+#include"MathAPIKernel/Matrix4D.h"
+
 CSGMesh::CSGMesh(QObject *parent)
 	: QObject(parent)
 {
@@ -32,13 +36,13 @@ CSGMesh::CSGMesh(QObject *parent)
 	m_dSizeMaxZ = 0;
 	m_dSizeMinZ = 0;
 
-	m_bXYCoordinateInvert = false;
+	m_bXYCoordinateInvert = false; 
 }
 
 CSGMesh::~CSGMesh()
 {
 	delete m_verticesMesh;
-	delete m_indicesMesh;
+	delete m_indicesMesh;   
 }
 
 void CSGMesh::loadData(const QString& sFileNameX, const QString& sFileNameY, const QString& sFileNameZ, const QString& szFileExt)
@@ -551,6 +555,32 @@ void CSGMesh::Render()
 	glPointSize(1.0f);
 }
 
+void CSGMesh::rotate(Vector3D& rotateAxis, float angle)
+{
+    Matrix4D rotateMatrix = Matrix4D::getRotateMatrix(angle, rotateAxis);
+    transform(rotateMatrix);
+}
+
+void CSGMesh::transform(Matrix4D& m)
+{
+    for (int i = 0; i < m_verticesMesh->GetSize(); i++)
+    {
+        Vector vP1 = m_verticesMesh->GetVector(i);
+
+        Vector3D pt;
+        pt.setX(vP1.x);
+        pt.setY(vP1.y);
+        pt.setZ(vP1.z);
+
+        pt = m * pt;
+
+        vP1.x = pt.X();
+        vP1.y = pt.Y();
+        vP1.z = pt.Z();
+    
+        m_verticesMesh->SetVector(i, vP1);
+    }
+}
 
 void CSGMesh::getLimit(double& dSizeMaxX, double& dSizeMinX, double& dSizeMaxY, double& dSizeMinY, double& dSizeMaxZ, double& dSizeMinZ)
 {
