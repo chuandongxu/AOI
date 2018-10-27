@@ -1458,7 +1458,7 @@ QVector<QDetectObj> VisionViewWidget::getDetectObjs() const
 void VisionViewWidget::setDeviceWindows(const VisionViewDeviceVector &vecWindows)
 {
     m_vecDevices = vecWindows;
-    m_szCadOffset.width = 0;
+    m_szCadOffset.width  = 0;
     m_szCadOffset.height = 0;
 
     if (! m_hoImage.empty()) {
@@ -1477,6 +1477,10 @@ void VisionViewWidget::setDeviceWindows(const VisionViewDeviceVector &vecWindows
     }
     m_selectedDevice = VisionViewDevice();
     repaintAll();
+}
+
+const VisionViewDeviceVector& VisionViewWidget::getDeviceWindows() const {
+    return m_vecDevices;
 }
 
 void VisionViewWidget::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const {

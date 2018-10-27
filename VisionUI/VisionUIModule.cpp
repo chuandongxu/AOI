@@ -226,6 +226,10 @@ void QVisionUIModule::setDeviceWindows(const VisionViewDeviceVector &vecWindows)
     m_pVisionView->setDeviceWindows(vecWindows);
 }
 
+const VisionViewDeviceVector& QVisionUIModule::getDeviceWindows() const {
+    return m_pVisionView->getDeviceWindows();
+}
+
 void QVisionUIModule::setViewState(VISION_VIEW_MODE enViewMode) {
     if (m_pVisionView)
     {

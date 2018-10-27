@@ -468,6 +468,10 @@ void VisionView::setDeviceWindows(const VisionViewDeviceVector &vecWindows)
     m_pViewWidget->setDeviceWindows(vecWindows);
 }
 
+const VisionViewDeviceVector& VisionView::getDeviceWindows() const {
+    return m_pViewWidget->getDeviceWindows();
+}
+
 void VisionView::getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const {
     if (m_pViewWidget)
     {

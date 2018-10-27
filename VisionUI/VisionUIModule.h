@@ -46,6 +46,7 @@ public:
     virtual void setCurrentDetectObj(const QDetectObj &detectObj) override;
     virtual QVector<QDetectObj> getDetectObjs() const override;
     virtual void setDeviceWindows(const VisionViewDeviceVector &vecWindows) override;
+    virtual const VisionViewDeviceVector& getDeviceWindows() const override;
     virtual void setViewState(VISION_VIEW_MODE enViewMode) override;
     virtual void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) override; 
     virtual VisionViewDevice getSelectedDevice() override;
