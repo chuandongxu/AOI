@@ -443,6 +443,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_EditOcvRecordDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\HSGWorkflowCtrl\TimeLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VisionDetect.h">

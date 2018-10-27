@@ -14,7 +14,8 @@ class ScanImageWidget : public QWidget
 
 public:
     ScanImageWidget(DataCtrl *pDataCtrl, QWidget *parent = Q_NULLPTR);
-    ~ScanImageWidget();
+    ~ScanImageWidget();    
+    static void updateDeviceWindows();
 
 protected:
     virtual void showEvent(QShowEvent *event) override;
@@ -33,8 +34,8 @@ private slots:
 
 private:
     cv::Mat _combineImage(const QString &strFolder);
-    void updateImageDeviceWindows(const cv::Mat &matImage);
     bool _moveToCapturePos(float fPosX, float fPosY);
+    void _updateImageDeviceWindows(const cv::Mat &matImage);
 
 private:
     Ui::ScanImageWidget              ui;

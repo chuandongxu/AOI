@@ -178,7 +178,7 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
         for (int i = 0; i < IMAGE_COUNT; ++i)
         {
             m_stCalcHeightCmds[nStation - 1].vecInputImgs.push_back(imageMats[i]);
-        }        
+        }
 
         cv::Mat matBaseSurfaceParam;
 
@@ -255,7 +255,7 @@ bool VisionCtrl::calculate3DHeight(int nStation, QVector<cv::Mat>& imageMats, cv
         heightMat.setTo(NAN, matNanMask);
         //cv::patchNaNs(heightMat, 0.0);
 
-        matHeightResultImg = drawHeightGray(stRpy.matHeight);
+        //matHeightResultImg = drawHeightGray(stRpy.matHeight);
         return true;
     }
     else

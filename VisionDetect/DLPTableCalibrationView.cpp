@@ -145,7 +145,7 @@ void DLPTableCalibrationView::_saveResult()
     System->setParam("dlp_table_cali_pos_bottom", m_dBottomY);
 }
 
-void DLPTableCalibrationView::_displayResult() 
+void DLPTableCalibrationView::_displayResult()
 {
     float left = 0.f, top = 0.f, right = 0.f, bottom = 0.f;
 

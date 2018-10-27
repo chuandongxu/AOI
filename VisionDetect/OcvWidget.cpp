@@ -302,7 +302,7 @@ void OcvWidget::on_btnEditOcv_clicked() {
     dialog.setImage(stOcvRecordInfo.matTmplImg);
     dialog.setCharRects(stOcvRecordInfo.vecCharRects);
     auto nReturn = dialog.exec();
-    if (nReturn ==  QDialog::Accepted) {
+    if (QDialog::Accepted == nReturn) {
         stOcvRecordInfo.vecCharRects = dialog.getCharRects();
         if (Vision::VisionStatus::OK != Vision::PR_SetOcvRecordInfo(nRecordId, &stOcvRecordInfo)) {
             System->showMessage(strTitle, QStringLiteral("Failed to update OCV record information"));

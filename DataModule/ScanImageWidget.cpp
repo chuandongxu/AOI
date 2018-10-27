@@ -123,7 +123,7 @@ void ScanImageWidget::on_scanImage_done()
 {
     if (m_pScanImageThread->isGood()) {
         m_pDataCtrl->setCombinedBigResult(m_pScanImageThread->getCombinedBigImages(), m_pScanImageThread->getCombinedBigHeight());
-        updateImageDeviceWindows(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]);
+        _updateImageDeviceWindows(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]);
         ui.comboBoxDisplayImage->setEnabled(true);
 
         auto pUI = getModule<IVisionUI>(UI_MODEL);
@@ -248,7 +248,7 @@ void ScanImageWidget::on_btnCombineLoadImage_clicked() {
     if (matImage.empty())
         return;
 
-    updateImageDeviceWindows(matImage);
+    _updateImageDeviceWindows(matImage);
 }
 
 void ScanImageWidget::on_btnSelectCombinedImage_clicked() {
@@ -275,7 +275,7 @@ void ScanImageWidget::on_btnSelectCombinedImage_clicked() {
     Engine::SetParameter("BOARD_ROTATED", bBoardRotated);
 
     auto matImage = cv::imread(fileNames[0].toStdString());
-    updateImageDeviceWindows(matImage);
+    _updateImageDeviceWindows(matImage);
 }
 
 void ScanImageWidget::on_btnSaveScanImage_clicked() {
@@ -344,14 +344,26 @@ void ScanImageWidget::on_btnOpenScanImage_clicked() {
     fs.release();
 
     m_pDataCtrl->setCombinedBigResult(vecCombinedImage, matHeight);
-    updateImageDeviceWindows(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]);
+    _updateImageDeviceWindows(m_pDataCtrl->getCombinedBigImages()[PROCESSED_IMAGE_SEQUENCE::SOLDER_LIGHT]);
     ui.comboBoxDisplayImage->setEnabled(true);
 
     auto pUI = getModule<IVisionUI>(UI_MODEL);
     pUI->setHeightData(matHeight);
 }
 
-void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage) {    
+void ScanImageWidget::_updateImageDeviceWindows(const cv::Mat &matImage) {
+    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_SET_FIDUCIAL_MARK);
+    pUI->setImage(matImage, false);
+    updateDeviceWindows();
+}
+
+void ScanImageWidget::updateDeviceWindows() {
+    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
+    auto matImage = pUI->getImage();
+    if (matImage.empty())
+        return;
+
     Int32 bBoardRotated = 0; Engine::GetParameter("BOARD_ROTATED", bBoardRotated, false);
     auto dResolutionX = System->getSysParam("CAM_RESOLUTION_X").toDouble();
     auto dResolutionY = System->getSysParam("CAM_RESOLUTION_Y").toDouble();
@@ -396,9 +408,6 @@ void ScanImageWidget::updateImageDeviceWindows(const cv::Mat &matImage) {
         }
     }
 
-    IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
-    pUI->setViewState(VISION_VIEW_MODE::MODE_VIEW_SET_FIDUCIAL_MARK);
-    pUI->setImage(matImage, true);
     pUI->setDeviceWindows(vecVisionViewDevices);
 }
 
