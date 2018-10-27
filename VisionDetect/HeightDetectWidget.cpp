@@ -452,6 +452,7 @@ void HeightDetectWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
+    m_currentWindow = window;
     updateWindowToUI(window, enOperation);
     m_pParent->updateInspWindowList();
 }

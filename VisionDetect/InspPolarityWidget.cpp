@@ -215,8 +215,8 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
         }
     }
 
+    m_currentWindow = window;
     updateWindowToUI(window, enOperation);
-
     m_pParent->updateInspWindowList();
 
     if (Engine::Window::Usage::INSP_POLARITY != window.usage || OPERATION::ADD != enOperation)
@@ -278,6 +278,7 @@ void InspPolarityWidget::confirmWindow(OPERATION enOperation) {
         System->showMessage(strTitle, strMsg);
     }
     
+    m_currentWindow = window;
     updateWindowToUI(window, enOperation);
     m_pParent->updateInspWindowList();
 }

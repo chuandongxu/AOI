@@ -27,7 +27,7 @@ public:
     virtual void setCurrentWindow(const Engine::Window &window) = 0;
     virtual void setWindowGroup(const Engine::WindowGroup &windowGroup);
 
-    Engine::Window getCurrentWindow() const { return m_currentWindow; }
+    const Engine::Window& getCurrentWindow() const { return m_currentWindow; }
    
     bool isSupportMask() { return m_bSupportMask; }
     void setMask(const cv::Mat& maskMat);

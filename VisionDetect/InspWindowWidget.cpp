@@ -95,8 +95,7 @@ void InspWindowWidget::setCurrentIndex(int index) {
     ui.stackedWidget->setCurrentIndex(index);
 }
 
-void InspWindowWidget::showInspDetectObjs()
-{
+void InspWindowWidget::showInspDetectObjs() {
     this->hide();
     this->show();
 }
@@ -165,8 +164,12 @@ void InspWindowWidget::updateInspWindowList() {
         return;
     }
 
-
-    bool bItemSelect = false;
+    bool bItemSelected = false;
+    QString selectWindowName;
+    if (m_enCurrentInspWidget != INSP_WIDGET_INDEX::UNDEFINED) {
+        const auto& window = m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->getCurrentWindow();
+        selectWindowName = window.name.c_str();
+    }
     m_mapIdWindow.clear();
 
     for (const auto &window : vecCurrentDeviceWindows) {
@@ -174,13 +177,17 @@ void InspWindowWidget::updateInspWindowList() {
         QTreeWidgetItem *pItem = new QTreeWidgetItem(QStringList{window.name.c_str()}, TREE_ITEM_WINDOW);
         pItem->setData(0, Qt::UserRole, window.Id);
         ui.treeWidget->addTopLevelItem(pItem);
-        if (Engine::Window::Usage::ALIGNMENT == window.usage)
+
+        if (!selectWindowName.isEmpty() && pItem->text(0) == selectWindowName) {
+            pItem->setSelected(true);
+        }else if (selectWindowName.isEmpty() && Engine::Window::Usage::ALIGNMENT == window.usage)
         {
-            ui.treeWidget->topLevelItem(ui.treeWidget->topLevelItemCount() - 1)->setSelected(true);
-            bItemSelect = true;
+            pItem->setSelected(true);
+            bItemSelected = true;
         }
     }
-    if (!bItemSelect && ui.treeWidget->topLevelItemCount() > 0) {
+
+    if (!bItemSelected && ui.treeWidget->topLevelItemCount() > 0) {
         ui.treeWidget->topLevelItem(ui.treeWidget->topLevelItemCount() - 1)->setSelected(true);
     }
 
@@ -369,6 +376,7 @@ void InspWindowWidget::on_btnRemoveWindow_clicked() {
         }
     }
 
+    m_enCurrentInspWidget = INSP_WIDGET_INDEX::UNDEFINED;
     updateInspWindowList();
 }
 
@@ -648,7 +656,7 @@ void InspWindowWidget::on_btnTryInsp_clicked() {
 
 void InspWindowWidget::_tryInspHeight() {
     bool bUseGloablBase = false;
-    Engine::Window window = m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->getCurrentWindow();
+    const auto& window = m_arrInspWindowWidget[static_cast<int>(m_enCurrentInspWidget)]->getCurrentWindow();
     if (window.usage == Engine::Window::Usage::HEIGHT_MEASURE)
     {
         QJsonParseError json_error;
@@ -782,10 +790,9 @@ void InspWindowWidget::on_btnConfirmWindow_clicked() {
 }
 
 void InspWindowWidget::onInspWindowState(const QVariantList &data) {
+    m_enCurrentInspWidget = INSP_WIDGET_INDEX::UNDEFINED;
     updateInspWindowList();
     if (ui.treeWidget->topLevelItemCount() <= 0) {
-        m_enCurrentInspWidget = INSP_WIDGET_INDEX::UNDEFINED;
-
         IVisionUI* pUI = getModule<IVisionUI>(UI_MODEL);
         pUI->setCurrentDetectObj(QDetectObj());
     }

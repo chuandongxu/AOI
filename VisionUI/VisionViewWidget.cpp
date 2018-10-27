@@ -1959,8 +1959,8 @@ void VisionViewWidget::_moveToSelectDevice(const QString& name)
             float scale = localRotateRect.size.width > 0 ? m_windowWidth * 0.25 / localRotateRect.size.width : 1.0;
             zoomImage(scale);
 
-            cv::Point2f ptImgPos = localRotateRect.center;         
-            cv::Point ptMousePos = convertToMousePos(ptImgPos);          
+            cv::Point2f ptImgPos = localRotateRect.center;
+            cv::Point ptMousePos = convertToMousePos(ptImgPos);
 
             moveImage(-(ptMousePos.x - LABEL_IMAGE_WIDTH / 2), -(ptMousePos.y - LABEL_IMAGE_HEIGHT / 2));
             

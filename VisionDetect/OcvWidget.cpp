@@ -226,6 +226,7 @@ void OcvWidget::confirmWindow(OPERATION enOperation) {
             System->setTrackInfo(QString("Success to update window: %1.").arg(window.name.c_str()));
     }
 
+    m_currentWindow = window;
     updateWindowToUI(window, enOperation);
     m_pParent->updateInspWindowList();
 }
