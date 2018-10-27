@@ -64,7 +64,7 @@ void EditCADWidget::on_btnAddDevice_clicked() {
     device.height = selectedROI.height * dResolutionY;
 
     cv::Point2f ptCtr(selectedROI.x + selectedROI.width / 2, selectedROI.y + selectedROI.height / 2);
-
+    auto ptCtrDisplay = ptCtr;
     auto matImage = pUI->getImage();
 
     if (bBoardRotated)
@@ -84,7 +84,10 @@ void EditCADWidget::on_btnAddDevice_clicked() {
         return;
     }
 
-    ScanImageWidget::updateDeviceWindows();
+    auto vecDeviceWindows = pUI->getDeviceWindows();
+    cv::RotatedRect rectDevice(ptCtrDisplay, cv::Size2f(selectedROI.width, selectedROI.height), 0);
+    vecDeviceWindows.emplace_back(device.Id, device.name, rectDevice);
+    pUI->setDeviceWindows(vecDeviceWindows);
 }
 
 void EditCADWidget::on_btnEditDevice_clicked() {
@@ -146,7 +149,7 @@ void EditCADWidget::on_btnEditDevice_clicked() {
     device.width  = selectedROI.width  * dResolutionX;
     device.height = selectedROI.height * dResolutionY;
     cv::Point2f ptCtr(selectedROI.x + selectedROI.width / 2, selectedROI.y + selectedROI.height / 2);
-
+    auto ptCtrDisplay = ptCtr;
     auto matImage = pUI->getImage();
 
     if (bBoardRotated)
@@ -166,7 +169,13 @@ void EditCADWidget::on_btnEditDevice_clicked() {
         return;
     }
 
-    ScanImageWidget::updateDeviceWindows();
+    auto vecDeviceWindows = pUI->getDeviceWindows();
+    auto iterWindow = std::find_if(vecDeviceWindows.begin(), vecDeviceWindows.end(), [device] (const VisionViewDevice& vvDevice){ return device.Id == vvDevice.getId(); });
+    if (iterWindow != vecDeviceWindows.end()) {
+        cv::RotatedRect rectDevice(ptCtrDisplay, cv::Size2f(selectedROI.width, selectedROI.height), 0);
+        *iterWindow = VisionViewDevice(iterWindow->getId(), iterWindow->getName(), rectDevice);
+        pUI->setDeviceWindows(vecDeviceWindows);
+    }
 }
 
 void EditCADWidget::on_btnDeleteDevice_clicked() {
@@ -198,5 +207,10 @@ void EditCADWidget::on_btnDeleteDevice_clicked() {
         return;
     }
 
-    ScanImageWidget::updateDeviceWindows();
+    auto vecDeviceWindows = pUI->getDeviceWindows();
+    auto iterWindow = std::find_if(vecDeviceWindows.begin(), vecDeviceWindows.end(), [device] (const VisionViewDevice& vvDevice){ return device.Id == vvDevice.getId(); });
+    if (iterWindow != vecDeviceWindows.end()) {
+        vecDeviceWindows.erase(iterWindow);
+        pUI->setDeviceWindows(vecDeviceWindows);
+    }
 }

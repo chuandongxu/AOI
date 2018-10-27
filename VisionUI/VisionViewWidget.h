@@ -72,6 +72,7 @@ public:
     void setCurrentDetectObj(const QDetectObj &detectObj);
     QVector<QDetectObj> getDetectObjs() const;
     void setDeviceWindows(const VisionViewDeviceVector &vecWindows);
+    const VisionViewDeviceVector& getDeviceWindows() const;
     void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) const;
     VisionViewDevice getSelectedDevice() const;
     void setConfirmedFM(const VisionViewFMVector &vecFM);

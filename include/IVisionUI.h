@@ -50,6 +50,7 @@ public:
     virtual void setCurrentDetectObj(const QDetectObj &detectObj) = 0;
     virtual QVector<QDetectObj> getDetectObjs() const = 0;
     virtual void setDeviceWindows(const VisionViewDeviceVector &vecWindows) = 0;
+    virtual const VisionViewDeviceVector& getDeviceWindows() const = 0;
     virtual void setViewState(VISION_VIEW_MODE enViewMode) = 0;
     virtual void getSelectDeviceWindow(cv::RotatedRect &rrectCadWindow, cv::RotatedRect &rrectImageWindow) = 0;
     virtual VisionViewDevice getSelectedDevice() = 0;
