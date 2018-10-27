@@ -57,7 +57,7 @@ void ViewEditor::previousROIDisplay()
 
 void ViewEditor::prepareROIDisplay(QImage& texture, bool invert)
 {
-	m_pViewWidget->topView();
+	m_pViewWidget->fullScreen();//m_pViewWidget->topView();
 	m_pViewWidget->changeMeshTriView(false);
 	m_pViewWidget->meshTexture(texture, invert);
 	m_pViewWidget->rotateView();

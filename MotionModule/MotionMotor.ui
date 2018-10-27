@@ -1219,7 +1219,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>平滑时间：</string>
+       <string>加速比例：</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_161">
@@ -1271,7 +1271,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>us</string>
+       <string>%</string>
       </property>
      </widget>
     </widget>
