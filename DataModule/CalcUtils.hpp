@@ -31,10 +31,20 @@ public:
 
     template<typename T>
     static inline bool isRectInRect(const cv::Rect_<T> &rectIn, const cv::Rect_<T> &rectOut) {
-    if (rectOut.contains(rectIn.tl()) && rectOut.contains(rectIn.br()))
-        return true;
-    return false;
-}
+        if (rectOut.contains(rectIn.tl()) && rectOut.contains(rectIn.br()))
+            return true;
+        return false;
+    }
+
+    template<typename _Tp>
+    static inline cv::Point2f warpPoint(const cv::Mat &matWarp, const cv::Point2f &ptInput) {
+        cv::Mat matPoint = cv::Mat::zeros(3, 1, matWarp.type());
+        matPoint.at<_Tp>(0, 0) = ptInput.x;
+        matPoint.at<_Tp>(1, 0) = ptInput.y;
+        matPoint.at<_Tp>(2, 0) = 1.f;
+        cv::Mat matResult = matWarp * matPoint;
+        return cv::Point_<_Tp>(matResult.at<_Tp>(0, 0), matResult.at<_Tp>(1, 0));
+    }
 
 private:
     CalcUtils();

@@ -1217,3 +1217,11 @@ void DataCtrl::setCombinedBigResult(const Vision::VectorOfMat &vecCombinedBigIma
     m_vecCombinedBigImages = vecCombinedBigImages;
     m_matCombinedBigHeight = matHeight;
 }
+
+void DataCtrl::getCadOffsetPixel(float& fOffsetX, float& fOffsetY) const {
+    fOffsetX = 0.f; fOffsetY = 0.f;
+    if (!m_matCadTransform.empty()) {
+        fOffsetX = m_matCadTransform.at<float>(0, 2);
+        fOffsetY = m_matCadTransform.at<float>(1, 2);
+    }
+}

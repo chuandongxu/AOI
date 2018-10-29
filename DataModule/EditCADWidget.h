@@ -3,13 +3,14 @@
 
 #include <QWidget>
 #include "ui_EditCADWidget.h"
+#include "DataCtrl.h"
 
 class EditCADWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    EditCADWidget(QWidget *parent = 0);
+    EditCADWidget(DataCtrl *pDataCtrl, QWidget *parent = 0);
     ~EditCADWidget();
 
 private slots:
@@ -19,6 +20,7 @@ private slots:
 
 private:
     Ui::EditCAD ui;
+    DataCtrl                   *m_pDataCtrl;
 };
 
 #endif // EDITCAD_H

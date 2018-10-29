@@ -10,12 +10,12 @@
 #include "../include/IVision.h"
 #include "EditDeviceDialog.h"
 #include "ScanImageWidget.h"
+#include "CalcUtils.hpp"
 
 using namespace NFG::AOI;
 
-EditCADWidget::EditCADWidget(QWidget *parent)
-    : QWidget(parent)
-{
+EditCADWidget::EditCADWidget(DataCtrl *pDataCtrl, QWidget *parent)
+    : m_pDataCtrl(pDataCtrl), QWidget(parent) {
     ui.setupUi(this);
 }
 
@@ -66,6 +66,13 @@ void EditCADWidget::on_btnAddDevice_clicked() {
     cv::Point2f ptCtr(selectedROI.x + selectedROI.width / 2, selectedROI.y + selectedROI.height / 2);
     auto ptCtrDisplay = ptCtr;
     auto matImage = pUI->getImage();
+
+    auto matTransform = m_pDataCtrl->getCadTransform();
+    if (!matTransform.empty()) {
+        cv::Mat matTransformInv;
+        cv::invertAffineTransform(matTransform, matTransformInv);
+        ptCtr = CalcUtils::warpPoint<float>(matTransformInv, ptCtr);
+    }
 
     if (bBoardRotated)
         ptCtr.x = matImage.cols - ptCtr.x;
@@ -148,11 +155,18 @@ void EditCADWidget::on_btnEditDevice_clicked() {
     dialog.getDeviceInfo(device.name, device.group, device.type);
     device.width  = selectedROI.width  * dResolutionX;
     device.height = selectedROI.height * dResolutionY;
-    if (Vision::ToInt32(device.angle) % 90 == 0)
+    if (fabs(device.angle) > 1.f && Vision::ToInt32(device.angle) % 90 == 0)
         std::swap(device.width, device.height);
     cv::Point2f ptCtr(selectedROI.x + selectedROI.width / 2, selectedROI.y + selectedROI.height / 2);
     auto ptCtrDisplay = ptCtr;
     auto matImage = pUI->getImage();
+
+    auto matTransform = m_pDataCtrl->getCadTransform();
+    if (!matTransform.empty()) {
+        cv::Mat matTransformInv;
+        cv::invertAffineTransform(matTransform, matTransformInv);
+        ptCtr = CalcUtils::warpPoint<float>(matTransformInv, ptCtr);
+    }
 
     if (bBoardRotated)
         ptCtr.x = matImage.cols - ptCtr.x;

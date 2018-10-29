@@ -55,6 +55,9 @@ public:
     Vision::VectorOfMat getCombinedBigImages() const { return m_vecCombinedBigImages; }
     cv::Mat getCombinedBigHeight() const { return m_matCombinedBigHeight; }
     QString getDataStoreApiVersion() const { return m_strDataStoreApiVersion; }
+    inline void setCadTransform(const cv::Mat& matTranform)  { m_matCadTransform = matTranform; };
+    inline const cv::Mat& getCadTransform() const { return m_matCadTransform; };
+    void getCadOffsetPixel(float& fOffsetX, float& fOffsetY) const;
 
 private:
     void clearFiles(const QString &folderFullPath);
@@ -64,12 +67,13 @@ private:
     QMutex m_mutex;
     int m_nCycleTestNum;
 
-    QBoardObj* m_boardObj;
-    QVector<QDetectObj*> m_cellTmpObjs;
-    QVector<QDetectObj*> m_cellTestObjs;
-    QVector<QProfileObj*> m_profileObjs;
-    int m_nProfileIndex;
+    QBoardObj*              m_boardObj;
+    QVector<QDetectObj*>    m_cellTmpObjs;
+    QVector<QDetectObj*>    m_cellTestObjs;
+    QVector<QProfileObj*>   m_profileObjs;
+    int                     m_nProfileIndex;
     Vision::VectorOfMat     m_vecCombinedBigImages;
     cv::Mat                 m_matCombinedBigHeight;
     QString                 m_strDataStoreApiVersion;
+    cv::Mat                 m_matCadTransform;
 };

@@ -13,6 +13,7 @@
 #include "opencv2/video.hpp"
 #include "../Common/CommonFunc.h"
 #include "QDetectObj.h"
+#include "DataUtils.h"
 
 FiducialMarkWidget::FiducialMarkWidget(DataCtrl *pDataCtrl, QWidget *parent)
 :   m_pDataCtrl(pDataCtrl), 
@@ -780,7 +781,7 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked() {
         matTransform.convertTo(matTransform, CV_32FC1);
     }
 
-    auto vecVecTransform = DataUtils::matToVector<float>(matTransform);
+    m_pDataCtrl->setCadTransform(matTransform);
 
     Engine::BoardVector vecBoard;
     auto result = Engine::GetAllBoards(vecBoard);
@@ -813,7 +814,7 @@ void FiducialMarkWidget::on_btnDoAlignment_clicked() {
             if (bBoardRotated)
                 x = m_nBigImageWidth  - x;
             else
-                y = m_nBigImageHeight - y; //In cad, up is positive, but in image, down is positive.        
+                y = m_nBigImageHeight - y; //In cad, up is positive, but in image, down is positive.
 
             std::vector<float> vecSrcPos;
             vecSrcPos.push_back(x);
