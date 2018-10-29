@@ -148,6 +148,8 @@ void EditCADWidget::on_btnEditDevice_clicked() {
     dialog.getDeviceInfo(device.name, device.group, device.type);
     device.width  = selectedROI.width  * dResolutionX;
     device.height = selectedROI.height * dResolutionY;
+    if (Vision::ToInt32(device.angle) % 90 == 0)
+        std::swap(device.width, device.height);
     cv::Point2f ptCtr(selectedROI.x + selectedROI.width / 2, selectedROI.y + selectedROI.height / 2);
     auto ptCtrDisplay = ptCtr;
     auto matImage = pUI->getImage();
