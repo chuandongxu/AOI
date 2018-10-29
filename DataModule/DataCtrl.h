@@ -62,7 +62,7 @@ private:
 
 private:
     QMutex m_mutex;
-    int m_nCycleTestNum;    
+    int m_nCycleTestNum;
 
     QBoardObj* m_boardObj;
     QVector<QDetectObj*> m_cellTmpObjs;
